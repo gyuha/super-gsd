@@ -1,6 +1,9 @@
 {
   "name": "super-gsd",
-  "owner": "gyuha",
+  "owner": {
+    "name": "gyuha",
+    "email": "nicegyuha@gmail.com"
+  },
   "description": "Self-hosted marketplace for the super-gsd orchestrator plugin.",
   "plugins": [
     {

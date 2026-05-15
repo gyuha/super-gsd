@@ -12,7 +12,7 @@
 
 - [x] **Phase 1: Plugin Scaffold** - Installable Claude Code plugin shell with manifest and marketplace metadata
 - [x] **Phase 2: Manual Handoff & Status** - User can hand off from GSD to Superpowers via slash command and inspect workflow state (completed 2026-05-15)
-- [ ] **Phase 3: sg- Command Set & README** - Full sg- command set (8 commands) with updated README and docs/COMMANDS.md
+- [x] **Phase 3: sg- Command Set & README** - Full sg- command set (8 commands) with updated README and docs/COMMANDS.md (completed 2026-05-16)
 - [ ] **Phase 4: Auto-Advance Hooks** - Stage transitions are auto-detected and announced via Stop/SubagentStop hooks
 - [ ] **Phase 5: Lessons Feedback Loop** - Hookify findings persist into `.planning/lessons/` and feed into next GSD phase
 
@@ -38,13 +38,13 @@
 **Depends on**: Phase 1
 **Requirements**: HAND-01, HAND-02, HAND-03, HAND-04, STATE-01, STATE-02
 **Success Criteria** (what must be TRUE):
-  1. User can run `/super-gsd:to-superpowers [phase]` after `plan-phase` and the current phase's PLAN.md, REQ-ID mapping, and success criteria are packaged into a single Superpowers-ready prompt
+  1. User can run `/super-gsd:sg-execute [phase]` after `plan-phase` and the current phase's PLAN.md, REQ-ID mapping, and success criteria are packaged into a single Superpowers-ready prompt
   2. Running the handoff command without a phase argument resolves the current phase from `.planning/STATE.md` automatically
   3. Each handoff appends a timestamped entry (from-stage, to-stage, phase) to `.planning/HANDOFF.md` and re-running on the same phase does not duplicate context
-  4. User can run `/super-gsd:status` and see current stage (plan/execute/review/hookify), last handoff timestamp, and the next recommended command
+  4. User can run `/super-gsd:sg-status` and see current stage (plan/execute/review/hookify), last handoff timestamp, and the next recommended command
 **Plans:** 2/2 plans complete
 - [x] 02-01-PLAN.md — Lock HANDOFF.md 5-column schema, patch-bump plugin.json to 0.0.2, add CHANGELOG [0.0.2] entry
-- [x] 02-02-PLAN.md — Author commands/to-superpowers.md (handoff + Skill auto-invoke + idempotency) and commands/status.md (stage detection + next-command mapping)
+- [x] 02-02-PLAN.md — Author commands/sg-execute.md (handoff + Skill auto-invoke + idempotency) and commands/sg-status.md (stage detection + next-command mapping)
 
 ### Phase 3: sg- Command Set & README
 **Goal**: Deliver the full sg- command set (8 commands) and updated documentation so users have a complete, discoverable interface for the GSD→Superpowers→Hookify workflow.
@@ -58,11 +58,11 @@
   4. /super-gsd:sg-status replaces /super-gsd:status with identical logic
   5. README.md contains a sg- command quick-reference table and updated workflow diagram
   6. docs/COMMANDS.md contains a full per-command reference table
-**Plans:** 3/4 plans executed
+**Plans:** 4/4 plans complete
 - [x] 03-01-PLAN.md — Replace to-superpowers.md → sg-execute.md and status.md → sg-status.md
 - [x] 03-02-PLAN.md — Create sg-start.md and sg-explore.md
 - [x] 03-03-PLAN.md — Create sg-plan.md, sg-review.md, sg-learn.md, sg-ship.md
-- [ ] 03-04-PLAN.md — Rewrite README.md, create docs/COMMANDS.md, update ROADMAP.md and REQUIREMENTS.md
+- [x] 03-04-PLAN.md — Rewrite README.md, create docs/COMMANDS.md, update ROADMAP.md and REQUIREMENTS.md
 
 ### Phase 4: Auto-Advance Hooks
 **Goal**: Stage transitions are detected automatically — the user no longer has to remember which command comes next.
@@ -96,6 +96,6 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5
 |-------|----------------|--------|-----------|
 | 1. Plugin Scaffold | 2/2 | Complete | 2026-05-15 |
 | 2. Manual Handoff & Status | 2/2 | Complete | 2026-05-15 |
-| 3. sg- Command Set & README | 3/4 | In Progress|  |
+| 3. sg- Command Set & README | 4/4 | Complete | 2026-05-16 |
 | 4. Auto-Advance Hooks | 0/TBD | Not started | - |
 | 5. Lessons Feedback Loop | 0/TBD | Not started | - |

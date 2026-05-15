@@ -62,7 +62,7 @@
 | Requirement | Phase | Status |
 |-------------|-------|--------|
 | PLUGIN-01 | Phase 1 | Complete (01-01) |
-| PLUGIN-02 | Phase 1 | Complete |
+| PLUGIN-02 | Phase 3 | Complete (Phase 3) |
 | PLUGIN-03 | Phase 1 | Complete (01-01) |
 | HAND-01 | Phase 2 | Complete |
 | HAND-02 | Phase 2 | Complete |
@@ -70,16 +70,16 @@
 | HAND-04 | Phase 2 | Complete |
 | STATE-01 | Phase 2 | Complete |
 | STATE-02 | Phase 2 | Complete (02-01) |
-| HOOK-01 | Phase 3 | Pending |
-| HOOK-02 | Phase 3 | Pending |
-| HOOK-03 | Phase 3 | Pending |
-| HOOK-04 | Phase 3 | Pending |
-| LESS-01 | Phase 4 | Pending |
-| LESS-02 | Phase 4 | Pending |
+| HOOK-01 | Phase 4 | Pending |
+| HOOK-02 | Phase 4 | Pending |
+| HOOK-03 | Phase 4 | Pending |
+| HOOK-04 | Phase 4 | Pending |
+| LESS-01 | Phase 5 | Pending |
+| LESS-02 | Phase 5 | Pending |
 
 **Coverage:**
 - v1 requirements: 15 total
-- Mapped to phases: 15
+- Mapped to phases 1-5: 15
 - Unmapped: 0 ✓
 
 ---

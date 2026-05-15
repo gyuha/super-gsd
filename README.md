@@ -42,6 +42,71 @@ Quick reference for all `/super-gsd:sg-*` slash commands.
 
 See [docs/COMMANDS.md](./docs/COMMANDS.md) for the full per-command reference including arguments and detailed descriptions.
 
+## Usage Examples
+
+### End-to-End Workflow
+
+The typical flow for adding a new feature milestone to an existing project (e.g., adding a payment module to `my-saas-app`):
+
+```shell
+# 1. Start a new milestone — scaffolds .planning/ context for "payment module"
+/super-gsd:sg-start add payment module
+
+# 2. Explore the codebase — maps existing code so the plan is grounded in reality
+/super-gsd:sg-explore
+
+# 3. Plan the phase — reviews prior lessons, then runs gsd-discuss-phase → gsd-plan-phase
+/super-gsd:sg-plan
+
+# 4. Execute — hands the finished plan to Superpowers for implementation
+/super-gsd:sg-execute
+
+# ... Superpowers implements the payment module across one or more sessions ...
+
+# 5. Review — requests a Superpowers code review when implementation is complete
+/super-gsd:sg-review
+
+# 6. Learn — runs Hookify retrospective; findings are saved to .planning/lessons/
+/super-gsd:sg-learn
+
+# 7. Ship — closes the milestone and merges via gsd-ship
+/super-gsd:sg-ship
+```
+
+Each command hands context to the next automatically. You do not need to copy-paste state between steps.
+
+### Individual Command Examples
+
+**Check your current position at any time:**
+
+```shell
+/super-gsd:sg-status
+```
+
+**Review lessons from previous cycles before planning:**
+
+```shell
+# List all lessons
+/super-gsd:sg-lessons
+
+# Filter to a specific phase
+/super-gsd:sg-lessons phase-03
+```
+
+**Update all workflow tools at once:**
+
+```shell
+/super-gsd:sg-update
+```
+
+**Run a small, one-off task outside the main workflow** (bug fix, doc update, config tweak):
+
+```shell
+/super-gsd:sg-quick fix null pointer in payment webhook handler
+```
+
+`sg-quick` wraps the task in a lightweight GSD plan-execute-commit cycle without starting a full milestone.
+
 ## Prerequisites
 
 `super-gsd` is non-invasive: it does not modify, fork, or replace any of the three plugins below. You install them independently first, and `super-gsd` simply chains their existing commands and hooks.

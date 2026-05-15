@@ -14,7 +14,7 @@
 - [x] **Phase 2: Manual Handoff & Status** - User can hand off from GSD to Superpowers via slash command and inspect workflow state (completed 2026-05-15)
 - [x] **Phase 3: sg- Command Set & README** - Full sg- command set (8 commands) with updated README and docs/COMMANDS.md (completed 2026-05-16)
 - [x] **Phase 4: Auto-Advance Hooks** - Stage transitions are auto-detected and announced via Stop/SubagentStop hooks (completed 2026-05-15)
-- [ ] **Phase 5: Lessons Feedback Loop** - Hookify findings persist into `.planning/lessons/` and feed into next GSD phase
+- [x] **Phase 5: Lessons Feedback Loop** - Hookify findings persist into `.planning/lessons/` and feed into next GSD phase (completed 2026-05-15)
 
 ## Phase Details
 
@@ -86,9 +86,9 @@
   1. After Hookify runs, its extracted patterns are saved to `.planning/lessons/{phase}-{date}.md` automatically
   2. When the user runs the next GSD `discuss-phase` or `plan-phase`, prior lessons from `.planning/lessons/` are included as context (via a helper command or auto-injection guidance)
   3. A full GSD → Superpowers → Hookify → next GSD cycle can be observed end-to-end on a sample project without any manual context shuttling
-**Plans:** 1/2 plans executed
+**Plans:** 2/2 plans complete
 - [x] 05-01-PLAN.md — hooks/transcript_matcher.py + hooks/stop_hook.py 확장 (HOOKIFY_SIGNALS + save_hookify_lessons)
-- [ ] 05-02-PLAN.md — commands/sg-lessons.md 신규 생성 + commands/sg-plan.md Step 0 prior lessons 주입
+- [x] 05-02-PLAN.md — commands/sg-lessons.md 신규 생성 + commands/sg-plan.md Step 0 prior lessons 주입
 
 ## Progress
 
@@ -101,4 +101,4 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5
 | 2. Manual Handoff & Status | 2/2 | Complete | 2026-05-15 |
 | 3. sg- Command Set & README | 4/4 | Complete   | 2026-05-15 |
 | 4. Auto-Advance Hooks | 1/1 | Complete   | 2026-05-15 |
-| 5. Lessons Feedback Loop | 1/2 | In Progress|  |
+| 5. Lessons Feedback Loop | 2/2 | Complete   | 2026-05-15 |

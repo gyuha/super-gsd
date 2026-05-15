@@ -71,7 +71,7 @@
 **Requirements**: HOOK-01, HOOK-02, HOOK-03, HOOK-04
 **Success Criteria** (what must be TRUE):
   1. When GSD `plan-phase` completes, a Stop hook surfaces a message guiding the user to `/super-gsd:sg-execute`
-  2. When Superpowers `code-reviewer` (or equivalent review skill) completes, a SubagentStop hook invokes Hookify `/hookify` automatically
+  2. When Superpowers `code-reviewer` (or equivalent review skill) completes, a SubagentStop hook displays a systemMessage guiding the user to run `/super-gsd:sg-learn` (hooks cannot directly invoke skills — message guidance is the maximum automation level)
   3. Setting `super_gsd.auto_advance: false` in `.planning/config.json` disables both auto-advance hooks while keeping manual commands functional
   4. Hooks only fire on the intended transcript signals — running unrelated commands does not trigger spurious handoff messages
 **Plans:** 1/1 plans complete

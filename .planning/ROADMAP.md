@@ -27,7 +27,9 @@
   2. After installation, `super-gsd` appears in the plugin list with name, description, and version pulled from `plugin.json`
   3. User can read the README and understand prerequisites (GSD/Superpowers/Hookify) and the 3-stage workflow
   4. Loading the plugin in a Claude Code session does not break GSD, Superpowers, or Hookify (non-invasive verified)
-**Plans**: TBD
+**Plans:** 2 plans
+- [ ] 01-01-PLAN.md — Manifest set: plugin.json, marketplace.json, LICENSE, .gitignore, CHANGELOG.md
+- [ ] 01-02-PLAN.md — README.md with 9 sections, ASCII workflow diagram, install commands, verify checklist, Korean summary
 
 ### Phase 2: Manual Handoff & Status
 **Goal**: User can manually hand off a completed GSD phase to Superpowers with structured context, and at any time inspect where the workflow is.
@@ -71,7 +73,7 @@ Phases execute in numeric order: 1 → 2 → 3 → 4
 
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
-| 1. Plugin Scaffold | 0/TBD | Not started | - |
+| 1. Plugin Scaffold | 0/2 | Not started | - |
 | 2. Manual Handoff & Status | 0/TBD | Not started | - |
 | 3. Auto-Advance Hooks | 0/TBD | Not started | - |
 | 4. Lessons Feedback Loop | 0/TBD | Not started | - |

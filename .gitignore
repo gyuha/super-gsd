@@ -12,3 +12,5 @@ node_modules/
 
 # Claude Code local state
 .claude/local/
+
+__pycache__

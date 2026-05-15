@@ -20,10 +20,10 @@
 
 ### Auto-Advance Hooks (HOOK)
 
-- [ ] **HOOK-01**: GSD `plan-phase` 완료를 감지하는 Stop hook을 플러그인에 포함시켜 다음 단계 안내 메시지를 자동 표시한다
-- [ ] **HOOK-02**: Superpowers `code-reviewer` (또는 동등 review skill) 완료를 감지하는 SubagentStop hook이 Hookify 실행을 안내하는 systemMessage를 자동 표시한다 (Claude Code hooks는 skill을 직접 호출할 수 없으므로 메시지 안내가 최대 자동화 수준)
-- [ ] **HOOK-03**: Hook 동작은 `.planning/config.json`의 `super_gsd.auto_advance: false` 설정으로 비활성화할 수 있다
-- [ ] **HOOK-04**: Hook이 잘못된 컨텍스트(다른 명령 종료 등)에서 발화하지 않도록 transcript 기반 매처를 구현한다
+- [x] **HOOK-01**: GSD `plan-phase` 완료를 감지하는 Stop hook을 플러그인에 포함시켜 다음 단계 안내 메시지를 자동 표시한다
+- [x] **HOOK-02**: Superpowers `code-reviewer` (또는 동등 review skill) 완료를 감지하는 SubagentStop hook이 Hookify 실행을 안내하는 systemMessage를 자동 표시한다 (Claude Code hooks는 skill을 직접 호출할 수 없으므로 메시지 안내가 최대 자동화 수준)
+- [x] **HOOK-03**: Hook 동작은 `.planning/config.json`의 `super_gsd.auto_advance: false` 설정으로 비활성화할 수 있다
+- [x] **HOOK-04**: Hook이 잘못된 컨텍스트(다른 명령 종료 등)에서 발화하지 않도록 transcript 기반 매처를 구현한다
 
 ### Lessons Persistence (LESS)
 
@@ -70,10 +70,10 @@
 | HAND-04 | Phase 2 | Complete |
 | STATE-01 | Phase 2 | Complete |
 | STATE-02 | Phase 2 | Complete (02-01) |
-| HOOK-01 | Phase 4 | Pending |
-| HOOK-02 | Phase 4 | Pending |
-| HOOK-03 | Phase 4 | Pending |
-| HOOK-04 | Phase 4 | Pending |
+| HOOK-01 | Phase 4 | Complete |
+| HOOK-02 | Phase 4 | Complete |
+| HOOK-03 | Phase 4 | Complete |
+| HOOK-04 | Phase 4 | Complete |
 | LESS-01 | Phase 5 | Pending |
 | LESS-02 | Phase 5 | Pending |
 

@@ -13,7 +13,7 @@
 - [x] **Phase 1: Plugin Scaffold** - Installable Claude Code plugin shell with manifest and marketplace metadata
 - [x] **Phase 2: Manual Handoff & Status** - User can hand off from GSD to Superpowers via slash command and inspect workflow state (completed 2026-05-15)
 - [x] **Phase 3: sg- Command Set & README** - Full sg- command set (8 commands) with updated README and docs/COMMANDS.md (completed 2026-05-16)
-- [ ] **Phase 4: Auto-Advance Hooks** - Stage transitions are auto-detected and announced via Stop/SubagentStop hooks
+- [x] **Phase 4: Auto-Advance Hooks** - Stage transitions are auto-detected and announced via Stop/SubagentStop hooks (completed 2026-05-15)
 - [ ] **Phase 5: Lessons Feedback Loop** - Hookify findings persist into `.planning/lessons/` and feed into next GSD phase
 
 ## Phase Details
@@ -74,8 +74,8 @@
   2. When Superpowers `code-reviewer` (or equivalent review skill) completes, a SubagentStop hook invokes Hookify `/hookify` automatically
   3. Setting `super_gsd.auto_advance: false` in `.planning/config.json` disables both auto-advance hooks while keeping manual commands functional
   4. Hooks only fire on the intended transcript signals — running unrelated commands does not trigger spurious handoff messages
-**Plans:** 1 plan
-- [ ] 04-01-PLAN.md — hooks/ 디렉토리(hooks.json, stop-hook.py, transcript-matcher.py) + config.json super_gsd 키 추가
+**Plans:** 1/1 plans complete
+- [x] 04-01-PLAN.md — hooks/ 디렉토리(hooks.json, stop-hook.py, transcript-matcher.py) + config.json super_gsd 키 추가
 
 ### Phase 5: Lessons Feedback Loop
 **Goal**: Hookify's retrospection output is captured per-phase and automatically resurfaced when the next GSD phase begins, closing the learning loop.
@@ -98,5 +98,5 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5
 | 1. Plugin Scaffold | 2/2 | Complete | 2026-05-15 |
 | 2. Manual Handoff & Status | 2/2 | Complete | 2026-05-15 |
 | 3. sg- Command Set & README | 4/4 | Complete   | 2026-05-15 |
-| 4. Auto-Advance Hooks | 0/1 | Not started | - |
+| 4. Auto-Advance Hooks | 1/1 | Complete   | 2026-05-15 |
 | 5. Lessons Feedback Loop | 0/TBD | Not started | - |

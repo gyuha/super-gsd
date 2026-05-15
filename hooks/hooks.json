@@ -1,0 +1,27 @@
+{
+  "description": "super-gsd auto-advance hooks — GSD plan-phase 완료 및 Superpowers review 완료를 감지해 다음 단계를 안내한다",
+  "hooks": {
+    "Stop": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python3 \"${CLAUDE_PLUGIN_ROOT}/hooks/stop-hook.py\"",
+            "timeout": 10
+          }
+        ]
+      }
+    ],
+    "SubagentStop": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python3 \"${CLAUDE_PLUGIN_ROOT}/hooks/stop-hook.py\"",
+            "timeout": 10
+          }
+        ]
+      }
+    ]
+  }
+}

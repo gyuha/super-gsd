@@ -2,7 +2,7 @@
 
 ## Overview
 
-`super-gsd` ships in four MVP vertical slices. Each slice is an installable Claude Code plugin build that delivers a coherent, testable user behavior. Phase 1 produces the plugin shell (installable but inert). Phase 2 makes manual stage handoff work end-to-end. Phase 3 adds automatic triggering via Stop/SubagentStop hooks. Phase 4 closes the loop by persisting Hookify lessons back into the next GSD phase. Granularity is `coarse`; mode is `mvp`.
+`super-gsd` ships in five MVP vertical slices. Each slice is an installable Claude Code plugin build that delivers a coherent, testable user behavior. Phase 1 produces the plugin shell (installable but inert). Phase 2 makes manual stage handoff work end-to-end. Phase 3 delivers the full sg- command set and updated documentation. Phase 4 adds automatic triggering via Stop/SubagentStop hooks. Phase 5 closes the loop by persisting Hookify lessons back into the next GSD phase. Granularity is `coarse`; mode is `mvp`.
 
 ## Phases
 
@@ -12,8 +12,9 @@
 
 - [x] **Phase 1: Plugin Scaffold** - Installable Claude Code plugin shell with manifest and marketplace metadata
 - [x] **Phase 2: Manual Handoff & Status** - User can hand off from GSD to Superpowers via slash command and inspect workflow state (completed 2026-05-15)
-- [ ] **Phase 3: Auto-Advance Hooks** - Stage transitions are auto-detected and announced via Stop/SubagentStop hooks
-- [ ] **Phase 4: Lessons Feedback Loop** - Hookify findings persist into `.planning/lessons/` and feed into next GSD phase
+- [ ] **Phase 3: sg- Command Set & README** - Full sg- command set (8 commands) with updated README and docs/COMMANDS.md
+- [ ] **Phase 4: Auto-Advance Hooks** - Stage transitions are auto-detected and announced via Stop/SubagentStop hooks
+- [ ] **Phase 5: Lessons Feedback Loop** - Hookify findings persist into `.planning/lessons/` and feed into next GSD phase
 
 ## Phase Details
 
@@ -45,22 +46,40 @@
 - [x] 02-01-PLAN.md — Lock HANDOFF.md 5-column schema, patch-bump plugin.json to 0.0.2, add CHANGELOG [0.0.2] entry
 - [x] 02-02-PLAN.md — Author commands/to-superpowers.md (handoff + Skill auto-invoke + idempotency) and commands/status.md (stage detection + next-command mapping)
 
-### Phase 3: Auto-Advance Hooks
-**Goal**: Stage transitions are detected automatically — the user no longer has to remember which command comes next.
+### Phase 3: sg- Command Set & README
+**Goal**: Deliver the full sg- command set (8 commands) and updated documentation so users have a complete, discoverable interface for the GSD→Superpowers→Hookify workflow.
 **Mode:** mvp
 **Depends on**: Phase 2
+**Requirements**: PLUGIN-02
+**Success Criteria** (what must be TRUE):
+  1. All 8 sg- commands are available: /super-gsd:sg-start, sg-explore, sg-plan, sg-execute, sg-review, sg-learn, sg-ship, sg-status
+  2. /super-gsd:sg-plan automatically chains gsd-discuss-phase then gsd-plan-phase with progress messages
+  3. /super-gsd:sg-execute replaces /super-gsd:to-superpowers with identical logic
+  4. /super-gsd:sg-status replaces /super-gsd:status with identical logic
+  5. README.md contains a sg- command quick-reference table and updated workflow diagram
+  6. docs/COMMANDS.md contains a full per-command reference table
+**Plans:** 4 plans
+- [ ] 03-01-PLAN.md — Replace to-superpowers.md → sg-execute.md and status.md → sg-status.md
+- [ ] 03-02-PLAN.md — Create sg-start.md and sg-explore.md
+- [ ] 03-03-PLAN.md — Create sg-plan.md, sg-review.md, sg-learn.md, sg-ship.md
+- [ ] 03-04-PLAN.md — Rewrite README.md, create docs/COMMANDS.md, update ROADMAP.md and REQUIREMENTS.md
+
+### Phase 4: Auto-Advance Hooks
+**Goal**: Stage transitions are detected automatically — the user no longer has to remember which command comes next.
+**Mode:** mvp
+**Depends on**: Phase 3
 **Requirements**: HOOK-01, HOOK-02, HOOK-03, HOOK-04
 **Success Criteria** (what must be TRUE):
-  1. When GSD `plan-phase` completes, a Stop hook surfaces a message guiding the user to `/super-gsd:to-superpowers`
+  1. When GSD `plan-phase` completes, a Stop hook surfaces a message guiding the user to `/super-gsd:sg-execute`
   2. When Superpowers `code-reviewer` (or equivalent review skill) completes, a SubagentStop hook invokes Hookify `/hookify` automatically
   3. Setting `super_gsd.auto_advance: false` in `.planning/config.json` disables both auto-advance hooks while keeping manual commands functional
   4. Hooks only fire on the intended transcript signals — running unrelated commands does not trigger spurious handoff messages
 **Plans**: TBD
 
-### Phase 4: Lessons Feedback Loop
+### Phase 5: Lessons Feedback Loop
 **Goal**: Hookify's retrospection output is captured per-phase and automatically resurfaced when the next GSD phase begins, closing the learning loop.
 **Mode:** mvp
-**Depends on**: Phase 3
+**Depends on**: Phase 4
 **Requirements**: LESS-01, LESS-02
 **Success Criteria** (what must be TRUE):
   1. After Hookify runs, its extracted patterns are saved to `.planning/lessons/{phase}-{date}.md` automatically
@@ -71,11 +90,12 @@
 ## Progress
 
 **Execution Order:**
-Phases execute in numeric order: 1 → 2 → 3 → 4
+Phases execute in numeric order: 1 → 2 → 3 → 4 → 5
 
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
-| 1. Plugin Scaffold | 2/2 | Complete   | 2026-05-15 |
-| 2. Manual Handoff & Status | 2/2 | Complete   | 2026-05-15 |
-| 3. Auto-Advance Hooks | 0/TBD | Not started | - |
-| 4. Lessons Feedback Loop | 0/TBD | Not started | - |
+| 1. Plugin Scaffold | 2/2 | Complete | 2026-05-15 |
+| 2. Manual Handoff & Status | 2/2 | Complete | 2026-05-15 |
+| 3. sg- Command Set & README | 0/4 | In Progress | - |
+| 4. Auto-Advance Hooks | 0/TBD | Not started | - |
+| 5. Lessons Feedback Loop | 0/TBD | Not started | - |

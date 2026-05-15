@@ -33,7 +33,7 @@
 ### State & Status (STATE)
 
 - [ ] **STATE-01**: `/super-gsd:status` 명령이 현재 워크플로우 단계(plan/execute/review/hookify), 마지막 인계 시각, 다음 권장 명령을 출력한다
-- [ ] **STATE-02**: 상태 추적은 `.planning/HANDOFF.md` 한 파일에 append-only로 기록되며 사람이 읽을 수 있는 마크다운 형식이다
+- [x] **STATE-02**: 상태 추적은 `.planning/HANDOFF.md` 한 파일에 append-only로 기록되며 사람이 읽을 수 있는 마크다운 형식이다
 
 ## v2 Requirements
 
@@ -69,7 +69,7 @@
 | HAND-03 | Phase 2 | Pending |
 | HAND-04 | Phase 2 | Pending |
 | STATE-01 | Phase 2 | Pending |
-| STATE-02 | Phase 2 | Pending |
+| STATE-02 | Phase 2 | Complete (02-01) |
 | HOOK-01 | Phase 3 | Pending |
 | HOOK-02 | Phase 3 | Pending |
 | HOOK-03 | Phase 3 | Pending |

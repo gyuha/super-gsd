@@ -41,8 +41,8 @@
   2. Running the handoff command without a phase argument resolves the current phase from `.planning/STATE.md` automatically
   3. Each handoff appends a timestamped entry (from-stage, to-stage, phase) to `.planning/HANDOFF.md` and re-running on the same phase does not duplicate context
   4. User can run `/super-gsd:status` and see current stage (plan/execute/review/hookify), last handoff timestamp, and the next recommended command
-**Plans:** 2 plans
-- [ ] 02-01-PLAN.md — Lock HANDOFF.md 5-column schema, patch-bump plugin.json to 0.0.2, add CHANGELOG [0.0.2] entry
+**Plans:** 1/2 plans complete
+- [x] 02-01-PLAN.md — Lock HANDOFF.md 5-column schema, patch-bump plugin.json to 0.0.2, add CHANGELOG [0.0.2] entry
 - [ ] 02-02-PLAN.md — Author commands/to-superpowers.md (handoff + Skill auto-invoke + idempotency) and commands/status.md (stage detection + next-command mapping)
 
 ### Phase 3: Auto-Advance Hooks
@@ -76,6 +76,6 @@ Phases execute in numeric order: 1 → 2 → 3 → 4
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
 | 1. Plugin Scaffold | 2/2 | Complete   | 2026-05-15 |
-| 2. Manual Handoff & Status | 0/2 | Planned | - |
+| 2. Manual Handoff & Status | 1/2 | In Progress | - |
 | 3. Auto-Advance Hooks | 0/TBD | Not started | - |
 | 4. Lessons Feedback Loop | 0/TBD | Not started | - |

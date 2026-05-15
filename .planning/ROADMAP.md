@@ -74,7 +74,8 @@
   2. When Superpowers `code-reviewer` (or equivalent review skill) completes, a SubagentStop hook invokes Hookify `/hookify` automatically
   3. Setting `super_gsd.auto_advance: false` in `.planning/config.json` disables both auto-advance hooks while keeping manual commands functional
   4. Hooks only fire on the intended transcript signals — running unrelated commands does not trigger spurious handoff messages
-**Plans**: TBD
+**Plans:** 1 plan
+- [ ] 04-01-PLAN.md — hooks/ 디렉토리(hooks.json, stop-hook.py, transcript-matcher.py) + config.json super_gsd 키 추가
 
 ### Phase 5: Lessons Feedback Loop
 **Goal**: Hookify's retrospection output is captured per-phase and automatically resurfaced when the next GSD phase begins, closing the learning loop.
@@ -97,5 +98,5 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5
 | 1. Plugin Scaffold | 2/2 | Complete | 2026-05-15 |
 | 2. Manual Handoff & Status | 2/2 | Complete | 2026-05-15 |
 | 3. sg- Command Set & README | 4/4 | Complete   | 2026-05-15 |
-| 4. Auto-Advance Hooks | 0/TBD | Not started | - |
+| 4. Auto-Advance Hooks | 0/1 | Not started | - |
 | 5. Lessons Feedback Loop | 0/TBD | Not started | - |

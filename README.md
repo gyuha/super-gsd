@@ -38,6 +38,7 @@ Quick reference for all `/super-gsd:sg-*` slash commands.
 | `/super-gsd:sg-ship` | Complete and ship the current milestone via `gsd-ship` | After learning is captured |
 | `/super-gsd:sg-status` | Show current stage, last handoff timestamp, and next recommended command | At any point to check where you are |
 | `/super-gsd:sg-update` | Update GSD, superpowers, hookify, and super-gsd to their latest versions | When you want to update all workflow tools at once |
+| `/super-gsd:sg-quick` | Execute a small, ad-hoc task with GSD guarantees (plan + execute + commit) | For one-off tasks outside the main phase workflow |
 
 See [docs/COMMANDS.md](./docs/COMMANDS.md) for the full per-command reference including arguments and detailed descriptions.
 
@@ -87,7 +88,7 @@ If all four checks pass, `super-gsd` is installed correctly and non-invasively.
 
 `super-gsd`는 GSD → Superpowers → Hookify 세 단계 워크플로우를 자동으로 이어 주는 Claude Code 플러그인이다. 전략(GSD), 구현(Superpowers), 회고(Hookify)의 역할을 분리한 상태에서, 각 단계가 끝나는 시점에 다음 단계로 컨텍스트와 함께 자연스럽게 인계되도록 명령과 훅을 제공한다.
 
-Phase 5에서 학습 루프가 완성되었다. Hookify 회고 출력이 `.planning/lessons/{phase}-{date}.md`로 자동 저장되고, 다음 `sg-plan` 실행 시 Step 0에서 자동으로 주입된다. `sg-lessons` 명령으로 수동 확인도 가능하다. 전체 명령어는 10개: `sg-start`, `sg-explore`, `sg-plan`, `sg-execute`, `sg-review`, `sg-learn`, `sg-lessons`, `sg-ship`, `sg-status`, `sg-update`.
+Phase 5에서 학습 루프가 완성되었다. Hookify 회고 출력이 `.planning/lessons/{phase}-{date}.md`로 자동 저장되고, 다음 `sg-plan` 실행 시 Step 0에서 자동으로 주입된다. `sg-lessons` 명령으로 수동 확인도 가능하다. 전체 명령어는 11개: `sg-start`, `sg-explore`, `sg-plan`, `sg-execute`, `sg-review`, `sg-learn`, `sg-lessons`, `sg-ship`, `sg-status`, `sg-update`, `sg-quick`.
 
 핵심 가치는 **학습 루프가 끊기지 않게 하는 것**이다. 사용자가 도구 간 전환을 직접 기억하지 않아도 단계 종료를 감지해 다음 단계 도구로 인계가 일어나며, 회고에서 추출한 패턴이 다음 계획에 자동으로 반영된다. 그래서 같은 실수가 반복되지 않는다.
 

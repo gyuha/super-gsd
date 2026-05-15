@@ -15,7 +15,8 @@
     "./commands/sg-learn.md",
     "./commands/sg-ship.md",
     "./commands/sg-status.md",
-    "./commands/sg-lessons.md"
+    "./commands/sg-lessons.md",
+    "./commands/sg-update.md"
   ],
   "homepage": "https://github.com/gyuha/super-gsd",
   "repository": "https://github.com/gyuha/super-gsd",

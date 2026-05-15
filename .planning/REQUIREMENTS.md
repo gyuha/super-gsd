@@ -13,10 +13,10 @@
 
 ### Handoff Commands (HAND)
 
-- [ ] **HAND-01**: `/super-gsd:to-superpowers [phase]` 명령이 현재 phase의 PLAN.md를 읽어 Superpowers `executing-plans` 또는 `subagent-driven-development` skill로 인계한다
-- [ ] **HAND-02**: 인계 명령이 phase 번호 없이 호출되면 STATE.md에서 현재 진행 중 phase를 자동 추출한다
-- [ ] **HAND-03**: 인계 명령은 success criteria, REQ-ID 매핑, 관련 컨텍스트를 단일 프롬프트로 구조화하여 전달한다
-- [ ] **HAND-04**: 인계 후 `.planning/HANDOFF.md`에 (timestamp, from-stage, to-stage, phase) 항목을 append한다
+- [x] **HAND-01**: `/super-gsd:to-superpowers [phase]` 명령이 현재 phase의 PLAN.md를 읽어 Superpowers `executing-plans` 또는 `subagent-driven-development` skill로 인계한다
+- [x] **HAND-02**: 인계 명령이 phase 번호 없이 호출되면 STATE.md에서 현재 진행 중 phase를 자동 추출한다
+- [x] **HAND-03**: 인계 명령은 success criteria, REQ-ID 매핑, 관련 컨텍스트를 단일 프롬프트로 구조화하여 전달한다
+- [x] **HAND-04**: 인계 후 `.planning/HANDOFF.md`에 (timestamp, from-stage, to-stage, phase) 항목을 append한다
 
 ### Auto-Advance Hooks (HOOK)
 
@@ -32,7 +32,7 @@
 
 ### State & Status (STATE)
 
-- [ ] **STATE-01**: `/super-gsd:status` 명령이 현재 워크플로우 단계(plan/execute/review/hookify), 마지막 인계 시각, 다음 권장 명령을 출력한다
+- [x] **STATE-01**: `/super-gsd:status` 명령이 현재 워크플로우 단계(plan/execute/review/hookify), 마지막 인계 시각, 다음 권장 명령을 출력한다
 - [x] **STATE-02**: 상태 추적은 `.planning/HANDOFF.md` 한 파일에 append-only로 기록되며 사람이 읽을 수 있는 마크다운 형식이다
 
 ## v2 Requirements
@@ -64,11 +64,11 @@
 | PLUGIN-01 | Phase 1 | Complete (01-01) |
 | PLUGIN-02 | Phase 1 | Pending |
 | PLUGIN-03 | Phase 1 | Complete (01-01) |
-| HAND-01 | Phase 2 | Pending |
-| HAND-02 | Phase 2 | Pending |
-| HAND-03 | Phase 2 | Pending |
-| HAND-04 | Phase 2 | Pending |
-| STATE-01 | Phase 2 | Pending |
+| HAND-01 | Phase 2 | Complete |
+| HAND-02 | Phase 2 | Complete |
+| HAND-03 | Phase 2 | Complete |
+| HAND-04 | Phase 2 | Complete |
+| STATE-01 | Phase 2 | Complete |
 | STATE-02 | Phase 2 | Complete (02-01) |
 | HOOK-01 | Phase 3 | Pending |
 | HOOK-02 | Phase 3 | Pending |

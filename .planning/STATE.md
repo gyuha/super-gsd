@@ -2,16 +2,16 @@
 gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
-status: executing
-stopped_at: Phase 2 Plan 01 complete (HANDOFF schema + 0.0.2 bump)
-last_updated: "2026-05-15T12:14:31Z"
-last_activity: 2026-05-15 -- Phase 2 Plan 01 complete
+status: verifying
+stopped_at: Phase 2 complete — both slash commands written
+last_updated: "2026-05-15T12:22:38.823Z"
+last_activity: 2026-05-15
 progress:
   total_phases: 4
-  completed_phases: 1
-  total_plans: 5
-  completed_plans: 3
-  percent: 38
+  completed_phases: 2
+  total_plans: 4
+  completed_plans: 4
+  percent: 50
 ---
 
 # Project State
@@ -27,10 +27,10 @@ See: .planning/PROJECT.md (updated 2026-05-15)
 
 Phase: 2 (Manual Handoff & Status) — EXECUTING
 Plan: 2 of 2 (Plan 01 complete, Plan 02 pending)
-Status: Executing Phase 2
-Last activity: 2026-05-15 -- Phase 2 Plan 01 complete
+Status: Phase complete — ready for verification
+Last activity: 2026-05-15
 
-Progress: [████░░░░░░] 38%
+Progress: [██████████] 100%
 
 ## Performance Metrics
 
@@ -53,6 +53,7 @@ Progress: [████░░░░░░] 38%
 - Trend: Schema-only plans are fast (~3min); upcoming 02-02 will be longer (two slash command authoring)
 
 *Updated after each plan completion*
+| Phase 2 P02 | ~8min | 2 tasks | 2 files |
 
 ## Accumulated Context
 
@@ -74,6 +75,10 @@ Recent decisions affecting current work:
 - 02-01: HANDOFF.md created with 5-column append-only schema, no data rows (D-26)
 - 02-01: plugin.json patched via `jq` to change only `version` field (D-02, T-02-02 mitigation)
 - 02-01: CHANGELOG [0.0.2] kept English (OSS surface, matches [0.0.1] tone) while SUMMARY in Korean per .planning/ policy
+- [Phase ?]: 02-02: commands/ flat structure + frontmatter minimal keys (D-16/D-17) — namespace prefix automatic
+- [Phase ?]: 02-02: hybrid handoff — print structured prompt + auto-invoke Skill in same turn (D-19, D-20)
+- [Phase ?]: 02-02: idempotency key = (Phase, To, Plan Hash) with header-row schema validation before append (D-24)
+- [Phase ?]: 02-02: status output strictly 3 header lines + blank + Next line (D-29); all user-facing strings English (D-30)
 
 ### Pending Todos
 
@@ -91,6 +96,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-05-15T12:14:31Z
-Stopped at: Phase 2 Plan 01 complete (HANDOFF schema + 0.0.2 bump)
-Resume file: .planning/phases/02-manual-handoff-status/02-02-PLAN.md
+Last session: 2026-05-15T12:22:38.818Z
+Stopped at: Phase 2 complete — both slash commands written
+Resume file: None

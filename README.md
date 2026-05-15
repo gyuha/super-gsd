@@ -2,31 +2,41 @@
 
 Orchestrator plugin that auto-chains GSD → Superpowers → Hookify so planning, implementation, and retrospection stay connected as a single learning loop.
 
-## Workflow
-
-```
-   +-------------------+        +------------------------+        +----------------------+
-   |    GSD            |  --->  |   Superpowers          |  --->  |   Hookify            |
-   |  (planning)       |        |   (building)           |        |   (learning)         |
-   |                   |        |                        |        |                      |
-   |  requirements ->  |        |  plan -> execute ->    |        |  retrospect ->       |
-   |  roadmap ->       |        |  review -> commit      |        |  extract patterns -> |
-   |  phase plan       |        |                        |        |  generate hooks      |
-   +-------------------+        +------------------------+        +----------------------+
-            ^                                                                  |
-            |                                                                  |
-            +-------------- lessons feed back into next plan ------------------+
-```
-
-Each tool keeps its own focus; `super-gsd` only handles the handoffs between them.
-
 ## What this is
 
 `super-gsd` is a Claude Code plugin whose only job is to keep three other Claude Code plugins talking to each other. Strategy lives in GSD. Implementation lives in Superpowers. Retrospection lives in Hookify. When one of them finishes a stage, `super-gsd` is responsible for handing the context to the next one — so the user does not have to remember which command comes next, and so lessons learned in one cycle actually reach the next plan.
 
 The problem this solves is that manual handoff between these three tools is fragile. People forget to run the review, skip the retro, lose context between sessions, or re-run a planning command that overwrites half-finished work. By separating roles and then orchestrating the seams between them, the same mistakes stop showing up.
 
-**Phase 1 (this release) ships an installable plugin shell only.** There are no `/super-gsd:*` commands or hooks yet — those arrive in later phases. What you get today is a clean install path, a non-invasive footprint, and a documented roadmap so you can verify nothing of yours breaks before commands start appearing. See the **Roadmap** section for what is coming next.
+**Phase 3 (this release) ships the full `sg-` command set.** Eight slash commands cover the entire GSD → Superpowers → Hookify cycle. See the **Commands** section below for the quick-reference table, and `docs/COMMANDS.md` for the full per-command reference.
+
+## Workflow
+
+```
+sg-start → sg-explore → sg-plan → sg-execute → sg-review → sg-learn → sg-ship
+  (GSD)       (GSD)      (GSD)    (Superpowers) (Superpowers) (Hookify)  (GSD)
+                                                                    |
+                         lessons feed back into next sg-plan cycle ←
+```
+
+`sg-status` can be run at any point to check current position.
+
+## Commands
+
+Quick reference for all `/super-gsd:sg-*` slash commands.
+
+| Command | What it does | When to use |
+|---------|-------------|-------------|
+| `/super-gsd:sg-start` | Scaffold a new project or milestone via `gsd-new-project` | At the very beginning of a new project or milestone |
+| `/super-gsd:sg-explore` | Map and analyse the codebase via `gsd-explore` | After `sg-start`, before planning |
+| `/super-gsd:sg-plan` | Gather phase context then create an execution plan (2-step chain: `gsd-discuss-phase` → `gsd-plan-phase`) | After `sg-explore`, when ready to plan |
+| `/super-gsd:sg-execute` | Package the current phase plan and hand off to Superpowers (`sg-executing-plans`) | After `sg-plan` is complete |
+| `/super-gsd:sg-review` | Request a code review via `superpowers:requesting-code-review` | After implementation is complete |
+| `/super-gsd:sg-learn` | Run a Hookify retrospective to extract patterns and generate hooks (`hookify:hookify`) | After the review is done |
+| `/super-gsd:sg-ship` | Complete and ship the current milestone via `gsd-ship` | After learning is captured |
+| `/super-gsd:sg-status` | Show current stage, last handoff timestamp, and next recommended command | At any point to check where you are |
+
+See [docs/COMMANDS.md](./docs/COMMANDS.md) for the full per-command reference including arguments and detailed descriptions.
 
 ## Prerequisites
 
@@ -65,17 +75,20 @@ If all four checks pass, `super-gsd` is installed correctly and non-invasively.
 `super-gsd` ships in MVP vertical slices. Each phase delivers a coherent, testable user behavior.
 
 - **Phase 1 — Plugin Scaffold (shipped):** installable plugin shell with manifest, marketplace metadata, README, and verify checklist. No commands or hooks yet.
-- **Phase 2 — Manual Handoff & Status:** introduces `/super-gsd:to-superpowers` (package a finished GSD phase as a Superpowers-ready prompt) and `/super-gsd:status` (inspect current stage, last handoff, next recommended command).
-- **Phase 3 — Auto-Advance Hooks:** registers `Stop` and `SubagentStop` hooks so stage transitions are auto-detected — completed `plan-phase` surfaces a handoff prompt, completed `code-reviewer` auto-invokes Hookify.
-- **Phase 4 — Lessons Feedback Loop:** persists Hookify findings into `.planning/lessons/` and surfaces them automatically when the next GSD phase begins, closing the learning loop.
+- **Phase 2 — Manual Handoff & Status (shipped):** introduces `/super-gsd:sg-execute` (package a finished GSD phase as a Superpowers-ready prompt) and `/super-gsd:sg-status` (inspect current stage, last handoff, next recommended command).
+- **Phase 3 — sg- Command Set & README (this release):** delivers the full 8-command `sg-` interface and updated documentation so the entire GSD → Superpowers → Hookify cycle has discoverable slash commands.
+- **Phase 4 — Auto-Advance Hooks:** registers `Stop` and `SubagentStop` hooks so stage transitions are auto-detected — completed `plan-phase` surfaces a handoff prompt, completed `code-reviewer` auto-invokes Hookify.
+- **Phase 5 — Lessons Feedback Loop:** persists Hookify findings into `.planning/lessons/` and surfaces them automatically when the next GSD phase begins, closing the learning loop.
 
 ## 한국어 요약
 
 `super-gsd`는 GSD → Superpowers → Hookify 세 단계 워크플로우를 자동으로 이어 주는 Claude Code 플러그인이다. 전략(GSD), 구현(Superpowers), 회고(Hookify)의 역할을 분리한 상태에서, 각 단계가 끝나는 시점에 다음 단계로 컨텍스트와 함께 자연스럽게 인계되도록 명령과 훅을 제공한다.
 
+Phase 3에서 8개의 `sg-` 명령어가 출시되었다: `sg-start`, `sg-explore`, `sg-plan`, `sg-execute`, `sg-review`, `sg-learn`, `sg-ship`, `sg-status`. 이 명령어들을 순서대로 실행하면 새 프로젝트 착수부터 마일스톤 배포까지 전 과정이 자동으로 이어진다.
+
 핵심 가치는 **학습 루프가 끊기지 않게 하는 것**이다. 사용자가 도구 간 전환을 직접 기억하지 않아도 단계 종료를 감지해 다음 단계 도구로 인계가 일어나며, 회고에서 추출한 패턴이 다음 계획에 다시 반영된다. 그래서 같은 실수가 반복되지 않는다.
 
-설계 원칙은 **비침투적 orchestrator** — 기존 GSD/Superpowers/Hookify의 어떤 파일도 수정하지 않는다. 이 Phase 1은 설치 가능한 플러그인 셸까지만 제공하며, 실제 인계 명령과 훅은 Phase 2 이후 차례로 추가된다.
+설계 원칙은 **비침투적 orchestrator** — 기존 GSD/Superpowers/Hookify의 어떤 파일도 수정하지 않는다.
 
 ## License
 

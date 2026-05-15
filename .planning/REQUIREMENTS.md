@@ -27,7 +27,7 @@
 
 ### Lessons Persistence (LESS)
 
-- [ ] **LESS-01**: Hookify가 추출한 학습/패턴을 `.planning/lessons/{phase}-{date}.md`로 저장하는 후처리 스텝을 제공한다
+- [x] **LESS-01**: Hookify가 추출한 학습/패턴을 `.planning/lessons/{phase}-{date}.md`로 저장하는 후처리 스텝을 제공한다
 - [ ] **LESS-02**: 다음 GSD `discuss-phase`/`plan-phase` 실행 시 `.planning/lessons/` 내용을 컨텍스트로 자동 포함시키는 보조 명령 또는 지침을 제공한다
 
 ### State & Status (STATE)
@@ -74,7 +74,7 @@
 | HOOK-02 | Phase 4 | Complete |
 | HOOK-03 | Phase 4 | Complete |
 | HOOK-04 | Phase 4 | Complete |
-| LESS-01 | Phase 5 | Pending |
+| LESS-01 | Phase 5 | Complete |
 | LESS-02 | Phase 5 | Pending |
 
 **Coverage:**

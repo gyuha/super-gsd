@@ -96,6 +96,6 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5
 |-------|----------------|--------|-----------|
 | 1. Plugin Scaffold | 2/2 | Complete | 2026-05-15 |
 | 2. Manual Handoff & Status | 2/2 | Complete | 2026-05-15 |
-| 3. sg- Command Set & README | 4/4 | Complete | 2026-05-16 |
+| 3. sg- Command Set & README | 4/4 | Complete   | 2026-05-15 |
 | 4. Auto-Advance Hooks | 0/TBD | Not started | - |
 | 5. Lessons Feedback Loop | 0/TBD | Not started | - |

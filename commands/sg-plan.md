@@ -13,6 +13,16 @@ Self-contained. Reads .planning/STATE.md for phase resolution when no argument p
 </execution_context>
 
 <process>
+0. **Prior lessons 주입.** .planning/lessons/ 아래 Markdown 파일이 있으면 내용을 먼저 출력한다:
+   ```bash
+   if ls .planning/lessons/*.md 2>/dev/null | head -1 | grep -q .; then
+     echo "=== Prior Lessons (auto-injected) ==="
+     cat .planning/lessons/*.md
+     echo "=== End of Prior Lessons ==="
+   fi
+   ```
+   파일이 없으면 이 단계를 조용히 건너뛴다.
+
 1. **Resolve phase.** If `$ARGUMENTS` is non-empty, use it as the phase identifier. Otherwise, extract the current phase from `.planning/STATE.md`:
    ```bash
    if [ -n "$ARGUMENTS" ]; then
@@ -33,6 +43,7 @@ Self-contained. Reads .planning/STATE.md for phase resolution when no argument p
 </process>
 
 <success_criteria>
+0. .planning/lessons/ 에 파일이 있으면 Step 1 전에 내용이 출력된다. 파일이 없으면 Step 0이 조용히 건너뛰어진다.
 1. gsd-discuss-phase Skill is invoked exactly once with the resolved phase number.
 2. gsd-plan-phase Skill is invoked exactly once with the same phase number, after gsd-discuss-phase completes.
 3. Progress messages "[sg-plan] Step 1/2:" and "[sg-plan] Step 2/2:" are printed before each respective Skill invocation.

@@ -1,5 +1,5 @@
 ---
-name: status
+name: sg-status
 description: Show the current super-gsd workflow stage, last handoff timestamp, and the next recommended command.
 ---
 
@@ -51,7 +51,7 @@ Self-contained — reads .planning/HANDOFF.md, .planning/STATE.md, .planning/ROA
    ```bash
    case "$STAGE" in
      init)        NEXT_CMD="/gsd:plan-phase $PHASE_NUM" ;;
-     gsd-plan)    NEXT_CMD="/super-gsd:to-superpowers" ;;
+     gsd-plan)    NEXT_CMD="/super-gsd:sg-execute" ;;
      superpowers) NEXT_CMD="/hookify" ;;
      review)      NEXT_CMD="/hookify" ;;
      hookify)

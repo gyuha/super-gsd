@@ -111,9 +111,30 @@ Each command hands context to the next automatically. You do not need to copy-pa
 
 `super-gsd` is non-invasive: it does not modify, fork, or replace any of the three plugins below. You install them independently first, and `super-gsd` simply chains their existing commands and hooks.
 
-- **GSD** (`get-shit-done-cc` or an equivalent install) — provides the `/gsd-*` planning commands and the `.planning/` directory convention this plugin reads from.
-- **Superpowers** (`claude-plugins-official/superpowers`) — provides the `superpowers:*` skill tree used during the build / review stage.
-- **Hookify** (`claude-plugins-official/hookify`) — provides the `/hookify:*` commands used during the retrospection stage.
+### GSD
+
+Install via npm, then run the installer which configures Claude Code integration:
+
+```shell
+npm install -g get-shit-done-cc
+get-shit-done-cc
+```
+
+### Superpowers
+
+Install from the Claude Code official plugin marketplace:
+
+```
+/plugin install superpowers@claude-plugins-official
+```
+
+### Hookify
+
+Install from the Claude Code official plugin marketplace:
+
+```
+/plugin install hookify@claude-plugins-official
+```
 
 If any of the three is missing, `super-gsd` will still install cleanly, but the workflow it orchestrates will only be partial. Install all three first to get the full chain.
 

@@ -8,7 +8,7 @@
 ### Plugin Scaffold (PLUGIN)
 
 - [x] **PLUGIN-01**: `.claude-plugin/plugin.json` 매니페스트를 포함한 Claude Code 플러그인 구조를 만든다
-- [ ] **PLUGIN-02**: 플러그인 README가 설치 방법, 의존성(GSD/Superpowers/Hookify), 워크플로우 다이어그램을 설명한다
+- [x] **PLUGIN-02**: 플러그인 README가 설치 방법, 의존성(GSD/Superpowers/Hookify), 워크플로우 다이어그램을 설명한다
 - [x] **PLUGIN-03**: 플러그인이 marketplace를 통해 설치 가능하도록 marketplace 메타데이터를 작성한다
 
 ### Handoff Commands (HAND)
@@ -62,7 +62,7 @@
 | Requirement | Phase | Status |
 |-------------|-------|--------|
 | PLUGIN-01 | Phase 1 | Complete (01-01) |
-| PLUGIN-02 | Phase 1 | Pending |
+| PLUGIN-02 | Phase 1 | Complete |
 | PLUGIN-03 | Phase 1 | Complete (01-01) |
 | HAND-01 | Phase 2 | Complete |
 | HAND-02 | Phase 2 | Complete |

@@ -58,8 +58,8 @@
   4. /super-gsd:sg-status replaces /super-gsd:status with identical logic
   5. README.md contains a sg- command quick-reference table and updated workflow diagram
   6. docs/COMMANDS.md contains a full per-command reference table
-**Plans:** 4 plans
-- [ ] 03-01-PLAN.md — Replace to-superpowers.md → sg-execute.md and status.md → sg-status.md
+**Plans:** 1/4 plans executed
+- [x] 03-01-PLAN.md — Replace to-superpowers.md → sg-execute.md and status.md → sg-status.md
 - [ ] 03-02-PLAN.md — Create sg-start.md and sg-explore.md
 - [ ] 03-03-PLAN.md — Create sg-plan.md, sg-review.md, sg-learn.md, sg-ship.md
 - [ ] 03-04-PLAN.md — Rewrite README.md, create docs/COMMANDS.md, update ROADMAP.md and REQUIREMENTS.md
@@ -96,6 +96,6 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5
 |-------|----------------|--------|-----------|
 | 1. Plugin Scaffold | 2/2 | Complete | 2026-05-15 |
 | 2. Manual Handoff & Status | 2/2 | Complete | 2026-05-15 |
-| 3. sg- Command Set & README | 0/4 | In Progress | - |
+| 3. sg- Command Set & README | 1/4 | In Progress|  |
 | 4. Auto-Advance Hooks | 0/TBD | Not started | - |
 | 5. Lessons Feedback Loop | 0/TBD | Not started | - |

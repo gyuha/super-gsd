@@ -3,14 +3,14 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: executing
-stopped_at: Phase 03 Plan 01 complete — sg-execute/sg-status renamed
-last_updated: "2026-05-15T15:07:38.251Z"
+stopped_at: Phase 03 Plan 02 complete — sg-start/sg-explore created
+last_updated: "2026-05-15T15:10:30.155Z"
 last_activity: 2026-05-15
 progress:
   total_phases: 5
   completed_phases: 2
   total_plans: 8
-  completed_plans: 5
+  completed_plans: 6
   percent: 40
 ---
 
@@ -26,11 +26,11 @@ See: .planning/PROJECT.md (updated 2026-05-15)
 ## Current Position
 
 Phase: 03 (sg-command-set-readme) — EXECUTING
-Plan: 2 of 4
+Plan: 3 of 4
 Status: Ready to execute
 Last activity: 2026-05-15
 
-Progress: [██████░░░░] 63%
+Progress: [████████░░] 75%
 
 ## Performance Metrics
 
@@ -55,6 +55,7 @@ Progress: [██████░░░░] 63%
 *Updated after each plan completion*
 | Phase 2 P02 | ~8min | 2 tasks | 2 files |
 | Phase 03-sg-command-set-readme P01 | 3min | 2 tasks | 4 files |
+| Phase 03-sg-command-set-readme P02 | 3min | 2 tasks | 2 files |
 
 ## Accumulated Context
 
@@ -82,6 +83,8 @@ Recent decisions affecting current work:
 - [Phase ?]: 02-02: status output strictly 3 header lines + blank + Next line (D-29); all user-facing strings English (D-30)
 - 03-01: sg- prefix 적용 — to-superpowers→sg-execute (D-36), status→sg-status (D-37) 이름 변경 완료
 - 03-01: 내부 교차 참조 일관성 — sg-execute Step 10 ↔ sg-status gsd-plan branch 양방향 참조 정합성 유지
+- [Phase ?]: sg-start에 argument-hint 포함 — gsd-new-project가 내부 감지 처리하므로 $ARGUMENTS 파싱 없이 전달
+- [Phase ?]: sg-explore argument-hint 생략 — gsd-explore는 인자를 받지 않음, XML 4-section Skill 위임 패턴 적용
 
 ### Pending Todos
 
@@ -99,6 +102,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-05-15T15:07:34.523Z
-Stopped at: Phase 03 Plan 01 complete — sg-execute/sg-status renamed
+Last session: 2026-05-15T15:10:30.150Z
+Stopped at: Phase 03 Plan 02 complete — sg-start/sg-explore created
 Resume file: None

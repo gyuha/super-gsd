@@ -1,6 +1,6 @@
 ---
-name: to-superpowers
-description: Hand off the current GSD phase to Superpowers — package PLAN/REQ/SC into a single prompt and auto-invoke superpowers:executing-plans.
+name: sg-execute
+description: Hand off the current GSD phase to Superpowers — package PLAN/REQ/SC into a single prompt and auto-invoke sg-executing-plans.
 argument-hint: "[phase] - optional. Defaults to STATE.md current phase"
 ---
 
@@ -21,7 +21,7 @@ This command is self-contained — no external workflow files imported. Reads .p
      PHASE_NUM=$(grep -E '^Phase: [0-9]+' .planning/STATE.md | head -1 | awk '{print $2}')
    fi
    ```
-   If extraction fails, print exactly: `Could not resolve current phase. Pass phase number explicitly: /super-gsd:to-superpowers <phase>` and exit.
+   If extraction fails, print exactly: `Could not resolve current phase. Pass phase number explicitly: /super-gsd:sg-execute <phase>` and exit.
 
 2. **Locate phase directory.** Glob `.planning/phases/<phase>-*` (with zero-padded two-digit prefix support). Example:
    ```bash
@@ -61,7 +61,7 @@ This command is self-contained — no external workflow files imported. Reads .p
    ```bash
    EXISTING_HASH=$(grep -E "^\| [^|]+ \| [^|]*${PHASE_NUM}[^|]* \| [^|]+ \| superpowers \|" .planning/HANDOFF.md | tail -1 | awk -F'|' '{gsub(/ /,"",$6); print $6}')
    if [ -n "$EXISTING_HASH" ] && [ "$EXISTING_HASH" = "$PLAN_HASH" ]; then
-     echo "Already handed off Phase $PHASE_NUM to superpowers (plan hash matches: $PLAN_HASH). Skipping append. Use /super-gsd:status to inspect, or modify a PLAN.md to re-handoff."
+     echo "Already handed off Phase $PHASE_NUM to superpowers (plan hash matches: $PLAN_HASH). Skipping append. Use /super-gsd:sg-status to inspect, or modify a PLAN.md to re-handoff."
      exit 0
    fi
    ```
@@ -118,7 +118,7 @@ This command is self-contained — no external workflow files imported. Reads .p
    ```
 
 10. **Final user message.** After the Skill returns, print exactly:
-    `Handoff complete. HANDOFF.md updated; superpowers:executing-plans invoked. Use /super-gsd:status to inspect workflow state.`
+    `Handoff complete. HANDOFF.md updated; superpowers:executing-plans invoked. Use /super-gsd:sg-status to inspect workflow state.`
 </process>
 
 <success_criteria>

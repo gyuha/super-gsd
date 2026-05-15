@@ -2,14 +2,14 @@
 
 transcript 파일에서 단계 완료 신호를 감지하는 유틸리티.
 
-detect_signal(transcript_path) -> 'gsd-plan-complete' | 'superpowers-review-complete' | ''
+detect_signal(transcript_path) -> 'gsd-plan-complete' | 'superpowers-review-complete' | 'hookify-complete' | ''
 """
 
 
 def detect_signal(transcript_path: str) -> str:
     """transcript에서 단계 완료 신호를 감지한다.
 
-    Returns: 'gsd-plan-complete' | 'superpowers-review-complete' | ''
+    Returns: 'gsd-plan-complete' | 'superpowers-review-complete' | 'hookify-complete' | ''
     """
     if not transcript_path:
         return ''
@@ -32,6 +32,13 @@ def detect_signal(transcript_path: str) -> str:
         'requesting-code-review',
         'review complete',
     ]
+    # Hookify 완료 신호 패턴 (LESS-01)
+    HOOKIFY_SIGNALS = [
+        'hookify',
+        'Retrospective complete',
+        'hooks generated',
+        'patterns extracted',
+    ]
 
     # 마지막 200줄만 검사 (spurious firing 방지, HOOK-04)
     recent = '\n'.join(content.splitlines()[-200:])
@@ -40,4 +47,6 @@ def detect_signal(transcript_path: str) -> str:
         return 'gsd-plan-complete'
     if any(sig in recent for sig in REVIEW_SIGNALS):
         return 'superpowers-review-complete'
+    if any(sig in recent for sig in HOOKIFY_SIGNALS):
+        return 'hookify-complete'
     return ''

@@ -44,7 +44,7 @@ Self-contained — reads ~/.claude/*, hooks/hooks.json, .planning/HANDOFF.md, .p
 4. **Stop hook 등록**
 
    ```bash
-   grep -q '"Stop"' hooks/hooks.json && echo OK || echo FAIL
+   grep -q '"Stop"[[:space:]]*:' hooks/hooks.json && echo OK || echo FAIL
    ```
 
    - OK → `Stop hook ........ [OK]`

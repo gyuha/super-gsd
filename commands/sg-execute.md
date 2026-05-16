@@ -42,6 +42,9 @@ This command is self-contained — no external workflow files imported. Reads .p
    ```bash
    PHASE_HEADER=$(grep -n "^### Phase ${PHASE_NUM}:" .planning/ROADMAP.md | head -1)
    if [ -z "$PHASE_HEADER" ]; then
+     PHASE_HEADER=$(grep -n "^### Phase ${PHASE_PAD}:" .planning/ROADMAP.md | head -1)
+   fi
+   if [ -z "$PHASE_HEADER" ]; then
      echo "No '### Phase ${PHASE_NUM}:' header found in .planning/ROADMAP.md. Aborting."
      exit 1
    fi

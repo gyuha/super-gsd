@@ -105,6 +105,7 @@ None yet.
 | 260516-2sw | README.md Prerequisites 섹션에 설치 명령어 추가 | 2026-05-16 | 46962be | [260516-2sw-readme-md-gsd-superpowers-hookify](./quick/260516-2sw-readme-md-gsd-superpowers-hookify/) |
 | 260516-dsz | sg-update에 install/update 감지 로직 추가 | 2026-05-16 | 80fe4e0 | [260516-dsz-sg-update-gsd-superpowers-hookify](./quick/260516-dsz-sg-update-gsd-superpowers-hookify/) |
 | 260516-edd | README.md 영문/한글 분리 (README.ko.md 신규 생성) | 2026-05-16 | c22d637 | [260516-edd-readme-md-readme-md-readme-ko-md](./quick/260516-edd-readme-md-readme-md-readme-ko-md/) |
+| 260516-kqe | sg-complete, sg-new 명령 추가 + README/COMMANDS.md 문서화 | 2026-05-16 | 9050ffd | [260516-kqe-sg-complete-and-sg-new-command-mapping](./quick/260516-kqe-sg-complete-and-sg-new-command-mapping/) |
 
 ## Deferred Items
 

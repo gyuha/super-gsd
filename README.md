@@ -8,7 +8,7 @@ Orchestrator plugin that auto-chains GSD → Superpowers → Hookify so planning
 
 The problem this solves is that manual handoff between these three tools is fragile. People forget to run the review, skip the retro, lose context between sessions, or re-run a planning command that overwrites half-finished work. By separating roles and then orchestrating the seams between them, the same mistakes stop showing up.
 
-**Phase 5 (this release) closes the learning loop.** Hookify retrospective output is now automatically captured to `.planning/lessons/` and injected into the next GSD plan phase — so lessons from one cycle feed the next without any manual steps. All nine slash commands covering the full GSD → Superpowers → Hookify cycle are available. See the **Commands** section below for the quick-reference table, and `docs/COMMANDS.md` for the full per-command reference.
+**Phase 5 (this release) closes the learning loop.** Hookify retrospective output is now automatically captured to `.planning/lessons/` and injected into the next GSD plan phase — so lessons from one cycle feed the next without any manual steps. All eleven slash commands covering the full GSD → Superpowers → Hookify cycle are available. See the **Commands** section below for the quick-reference table, and `docs/COMMANDS.md` for the full per-command reference.
 
 ## Workflow
 
@@ -37,7 +37,7 @@ Quick reference for all `/super-gsd:sg-*` slash commands.
 | `/super-gsd:sg-lessons` | List prior Hookify lessons from `.planning/lessons/` for review; accepts optional phase filter | Before `sg-plan` to review what was learned |
 | `/super-gsd:sg-ship` | Complete and ship the current milestone via `gsd-ship` | After learning is captured |
 | `/super-gsd:sg-status` | Show current stage, last handoff timestamp, and next recommended command | At any point to check where you are |
-| `/super-gsd:sg-update` | Update GSD, superpowers, hookify, and super-gsd to their latest versions | When you want to update all workflow tools at once |
+| `/super-gsd:sg-update` | Check, install, or update GSD, superpowers, hookify, and super-gsd (installs missing tools automatically) | When you want to install or update all workflow tools at once |
 | `/super-gsd:sg-quick` | Execute a small, ad-hoc task with GSD guarantees (plan + execute + commit) | For one-off tasks outside the main phase workflow |
 
 See [docs/COMMANDS.md](./docs/COMMANDS.md) for the full per-command reference including arguments and detailed descriptions.
@@ -168,7 +168,7 @@ If all four checks pass, `super-gsd` is installed correctly and non-invasively.
 - **Phase 2 — Manual Handoff & Status (shipped):** introduces `/super-gsd:sg-execute` (package a finished GSD phase as a Superpowers-ready prompt) and `/super-gsd:sg-status` (inspect current stage, last handoff, next recommended command).
 - **Phase 3 — sg- Command Set & README (shipped):** delivers the full 8-command `sg-` interface and updated documentation so the entire GSD → Superpowers → Hookify cycle has discoverable slash commands.
 - **Phase 4 — Auto-Advance Hooks (shipped):** registers `Stop` hooks so stage transitions are auto-detected — completed `plan-phase` surfaces a handoff prompt, completed `code-reviewer` auto-invokes Hookify.
-- **Phase 5 — Lessons Feedback Loop (this release):** persists Hookify findings into `.planning/lessons/` and surfaces them automatically when the next GSD phase begins via `sg-plan` Step 0 injection and the new `sg-lessons` command, closing the learning loop.
+- **Phase 5 — Lessons Feedback Loop (shipped):** persists Hookify findings into `.planning/lessons/` and surfaces them automatically when the next GSD phase begins via `sg-plan` Step 0 injection and the new `sg-lessons` command, closing the learning loop.
 
 ## 한국어 요약
 

@@ -5,7 +5,7 @@ milestone_name: Candidates
 status: Phase 05 shipped — direct to main (no PR)
 stopped_at: Phase 03 complete — all 4 plans done, 8 sg- commands created
 last_updated: "2026-05-15T16:55:58.320Z"
-last_activity: 2026-05-16 - Completed quick task 260516-2sw: README.md Prerequisites 섹션에 설치 명령어 추가
+last_activity: 2026-05-16 - Completed quick task 260516-dsz: sg-update에 install/update 감지 로직 추가
 progress:
   total_phases: 0
   completed_phases: 0
@@ -103,6 +103,7 @@ None yet.
 |---|-------------|------|--------|-----------|
 | 260516-2qm | README.md에 사용 예시 섹션 추가 | 2026-05-16 | c9bb22d | [260516-2qm-readme-md](./quick/260516-2qm-readme-md/) |
 | 260516-2sw | README.md Prerequisites 섹션에 설치 명령어 추가 | 2026-05-16 | 46962be | [260516-2sw-readme-md-gsd-superpowers-hookify](./quick/260516-2sw-readme-md-gsd-superpowers-hookify/) |
+| 260516-dsz | sg-update에 install/update 감지 로직 추가 | 2026-05-16 | 80fe4e0 | [260516-dsz-sg-update-gsd-superpowers-hookify](./quick/260516-dsz-sg-update-gsd-superpowers-hookify/) |
 
 ## Deferred Items
 

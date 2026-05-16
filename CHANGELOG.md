@@ -2,6 +2,18 @@
 
 All notable changes to `super-gsd` are documented in this file. Format follows [Keep a Changelog](https://keepachangelog.com/).
 
+## [0.0.6] - 2026-05-16
+
+### Added
+
+- `README.ko.md` — full Korean translation of README
+
+### Changed
+
+- `README.md` is now English-only with a link to `README.ko.md`
+- Installation flow simplified: install super-gsd first, then run `sg-update` to auto-install GSD/Superpowers/Hookify
+- `CLAUDE.md` versioning convention: `plugin.json` and `CHANGELOG.md` must always be updated together when bumping the version
+
 ## [0.0.2] - 2026-05-15
 
 ### Added

@@ -107,47 +107,40 @@ Each command hands context to the next automatically. You do not need to copy-pa
 
 `sg-quick` wraps the task in a lightweight GSD plan-execute-commit cycle without starting a full milestone.
 
-## Prerequisites
-
-`super-gsd` is non-invasive: it does not modify, fork, or replace any of the three plugins below. You install them independently first, and `super-gsd` simply chains their existing commands and hooks.
-
-### GSD
-
-Install via npm, then run the installer which configures Claude Code integration:
-
-```shell
-npm install -g get-shit-done-cc
-get-shit-done-cc
-```
-
-### Superpowers
-
-Install from the Claude Code official plugin marketplace:
-
-```
-/plugin install superpowers@claude-plugins-official
-```
-
-### Hookify
-
-Install from the Claude Code official plugin marketplace:
-
-```
-/plugin install hookify@claude-plugins-official
-```
-
-If any of the three is missing, `super-gsd` will still install cleanly, but the workflow it orchestrates will only be partial. Install all three first to get the full chain.
-
 ## Installation
 
-After the prerequisites above are installed, run these two commands in your Claude Code session:
+**Step 1 — Install super-gsd:**
+
+Run these two commands in your Claude Code session:
 
 ```
 /plugin marketplace add gyuha/super-gsd
 /plugin install super-gsd@super-gsd
 ```
 
-The first command registers this repository as a self-hosted plugin marketplace. The second installs the `super-gsd` plugin from that marketplace. Once both succeed, move on to **Verify install** below.
+The first command registers this repository as a self-hosted plugin marketplace. The second installs the `super-gsd` plugin from that marketplace.
+
+**Step 2 — Install prerequisites with `sg-update`:**
+
+Once super-gsd is loaded, run:
+
+```
+/super-gsd:sg-update
+```
+
+`sg-update` detects whether GSD, Superpowers, and Hookify are already installed and installs any that are missing. Running it on a fresh machine will install all three automatically. On an existing setup it updates them to their latest versions.
+
+Move on to **Verify install** once `sg-update` completes.
+
+## Prerequisites
+
+`super-gsd` orchestrates three tools. `sg-update` (above) installs them automatically — this section is a reference for what each one does.
+
+- **GSD** (`get-shit-done-cc`) — provides the `/gsd-*` planning commands and the `.planning/` directory convention this plugin reads from.
+- **Superpowers** (`claude-plugins-official/superpowers`) — provides the `superpowers:*` skill tree used during the build / review stage.
+- **Hookify** (`claude-plugins-official/hookify`) — provides the `/hookify:*` commands used during the retrospection stage.
+
+`super-gsd` is non-invasive: it does not modify, fork, or replace any of these tools.
 
 ## Verify install
 

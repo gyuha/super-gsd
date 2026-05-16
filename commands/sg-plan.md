@@ -37,15 +37,16 @@ Self-contained. Reads .planning/STATE.md for phase resolution when no argument p
    ```
 
 2. Print: `[sg-plan] Step 1/2: Gathering context via gsd-discuss-phase...`
-   Spawn a subagent to run gsd-discuss-phase and wait for it to complete:
+   Spawn a subagent to run gsd-discuss-phase and wait for it to complete.
+   **Before calling Agent, replace every occurrence of `$PHASE_NUM` in the block below with the actual resolved value** (e.g. `6`):
    ```
    Agent(
-     description="gsd-discuss-phase for Phase $PHASE_NUM",
-     prompt="Your task is to run the GSD discuss-phase workflow for phase $PHASE_NUM. Invoke Skill(skill='gsd-discuss-phase', args='$PHASE_NUM') and follow all its instructions to completion.",
+     description="gsd-discuss-phase for Phase $PHASE_NUM",  # replace $PHASE_NUM
+     prompt="Your task is to run the GSD discuss-phase workflow for phase $PHASE_NUM. Invoke Skill(skill='gsd-discuss-phase', args='$PHASE_NUM') and follow all its instructions to completion.",  # replace $PHASE_NUM twice
      subagent_type="claude"
    )
    ```
-   Substitute the actual value of `$PHASE_NUM` into the prompt before spawning. Wait for the agent to complete before proceeding.
+   Wait for the agent to complete before proceeding.
 
 3. Print: `[sg-plan] Step 2/2: Creating plan via gsd-plan-phase...`
    Session control transfers to the skill; no steps execute after this point:

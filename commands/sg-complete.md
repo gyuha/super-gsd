@@ -9,7 +9,7 @@ Resolve the target phase then invoke gsd-complete-milestone to mark the current 
 </objective>
 
 <execution_context>
-Self-contained. Reads .planning/STATE.md for phase resolution when no argument provided. Delegates milestone completion to gsd-complete-milestone Skill.
+Self-contained. Reads .planning/STATE.md for phase resolution when no argument provided. Delegates milestone completion to gsd-complete-milestone Skill (terminal action).
 </execution_context>
 
 <process>
@@ -20,15 +20,21 @@ Self-contained. Reads .planning/STATE.md for phase resolution when no argument p
    else
      PHASE_NUM=$(grep -E '^Phase: [0-9]+' .planning/STATE.md | head -1 | awk '{print $2}')
    fi
+   if [ -z "$PHASE_NUM" ]; then
+     echo "Could not resolve current phase. Pass phase number explicitly: /super-gsd:sg-complete <phase>"
+     exit 1
+   fi
    ```
-   If extraction fails, print exactly: `Could not resolve current phase. Pass phase number explicitly: /super-gsd:sg-complete <phase>` and exit.
 
-2. Invoke Skill: `Skill(skill="gsd-complete-milestone", args="$PHASE_NUM")`
-
-3. Print: `Milestone marked complete. Run /super-gsd:sg-new to start a new milestone.`
+2. **Before calling Skill, replace `$PHASE_NUM` with the actual resolved value** (e.g. `3`).
+   Session control transfers to the skill; no steps execute after this point:
+   ```
+   Skill(skill="gsd-complete-milestone", args="$PHASE_NUM")  # replace $PHASE_NUM
+   ```
 </process>
 
 <success_criteria>
 1. gsd-complete-milestone Skill is invoked exactly once with the resolved phase number.
 2. $ARGUMENTS is used as phase number when provided.
+3. If phase cannot be resolved, the command exits with the prescribed error message and does not invoke the Skill.
 </success_criteria>

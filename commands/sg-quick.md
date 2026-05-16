@@ -126,19 +126,16 @@ Self-contained. Combines gsd-sdk initialization, gsd-planner Agent, and superpow
    git commit -m "quick($QUICK_ID): $DESCRIPTION"
    COMMIT_SHA=$(git rev-parse --short HEAD)
 
-   # Step 8b: replace (pending) with the actual commit SHA, then commit STATE.md
-   sed -i "s/(pending)/$COMMIT_SHA/" .planning/STATE.md
+   # Step 8b: replace (pending) only in the QUICK_ID row, then commit STATE.md
+   sed -i '' "/$QUICK_ID/s/(pending)/$COMMIT_SHA/" .planning/STATE.md
    git add .planning/STATE.md
    git commit -m "quick($QUICK_ID): update STATE.md"
    ```
 
-9. **Invoke Superpowers.** In the same turn — no confirmation prompt:
+9. **Invoke Superpowers.** In the same turn — no confirmation prompt. Session control transfers to the skill; no steps execute after this point:
    ```
    Skill(skill="superpowers:executing-plans", args="<the prompt block from step 6>")
    ```
-
-10. **Print completion message.**
-    `Quick task $QUICK_ID complete. Plan executed via superpowers:executing-plans. STATE.md updated.`
 </process>
 
 <success_criteria>

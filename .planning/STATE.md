@@ -2,9 +2,9 @@
 gsd_state_version: 1.0
 milestone: v1.1
 milestone_name: Candidates
-status: v1.0 milestone complete — archived
+status: completed
 stopped_at: Phase 03 complete — all 4 plans done, 8 sg- commands created
-last_updated: "2026-05-16T01:34:14.775Z"
+last_updated: "2026-05-16T06:09:19.401Z"
 last_activity: 2026-05-16
 progress:
   total_phases: 0
@@ -27,7 +27,7 @@ See: .planning/PROJECT.md (updated 2026-05-15)
 
 Phase: 05 (lessons-feedback-loop) — EXECUTING
 Plan: 2 of 2
-Status: Phase 05 shipped — main branch
+Status: Quick tasks shipped — main branch (sg-complete, sg-new, sg-quick rewrite)
 Last activity: 2026-05-16
 
 Progress: [██████████] 100%

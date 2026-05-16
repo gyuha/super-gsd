@@ -73,7 +73,10 @@
   3. HANDOFF.md가 없거나 스키마(5컬럼 TSV)가 손상된 경우 `[WARN]` 또는 `[FAIL]`이 표시된다
   4. `sg-health` 실행 전후로 `.planning/` 안의 어떤 파일도 생성되거나 수정되지 않는다
   5. sg-health 출력 중 transcript_matcher.py가 오발동하지 않는다 (`'hookify'` 패턴 → `'Retrospective complete'` 교체)
-**Plans**: TBD
+**Plans**: 2 plans
+Plans:
+- [ ] 06-01-PLAN.md — sg-health 진단 명령 파일 생성 (commands/sg-health.md)
+- [ ] 06-02-PLAN.md — transcript_matcher.py HOOKIFY_SIGNALS 패치 ('hookify' 제거)
 
 ### Phase 7: Status Accuracy
 **Goal**: `sg-status`가 HANDOFF.md를 파싱하여 현재 workflow 단계를 정확하게 표시한다
@@ -106,6 +109,6 @@
 | 3. sg- Command Set | — | Done | 2026-05-16 |
 | 4. Auto-Advance Hooks | — | Done | 2026-05-16 |
 | 5. Lessons Loop | — | Done | 2026-05-16 |
-| 6. sg-health | 0/? | Not started | — |
+| 6. sg-health | 0/2 | Not started | — |
 | 7. Status Accuracy | 0/? | Not started | — |
 | 8. Session Restore | 0/? | Not started | — |

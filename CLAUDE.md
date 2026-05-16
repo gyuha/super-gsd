@@ -25,7 +25,14 @@ Technology stack not yet documented. Will populate after codebase mapping or fir
 <!-- GSD:conventions-start source:CONVENTIONS.md -->
 ## Conventions
 
-Conventions not yet established. Will populate as patterns emerge during development.
+### 버전 관리
+
+버전을 올릴 때는 반드시 다음 두 파일을 함께 업데이트한다:
+
+1. `.claude-plugin/plugin.json` — `version` 필드 변경
+2. `CHANGELOG.md` — 새 버전 섹션 추가 (변경 내용 요약 포함)
+
+CHANGELOG.md 업데이트 없이 버전만 올리는 커밋은 허용하지 않는다.
 <!-- GSD:conventions-end -->
 
 <!-- GSD:architecture-start source:ARCHITECTURE.md -->

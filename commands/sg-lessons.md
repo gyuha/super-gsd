@@ -36,11 +36,11 @@ Self-contained. Reads .planning/lessons/ directory. Writes nothing.
 
 3. **각 파일 내용 출력.** 파일명을 헤더로 표시하고 내용을 출력한다:
    ```bash
-   for FILE in $FILES; do
+   while IFS= read -r FILE; do
      echo "--- $FILE ---"
      cat "$FILE"
      echo ""
-   done
+   done <<< "$FILES"
    ```
 
 4. **안내 메시지 출력:**

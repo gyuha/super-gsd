@@ -96,5 +96,5 @@ Self-contained — reads .planning/HANDOFF.md, .planning/STATE.md, .planning/ROA
 <success_criteria>
 1. The output is exactly five lines: three non-empty header lines, one blank line, and one non-empty `Next:` line — no extra lines or trailing output.
 2. When `.planning/HANDOFF.md` contains only the header and separator rows (no data rows), `Stage` is `init` and `Last handoff:` is `(none)`.
-3. The `Next:` command matches the D-28 mapping for the detected stage, including the `hookify` branch that picks `/gsd:discuss-phase <next>` when a following phase exists in `.planning/ROADMAP.md`, or `/gsd:complete-milestone` otherwise.
+3. The `Next:` command matches the D-28 mapping for the detected stage, including the `hookify` branch that picks `/super-gsd:sg-plan <next>` when a following phase exists in `.planning/ROADMAP.md`, or `/super-gsd:sg-complete` otherwise.
 </success_criteria>

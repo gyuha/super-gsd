@@ -49,11 +49,10 @@ Self-contained. Combines gsd-sdk initialization, gsd-planner Agent, and superpow
    `Usage: /super-gsd:sg-quick <task description> [--discuss] [--research] [--validate] [--full]`
    and exit.
 
-   If any flag is set, delegate to the full gsd-quick Skill and exit — no further steps:
+   If any flag is set, delegate to the full gsd-quick Skill — session control transfers to the skill; no further steps execute:
    ```
    if [ -n "$DISCUSS_FLAG" ] || [ -n "$RESEARCH_FLAG" ] || [ -n "$VALIDATE_FLAG" ] || [ -n "$FULL_FLAG" ]; then
      Skill(skill="gsd-quick", args="$ARGUMENTS")
-     exit 0
    fi
    ```
 

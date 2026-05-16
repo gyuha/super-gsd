@@ -2,6 +2,20 @@
 
 All notable changes to `super-gsd` are documented in this file. Format follows [Keep a Changelog](https://keepachangelog.com/).
 
+## [0.0.7] - 2026-05-16
+
+### Added
+
+- `sg-complete` — `gsd-complete-milestone` 매핑 명령 추가 (마일스톤 완료 처리)
+- `sg-new` — `gsd-new-milestone` 매핑 명령 추가 (새 마일스톤 시작)
+
+### Changed
+
+- `sg-quick` — `gsd-executor` 대신 `superpowers:executing-plans` 사용하도록 파이프라인 재작성 (gsd-planner → Superpowers 핸드오프)
+- `plugin.json` — `sg-complete`, `sg-new` 명령 등록
+- `docs/COMMANDS.md` — `sg-complete`, `sg-new` Quick Reference 표 및 상세 섹션 추가
+- `README.md` / `README.ko.md` — Commands 표에 `sg-complete`, `sg-new` 추가
+
 ## [0.0.6] - 2026-05-16
 
 ### Added

@@ -1,6 +1,6 @@
 {
   "name": "super-gsd",
-  "version": "0.0.6",
+  "version": "0.0.7",
   "description": "Orchestrator plugin that auto-chains GSD -> Superpowers -> Hookify so planning, implementation, and retrospection stay connected as a single learning loop.",
   "author": {
     "name": "gyuha",
@@ -17,7 +17,9 @@
     "./commands/sg-status.md",
     "./commands/sg-lessons.md",
     "./commands/sg-update.md",
-    "./commands/sg-quick.md"
+    "./commands/sg-quick.md",
+    "./commands/sg-complete.md",
+    "./commands/sg-new.md"
   ],
   "homepage": "https://github.com/gyuha/super-gsd",
   "repository": "https://github.com/gyuha/super-gsd",

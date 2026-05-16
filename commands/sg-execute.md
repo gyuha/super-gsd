@@ -53,7 +53,7 @@ This command is self-contained — no external workflow files imported. Reads .p
    REQ_IDS_CLEAN=$(echo "$REQ_IDS" | sed 's/([^)]*)//g' | tr -d ' ' | tr ',' ' ')
 
    # Success Criteria: collect numbered items after **Success Criteria** until next ** section
-   SC_TEXT=$(awk "NR>${HEADER_LINE}" .planning/ROADMAP.md | awk '/^\*\*Success Criteria\*\*/{found=1; next} found && /^\*\*/{exit} found && /^  [0-9]+\./{print}')
+   SC_TEXT=$(awk "NR>${HEADER_LINE}" .planning/ROADMAP.md | awk '/^\*\*Success Criteria\*\*/{found=1; next} found && /^\*\*/{exit} found && /^[[:space:]]*[0-9]+\./{print}')
    ```
 
 4. **Map REQ-IDs to one-line definitions.** For each REQ-ID, grep `.planning/REQUIREMENTS.md` for the bullet starting with `**<REQ-ID>**:` and extract the one-line description:
@@ -75,7 +75,7 @@ This command is self-contained — no external workflow files imported. Reads .p
 
 7. **Idempotency check.** Inspect `.planning/HANDOFF.md` for the latest row whose `Phase` cell matches `$PHASE_NUM` and whose `To` cell equals `superpowers`. Extract the recorded Plan Hash and compare it to `$PLAN_HASH`:
    ```bash
-   EXISTING_HASH=$(grep -E "^\| [^|]+ \| ${PHASE_PAD}-[^|]* \| [^|]+ \|[[:space:]]*superpowers[[:space:]]*\|" .planning/HANDOFF.md | tail -1 | awk -F'|' '{gsub(/ /,"",$6); print $6}')
+   EXISTING_HASH=$(grep -E "^\| [^|]+ \| (${PHASE_PAD}|${PHASE_NUM})-[^|]* \| [^|]+ \|[[:space:]]*superpowers[[:space:]]*\|" .planning/HANDOFF.md | tail -1 | awk -F'|' '{gsub(/ /,"",$6); print $6}')
    if [ -n "$EXISTING_HASH" ] && [ "$EXISTING_HASH" = "$PLAN_HASH" ]; then
      echo "Already handed off Phase $PHASE_NUM to superpowers (plan hash matches: $PLAN_HASH). Skipping append. Use /super-gsd:sg-status to inspect, or modify a PLAN.md to re-handoff."
      exit 0

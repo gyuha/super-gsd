@@ -109,6 +109,7 @@ None yet.
 | 260516-kqe | sg-complete, sg-new 명령 추가 + README/COMMANDS.md 문서화 | 2026-05-16 | 9050ffd | [260516-kqe-sg-complete-and-sg-new-command-mapping](./quick/260516-kqe-sg-complete-and-sg-new-command-mapping/) |
 | 260516-kwk | sg-quick: gsd-executor → superpowers:executing-plans 파이프라인 재작성 | 2026-05-16 | 713c1b9 | [260516-kwk-sg-quick-superpowers-execution-mode](./quick/260516-kwk-sg-quick-superpowers-execution-mode/) |
 | 260517-0ao | sg-execute.md 코드 리뷰 버그 수정 | 2026-05-17 | 628750c | [260517-0ao-sg-execute-md](./quick/260517-0ao-sg-execute-md/) |
+| 260517-0lh | sg-quick.md 코드 리뷰 버그 수정 | 2026-05-17 | be57fb9 | [260517-0lh-sg-quick-md](./quick/260517-0lh-sg-quick-md/) |
 
 ## Deferred Items
 

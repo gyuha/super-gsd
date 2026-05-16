@@ -8,19 +8,18 @@ Orchestrator plugin that auto-chains GSD → Superpowers → Hookify so planning
 
 The problem this solves is that manual handoff between these three tools is fragile. People forget to run the review, skip the retro, lose context between sessions, or re-run a planning command that overwrites half-finished work. By separating roles and then orchestrating the seams between them, the same mistakes stop showing up.
 
-**Phase 5 (this release) closes the learning loop.** Hookify retrospective output is now automatically captured to `.planning/lessons/` and injected into the next GSD plan phase — so lessons from one cycle feed the next without any manual steps. All eleven slash commands covering the full GSD → Superpowers → Hookify cycle are available. See the **Commands** section below for the quick-reference table, and `docs/COMMANDS.md` for the full per-command reference.
+All thirteen slash commands covering the full GSD → Superpowers → Hookify cycle are available — from starting a new milestone to closing it out and beginning the next. See the **Commands** section below for the quick-reference table, and `docs/COMMANDS.md` for the full per-command reference.
 
 ## Workflow
 
 ```
-sg-start → sg-explore → sg-plan → sg-execute → sg-review → sg-learn → sg-ship
-  (GSD)       (GSD)      (GSD)    (Superpowers) (Superpowers) (Hookify)  (GSD)
-                ↑                                                  |
-                └──── lessons auto-injected into next sg-plan ←───┘
-                      (via .planning/lessons/ + sg-lessons)
+sg-new/sg-start → sg-explore → sg-plan → sg-execute → sg-review → sg-learn → sg-ship → sg-complete
+                                  ↑                                    |                      ↓
+                                  └──── lessons auto-injected ←────────┘               → sg-new
+                                        (.planning/lessons/ + sg-lessons)          (next milestone)
 ```
 
-`sg-status` can be run at any point to check current position.
+`sg-status` can be run at any point to check current position. `sg-quick` handles one-off tasks outside the main flow.
 
 ## Commands
 
@@ -31,13 +30,13 @@ Quick reference for all `/super-gsd:sg-*` slash commands.
 | `/super-gsd:sg-start` | Scaffold a new project or milestone via `gsd-new-project` | At the very beginning of a new project or milestone |
 | `/super-gsd:sg-explore` | Map and analyse the codebase via `gsd-explore` | After `sg-start`, before planning |
 | `/super-gsd:sg-plan` | Gather phase context then create an execution plan (2-step chain: `gsd-discuss-phase` → `gsd-plan-phase`) | After `sg-explore`, when ready to plan |
-| `/super-gsd:sg-execute` | Package the current phase plan and hand off to Superpowers (`sg-executing-plans`) | After `sg-plan` is complete |
+| `/super-gsd:sg-execute` | Package the current phase plan and hand off to Superpowers (`superpowers:executing-plans`) | After `sg-plan` is complete |
 | `/super-gsd:sg-review` | Request a code review via `superpowers:requesting-code-review` | After implementation is complete |
 | `/super-gsd:sg-learn` | Run a Hookify retrospective to extract patterns and generate hooks (`hookify:hookify`) | After the review is done |
-| `/super-gsd:sg-lessons` | List prior Hookify lessons from `.planning/lessons/` for review; accepts optional phase filter | Before `sg-plan` to review what was learned |
-| `/super-gsd:sg-ship` | Complete and ship the current milestone via `gsd-ship` | After learning is captured |
-| `/super-gsd:sg-complete` | 현재 마일스톤 완료 처리 — `gsd-complete-milestone` 호출 | 구현 완료 후 마일스톤을 닫을 때 |
-| `/super-gsd:sg-new` | 새 마일스톤 시작 — `gsd-new-milestone` 호출 | sg-complete 후 다음 마일스톤을 시작할 때 |
+| `/super-gsd:sg-lessons` | List prior Hookify lessons from `.planning/lessons/`; accepts optional phase filter | Before `sg-plan` to review what was learned |
+| `/super-gsd:sg-ship` | Merge and ship the current phase via `gsd-ship` | After learning is captured |
+| `/super-gsd:sg-complete` | Archive and close the current milestone via `gsd-complete-milestone` | After all phases are shipped |
+| `/super-gsd:sg-new` | Start a new milestone via `gsd-new-milestone` | After `sg-complete`, to begin the next milestone |
 | `/super-gsd:sg-status` | Show current stage, last handoff timestamp, and next recommended command | At any point to check where you are |
 | `/super-gsd:sg-update` | Check, install, or update GSD, superpowers, hookify, and super-gsd (installs missing tools automatically) | When you want to install or update all workflow tools at once |
 | `/super-gsd:sg-quick` | Execute a small, ad-hoc task with GSD guarantees (plan + execute + commit) | For one-off tasks outside the main phase workflow |
@@ -71,8 +70,14 @@ The typical flow for adding a new feature milestone to an existing project (e.g.
 # 6. Learn — runs Hookify retrospective; findings are saved to .planning/lessons/
 /super-gsd:sg-learn
 
-# 7. Ship — closes the milestone and merges via gsd-ship
+# 7. Ship — merges the phase via gsd-ship (repeat steps 3–7 for each phase)
 /super-gsd:sg-ship
+
+# 8. Complete — archives and closes the milestone once all phases are done
+/super-gsd:sg-complete
+
+# 9. New — starts the next milestone
+/super-gsd:sg-new
 ```
 
 Each command hands context to the next automatically. You do not need to copy-paste state between steps.

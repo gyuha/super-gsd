@@ -85,6 +85,7 @@ Self-contained. Combines gsd-sdk initialization, gsd-planner Agent, and superpow
      subagent_type="gsd-planner"
    )
    ```
+   Substitute `<DESCRIPTION>`, `<TASK_DIR>`, and `<QUICK_ID>` with actual variable values before invoking the Agent.
    Wait for the agent to complete before proceeding.
 
 5. **Read PLAN.md.** Load the file the agent created:
@@ -112,12 +113,23 @@ Self-contained. Combines gsd-sdk initialization, gsd-planner Agent, and superpow
    ```
    Display this prompt block to the user.
 
-7. **Update STATE.md Quick Tasks Completed.** Append a new row placeholder to the `### Quick Tasks Completed` table in `.planning/STATE.md`:
+7. **Update STATE.md Quick Tasks Completed.** Append a new row after the last existing row in the `### Quick Tasks Completed` table:
    ```bash
    DIR_NAME=$(basename "$TASK_DIR")
-   NEW_ROW="| $QUICK_ID | $DESCRIPTION | $(date +%Y-%m-%d) | (pending) | [$DIR_NAME](.planning/quick/$DIR_NAME/) |"
+   SAFE_DESCRIPTION=$(echo "$DESCRIPTION" | tr '|' '-')
+   NEW_ROW="| $QUICK_ID | $SAFE_DESCRIPTION | $(date +%Y-%m-%d) | (pending) | [$DIR_NAME](./quick/$DIR_NAME/) |"
+   awk -v row="$NEW_ROW" '
+     /### Quick Tasks Completed/ { in_section=1 }
+     in_section && /^\|/ { last_row=NR }
+     { lines[NR]=$0 }
+     END {
+       for(i=1;i<=NR;i++) {
+         print lines[i]
+         if(i==last_row) print row
+       }
+     }
+   ' .planning/STATE.md > .planning/STATE.md.tmp && mv .planning/STATE.md.tmp .planning/STATE.md
    ```
-   Insert the row after the last existing row in the `### Quick Tasks Completed` table (or after the header row if the table is empty).
 
 8. **Commit PLAN.md, then patch STATE.md with real SHA, then commit STATE.md.**
    ```bash

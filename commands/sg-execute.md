@@ -1,6 +1,6 @@
 ---
 name: sg-execute
-description: Hand off the current GSD phase to Superpowers — package PLAN/REQ/SC into a single prompt and auto-invoke sg-executing-plans.
+description: Hand off the current GSD phase to Superpowers — package PLAN/REQ/SC into a single prompt and auto-invoke superpowers:executing-plans.
 argument-hint: "[phase] - optional. Defaults to STATE.md current phase"
 ---
 
@@ -39,6 +39,17 @@ This command is self-contained — no external workflow files imported. Reads .p
    - The `**Goal**:` line immediately following the header to get `GOAL`.
    - The numbered list under `**Success Criteria**` to get the SC items.
    - The `**Requirements**:` line to get the REQ-ID list.
+   ```bash
+   PHASE_HEADER=$(grep -n "^### Phase ${PHASE_NUM}:" .planning/ROADMAP.md | head -1)
+   PHASE_NAME=$(echo "$PHASE_HEADER" | sed 's/.*Phase [0-9]*: //')
+   HEADER_LINE=$(echo "$PHASE_HEADER" | cut -d: -f1)
+
+   GOAL=$(awk "NR>${HEADER_LINE} && /^\*\*Goal\*\*:/{sub(/^\*\*Goal\*\*:[[:space:]]*/,\"\"); print; exit}" .planning/ROADMAP.md)
+   REQ_IDS=$(awk "NR>${HEADER_LINE} && /^\*\*Requirements\*\*:/{match(\$0,/: (.*)/,a); print a[1]; exit}" .planning/ROADMAP.md)
+
+   # Success Criteria: collect numbered items after **Success Criteria** until next ** section
+   SC_TEXT=$(awk "NR>${HEADER_LINE}" .planning/ROADMAP.md | awk '/^\*\*Success Criteria\*\*/{found=1; next} found && /^  [0-9]+\./{print} found && /^\*\*[^S]/{exit}')
+   ```
 
 4. **Map REQ-IDs to one-line definitions.** For each REQ-ID, grep `.planning/REQUIREMENTS.md` for the bullet starting with `**<REQ-ID>**:` and extract the one-line description:
    ```bash
@@ -59,7 +70,7 @@ This command is self-contained — no external workflow files imported. Reads .p
 
 7. **Idempotency check.** Inspect `.planning/HANDOFF.md` for the latest row whose `Phase` cell matches `$PHASE_NUM` and whose `To` cell equals `superpowers`. Extract the recorded Plan Hash and compare it to `$PLAN_HASH`:
    ```bash
-   EXISTING_HASH=$(grep -E "^\| [^|]+ \| [^|]*${PHASE_NUM}[^|]* \| [^|]+ \| superpowers \|" .planning/HANDOFF.md | tail -1 | awk -F'|' '{gsub(/ /,"",$6); print $6}')
+   EXISTING_HASH=$(grep -E "^\| [^|]+ \| ${PHASE_PAD}-[^|]* \| [^|]+ \| superpowers \|" .planning/HANDOFF.md | tail -1 | awk -F'|' '{gsub(/ /,"",$6); print $6}')
    if [ -n "$EXISTING_HASH" ] && [ "$EXISTING_HASH" = "$PLAN_HASH" ]; then
      echo "Already handed off Phase $PHASE_NUM to superpowers (plan hash matches: $PLAN_HASH). Skipping append. Use /super-gsd:sg-status to inspect, or modify a PLAN.md to re-handoff."
      exit 0
@@ -74,7 +85,7 @@ This command is self-contained — no external workflow files imported. Reads .p
      exit 1
    fi
    TS=$(date -u +%Y-%m-%dT%H:%M:%SZ)
-   FROM_STAGE=$(grep -E '^\| [0-9]{4}-' .planning/HANDOFF.md | tail -1 | awk -F'|' '{gsub(/ /,"",$5); print $5}')
+   FROM_STAGE=$(grep -E '^\| [0-9]{4}-' .planning/HANDOFF.md | tail -1 | awk -F'|' '{gsub(/ /,"",$4); print $4}')
    if [ -z "$FROM_STAGE" ]; then
      FROM_STAGE="init"
    fi

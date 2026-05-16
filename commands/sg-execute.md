@@ -50,7 +50,7 @@ This command is self-contained — no external workflow files imported. Reads .p
 
    GOAL=$(awk "NR>${HEADER_LINE} && /^\*\*Goal\*\*:/{sub(/^\*\*Goal\*\*:[[:space:]]*/,\"\"); print; exit}" .planning/ROADMAP.md)
    REQ_IDS=$(awk "NR>${HEADER_LINE} && /^\*\*Requirements\*\*:/{match(\$0,/: (.*)/,a); print a[1]; exit}" .planning/ROADMAP.md)
-   REQ_IDS_CLEAN=$(echo "$REQ_IDS" | tr -d ' ' | tr ',' ' ')
+   REQ_IDS_CLEAN=$(echo "$REQ_IDS" | sed 's/([^)]*)//g' | tr -d ' ' | tr ',' ' ')
 
    # Success Criteria: collect numbered items after **Success Criteria** until next ** section
    SC_TEXT=$(awk "NR>${HEADER_LINE}" .planning/ROADMAP.md | awk '/^\*\*Success Criteria\*\*/{found=1; next} found && /^\*\*/{exit} found && /^  [0-9]+\./{print}')

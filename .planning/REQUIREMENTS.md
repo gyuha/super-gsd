@@ -54,16 +54,16 @@
 
 | REQ-ID | Phase | Status |
 |--------|-------|--------|
-| HEALTH-01 | — | Pending |
-| HEALTH-02 | — | Pending |
-| HEALTH-03 | — | Pending |
-| HEALTH-04 | — | Pending |
-| HEALTH-05 | — | Pending |
-| HEALTH-06 | — | Pending |
-| STATUS-01 | — | Pending |
-| STATUS-02 | — | Pending |
-| STATUS-03 | — | Pending |
-| SESS-01 | — | Pending |
-| SESS-02 | — | Pending |
-| SESS-03 | — | Pending |
-| SESS-04 | — | Pending |
+| HEALTH-01 | Phase 6 | Pending |
+| HEALTH-02 | Phase 6 | Pending |
+| HEALTH-03 | Phase 6 | Pending |
+| HEALTH-04 | Phase 6 | Pending |
+| HEALTH-05 | Phase 6 | Pending |
+| HEALTH-06 | Phase 6 | Pending |
+| STATUS-01 | Phase 7 | Pending |
+| STATUS-02 | Phase 7 | Pending |
+| STATUS-03 | Phase 7 | Pending |
+| SESS-01 | Phase 8 | Pending |
+| SESS-02 | Phase 8 | Pending |
+| SESS-03 | Phase 8 | Pending |
+| SESS-04 | Phase 8 | Pending |

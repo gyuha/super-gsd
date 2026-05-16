@@ -2,11 +2,11 @@
 gsd_state_version: 1.0
 milestone: v1.1
 milestone_name: Reliability
-status: planning
-last_updated: "2026-05-16T06:44:59.265Z"
+status: roadmap_ready
+last_updated: "2026-05-16T07:00:00.000Z"
 last_activity: 2026-05-16
 progress:
-  total_phases: 0
+  total_phases: 3
   completed_phases: 0
   total_plans: 0
   completed_plans: 0
@@ -17,17 +17,17 @@ progress:
 
 ## Project Reference
 
-See: .planning/PROJECT.md (updated 2026-05-15)
+See: .planning/PROJECT.md (updated 2026-05-16)
 
 **Core value:** GSD → Superpowers → Hookify 단계 전환을 자동화하여 학습 루프가 끊기지 않도록 한다
-**Current focus:** v1.1 Planning
+**Current focus:** v1.1 Reliability — Phase 6 ready to plan
 
 ## Current Position
 
-Phase: Not started (defining requirements)
+Phase: 6 (sg-health) — Not started
 Plan: —
-Status: Defining requirements
-Last activity: 2026-05-16 — Milestone v1.1 started
+Status: Roadmap created, ready for /gsd:plan-phase 6
+Last activity: 2026-05-16 — v1.1 Roadmap finalized (Phase 6–8)
 
 ## Performance Metrics
 
@@ -85,6 +85,9 @@ Recent decisions affecting current work:
 - 03-01: 내부 교차 참조 일관성 — sg-execute Step 10 ↔ sg-status gsd-plan branch 양방향 참조 정합성 유지
 - [Phase ?]: sg-start에 argument-hint 포함 — gsd-new-project가 내부 감지 처리하므로 $ARGUMENTS 파싱 없이 전달
 - [Phase ?]: sg-explore argument-hint 생략 — gsd-explore는 인자를 받지 않음, XML 4-section Skill 위임 패턴 적용
+- v1.1 research: transcript_matcher.py bare `'hookify'` 패치는 sg-health Phase와 묶어야 함 (오발동 방지)
+- v1.1 research: HANDOFF.md 파싱은 parse_handoff.py 헬퍼로 중앙화 — sg-status와 sg-start 공유
+- v1.1 research: STATE.md Phase 파싱 정규식 `r'^Phase:\s*(\S+)'` → 전체 라인 캡처로 수정 필요
 
 ### Pending Todos
 
@@ -119,6 +122,6 @@ Items acknowledged and deferred at milestone close on 2026-05-16:
 
 ## Session Continuity
 
-Last session: 2026-05-15T16:01:33.198Z
-Stopped at: Phase 03 complete — all 4 plans done, 8 sg- commands created
-Resume file: None
+Last session: 2026-05-16
+Stopped at: v1.1 roadmap created — Phase 6 (sg-health) ready to plan
+Resume file: .planning/ROADMAP.md

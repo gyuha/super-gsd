@@ -5,7 +5,15 @@ argument-hint: "<task description> [--discuss] [--research] [--validate] [--full
 ---
 
 <objective>
-Invoke gsd-quick to execute a small, ad-hoc task with GSD guarantees. Supports the same flags as gsd-quick:
+Execute a small, ad-hoc task using a gsd-planner → Superpowers automatic execution pipeline. Unlike the simple Skill delegation of previous versions, this command runs the full pipeline:
+
+1. Parse flags from $ARGUMENTS
+2. Initialize a quick task via gsd-sdk (quick_id, slug, task_dir)
+3. Spawn a gsd-planner Agent to write PLAN.md into task_dir
+4. Hand off the PLAN.md content to superpowers:executing-plans for implementation
+5. Update STATE.md Quick Tasks Completed and commit artifacts
+
+Flags:
 - (no flags) — Plan + execute immediately. Use when you know exactly what to do.
 - --discuss — Lightweight discussion phase to clarify gray areas before planning.
 - --research — Spawn a research agent to investigate approaches before planning.
@@ -14,13 +22,111 @@ Invoke gsd-quick to execute a small, ad-hoc task with GSD guarantees. Supports t
 </objective>
 
 <execution_context>
-Self-contained. Delegates entirely to gsd-quick Skill.
+Self-contained. Combines gsd-sdk initialization, gsd-planner Agent, and superpowers:executing-plans Skill directly — no external workflow files imported.
 </execution_context>
 
 <process>
-1. Invoke Skill: `Skill(skill="gsd-quick", args="$ARGUMENTS")`
+1. **Parse arguments.** Extract DESCRIPTION and flags from `$ARGUMENTS`:
+   ```bash
+   ARGS="$ARGUMENTS"
+   DISCUSS_FLAG=""
+   RESEARCH_FLAG=""
+   VALIDATE_FLAG=""
+   FULL_FLAG=""
+   for arg in $ARGS; do
+     case "$arg" in
+       --discuss)  DISCUSS_FLAG="--discuss" ;;
+       --research) RESEARCH_FLAG="--research" ;;
+       --validate) VALIDATE_FLAG="--validate" ;;
+       --full)     FULL_FLAG="--full" ;;
+     esac
+   done
+   # Strip flags — remaining text is the task description
+   DESCRIPTION=$(echo "$ARGS" | sed 's/--discuss//g; s/--research//g; s/--validate//g; s/--full//g' | xargs)
+   ```
+   If DESCRIPTION is empty, print exactly:
+   `Usage: /super-gsd:sg-quick <task description> [--discuss] [--research] [--validate] [--full]`
+   and exit.
+
+2. **Initialize quick task.** Obtain quick_id, slug, and task_dir from gsd-sdk:
+   ```bash
+   INIT_JSON=$(gsd-sdk query init.quick "$DESCRIPTION")
+   QUICK_ID=$(echo "$INIT_JSON" | node -e "const d=JSON.parse(require('fs').readFileSync('/dev/stdin','utf8')); process.stdout.write(d.quick_id||d.id||'')")
+   SLUG=$(echo "$INIT_JSON" | node -e "const d=JSON.parse(require('fs').readFileSync('/dev/stdin','utf8')); process.stdout.write(d.slug||'')")
+   TASK_DIR=$(echo "$INIT_JSON" | node -e "const d=JSON.parse(require('fs').readFileSync('/dev/stdin','utf8')); process.stdout.write(d.task_dir||d.dir||'')")
+   ```
+   If QUICK_ID or TASK_DIR is empty, print exactly:
+   `gsd-sdk init.quick failed — check gsd-sdk installation`
+   and exit.
+
+3. **Create task directory.**
+   ```bash
+   mkdir -p "$TASK_DIR"
+   ```
+
+4. **Spawn gsd-planner Agent.** Use `Task()` to spawn a planning agent that writes PLAN.md into task_dir:
+   ```
+   Task(
+     description="You are a GSD quick planner. Write a PLAN.md for the following quick task.
+
+   Task description: <DESCRIPTION>
+   Flags: <list any of --discuss --research --validate --full that are set; omit line if none>
+   Output path: <TASK_DIR>/<QUICK_ID>-PLAN.md
+
+   Create a single focused PLAN.md with 1-2 tasks. Target ~30% context usage. Follow the GSD PLAN.md format (frontmatter + objective + tasks with action/verify/done + success_criteria). Write the file to the exact output path above.",
+     subagent_type="general-purpose"
+   )
+   ```
+   Wait for the agent to complete before proceeding.
+
+5. **Read PLAN.md.** Load the file the agent created:
+   ```bash
+   PLAN_PATH="$TASK_DIR/${QUICK_ID}-PLAN.md"
+   PLAN_CONTENT=$(cat "$PLAN_PATH" 2>/dev/null)
+   ```
+   If PLAN_CONTENT is empty, print exactly:
+   `Planner agent did not create PLAN.md at $PLAN_PATH`
+   and exit.
+
+6. **Build Superpowers handoff prompt.** Assemble the following markdown block, substituting actual values:
+   ```
+   # Quick Task Execution Handoff — <QUICK_ID>
+
+   ## Goal
+   <DESCRIPTION>
+
+   ## Plan
+
+   <PLAN_CONTENT>
+
+   ## Instruction to Superpowers
+   Execute the plan above using the superpowers:executing-plans skill. Treat the PLAN.md as the authoritative source of tasks and acceptance criteria. Complete all tasks and verify success criteria before finishing.
+   ```
+   Display this prompt block to the user.
+
+7. **Invoke Superpowers.** In the same turn — no confirmation prompt:
+   ```
+   Skill(skill="superpowers:executing-plans", args="<the prompt block from step 6>")
+   ```
+
+8. **Update STATE.md Quick Tasks Completed.** Append a new row to the `### Quick Tasks Completed` table in `.planning/STATE.md`:
+   ```bash
+   NEW_ROW="| $QUICK_ID | $DESCRIPTION | $(date +%Y-%m-%d) | (pending) | [$SLUG](.planning/quick/$SLUG/) |"
+   ```
+   Insert the row after the last existing row in the `### Quick Tasks Completed` table (or after the header row if the table is empty).
+
+9. **Commit artifacts.**
+   ```bash
+   git add "$PLAN_PATH" .planning/STATE.md
+   git commit -m "quick($QUICK_ID): $DESCRIPTION"
+   ```
+
+10. **Print completion message.**
+    `Quick task $QUICK_ID complete. Plan executed via superpowers:executing-plans. STATE.md updated.`
 </process>
 
 <success_criteria>
-1. gsd-quick Skill is invoked exactly once with all arguments forwarded unchanged.
+1. The full pipeline runs end-to-end: gsd-sdk initialization → gsd-planner Agent writes PLAN.md → superpowers:executing-plans is invoked with the full PLAN.md content.
+2. superpowers:executing-plans Skill is invoked exactly once per run.
+3. STATE.md Quick Tasks Completed table gains a new row and PLAN.md is committed atomically in a single `quick(<QUICK_ID>): <DESCRIPTION>` commit.
 </success_criteria>

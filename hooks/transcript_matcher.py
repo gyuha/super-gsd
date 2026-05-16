@@ -34,7 +34,6 @@ def detect_signal(transcript_path: str) -> str:
     ]
     # Hookify 완료 신호 패턴 (LESS-01)
     HOOKIFY_SIGNALS = [
-        'hookify',
         'Retrospective complete',
         'hooks generated',
         'patterns extracted',

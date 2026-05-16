@@ -108,9 +108,15 @@ None yet.
 
 ## Deferred Items
 
+Items acknowledged and deferred at milestone close on 2026-05-16:
+
 | Category | Item | Status | Deferred At |
 |----------|------|--------|-------------|
-| *(none)* | | | |
+| verification | Phase 03: stopped_at 필드 일관성 (기능 정상, 관리 메타 문제) | human_needed | 2026-05-16 |
+| verification | Phase 04: SubagentStop 안내 메시지 방식 (hooks API 제약 인정) | human_needed | 2026-05-16 |
+| quick_task | 260516-2qm-readme-md | missing | 2026-05-16 |
+| quick_task | 260516-2sw-readme-md-gsd-superpowers-hookify | missing | 2026-05-16 |
+| quick_task | 260516-dsz-sg-update-gsd-superpowers-hookify | missing | 2026-05-16 |
 
 ## Session Continuity
 

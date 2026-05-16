@@ -36,6 +36,8 @@ Quick reference for all `/super-gsd:sg-*` slash commands.
 | `/super-gsd:sg-learn` | Run a Hookify retrospective to extract patterns and generate hooks (`hookify:hookify`) | After the review is done |
 | `/super-gsd:sg-lessons` | List prior Hookify lessons from `.planning/lessons/` for review; accepts optional phase filter | Before `sg-plan` to review what was learned |
 | `/super-gsd:sg-ship` | Complete and ship the current milestone via `gsd-ship` | After learning is captured |
+| `/super-gsd:sg-complete` | 현재 마일스톤 완료 처리 — `gsd-complete-milestone` 호출 | 구현 완료 후 마일스톤을 닫을 때 |
+| `/super-gsd:sg-new` | 새 마일스톤 시작 — `gsd-new-milestone` 호출 | sg-complete 후 다음 마일스톤을 시작할 때 |
 | `/super-gsd:sg-status` | Show current stage, last handoff timestamp, and next recommended command | At any point to check where you are |
 | `/super-gsd:sg-update` | Check, install, or update GSD, superpowers, hookify, and super-gsd (installs missing tools automatically) | When you want to install or update all workflow tools at once |
 | `/super-gsd:sg-quick` | Execute a small, ad-hoc task with GSD guarantees (plan + execute + commit) | For one-off tasks outside the main phase workflow |

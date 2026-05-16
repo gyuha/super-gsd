@@ -2,6 +2,25 @@
 
 All notable changes to `super-gsd` are documented in this file. Format follows [Keep a Changelog](https://keepachangelog.com/).
 
+## [0.0.9] - 2026-05-17
+
+### Fixed
+
+**전체 14개 커맨드 코드 리뷰 — Skill() 종료 의미론 일관 적용:**
+
+- `sg-start`, `sg-explore`, `sg-new`, `sg-learn` — `Skill()` 이후 도달 불가한 print Step 제거 (dead code); `execution_context`에 "terminal action" 명시
+- `sg-review` — `Skill()` 이후 도달 불가한 Step 5 제거; `$DESCRIPTION`/`$PLAN_REQUIREMENTS`/`$BASE_SHA`/`$HEAD_SHA` 대입 지시 추가
+- `sg-complete`, `sg-ship` — `Skill()` 이후 dead code 제거; `PHASE_NUM` 빈값 bash 가드 명시화; `$PHASE_NUM` 대입 지시 추가; `success_criteria`에 phase 해석 실패 케이스 추가
+- `sg-lessons` — Step 1/2 빈값 가드를 prose → 코드 블록 내부로 이동; `for FILE in $FILES` → `while IFS= read -r FILE` (파일명 word-splitting 방지); `grep` stdin 파이프의 불필요한 `2>/dev/null` 제거
+- `sg-plan` — `gsd-discuss-phase`를 `Skill()` → `Agent()` 로 변경(서브에이전트, 반환됨), `gsd-plan-phase`만 `Skill()` 종료 액션으로 유지; `PHASE_NUM` 빈값 bash 가드 추가; 두 곳 모두 `$PHASE_NUM` 대입 지시 추가; `Agent()` 프롬프트에 실패 핸들링 추가
+- `sg-quick` — 조건부 `Skill()` 분기에 "session control transfers" 주석 추가; 혼동을 주는 `exit 0` bash 메타포 제거
+- `sg-status` — `NEXT_CMD` 매핑 전체를 `/gsd:*`·`/hookify` → `/super-gsd:sg-*` 래퍼로 교체 (`init→sg-plan`, `superpowers/review→sg-learn`, `hookify→sg-plan|sg-complete`); `success_criteria` item 3도 동기화
+- `sg-execute` — 9개 버그 수정: idempotency grep 공백 허용(`[[:space:]]*superpowers`), `PHASE_PAD|PHASE_NUM` 양쪽 매칭, ROADMAP Phase 헤더 zero-pad 폴백, `FROM_STAGE` 컬럼 `$4→$5`, SC_TEXT 들여쓰기 고정값 제거(`[[:space:]]*`), `REQ_IDS` 괄호 접미사 제거, HANDOFF.md 헤더 검사 `-Fxq → 부분문자열 grep`
+
+### Changed
+
+- `README.md` — `sg-explore` 설명의 스킬 이름 `gsd-explore` → `gsd-map-codebase` (커맨드 구현과 일치)
+
 ## [0.0.8] - 2026-05-16
 
 ### Changed

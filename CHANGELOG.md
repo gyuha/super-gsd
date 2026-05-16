@@ -2,6 +2,13 @@
 
 All notable changes to `super-gsd` are documented in this file. Format follows [Keep a Changelog](https://keepachangelog.com/).
 
+## [0.0.8] - 2026-05-16
+
+### Changed
+
+- v1.0 마일스톤 아카이브 완료 — `MILESTONES.md`, `RETROSPECTIVE.md` 생성, phase 디렉토리 `milestones/v1.0-phases/`로 이전
+- STATE.md 상태 정리 — v1.1 Planning 단계로 전환
+
 ## [0.0.7] - 2026-05-16
 
 ### Added

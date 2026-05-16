@@ -2,7 +2,7 @@
 gsd_state_version: 1.0
 milestone: v1.1
 milestone_name: Candidates
-status: Phase 05 shipped — main branch
+status: v1.0 milestone complete — archived
 stopped_at: Phase 03 complete — all 4 plans done, 8 sg- commands created
 last_updated: "2026-05-16T01:34:14.775Z"
 last_activity: 2026-05-16
@@ -21,7 +21,7 @@ progress:
 See: .planning/PROJECT.md (updated 2026-05-15)
 
 **Core value:** GSD → Superpowers → Hookify 단계 전환을 자동화하여 학습 루프가 끊기지 않도록 한다
-**Current focus:** Phase 05 — lessons-feedback-loop
+**Current focus:** v1.1 Planning
 
 ## Current Position
 

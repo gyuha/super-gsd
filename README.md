@@ -28,7 +28,7 @@ Quick reference for all `/super-gsd:sg-*` slash commands.
 | Command | What it does | When to use |
 |---------|-------------|-------------|
 | `/super-gsd:sg-start` | Scaffold a new project or milestone via `gsd-new-project` | At the very beginning of a new project or milestone |
-| `/super-gsd:sg-explore` | Map and analyse the codebase via `gsd-explore` | After `sg-start`, before planning |
+| `/super-gsd:sg-explore` | Map and analyse the codebase via `gsd-map-codebase` | After `sg-start`, before planning |
 | `/super-gsd:sg-plan` | Gather phase context then create an execution plan (2-step chain: `gsd-discuss-phase` → `gsd-plan-phase`) | After `sg-explore`, when ready to plan |
 | `/super-gsd:sg-execute` | Package the current phase plan and hand off to Superpowers (`superpowers:executing-plans`) | After `sg-plan` is complete |
 | `/super-gsd:sg-review` | Request a code review via `superpowers:requesting-code-review` | After implementation is complete |

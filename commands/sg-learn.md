@@ -8,12 +8,14 @@ Invoke the hookify:hookify Skill to run a retrospective and extract learnable pa
 </objective>
 
 <execution_context>
-Self-contained. Delegates entirely to hookify:hookify Skill.
+Self-contained. Delegates entirely to hookify:hookify Skill (terminal action).
 </execution_context>
 
 <process>
-1. Invoke Skill: `Skill(skill="hookify:hookify", args="$ARGUMENTS")`
-2. Print: `Retrospective complete. Run /super-gsd:sg-ship when ready to close the milestone.`
+1. Session control transfers to the skill; no steps execute after this point:
+   ```
+   Skill(skill="hookify:hookify", args="$ARGUMENTS")
+   ```
 </process>
 
 <success_criteria>

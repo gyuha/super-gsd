@@ -33,7 +33,8 @@ Self-contained. Combines gsd-sdk initialization, gsd-planner Agent, and superpow
    RESEARCH_FLAG=""
    VALIDATE_FLAG=""
    FULL_FLAG=""
-   for arg in $ARGS; do
+   IFS=' ' read -ra ARGS_ARRAY <<< "$ARGS"
+   for arg in "${ARGS_ARRAY[@]}"; do
      case "$arg" in
        --discuss)  DISCUSS_FLAG="--discuss" ;;
        --research) RESEARCH_FLAG="--research" ;;
@@ -42,7 +43,7 @@ Self-contained. Combines gsd-sdk initialization, gsd-planner Agent, and superpow
      esac
    done
    # Strip flags — remaining text is the task description
-   DESCRIPTION=$(echo "$ARGS" | sed 's/--discuss//g; s/--research//g; s/--validate//g; s/--full//g' | xargs)
+   DESCRIPTION=$(echo "$ARGS" | sed 's/--discuss//g; s/--research//g; s/--validate//g; s/--full//g' | sed 's/^[[:space:]]*//; s/[[:space:]]*$//')
    ```
    If DESCRIPTION is empty, print exactly:
    `Usage: /super-gsd:sg-quick <task description> [--discuss] [--research] [--validate] [--full]`
@@ -59,9 +60,8 @@ Self-contained. Combines gsd-sdk initialization, gsd-planner Agent, and superpow
 2. **Initialize quick task.** Obtain quick_id, slug, and task_dir from gsd-sdk:
    ```bash
    INIT_JSON=$(gsd-sdk query init.quick "$DESCRIPTION")
-   QUICK_ID=$(echo "$INIT_JSON" | node -e "const d=JSON.parse(require('fs').readFileSync('/dev/stdin','utf8')); process.stdout.write(d.quick_id||d.id||'')")
-   SLUG=$(echo "$INIT_JSON" | node -e "const d=JSON.parse(require('fs').readFileSync('/dev/stdin','utf8')); process.stdout.write(d.slug||'')")
-   TASK_DIR=$(echo "$INIT_JSON" | node -e "const d=JSON.parse(require('fs').readFileSync('/dev/stdin','utf8')); process.stdout.write(d.task_dir||d.dir||'')")
+   QUICK_ID=$(echo "$INIT_JSON" | node -e "const d=JSON.parse(require('fs').readFileSync(0,'utf8')); process.stdout.write(d.quick_id||d.id||'')")
+   TASK_DIR=$(echo "$INIT_JSON" | node -e "const d=JSON.parse(require('fs').readFileSync(0,'utf8')); process.stdout.write(d.task_dir||d.dir||'')")
    ```
    If QUICK_ID or TASK_DIR is empty, print exactly:
    `gsd-sdk init.quick failed — check gsd-sdk installation`
@@ -97,35 +97,41 @@ Self-contained. Combines gsd-sdk initialization, gsd-planner Agent, and superpow
    `Planner agent did not create PLAN.md at $PLAN_PATH`
    and exit.
 
-6. **Build Superpowers handoff prompt.** Assemble the following markdown block, substituting actual values:
+6. **Build Superpowers handoff prompt.** Assemble the prompt by substituting actual variable values and store it in `HANDOFF_PROMPT`:
    ```
-   # Quick Task Execution Handoff — <QUICK_ID>
+   HANDOFF_PROMPT="# Quick Task Execution Handoff — $QUICK_ID
 
    ## Goal
-   <DESCRIPTION>
+   $DESCRIPTION
 
    ## Plan
 
-   <PLAN_CONTENT>
+   $PLAN_CONTENT
 
    ## Instruction to Superpowers
-   Execute the plan above using the superpowers:executing-plans skill. Treat the PLAN.md as the authoritative source of tasks and acceptance criteria. Complete all tasks and verify success criteria before finishing.
+   Execute the plan above using the superpowers:executing-plans skill. Treat the PLAN.md as the authoritative source of tasks and acceptance criteria. Complete all tasks and verify success criteria before finishing."
    ```
-   Display this prompt block to the user.
+   Display `$HANDOFF_PROMPT` to the user.
 
 7. **Update STATE.md Quick Tasks Completed.** Append a new row after the last existing row in the `### Quick Tasks Completed` table:
    ```bash
    DIR_NAME=$(basename "$TASK_DIR")
-   SAFE_DESCRIPTION=$(echo "$DESCRIPTION" | tr '|' '-')
+   SAFE_DESCRIPTION=$(echo "$DESCRIPTION" | tr -d '\n' | tr '|\&' '---')
    NEW_ROW="| $QUICK_ID | $SAFE_DESCRIPTION | $(date +%Y-%m-%d) | (pending) | [$DIR_NAME](./quick/$DIR_NAME/) |"
    awk -v row="$NEW_ROW" '
-     /### Quick Tasks Completed/ { in_section=1 }
+     /### Quick Tasks Completed/ { in_section=1; section_hdr=NR }
+     in_section && /^##/ && !/### Quick Tasks Completed/ { in_section=0 }
      in_section && /^\|/ { last_row=NR }
      { lines[NR]=$0 }
      END {
+       insert_after = (last_row > 0) ? last_row : section_hdr
+       if (insert_after == 0) {
+         print "ERROR: ### Quick Tasks Completed section not found in STATE.md" > "/dev/stderr"
+         exit 1
+       }
        for(i=1;i<=NR;i++) {
          print lines[i]
-         if(i==last_row) print row
+         if(i==insert_after) print row
        }
      }
    ' .planning/STATE.md > .planning/STATE.md.tmp && mv .planning/STATE.md.tmp .planning/STATE.md
@@ -135,18 +141,23 @@ Self-contained. Combines gsd-sdk initialization, gsd-planner Agent, and superpow
    ```bash
    # Step 8a: commit PLAN.md first to obtain the real SHA
    git add "$PLAN_PATH"
-   git commit -m "quick($QUICK_ID): $DESCRIPTION"
+   git commit -m "quick($QUICK_ID): $DESCRIPTION" || { echo "git commit failed for PLAN.md at $PLAN_PATH"; exit 1; }
    COMMIT_SHA=$(git rev-parse --short HEAD)
 
    # Step 8b: replace (pending) only in the QUICK_ID row, then commit STATE.md
-   sed -i '' "/$QUICK_ID/s/(pending)/$COMMIT_SHA/" .planning/STATE.md
+   ESCAPED_ID=$(printf '%s' "$QUICK_ID" | sed 's/[]\[^$.*/]/\\&/g')
+   sed -i '' "/^| $ESCAPED_ID |/s/(pending)/$COMMIT_SHA/" .planning/STATE.md
    git add .planning/STATE.md
-   git commit -m "quick($QUICK_ID): update STATE.md"
+   git commit -m "quick($QUICK_ID): update STATE.md" || { echo "git commit failed for STATE.md"; exit 1; }
    ```
 
-9. **Invoke Superpowers.** In the same turn — no confirmation prompt. Session control transfers to the skill; no steps execute after this point:
+9. **Invoke Superpowers.** Before invoking, verify `HANDOFF_PROMPT` is non-empty (it must contain the full plan assembled in step 6). If it is empty, print exactly:
+   `HANDOFF_PROMPT assembly failed — PLAN_CONTENT may have been empty`
+   and exit.
+
+   Otherwise invoke in the same turn — no confirmation prompt. Session control transfers to the skill; no steps execute after this point:
    ```
-   Skill(skill="superpowers:executing-plans", args="<the prompt block from step 6>")
+   Skill(skill="superpowers:executing-plans", args="$HANDOFF_PROMPT")
    ```
 </process>
 

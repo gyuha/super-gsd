@@ -41,19 +41,24 @@ This command is self-contained — no external workflow files imported. Reads .p
    - The `**Requirements**:` line to get the REQ-ID list.
    ```bash
    PHASE_HEADER=$(grep -n "^### Phase ${PHASE_NUM}:" .planning/ROADMAP.md | head -1)
+   if [ -z "$PHASE_HEADER" ]; then
+     echo "No '### Phase ${PHASE_NUM}:' header found in .planning/ROADMAP.md. Aborting."
+     exit 1
+   fi
    PHASE_NAME=$(echo "$PHASE_HEADER" | sed 's/.*Phase [0-9]*: //')
    HEADER_LINE=$(echo "$PHASE_HEADER" | cut -d: -f1)
 
    GOAL=$(awk "NR>${HEADER_LINE} && /^\*\*Goal\*\*:/{sub(/^\*\*Goal\*\*:[[:space:]]*/,\"\"); print; exit}" .planning/ROADMAP.md)
    REQ_IDS=$(awk "NR>${HEADER_LINE} && /^\*\*Requirements\*\*:/{match(\$0,/: (.*)/,a); print a[1]; exit}" .planning/ROADMAP.md)
+   REQ_IDS_CLEAN=$(echo "$REQ_IDS" | tr -d ' ' | tr ',' ' ')
 
    # Success Criteria: collect numbered items after **Success Criteria** until next ** section
-   SC_TEXT=$(awk "NR>${HEADER_LINE}" .planning/ROADMAP.md | awk '/^\*\*Success Criteria\*\*/{found=1; next} found && /^  [0-9]+\./{print} found && /^\*\*[^S]/{exit}')
+   SC_TEXT=$(awk "NR>${HEADER_LINE}" .planning/ROADMAP.md | awk '/^\*\*Success Criteria\*\*/{found=1; next} found && /^\*\*/{exit} found && /^  [0-9]+\./{print}')
    ```
 
 4. **Map REQ-IDs to one-line definitions.** For each REQ-ID, grep `.planning/REQUIREMENTS.md` for the bullet starting with `**<REQ-ID>**:` and extract the one-line description:
    ```bash
-   for REQ in $REQ_IDS; do
+   for REQ in $REQ_IDS_CLEAN; do
      grep -E "\*\*${REQ}\*\*:" .planning/REQUIREMENTS.md | head -1
    done
    ```
@@ -123,13 +128,12 @@ This command is self-contained — no external workflow files imported. Reads .p
    ## Instruction to Superpowers
    Execute the plans above using the superpowers:executing-plans skill. Treat each PLAN.md as the authoritative source of tasks and acceptance criteria.
    ```
-   Display the prompt blob to the user, then invoke the Skill tool in the same turn — no confirmation prompt:
+   Display the prompt blob to the user. Then print exactly:
+   `Handoff complete. HANDOFF.md updated; superpowers:executing-plans invoked. Use /super-gsd:sg-status to inspect workflow state.`
+   Then invoke the Skill tool — no confirmation prompt. Session control transfers to the skill; no steps execute after this point:
    ```
    Skill(skill="superpowers:executing-plans", args="<the prompt blob above>")
    ```
-
-10. **Final user message.** After the Skill returns, print exactly:
-    `Handoff complete. HANDOFF.md updated; superpowers:executing-plans invoked. Use /super-gsd:sg-status to inspect workflow state.`
 </process>
 
 <success_criteria>

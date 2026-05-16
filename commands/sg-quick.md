@@ -48,6 +48,14 @@ Self-contained. Combines gsd-sdk initialization, gsd-planner Agent, and superpow
    `Usage: /super-gsd:sg-quick <task description> [--discuss] [--research] [--validate] [--full]`
    and exit.
 
+   If any flag is set, delegate to the full gsd-quick Skill and exit — no further steps:
+   ```
+   if [ -n "$DISCUSS_FLAG" ] || [ -n "$RESEARCH_FLAG" ] || [ -n "$VALIDATE_FLAG" ] || [ -n "$FULL_FLAG" ]; then
+     Skill(skill="gsd-quick", args="$ARGUMENTS")
+     exit 0
+   fi
+   ```
+
 2. **Initialize quick task.** Obtain quick_id, slug, and task_dir from gsd-sdk:
    ```bash
    INIT_JSON=$(gsd-sdk query init.quick "$DESCRIPTION")
@@ -64,9 +72,9 @@ Self-contained. Combines gsd-sdk initialization, gsd-planner Agent, and superpow
    mkdir -p "$TASK_DIR"
    ```
 
-4. **Spawn gsd-planner Agent.** Use `Task()` to spawn a planning agent that writes PLAN.md into task_dir:
+4. **Spawn gsd-planner Agent.** Use `Agent()` to spawn a planning agent that writes PLAN.md into task_dir:
    ```
-   Task(
+   Agent(
      description="You are a GSD quick planner. Write a PLAN.md for the following quick task.
 
    Task description: <DESCRIPTION>
@@ -74,7 +82,7 @@ Self-contained. Combines gsd-sdk initialization, gsd-planner Agent, and superpow
    Output path: <TASK_DIR>/<QUICK_ID>-PLAN.md
 
    Create a single focused PLAN.md with 1-2 tasks. Target ~30% context usage. Follow the GSD PLAN.md format (frontmatter + objective + tasks with action/verify/done + success_criteria). Write the file to the exact output path above.",
-     subagent_type="general-purpose"
+     subagent_type="gsd-planner"
    )
    ```
    Wait for the agent to complete before proceeding.
@@ -104,21 +112,29 @@ Self-contained. Combines gsd-sdk initialization, gsd-planner Agent, and superpow
    ```
    Display this prompt block to the user.
 
-7. **Invoke Superpowers.** In the same turn — no confirmation prompt:
-   ```
-   Skill(skill="superpowers:executing-plans", args="<the prompt block from step 6>")
-   ```
-
-8. **Update STATE.md Quick Tasks Completed.** Append a new row to the `### Quick Tasks Completed` table in `.planning/STATE.md`:
+7. **Update STATE.md Quick Tasks Completed.** Append a new row placeholder to the `### Quick Tasks Completed` table in `.planning/STATE.md`:
    ```bash
-   NEW_ROW="| $QUICK_ID | $DESCRIPTION | $(date +%Y-%m-%d) | (pending) | [$SLUG](.planning/quick/$SLUG/) |"
+   DIR_NAME=$(basename "$TASK_DIR")
+   NEW_ROW="| $QUICK_ID | $DESCRIPTION | $(date +%Y-%m-%d) | (pending) | [$DIR_NAME](.planning/quick/$DIR_NAME/) |"
    ```
    Insert the row after the last existing row in the `### Quick Tasks Completed` table (or after the header row if the table is empty).
 
-9. **Commit artifacts.**
+8. **Commit PLAN.md, then patch STATE.md with real SHA, then commit STATE.md.**
    ```bash
-   git add "$PLAN_PATH" .planning/STATE.md
+   # Step 8a: commit PLAN.md first to obtain the real SHA
+   git add "$PLAN_PATH"
    git commit -m "quick($QUICK_ID): $DESCRIPTION"
+   COMMIT_SHA=$(git rev-parse --short HEAD)
+
+   # Step 8b: replace (pending) with the actual commit SHA, then commit STATE.md
+   sed -i "s/(pending)/$COMMIT_SHA/" .planning/STATE.md
+   git add .planning/STATE.md
+   git commit -m "quick($QUICK_ID): update STATE.md"
+   ```
+
+9. **Invoke Superpowers.** In the same turn — no confirmation prompt:
+   ```
+   Skill(skill="superpowers:executing-plans", args="<the prompt block from step 6>")
    ```
 
 10. **Print completion message.**
@@ -127,6 +143,6 @@ Self-contained. Combines gsd-sdk initialization, gsd-planner Agent, and superpow
 
 <success_criteria>
 1. The full pipeline runs end-to-end: gsd-sdk initialization → gsd-planner Agent writes PLAN.md → superpowers:executing-plans is invoked with the full PLAN.md content.
-2. superpowers:executing-plans Skill is invoked exactly once per run.
-3. STATE.md Quick Tasks Completed table gains a new row and PLAN.md is committed atomically in a single `quick(<QUICK_ID>): <DESCRIPTION>` commit.
+2. superpowers:executing-plans Skill is invoked exactly once per run, after STATE.md has been updated.
+3. PLAN.md is committed first (to obtain a real SHA), then STATE.md is committed with the actual commit SHA — two separate commits per run.
 </success_criteria>

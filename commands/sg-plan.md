@@ -49,9 +49,10 @@ Self-contained. Reads .planning/STATE.md for phase resolution when no argument p
    Wait for the agent to complete before proceeding.
 
 3. Print: `[sg-plan] Step 2/2: Creating plan via gsd-plan-phase...`
+   **Before calling Skill, replace `$PHASE_NUM` with the actual resolved value** (e.g. `6`).
    Session control transfers to the skill; no steps execute after this point:
    ```
-   Skill(skill="gsd-plan-phase", args="$PHASE_NUM")
+   Skill(skill="gsd-plan-phase", args="$PHASE_NUM")  # replace $PHASE_NUM
    ```
 </process>
 

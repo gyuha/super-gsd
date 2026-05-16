@@ -22,7 +22,7 @@ Self-contained. Uses Bash to run detection and install/update commands.
    Preflight: check whether the `claude` CLI is available (required for plugin detection and install):
    ```bash
    if ! command -v claude >/dev/null 2>&1; then
-     echo "Warning: 'claude' CLI not found on PATH. Plugin detection for superpowers and hookify will fall back to install."
+     echo "Warning: 'claude' CLI not found on PATH. Plugin detection for superpowers, hookify, and super-gsd will fall back to install."
    fi
    ```
 
@@ -90,21 +90,19 @@ Self-contained. Uses Bash to run detection and install/update commands.
    fi
    ```
 
-6. Print a summary. Substitute each `<status>` with the value recorded in steps 2–5
-   (`GSD_STATUS`, `SUPERPOWERS_STATUS`, `HOOKIFY_STATUS`, `SUPERGSD_STATUS`).
-   Print only the values — do not include the variable names or inline annotations:
+6. Print a summary using the status values you recorded in steps 2–5.
+   Do not execute any bash here — use the in-context values directly.
+   Replace each bracketed item with the actual status string:
 
-   ```
    Done.
 
    Tools:
-   - GSD (get-shit-done-cc): <GSD_STATUS>
-   - superpowers: <SUPERPOWERS_STATUS>
-   - hookify: <HOOKIFY_STATUS>
-   - super-gsd: <SUPERGSD_STATUS>
+   - GSD (get-shit-done-cc): [status recorded in step 2, e.g. "installed" or "updated (1.2.3 → 1.3.0)"]
+   - superpowers: [status recorded in step 3, either "installed" or "updated"]
+   - hookify: [status recorded in step 4, either "installed" or "updated"]
+   - super-gsd: [status recorded in step 5, either "installed" or "updated"]
 
    Restart Claude Code to activate updated plugins.
-   ```
 </process>
 
 <success_criteria>

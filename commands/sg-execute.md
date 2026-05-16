@@ -88,7 +88,7 @@ This command is self-contained — no external workflow files imported. Reads .p
 
 8. **Append HANDOFF.md row.** Validate the header row exists, then append a new 5-column line:
    ```bash
-   if ! grep -Fxq "| Timestamp | Phase | From | To | Plan Hash |" .planning/HANDOFF.md; then
+   if ! grep -q "Timestamp.*Phase.*From.*To.*Plan Hash" .planning/HANDOFF.md; then
      echo ".planning/HANDOFF.md schema mismatch — header row not found. Aborting append."
      exit 1
    fi

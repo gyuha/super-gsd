@@ -75,7 +75,7 @@ This command is self-contained — no external workflow files imported. Reads .p
 
 7. **Idempotency check.** Inspect `.planning/HANDOFF.md` for the latest row whose `Phase` cell matches `$PHASE_NUM` and whose `To` cell equals `superpowers`. Extract the recorded Plan Hash and compare it to `$PLAN_HASH`:
    ```bash
-   EXISTING_HASH=$(grep -E "^\| [^|]+ \| ${PHASE_PAD}-[^|]* \| [^|]+ \| superpowers \|" .planning/HANDOFF.md | tail -1 | awk -F'|' '{gsub(/ /,"",$6); print $6}')
+   EXISTING_HASH=$(grep -E "^\| [^|]+ \| ${PHASE_PAD}-[^|]* \| [^|]+ \|[[:space:]]*superpowers[[:space:]]*\|" .planning/HANDOFF.md | tail -1 | awk -F'|' '{gsub(/ /,"",$6); print $6}')
    if [ -n "$EXISTING_HASH" ] && [ "$EXISTING_HASH" = "$PLAN_HASH" ]; then
      echo "Already handed off Phase $PHASE_NUM to superpowers (plan hash matches: $PLAN_HASH). Skipping append. Use /super-gsd:sg-status to inspect, or modify a PLAN.md to re-handoff."
      exit 0
@@ -90,7 +90,7 @@ This command is self-contained — no external workflow files imported. Reads .p
      exit 1
    fi
    TS=$(date -u +%Y-%m-%dT%H:%M:%SZ)
-   FROM_STAGE=$(grep -E '^\| [0-9]{4}-' .planning/HANDOFF.md | tail -1 | awk -F'|' '{gsub(/ /,"",$4); print $4}')
+   FROM_STAGE=$(grep -E '^\| [0-9]{4}-' .planning/HANDOFF.md | tail -1 | awk -F'|' '{gsub(/ /,"",$5); print $5}')
    if [ -z "$FROM_STAGE" ]; then
      FROM_STAGE="init"
    fi

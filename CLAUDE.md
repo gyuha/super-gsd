@@ -33,6 +33,28 @@ Technology stack not yet documented. Will populate after codebase mapping or fir
 2. `CHANGELOG.md` — 새 버전 섹션 추가 (변경 내용 요약 포함)
 
 CHANGELOG.md 업데이트 없이 버전만 올리는 커밋은 허용하지 않는다.
+
+### 배포 트리거
+
+프롬프트에 **"배포"** 라고 입력하면 다음 절차를 순서대로 실행한다:
+
+1. **버전 결정** — `.claude-plugin/plugin.json`의 현재 `version`을 읽고 patch를 1 올린다 (예: `0.0.9` → `0.0.10`).
+2. **plugin.json 업데이트** — `version` 필드를 새 버전으로 교체한다.
+3. **CHANGELOG.md 업데이트** — 파일 상단(첫 번째 `## [x.x.x]` 블록 바로 위)에 새 버전 섹션을 삽입한다. 형식:
+   ```
+   ## [NEW_VERSION] - YYYY-MM-DD
+
+   ### Changed
+
+   - (git log에서 마지막 버전 태그 이후 커밋 메시지를 요약하여 기재)
+   ```
+4. **git commit** — 변경된 두 파일을 스테이징하고 커밋한다. 메시지: `chore(release): bump version to NEW_VERSION`
+5. **git push** — 현재 브랜치를 원격에 push한다.
+
+**주의 사항:**
+- push 전에 사용자에게 확인을 구하지 않고 바로 실행한다 (배포 트리거는 명시적 의도가 있는 명령이다).
+- 커밋·push 외의 파일(테스트, 문서 등)은 건드리지 않는다.
+- git push가 실패하면(예: 원격에 앞선 커밋이 있는 경우) 강제 push 없이 오류를 그대로 보고한다.
 <!-- GSD:conventions-end -->
 
 <!-- GSD:architecture-start source:ARCHITECTURE.md -->

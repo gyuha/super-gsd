@@ -2,6 +2,21 @@
 
 All notable changes to `super-gsd` are documented in this file. Format follows [Keep a Changelog](https://keepachangelog.com/).
 
+## [0.0.10] - 2026-05-17
+
+### Added
+
+- `CLAUDE.md` — `배포` 트리거 절차 추가: 프롬프트에 "배포" 입력 시 버전 bump → CHANGELOG 업데이트 → commit → push 자동 실행
+
+### Changed
+
+- `commands/sg-plan.md` — lessons injection 범위를 "프로젝트 전체(phase 한정 아님)"으로 명확화; `gsd-discuss-phase` 에러 시 중단 처리 추가; `subagent_type` → `general-purpose`; Agent prompt에 `.planning/` 경로 힌트 추가
+- `commands/sg-update.md` — process 전체를 단일 bash 블록으로 통합; `claude` CLI 미설치 시 플러그인 단계 자동 skip; 각 단계 실패 exit code 캡처 및 status 표시 (`failed (exit N)`)
+
+### Fixed
+
+- `.planning/HANDOFF.md` — Phase 06-sg-health 핸드오프 로그 항목 누락 보완
+
 ## [0.0.9] - 2026-05-17
 
 ### Fixed

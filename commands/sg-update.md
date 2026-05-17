@@ -17,96 +17,136 @@ Self-contained. Uses Bash to run detection and install/update commands.
 </execution_context>
 
 <process>
-1. Print: "Updating workflow tools..."
+Run the following single bash block. All steps run in one shell process so variables persist through the summary.
 
-   Preflight: check whether the `claude` CLI is available (required for plugin detection and install):
-   ```bash
-   if ! command -v claude >/dev/null 2>&1; then
-     echo "Warning: 'claude' CLI not found on PATH. Plugin detection for superpowers, hookify, and super-gsd will fall back to install."
-   fi
-   ```
+```bash
+echo "Updating workflow tools..."
 
-2. **GSD (get-shit-done-cc):**
+# Preflight: check for claude CLI
+if ! command -v claude >/dev/null 2>&1; then
+  echo "Warning: 'claude' CLI not found on PATH. Plugin steps (superpowers, hookify, super-gsd) will be skipped."
+  CLAUDE_AVAILABLE=false
+else
+  CLAUDE_AVAILABLE=true
+fi
 
-   Run detection, messaging, install/update, and status capture in a single bash block so shell variables are preserved:
+# GSD (get-shit-done-cc)
+if command -v gsd-sdk >/dev/null 2>&1 || npm list -g --depth=0 get-shit-done-cc >/dev/null 2>&1; then
+  echo "Updating GSD..."
+  GSD_BEFORE=$(gsd-sdk --version 2>/dev/null || npm list -g --depth=0 get-shit-done-cc 2>/dev/null | grep -Eo '[0-9]+\.[0-9]+\.[0-9]+' | head -1 || echo 'unknown')
+  NPM_OUT=$(npm install -g get-shit-done-cc@latest 2>&1)
+  NPM_EC=$?
+  echo "$NPM_OUT" | tail -3
+  if [ "$NPM_EC" -ne 0 ]; then
+    GSD_STATUS="failed (exit ${NPM_EC})"
+  else
+    GSD_AFTER=$(gsd-sdk --version 2>/dev/null || npm list -g --depth=0 get-shit-done-cc 2>/dev/null | grep -Eo '[0-9]+\.[0-9]+\.[0-9]+' | head -1 || echo 'unknown')
+    GSD_STATUS="updated (${GSD_BEFORE} → ${GSD_AFTER})"
+  fi
+else
+  echo "Installing GSD..."
+  NPM_OUT=$(npm install -g get-shit-done-cc@latest 2>&1)
+  NPM_EC=$?
+  echo "$NPM_OUT" | tail -3
+  if [ "$NPM_EC" -eq 0 ]; then
+    GSD_STATUS="installed"
+  else
+    GSD_STATUS="failed (exit ${NPM_EC})"
+  fi
+fi
 
-   ```bash
-   if command -v gsd-sdk >/dev/null 2>&1 || npm list -g --depth=0 get-shit-done-cc >/dev/null 2>&1; then
-     echo "Updating GSD..."
-     GSD_BEFORE=$(gsd-sdk --version 2>/dev/null || echo 'unknown')
-     npm install -g get-shit-done-cc@latest 2>&1 | tail -3
-     GSD_AFTER=$(gsd-sdk --version 2>/dev/null || echo 'unknown')
-     GSD_STATUS="updated (${GSD_BEFORE} → ${GSD_AFTER})"
-   else
-     echo "Installing GSD..."
-     npm install -g get-shit-done-cc@latest 2>&1 | tail -3
-     GSD_STATUS="installed"
-   fi
-   ```
+# superpowers
+if [ "$CLAUDE_AVAILABLE" = "true" ]; then
+  if claude plugin list 2>&1 | grep -qiF 'superpowers'; then
+    echo "Updating superpowers..."
+    claude plugin install superpowers@claude-plugins-official 2>&1
+    PLUGIN_EC=$?
+    if [ "$PLUGIN_EC" -eq 0 ]; then
+      SUPERPOWERS_STATUS="updated"
+    else
+      SUPERPOWERS_STATUS="failed (exit ${PLUGIN_EC})"
+    fi
+  else
+    echo "Installing superpowers..."
+    claude plugin install superpowers@claude-plugins-official 2>&1
+    PLUGIN_EC=$?
+    if [ "$PLUGIN_EC" -eq 0 ]; then
+      SUPERPOWERS_STATUS="installed"
+    else
+      SUPERPOWERS_STATUS="failed (exit ${PLUGIN_EC})"
+    fi
+  fi
+else
+  SUPERPOWERS_STATUS="skipped (claude not found)"
+fi
 
-3. **superpowers:**
+# hookify
+if [ "$CLAUDE_AVAILABLE" = "true" ]; then
+  if claude plugin list 2>&1 | grep -qiF 'hookify'; then
+    echo "Updating hookify..."
+    claude plugin install hookify@claude-plugins-official 2>&1
+    PLUGIN_EC=$?
+    if [ "$PLUGIN_EC" -eq 0 ]; then
+      HOOKIFY_STATUS="updated"
+    else
+      HOOKIFY_STATUS="failed (exit ${PLUGIN_EC})"
+    fi
+  else
+    echo "Installing hookify..."
+    claude plugin install hookify@claude-plugins-official 2>&1
+    PLUGIN_EC=$?
+    if [ "$PLUGIN_EC" -eq 0 ]; then
+      HOOKIFY_STATUS="installed"
+    else
+      HOOKIFY_STATUS="failed (exit ${PLUGIN_EC})"
+    fi
+  fi
+else
+  HOOKIFY_STATUS="skipped (claude not found)"
+fi
 
-   Run detection, messaging, install/update, and status capture in a single bash block:
+# super-gsd
+if [ "$CLAUDE_AVAILABLE" = "true" ]; then
+  if claude plugin list 2>&1 | grep -qiF 'super-gsd'; then
+    echo "Updating super-gsd..."
+    claude plugin install super-gsd@super-gsd 2>&1
+    PLUGIN_EC=$?
+    if [ "$PLUGIN_EC" -eq 0 ]; then
+      SUPERGSD_STATUS="updated"
+    else
+      SUPERGSD_STATUS="failed (exit ${PLUGIN_EC})"
+    fi
+  else
+    echo "Installing super-gsd..."
+    claude plugin install super-gsd@super-gsd 2>&1
+    PLUGIN_EC=$?
+    if [ "$PLUGIN_EC" -eq 0 ]; then
+      SUPERGSD_STATUS="installed"
+    else
+      SUPERGSD_STATUS="failed (exit ${PLUGIN_EC})"
+    fi
+  fi
+else
+  SUPERGSD_STATUS="skipped (claude not found)"
+fi
 
-   ```bash
-   if claude plugin list 2>&1 | grep -qi superpowers; then
-     echo "Updating superpowers..."
-     claude plugin install superpowers@claude-plugins-official 2>&1
-     SUPERPOWERS_STATUS="updated"
-   else
-     echo "Installing superpowers..."
-     claude plugin install superpowers@claude-plugins-official 2>&1
-     SUPERPOWERS_STATUS="installed"
-   fi
-   ```
+echo ""
+echo "Done."
+echo ""
+echo "Tools:"
+echo "- GSD (get-shit-done-cc): ${GSD_STATUS}"
+echo "- superpowers: ${SUPERPOWERS_STATUS}"
+echo "- hookify: ${HOOKIFY_STATUS}"
+echo "- super-gsd: ${SUPERGSD_STATUS}"
+echo ""
+echo "Restart Claude Code to activate updated plugins."
+```
 
-4. **hookify:**
-
-   Run detection, messaging, install/update, and status capture in a single bash block:
-
-   ```bash
-   if claude plugin list 2>&1 | grep -qi hookify; then
-     echo "Updating hookify..."
-     claude plugin install hookify@claude-plugins-official 2>&1
-     HOOKIFY_STATUS="updated"
-   else
-     echo "Installing hookify..."
-     claude plugin install hookify@claude-plugins-official 2>&1
-     HOOKIFY_STATUS="installed"
-   fi
-   ```
-
-5. **super-gsd:**
-
-   ```bash
-   if claude plugin list 2>&1 | grep -qi super-gsd; then
-     echo "Updating super-gsd..."
-     claude plugin install super-gsd@super-gsd 2>&1
-     SUPERGSD_STATUS="updated"
-   else
-     echo "Installing super-gsd..."
-     claude plugin install super-gsd@super-gsd 2>&1
-     SUPERGSD_STATUS="installed"
-   fi
-   ```
-
-6. Print a summary using the status values you recorded in steps 2–5.
-   Do not execute any bash here — use the in-context values directly.
-   Replace each bracketed item with the actual status string:
-
-   Done.
-
-   Tools:
-   - GSD (get-shit-done-cc): [status recorded in step 2, e.g. "installed" or "updated (1.2.3 → 1.3.0)"]
-   - superpowers: [status recorded in step 3, either "installed" or "updated"]
-   - hookify: [status recorded in step 4, either "installed" or "updated"]
-   - super-gsd: [status recorded in step 5, either "installed" or "updated"]
-
-   Restart Claude Code to activate updated plugins.
+After the bash block completes, relay its output to the user verbatim.
 </process>
 
 <success_criteria>
-1. GSD npm package installed or updated to latest.
-2. superpowers, hookify, super-gsd plugins installed or updated.
-3. Summary shows the actual installed/updated state for each tool, with no literal placeholder text.
+1. GSD npm package installed or updated to latest, with actual status shown.
+2. superpowers, hookify, super-gsd plugins installed or updated (or skipped if claude not on PATH).
+3. Summary shows actual installed/updated/failed/skipped state for each tool — no literal placeholder text.
 </success_criteria>

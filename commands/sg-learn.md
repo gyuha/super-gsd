@@ -24,7 +24,9 @@ Self-contained. Delegates entirely to hookify:hookify Skill (terminal action).
    PHASE_PAD_L=$(printf "%02d" "${PHASE_NUM_L:-0}" 2>/dev/null || echo "${PHASE_NUM_L:-0}")
    PHASE_SLUG_L=$(ls -d .planning/phases/${PHASE_PAD_L}-* 2>/dev/null | head -1 | xargs basename 2>/dev/null)
    [ -z "$PHASE_SLUG_L" ] && PHASE_SLUG_L="${PHASE_NUM_L:-unknown}"
-   echo "| $TS | $PHASE_SLUG_L | review | hookify | - |" >> "$HANDOFF_FILE"
+   FROM_STAGE_L=$(grep -E '^\| [0-9]{4}-' "$HANDOFF_FILE" | tail -1 | awk -F'|' '{gsub(/ /,"",$5); print $5}')
+   [ -z "$FROM_STAGE_L" ] && FROM_STAGE_L="init"
+   echo "| $TS | $PHASE_SLUG_L | $FROM_STAGE_L | hookify | - |" >> "$HANDOFF_FILE"
    ```
 
 1. Session control transfers to the skill; no steps execute after this point:

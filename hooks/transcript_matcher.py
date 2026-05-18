@@ -30,11 +30,8 @@ def detect_signal(transcript_path: str) -> str:
     ]
     # Superpowers executing-plans 완료 신호 패턴 (P1-2)
     IMPLEMENTATION_SIGNALS = [
-        'Implementation complete',
-        'implementation complete',
-        'Branch ready for review',
-        'All tasks complete',
         'finishing-a-development-branch',
+        'Branch is ready for review',
     ]
     # Superpowers review 완료 신호 패턴 (HOOK-02, HOOK-04)
     REVIEW_SIGNALS = [

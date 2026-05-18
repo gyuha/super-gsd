@@ -2,6 +2,17 @@
 
 All notable changes to `super-gsd` are documented in this file. Format follows [Keep a Changelog](https://keepachangelog.com/).
 
+## [0.0.12] - 2026-05-19
+
+### Fixed
+
+- `.planning/HANDOFF.md` — Stage enum 주석에 `ship`, `complete` 추가 (v0.0.11에서 7-state로 확장했으나 schema 문서 미갱신 상태였음)
+- `hooks/stop_hook.py` — `_read_current_phase()`의 `\S+` 단일토큰 파싱 버그 수정: `Phase: Not started` 같은 비숫자 Phase 라인에서 `int()` 변환 실패로 hookify 완료 시 lessons 파일이 저장되지 않던 문제 해결
+- `hooks/transcript_matcher.py` — `IMPLEMENTATION_SIGNALS` 패턴을 좁은 2개로 축소 (`finishing-a-development-branch`, `Branch is ready for review`): 일반 문자열(`All tasks complete` 등)로 인한 false positive 방지
+- `commands/sg-review.md` — HANDOFF `From` 컬럼을 하드코딩 `superpowers` → HANDOFF.md 마지막 행 동적 읽기로 변경
+- `commands/sg-learn.md` — HANDOFF `From` 컬럼을 하드코딩 `review` → HANDOFF.md 마지막 행 동적 읽기로 변경
+- `commands/sg-plan.md` — idempotency grep 앞에 `PHASE_SLUG_P` 비어있음 가드 추가 (phase 디렉토리 없는 상황에서 중복 기록 방지)
+
 ## [0.0.11] - 2026-05-19
 
 ### Fixed

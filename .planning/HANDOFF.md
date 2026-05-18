@@ -12,7 +12,7 @@
   - `From` — 직전 stage. 처음 진입 시 `init`.
   - `To` — 인계 후 도착 stage. 마지막 행의 이 값이 현재 stage가 된다.
   - `Plan Hash` — 해당 phase의 모든 `*-PLAN.md` 본문을 합쳐 산출한 sha256 short hash (7자). plan 본문이 변경되면 같은 phase라도 재인계 가능.
-- Stage enum (From / To 컬럼 허용 값): `init`, `gsd-plan`, `superpowers`, `review`, `hookify`.
+- Stage enum (From / To 컬럼 허용 값): `init`, `gsd-plan`, `superpowers`, `review`, `hookify`, `ship`, `complete`.
 - 초기 상태 (= 데이터 행 0개)에서는 stage가 자동으로 `init`으로 판정된다 — `init` 행을 사전 작성하지 않는다.
 
 ## 로그
@@ -21,3 +21,4 @@
 | --------- | ----- | ---- | -- | --------- |
 | 2026-05-16T13:01:11Z | 06-sg-health | init | superpowers | 415be74 |
 | 2026-05-18T06:07:20Z | 07-status-accuracy | superpowers | superpowers | e0dfa4b |
+| 2026-05-18T15:48:55Z | 06-sg-health | superpowers | review | - |

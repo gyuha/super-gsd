@@ -73,7 +73,9 @@ Self-contained. Reads git history to derive BASE_SHA and HEAD_SHA, then delegate
    PHASE_PAD_R=$(printf "%02d" "${PHASE_NUM_R:-0}" 2>/dev/null || echo "${PHASE_NUM_R:-0}")
    PHASE_SLUG_R=$(ls -d .planning/phases/${PHASE_PAD_R}-* 2>/dev/null | head -1 | xargs basename 2>/dev/null)
    [ -z "$PHASE_SLUG_R" ] && PHASE_SLUG_R="${PHASE_NUM_R:-unknown}"
-   echo "| $TS | $PHASE_SLUG_R | superpowers | review | - |" >> "$HANDOFF_FILE"
+   FROM_STAGE_R=$(grep -E '^\| [0-9]{4}-' "$HANDOFF_FILE" | tail -1 | awk -F'|' '{gsub(/ /,"",$5); print $5}')
+   [ -z "$FROM_STAGE_R" ] && FROM_STAGE_R="init"
+   echo "| $TS | $PHASE_SLUG_R | $FROM_STAGE_R | review | - |" >> "$HANDOFF_FILE"
    ```
 
 4. **Invoke Skill** with the structured context.

@@ -35,9 +35,11 @@ def _read_current_phase():
     try:
         with open('.planning/STATE.md', 'r') as f:
             content = f.read()
-        m = re.search(r'^Phase:\s*(\S+)', content, re.MULTILINE)
+        m = re.search(r'^Phase:\s*(.+)', content, re.MULTILINE)
         if m:
-            return m.group(1)
+            raw = m.group(1).strip()
+            num_m = re.match(r'^([0-9]+)', raw)
+            return num_m.group(1) if num_m else raw
         return 'unknown'
     except Exception:
         return 'unknown'

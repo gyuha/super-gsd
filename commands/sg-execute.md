@@ -86,12 +86,17 @@ This command is self-contained — no external workflow files imported. Reads .p
    ```
    If the Plan Hash differs from the recorded one, a new row is permitted (PLAN.md changed since the last handoff).
 
-8. **Append HANDOFF.md row.** Validate the header row exists, then append a new 5-column line:
+7.5. **HANDOFF.md 자동 초기화.** 파일이 없거나 헤더 행이 없으면 파일을 생성한다:
    ```bash
-   if ! grep -q "Timestamp.*Phase.*From.*To.*Plan Hash" .planning/HANDOFF.md; then
-     echo ".planning/HANDOFF.md schema mismatch — header row not found. Aborting append."
-     exit 1
+   HANDOFF_FILE=".planning/HANDOFF.md"
+   if [ ! -f "$HANDOFF_FILE" ] || ! grep -q "Timestamp.*Phase.*From.*To.*Plan Hash" "$HANDOFF_FILE" 2>/dev/null; then
+     mkdir -p "$(dirname "$HANDOFF_FILE")"
+     printf '| Timestamp | Phase | From | To | Plan Hash |\n| --- | --- | --- | --- | --- |\n' > "$HANDOFF_FILE"
    fi
+   ```
+
+8. **Append HANDOFF.md row.** Append a new 5-column line:
+   ```bash
    TS=$(date -u +%Y-%m-%dT%H:%M:%SZ)
    FROM_STAGE=$(grep -E '^\| [0-9]{4}-' .planning/HANDOFF.md | tail -1 | awk -F'|' '{gsub(/ /,"",$5); print $5}')
    if [ -z "$FROM_STAGE" ]; then

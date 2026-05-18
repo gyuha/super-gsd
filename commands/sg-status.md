@@ -82,7 +82,7 @@ Self-contained — reads .planning/HANDOFF.md, .planning/STATE.md, .planning/ROA
        fi
        ;;
      gsd-plan)    NEXT_CMD="/super-gsd:sg-execute" ;;
-     superpowers) NEXT_CMD="/super-gsd:sg-learn" ;;
+     superpowers) NEXT_CMD="/super-gsd:sg-review" ;;
      review)      NEXT_CMD="/super-gsd:sg-learn" ;;
      hookify)
        if [ "$NEXT_PHASE_EXISTS" = "1" ]; then
@@ -108,5 +108,5 @@ Self-contained — reads .planning/HANDOFF.md, .planning/STATE.md, .planning/ROA
 <success_criteria>
 1. The output is exactly five lines (D-29 lock): three non-empty header lines, one blank line, and one non-empty `Next:` line — no extra lines or trailing output.
 2. When `.planning/HANDOFF.md` contains only the header and separator rows (no data rows), `Stage` is `init` and `Last handoff:` is `(none)` (STATUS-02).
-3. The `Stage:` value uses the display enum (`init|gsd|superpowers|hookify`) per D-01/D-02, and the `Next:` command branches on the storage 5-state enum per D-03 — so `review` displays as `superpowers` but still routes to `/super-gsd:sg-learn`.
+3. The `Stage:` value uses the display enum (`init|gsd|superpowers|hookify`) per D-01/D-02, and the `Next:` command branches on the storage 5-state enum per D-03 — so `superpowers` routes to `/super-gsd:sg-review`, and `review` displays as `superpowers` but routes to `/super-gsd:sg-learn`.
 </success_criteria>

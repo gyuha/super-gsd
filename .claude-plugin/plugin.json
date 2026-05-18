@@ -19,7 +19,8 @@
     "./commands/sg-update.md",
     "./commands/sg-quick.md",
     "./commands/sg-complete.md",
-    "./commands/sg-new.md"
+    "./commands/sg-new.md",
+    "./commands/sg-health.md"
   ],
   "homepage": "https://github.com/gyuha/super-gsd",
   "repository": "https://github.com/gyuha/super-gsd",

@@ -22,10 +22,15 @@ Self-contained. Reads .planning/lessons/ directory. Writes nothing.
    fi
    ```
 
-2. **ARGUMENTS로 phase 필터 적용.** $ARGUMENTS가 비어 있지 않으면 해당 phase 번호로 시작하는 파일만 남긴다:
+2. **ARGUMENTS로 phase 필터 적용.** $ARGUMENTS가 비어 있지 않으면 해당 phase 번호로 시작하는 파일만 남긴다. `phase-03`, `03`, `3` 등 다양한 형식을 숫자로 정규화한다:
    ```bash
    if [ -n "$ARGUMENTS" ]; then
-     PADDED=$(printf "%02d" "$ARGUMENTS" 2>/dev/null || echo "$ARGUMENTS")
+     ARG_NUM=$(echo "$ARGUMENTS" | grep -oE '[0-9]+' | head -1)
+     if [ -z "$ARG_NUM" ]; then
+       echo "Invalid phase argument: '$ARGUMENTS'. Use a number (e.g. 3 or 03 or phase-03)."
+       exit 1
+     fi
+     PADDED=$(printf "%02d" "$ARG_NUM")
      FILES=$(echo "$FILES" | grep "/${PADDED}-")
      if [ -z "$FILES" ]; then
        echo "No lessons found for phase $ARGUMENTS."

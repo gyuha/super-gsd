@@ -57,6 +57,21 @@ Self-contained. Reads git history to derive BASE_SHA and HEAD_SHA, then delegate
    fi
    ```
 
+3.5. **HANDOFF.md에 review 행 기록.**
+   ```bash
+   HANDOFF_FILE=".planning/HANDOFF.md"
+   if [ ! -f "$HANDOFF_FILE" ] || ! grep -q "Timestamp.*Phase.*From.*To.*Plan Hash" "$HANDOFF_FILE" 2>/dev/null; then
+     mkdir -p "$(dirname "$HANDOFF_FILE")"
+     printf '| Timestamp | Phase | From | To | Plan Hash |\n| --- | --- | --- | --- | --- |\n' > "$HANDOFF_FILE"
+   fi
+   TS=$(date -u +%Y-%m-%dT%H:%M:%SZ)
+   PHASE_NUM_R=$(grep -E '^Phase: [0-9]+' .planning/STATE.md 2>/dev/null | head -1 | awk '{print $2}')
+   PHASE_PAD_R=$(printf "%02d" "${PHASE_NUM_R:-0}" 2>/dev/null || echo "${PHASE_NUM_R:-0}")
+   PHASE_SLUG_R=$(ls -d .planning/phases/${PHASE_PAD_R}-* 2>/dev/null | head -1 | xargs basename 2>/dev/null)
+   [ -z "$PHASE_SLUG_R" ] && PHASE_SLUG_R="${PHASE_NUM_R:-unknown}"
+   echo "| $TS | $PHASE_SLUG_R | superpowers | review | - |" >> "$HANDOFF_FILE"
+   ```
+
 4. **Invoke Skill** with the structured context.
    **Before calling Skill, substitute the actual resolved values** for `$DESCRIPTION`, `$PLAN_REQUIREMENTS`, `$BASE_SHA`, and `$HEAD_SHA` captured in steps 1–3.
    Session control transfers to the skill; no steps execute after this point:

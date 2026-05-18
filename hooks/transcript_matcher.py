@@ -24,13 +24,15 @@ def detect_signal(transcript_path: str) -> str:
     GSD_PLAN_SIGNALS = [
         'gsd-plan-phase',
         'plan-phase complete',
-        'PLAN.md',
+        'PLANNING COMPLETE',
+        'Plans Created',
+        '/gsd:execute-phase',
     ]
     # Superpowers review 완료 신호 패턴 (HOOK-02, HOOK-04)
     REVIEW_SIGNALS = [
-        'code-reviewer',
-        'requesting-code-review',
         'review complete',
+        'Code Review Complete',
+        'Review Summary',
     ]
     # Hookify 완료 신호 패턴 (LESS-01)
     HOOKIFY_SIGNALS = [

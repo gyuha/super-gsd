@@ -2,14 +2,14 @@
 
 transcript 파일에서 단계 완료 신호를 감지하는 유틸리티.
 
-detect_signal(transcript_path) -> 'gsd-plan-complete' | 'superpowers-review-complete' | 'hookify-complete' | ''
+detect_signal(transcript_path) -> 'gsd-plan-complete' | 'superpowers-implementation-complete' | 'superpowers-review-complete' | 'hookify-complete' | ''
 """
 
 
 def detect_signal(transcript_path: str) -> str:
     """transcript에서 단계 완료 신호를 감지한다.
 
-    Returns: 'gsd-plan-complete' | 'superpowers-review-complete' | 'hookify-complete' | ''
+    Returns: 'gsd-plan-complete' | 'superpowers-implementation-complete' | 'superpowers-review-complete' | 'hookify-complete' | ''
     """
     if not transcript_path:
         return ''
@@ -27,6 +27,14 @@ def detect_signal(transcript_path: str) -> str:
         'PLANNING COMPLETE',
         'Plans Created',
         '/gsd:execute-phase',
+    ]
+    # Superpowers executing-plans 완료 신호 패턴 (P1-2)
+    IMPLEMENTATION_SIGNALS = [
+        'Implementation complete',
+        'implementation complete',
+        'Branch ready for review',
+        'All tasks complete',
+        'finishing-a-development-branch',
     ]
     # Superpowers review 완료 신호 패턴 (HOOK-02, HOOK-04)
     REVIEW_SIGNALS = [
@@ -46,6 +54,8 @@ def detect_signal(transcript_path: str) -> str:
 
     if any(sig in recent for sig in GSD_PLAN_SIGNALS):
         return 'gsd-plan-complete'
+    if any(sig in recent for sig in IMPLEMENTATION_SIGNALS):
+        return 'superpowers-implementation-complete'
     if any(sig in recent for sig in REVIEW_SIGNALS):
         return 'superpowers-review-complete'
     if any(sig in recent for sig in HOOKIFY_SIGNALS):

@@ -103,6 +103,9 @@ def main():
         if signal == 'gsd-plan-complete':
             msg = "GSD plan-phase complete. Run /super-gsd:sg-execute to hand off to Superpowers."
             print(json.dumps({"systemMessage": msg}), file=sys.stdout)
+        elif signal == 'superpowers-implementation-complete':
+            msg = "Superpowers implementation complete. Run /super-gsd:sg-review to request a code review."
+            print(json.dumps({"systemMessage": msg}), file=sys.stdout)
         elif signal == 'superpowers-review-complete':
             msg = "Superpowers review complete. Run /super-gsd:sg-learn to capture lessons with Hookify."
             print(json.dumps({"systemMessage": msg}), file=sys.stdout)

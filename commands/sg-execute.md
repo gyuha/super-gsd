@@ -32,7 +32,7 @@ This command is self-contained — no external workflow files imported. Reads .p
      PHASE_DIR=$(ls -d .planning/phases/${PHASE_NUM}-* 2>/dev/null | head -1)
    fi
    ```
-   If no directory matches, print: `No phase directory matches '<phase>' under .planning/phases/. Run /gsd:discuss-phase first.` and exit.
+   If no directory matches, print: `No phase directory matches '<phase>' under .planning/phases/. Run /super-gsd:sg-plan first.` and exit.
 
 3. **Extract phase meta.** From `.planning/ROADMAP.md`, grep:
    - `### Phase <N>: <Name>` header to get `PHASE_NAME`.

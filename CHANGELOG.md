@@ -2,6 +2,18 @@
 
 All notable changes to `super-gsd` are documented in this file. Format follows [Keep a Changelog](https://keepachangelog.com/).
 
+## [0.0.11] - 2026-05-19
+
+### Fixed
+
+- `commands/sg-status.md` — `hookify` 단계에서 `sg-complete`로 직행하던 라우팅을 `sg-ship → sg-complete` 경로로 수정; `ship`, `complete` stage를 7-state enum에 추가; `ship` stage는 다음 phase 유무에 따라 `sg-plan <next>` 또는 `sg-complete`로 분기; `complete` stage는 `sg-new`로 라우팅
+- `commands/sg-ship.md` — Step 1.5 추가: terminal Skill 호출 직전에 HANDOFF.md에 `ship` row 기록 (sg-status가 정확한 stage 추적 가능)
+- `commands/sg-complete.md` — Step 1.5 추가: terminal Skill 호출 직전에 HANDOFF.md에 `complete` row 기록 (sg-status → `sg-new` 추천 활성화)
+- `commands/sg-execute.md` — 사전 조건 오류 메시지의 `/gsd:discuss-phase` → `/super-gsd:sg-plan`으로 수정 (super-gsd 명령 체계 일관성)
+- `hooks/transcript_matcher.py` — `IMPLEMENTATION_SIGNALS` 추가: Superpowers executing-plans 완료를 `superpowers-implementation-complete` 신호로 감지
+- `hooks/stop_hook.py` — `superpowers-implementation-complete` 분기 추가: 구현 완료 후 `/super-gsd:sg-review` 실행 안내 systemMessage 출력
+- `README.md` — Phase 4 설명에서 "auto-invokes Hookify" 표현 정정: hooks API는 slash command를 자동 실행하지 않고 systemMessage로 제안만 함
+
 ## [0.0.10] - 2026-05-17
 
 ### Added

@@ -26,6 +26,21 @@ Self-contained. Reads .planning/STATE.md for phase resolution when no argument p
    fi
    ```
 
+1.5. **Record HANDOFF.md row (`complete` stage) — before invoking the Skill.**
+   ```bash
+   HANDOFF_FILE=".planning/HANDOFF.md"
+   if [ ! -f "$HANDOFF_FILE" ] || ! grep -q "Timestamp.*Phase.*From.*To.*Plan Hash" "$HANDOFF_FILE" 2>/dev/null; then
+     mkdir -p "$(dirname "$HANDOFF_FILE")"
+     printf '| Timestamp | Phase | From | To | Plan Hash |\n| --- | --- | --- | --- | --- |\n' > "$HANDOFF_FILE"
+   fi
+   TS=$(date -u +%Y-%m-%dT%H:%M:%SZ)
+   FROM_STAGE=$(grep -E '^\| [0-9]{4}-' "$HANDOFF_FILE" | tail -1 | awk -F'|' '{gsub(/ /,"",$5); print $5}')
+   [ -z "$FROM_STAGE" ] && FROM_STAGE="init"
+   PHASE_PAD=$(printf "%02d" "$PHASE_NUM" 2>/dev/null || echo "$PHASE_NUM")
+   PHASE_SLUG=$(ls -d .planning/phases/${PHASE_PAD}-* 2>/dev/null | head -1 | xargs basename 2>/dev/null || echo "${PHASE_PAD}")
+   echo "| $TS | $PHASE_SLUG | $FROM_STAGE | complete | - |" >> "$HANDOFF_FILE"
+   ```
+
 2. **Before calling Skill, replace `$PHASE_NUM` with the actual resolved value** (e.g. `3`).
    Session control transfers to the skill; no steps execute after this point:
    ```
@@ -36,5 +51,6 @@ Self-contained. Reads .planning/STATE.md for phase resolution when no argument p
 <success_criteria>
 1. gsd-complete-milestone Skill is invoked exactly once with the resolved phase number.
 2. $ARGUMENTS is used as phase number when provided.
-3. If phase cannot be resolved, the command exits with the prescribed error message and does not invoke the Skill.
+3. `.planning/HANDOFF.md` gains a `complete` row immediately before the Skill is invoked, enabling `/super-gsd:sg-status` to recommend `/super-gsd:sg-new` after milestone completion.
+4. If phase cannot be resolved, the command exits with the prescribed error message and does not invoke the Skill.
 </success_criteria>

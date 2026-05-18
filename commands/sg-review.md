@@ -57,7 +57,7 @@ Self-contained. Reads git history to derive BASE_SHA and HEAD_SHA, then delegate
    fi
    ```
 
-3.5. **HANDOFF.md에 review 행 기록.**
+3.9. **HANDOFF.md에 review 행 기록.** superpowers:requesting-code-review는 terminal Skill이므로 호출 직전이 기록 가능한 최후 시점이다:
    ```bash
    HANDOFF_FILE=".planning/HANDOFF.md"
    if [ ! -f "$HANDOFF_FILE" ] || ! grep -q "Timestamp.*Phase.*From.*To.*Plan Hash" "$HANDOFF_FILE" 2>/dev/null; then

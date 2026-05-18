@@ -20,9 +20,9 @@ sg-start → sg-explore → sg-plan → sg-execute → sg-review → sg-learn �
 | Command | Maps to | Args | Description |
 |---------|---------|------|-------------|
 | `/super-gsd:sg-start` | `gsd-new-project` | `[project-name]` | Scaffold a new project or milestone |
-| `/super-gsd:sg-explore` | `gsd-explore` | (none) | Map and analyse the codebase |
+| `/super-gsd:sg-explore` | `gsd-map-codebase` | (none) | Map and analyse the codebase |
 | `/super-gsd:sg-plan` | `gsd-discuss-phase` → `gsd-plan-phase` | `[phase]` | Gather context and create a phase plan (2-step chain) |
-| `/super-gsd:sg-execute` | `sg-executing-plans` Skill | `[phase]` | Package phase plan and hand off to Superpowers |
+| `/super-gsd:sg-execute` | `superpowers:executing-plans` Skill | `[phase]` | Package phase plan and hand off to Superpowers |
 | `/super-gsd:sg-review` | `superpowers:requesting-code-review` | (none) | Request a code review via Superpowers |
 | `/super-gsd:sg-learn` | `hookify:hookify` | (none) | Run Hookify retrospective to capture patterns |
 | `/super-gsd:sg-ship` | `gsd-ship` | `[phase]` | Complete and ship the current milestone |
@@ -57,11 +57,11 @@ After completion, the command prints a message guiding you to run `sg-explore` n
 
 **Slash command:** `/super-gsd:sg-explore`
 
-**Maps to:** `gsd-explore`
+**Maps to:** `gsd-map-codebase`
 
 **Arguments:** (none)
 
-**What it does:** Invokes the `gsd-explore` Skill to analyse and map the current codebase. No arguments required — `gsd-explore` uses the current working directory.
+**What it does:** Invokes the `gsd-map-codebase` Skill to analyse and map the current codebase. No arguments required — `gsd-map-codebase` uses the current working directory.
 
 **Example:**
 ```
@@ -102,11 +102,11 @@ After completion, the command prints a message guiding you to run `sg-execute` n
 
 **Slash command:** `/super-gsd:sg-execute`
 
-**Maps to:** `sg-executing-plans` Skill (via Superpowers)
+**Maps to:** `superpowers:executing-plans` Skill
 
 **Arguments:** `[phase]` — optional. Defaults to the current phase from `.planning/STATE.md`.
 
-**What it does:** Packages the current phase's `PLAN.md` bodies, `REQUIREMENTS.md` REQ-ID mapping, and `ROADMAP.md` success criteria into a single Superpowers-ready prompt, then auto-invokes the `sg-executing-plans` Skill. Appends a timestamped row to `.planning/HANDOFF.md`. Re-running on an unchanged plan is idempotent (skips append when plan hash matches).
+**What it does:** Packages the current phase's `PLAN.md` bodies, `REQUIREMENTS.md` REQ-ID mapping, and `ROADMAP.md` success criteria into a single Superpowers-ready prompt, then auto-invokes the `superpowers:executing-plans` Skill. Appends a timestamped row to `.planning/HANDOFF.md`. Re-running on an unchanged plan is idempotent (skips append when plan hash matches).
 
 **Example:**
 ```
@@ -254,7 +254,7 @@ Phase: 3 (sg- Command Set & README)
 Stage: superpowers
 Last handoff: 2026-05-15T14:30:00Z
 
-Next: /hookify
+Next: /super-gsd:sg-review
 ```
 
 ---
@@ -266,7 +266,7 @@ Run the commands in sequence to complete a full GSD → Superpowers → Hookify 
 1. **`sg-start`** — begin a new project or milestone. GSD scaffolds the `.planning/` directory.
 2. **`sg-explore`** — map the codebase. GSD produces an exploration report.
 3. **`sg-plan`** — gather context and create a phase plan. The 2-step chain handles `discuss-phase` and `plan-phase` automatically.
-4. **`sg-execute`** — hand the plan to Superpowers. The packaged prompt is passed to `sg-executing-plans` automatically.
+4. **`sg-execute`** — hand the plan to Superpowers. The packaged prompt is passed to `superpowers:executing-plans` automatically.
 5. **`sg-review`** — request a code review via Superpowers when implementation is complete.
 6. **`sg-learn`** — run a Hookify retrospective after the review. Extracted patterns feed back into the next planning cycle.
 7. **`sg-ship`** — close out the milestone via GSD.

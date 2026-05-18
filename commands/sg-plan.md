@@ -49,6 +49,24 @@ Self-contained. Reads .planning/STATE.md for phase resolution when no argument p
    ```
    Wait for the agent to complete before proceeding. If the agent exits with an error, print: `[sg-plan] gsd-discuss-phase failed. Aborting.` and stop execution. Do not proceed to Step 3.
 
+2.5. **HANDOFF.md에 gsd-plan 행 idempotent 기록.** gsd-plan-phase가 terminal Skill이므로 제어가 반환되지 않는다. 호출 직전이 기록 가능한 최후 시점이다. 동일 phase의 gsd-plan 행이 이미 있으면 skip한다:
+   ```bash
+   HANDOFF_FILE=".planning/HANDOFF.md"
+   if [ ! -f "$HANDOFF_FILE" ] || ! grep -q "Timestamp.*Phase.*From.*To.*Plan Hash" "$HANDOFF_FILE" 2>/dev/null; then
+     mkdir -p "$(dirname "$HANDOFF_FILE")"
+     printf '| Timestamp | Phase | From | To | Plan Hash |\n| --- | --- | --- | --- | --- |\n' > "$HANDOFF_FILE"
+   fi
+   PHASE_PAD_P=$(printf "%02d" "${PHASE_NUM:-0}" 2>/dev/null || echo "${PHASE_NUM:-0}")
+   PHASE_SLUG_P=$(ls -d .planning/phases/${PHASE_PAD_P}-* 2>/dev/null | head -1 | xargs basename 2>/dev/null)
+   [ -z "$PHASE_SLUG_P" ] && PHASE_SLUG_P="${PHASE_NUM:-unknown}"
+   if ! grep -q "| ${PHASE_SLUG_P} |.*| gsd-plan |" "$HANDOFF_FILE" 2>/dev/null; then
+     TS=$(date -u +%Y-%m-%dT%H:%M:%SZ)
+     PREV_STAGE=$(grep -E '^\| [0-9]{4}-' "$HANDOFF_FILE" | tail -1 | awk -F'|' '{gsub(/ /,"",$5); print $5}')
+     [ -z "$PREV_STAGE" ] && PREV_STAGE="init"
+     echo "| $TS | $PHASE_SLUG_P | $PREV_STAGE | gsd-plan | - |" >> "$HANDOFF_FILE"
+   fi
+   ```
+
 3. Print: `[sg-plan] Step 2/2: Creating plan via gsd-plan-phase...`
    **Before calling Skill, replace `$PHASE_NUM` with the actual resolved value** (e.g. `6`).
    Session control transfers to the skill; no steps execute after this point:
@@ -62,6 +80,7 @@ Self-contained. Reads .planning/STATE.md for phase resolution when no argument p
 1. PHASE_NUM이 비어 있으면 명시적 오류 메시지를 출력하고 종료한다.
 2. gsd-discuss-phase는 Agent()로 서브에이전트에서 실행되고, 완료 후 제어가 반환된다.
 3. gsd-discuss-phase Agent가 에러로 종료되면 오류 메시지를 출력하고 Step 3(gsd-plan-phase)을 실행하지 않는다.
-4. gsd-plan-phase Skill is invoked exactly once with the resolved phase number as the terminal action.
-5. Progress messages "[sg-plan] Step 1/2:" and "[sg-plan] Step 2/2:" are printed before each respective invocation.
+4. gsd-plan-phase Skill 호출 직전에 HANDOFF.md에 To=gsd-plan 행이 기록된다 (이미 동일 phase+gsd-plan 조합이 있으면 skip).
+5. gsd-plan-phase Skill is invoked exactly once with the resolved phase number as the terminal action.
+6. Progress messages "[sg-plan] Step 1/2:" and "[sg-plan] Step 2/2:" are printed before each respective invocation.
 </success_criteria>

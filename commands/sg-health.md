@@ -8,7 +8,7 @@ GSD/Superpowers/Hookify 설치 여부, hooks.json 훅 등록, HANDOFF.md 스키�
 </objective>
 
 <execution_context>
-Self-contained — reads ~/.claude/*, hooks/hooks.json, .planning/HANDOFF.md, .planning/STATE.md. Writes nothing.
+Self-contained — reads ~/.claude/*, ${CLAUDE_PLUGIN_ROOT}/hooks/hooks.json, .planning/HANDOFF.md, .planning/STATE.md. Writes nothing.
 </execution_context>
 
 <process>
@@ -44,7 +44,7 @@ Self-contained — reads ~/.claude/*, hooks/hooks.json, .planning/HANDOFF.md, .p
 4. **Stop hook 등록**
 
    ```bash
-   grep -q '"Stop"[[:space:]]*:' hooks/hooks.json && echo OK || echo FAIL
+   grep -q '"Stop"[[:space:]]*:' "${CLAUDE_PLUGIN_ROOT}/hooks/hooks.json" && echo OK || echo FAIL
    ```
 
    - OK → `Stop hook ........ [OK]`
@@ -53,7 +53,7 @@ Self-contained — reads ~/.claude/*, hooks/hooks.json, .planning/HANDOFF.md, .p
 5. **SubagentStop hook 등록**
 
    ```bash
-   grep -q '"SubagentStop"' hooks/hooks.json && echo OK || echo FAIL
+   grep -q '"SubagentStop"' "${CLAUDE_PLUGIN_ROOT}/hooks/hooks.json" && echo OK || echo FAIL
    ```
 
    - OK → `SubagentStop hook  [OK]`

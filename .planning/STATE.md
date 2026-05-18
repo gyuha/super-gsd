@@ -110,6 +110,7 @@ None yet.
 | 260516-kwk | sg-quick: gsd-executor → superpowers:executing-plans 파이프라인 재작성 | 2026-05-16 | 713c1b9 | [260516-kwk-sg-quick-superpowers-execution-mode](./quick/260516-kwk-sg-quick-superpowers-execution-mode/) |
 | 260517-0ao | sg-execute.md 코드 리뷰 버그 수정 | 2026-05-17 | 628750c | [260517-0ao-sg-execute-md](./quick/260517-0ao-sg-execute-md/) |
 | 260517-0lh | sg-quick.md 코드 리뷰 버그 수정 | 2026-05-17 | be57fb9 | [260517-0lh-sg-quick-md](./quick/260517-0lh-sg-quick-md/) |
+| 260518-wvx | 코드 리뷰 지적사항 수정 (P1: HANDOFF 초기화, 상태 머신, SubagentStop; P2: transcript 패턴, lessons 정규화; Extra: plugin.json, COMMANDS.md) | 2026-05-18 | a57e214 | [260518-wvx-code-review-fixes](.planning/quick/260518-wvx-code-review-fixes/) |
 
 ## Deferred Items
 

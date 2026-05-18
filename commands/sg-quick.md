@@ -136,18 +136,13 @@ Self-contained. Combines gsd-sdk initialization, gsd-planner Agent, and superpow
    ' .planning/STATE.md > .planning/STATE.md.tmp && mv .planning/STATE.md.tmp .planning/STATE.md
    ```
 
-8. **Commit PLAN.md, then patch STATE.md with real SHA, then commit STATE.md.**
+8. **Commit PLAN.md and STATE.md together.**
    ```bash
-   # Step 8a: commit PLAN.md first to obtain the real SHA
-   git add "$PLAN_PATH"
-   git commit -m "quick($QUICK_ID): $DESCRIPTION" || { echo "git commit failed for PLAN.md at $PLAN_PATH"; exit 1; }
-   COMMIT_SHA=$(git rev-parse --short HEAD)
-
-   # Step 8b: replace (pending) only in the QUICK_ID row, then commit STATE.md
-   ESCAPED_ID=$(printf '%s' "$QUICK_ID" | sed 's/[]\[^$.*/]/\\&/g')
-   sed -i '' "/^| $ESCAPED_ID |/s/(pending)/$COMMIT_SHA/" .planning/STATE.md
-   git add .planning/STATE.md
-   git commit -m "quick($QUICK_ID): update STATE.md" || { echo "git commit failed for STATE.md"; exit 1; }
+   # Commit PLAN.md and STATE.md (with (pending) SHA) before handing off to Superpowers.
+   # STATE.md keeps (pending) because implementation happens inside Superpowers — the real
+   # implementation commit SHA is not yet known. Superpowers is responsible for the final commit.
+   git add "$PLAN_PATH" .planning/STATE.md
+   git commit -m "quick($QUICK_ID): $DESCRIPTION" || { echo "git commit failed"; exit 1; }
    ```
 
 9. **Invoke Superpowers.** Before invoking, verify `HANDOFF_PROMPT` is non-empty (it must contain the full plan assembled in step 6). If it is empty, print exactly:
@@ -162,6 +157,6 @@ Self-contained. Combines gsd-sdk initialization, gsd-planner Agent, and superpow
 
 <success_criteria>
 1. The full pipeline runs end-to-end: gsd-sdk initialization → gsd-planner Agent writes PLAN.md → superpowers:executing-plans is invoked with the full PLAN.md content.
-2. superpowers:executing-plans Skill is invoked exactly once per run, after STATE.md has been updated.
-3. PLAN.md is committed first (to obtain a real SHA), then STATE.md is committed with the actual commit SHA — two separate commits per run.
+2. superpowers:executing-plans Skill is invoked exactly once per run.
+3. PLAN.md and STATE.md (with (pending) SHA) are committed in a single commit before Superpowers is invoked. STATE.md is not patched with a plan commit SHA that misrepresents the implementation state.
 </success_criteria>

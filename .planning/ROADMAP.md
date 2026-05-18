@@ -86,7 +86,9 @@ Plans:
   1. `sg-status` 실행 시 HANDOFF.md 마지막 데이터 행에서 stage(gsd/superpowers/hookify)를 정확히 읽어 표시한다
   2. HANDOFF.md가 없거나 데이터 행이 없을 때 `sg-status`가 오류 없이 `init` 상태를 표시한다
   3. STATE.md에 `Phase: Not started`처럼 프로즈 텍스트가 있어도 `sg-status`가 전체 값을 정확하게 표시한다 (`Not`만 반환하는 버그 제거)
-**Plans**: TBD
+**Plans**: 1 plan
+Plans:
+- [ ] 07-01-PLAN.md — sg-status bash 블록 갱신: display enum 매핑(D-01/D-02) + STATE.md Phase 라인 풀 캡처(D-04/D-05/D-06) + scenario 6 fallback
 
 ### Phase 8: Session Restore
 **Goal**: 사용자가 `sg-start` 실행 시 기존 세션을 감지하고 중단 지점에서 재개할 수 있다
@@ -110,5 +112,5 @@ Plans:
 | 4. Auto-Advance Hooks | — | Done | 2026-05-16 |
 | 5. Lessons Loop | — | Done | 2026-05-16 |
 | 6. sg-health | 0/2 | Not started | — |
-| 7. Status Accuracy | 0/? | Not started | — |
+| 7. Status Accuracy | 0/1 | Not started | — |
 | 8. Session Restore | 0/? | Not started | — |

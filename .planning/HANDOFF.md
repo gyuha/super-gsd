@@ -22,3 +22,4 @@
 | 2026-05-16T13:01:11Z | 06-sg-health | init | superpowers | 415be74 |
 | 2026-05-18T06:07:20Z | 07-status-accuracy | superpowers | superpowers | e0dfa4b |
 | 2026-05-18T15:48:55Z | 06-sg-health | superpowers | review | - |
+| 2026-05-18T16:01:27Z | 06-sg-health | review | hookify | - |

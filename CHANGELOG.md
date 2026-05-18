@@ -2,6 +2,12 @@
 
 All notable changes to `super-gsd` are documented in this file. Format follows [Keep a Changelog](https://keepachangelog.com/).
 
+## [0.0.13] - 2026-05-19
+
+### Changed
+
+- `.planning/HANDOFF.md` — sg-learn 완료 후 hookify stage 상태 기록 (Phase 6 sg-health 회고 완료)
+
 ## [0.0.12] - 2026-05-19
 
 ### Fixed

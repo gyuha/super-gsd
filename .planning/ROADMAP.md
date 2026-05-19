@@ -99,7 +99,9 @@ Plans:
   2. 기존 세션이 있으면 milestone, stage, 마지막 활동 시각을 표시하고 재개/새 시작을 질의한다
   3. 재개를 선택하면 gsd-new-project 호출을 건너뛰고 감지된 단계부터 계속 진행한다
   4. 새 시작을 선택해도 HANDOFF.md는 삭제되지 않고 유지된다 (append-only 감사 로그)
-**Plans**: TBD
+**Plans**: 1 plan
+Plans:
+- [ ] 08-01-PLAN.md — sg-start.md `<process>` 확장: STATE.md/HANDOFF.md 세션 감지 + 5-line 표시 + AskUserQuestion 3-옵션 분기 (Resume/Start new milestone/Cancel)
 **UI hint**: no
 
 ## Progress
@@ -113,4 +115,4 @@ Plans:
 | 5. Lessons Loop | — | Done | 2026-05-16 |
 | 6. sg-health | 0/2 | Not started | — |
 | 7. Status Accuracy | 0/1 | Not started | — |
-| 8. Session Restore | 0/? | Not started | — |
+| 8. Session Restore | 0/1 | Not started | — |

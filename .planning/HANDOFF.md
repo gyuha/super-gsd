@@ -24,3 +24,7 @@
 | 2026-05-18T15:48:55Z | 06-sg-health | superpowers | review | - |
 | 2026-05-18T16:01:27Z | 06-sg-health | review | hookify | - |
 | 2026-05-18T16:08:59Z | 06-sg-health | hookify | complete | - |
+| 2026-05-18T14:50:50Z | 07-status-accuracy | superpowers | review | - |
+| 2026-05-18T15:27:34Z | 07-status-accuracy | review | hookify | - |
+| 2026-05-19T15:13:29Z | 07-status-accuracy | hookify | complete | - |
+| 2026-05-19T15:44:46Z | 08-session-restore | complete | gsd-plan | - |

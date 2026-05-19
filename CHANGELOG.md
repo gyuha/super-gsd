@@ -2,6 +2,18 @@
 
 All notable changes to `super-gsd` are documented in this file. Format follows [Keep a Changelog](https://keepachangelog.com/).
 
+## [0.0.15] - 2026-05-20
+
+### Changed
+
+- v1.1 Reliability milestone archived (`8f59177`): `.planning/milestones/v1.1-ROADMAP.md` + `v1.1-REQUIREMENTS.md` 생성, Phase 06/07/08 디렉터리를 `.planning/milestones/v1.1-phases/`로 이동. ROADMAP.md는 milestone 한 줄 entry로 축약, REQUIREMENTS.md 삭제(다음 milestone에서 fresh 생성), PROJECT.md `Current State`를 v1.1 shipped로 갱신, MILESTONES.md v1.1 섹션 추가, STATE.md `## Deferred Items`에 v1.1 close block(9 quick-task SUMMARY 누락 + Phase 8 Task 2 manual verify) 기록.
+- `.planning/ROADMAP.md` (`083a6d6`): Phase 6/7/8 체크박스 + Progress 표를 완료 상태로 반영.
+- `.planning/HANDOFF.md` (`2eee726`): Phase 8 sg-ship hookify→ship 전이 행 기록.
+
+### Tagged
+
+- `v1.1` git tag 생성: super-gsd v1.1 Reliability — sg-health 자기진단 + sg-status 정확도 + sg-start 세션 복원.
+
 ## [0.0.14] - 2026-05-20
 
 ### Added

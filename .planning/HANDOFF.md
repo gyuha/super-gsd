@@ -29,3 +29,4 @@
 | 2026-05-19T15:13:29Z | 07-status-accuracy | hookify | complete | - |
 | 2026-05-19T15:44:46Z | 08-session-restore | complete | gsd-plan | - |
 | 2026-05-19T15:55:40Z | 08-session-restore | gsd-plan | superpowers | b0ec14e |
+| 2026-05-19T16:04:54Z | 08-session-restore | review | hookify | - |

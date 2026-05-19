@@ -1,5 +1,40 @@
 # Milestones: super-gsd
 
+## v1.1 Reliability
+
+**Shipped:** 2026-05-20
+**Phases:** 3 (06–08)
+**Plans:** 4
+**Commits:** 100 (since v1.0 tag)
+**Files:** 105 changed, +7,724 / -202 lines
+**Timeline:** 2026-05-16 → 2026-05-20 (5 days)
+**Known deferred items at close:** 10 (9 quick-task summaries + Phase 08 Task 2 manual verify — see STATE.md `## Deferred Items` v1.1 block)
+
+### Delivered
+
+GSD → Superpowers → Hookify orchestration의 안정성·자기진단·세션 복원 강화. sg-health(자기진단), sg-status(정확도), sg-start(세션 복원) 세 축을 한 milestone에 묶어 사용자가 며칠 끊겼다 돌아와도 워크플로우가 자기 위치를 잃지 않도록 했다. 모든 phase는 `commands/sg-*.md` 단일 파일 수정 위주로 진행 (Phase 6 D-04 + Phase 7 D-08 lock — bash-only, no helper modules).
+
+### Key Accomplishments
+
+1. **sg-health 자기진단** — GSD/Superpowers/Hookify 설치 여부, hooks.json Stop/SubagentStop 등록, HANDOFF.md 5컬럼 스키마 무결성을 `[OK]`/`[WARN]`/`[FAIL]`로 한 번에 진단 (read-only)
+2. **Storage vs Display enum 분리** — sg-status가 7-state storage routing과 4-state display를 분리해 review→sg-learn 분기를 정확히 표시
+3. **STATE.md `Phase:` 라인 single source of truth** — `\S+` 토큰 단일 캡처 버그 폐기, BEGIN/END 주석 demarcate로 sg-start 인라인 복제 가능 (Phase 7 D-07 lock)
+4. **sg-start 세션 복원** — STATE.md/HANDOFF.md 자동 감지 + Resume/Start new milestone/Cancel 3-옵션 분기, SESS-04 append-only HANDOFF 자연 충족
+5. **7-state 워크플로우 라우팅** — sg-ship → next phase 또는 sg-complete, complete → sg-new 분기를 sg-status가 정확히 추천
+6. **transcript_matcher 신호 정확도** — IMPLEMENTATION_SIGNALS 좁힘, HOOKIFY_SIGNALS의 `'hookify'` 제거로 false positive 차단
+
+### Archive
+
+- `.planning/milestones/v1.1-ROADMAP.md`
+- `.planning/milestones/v1.1-REQUIREMENTS.md`
+- `.planning/milestones/v1.1-phases/` (06-sg-health, 07-status-accuracy, 08-session-restore)
+
+---
+
+*See [v1.1-ROADMAP.md](milestones/v1.1-ROADMAP.md) for full phase details.*
+
+---
+
 ## v1.0 MVP
 
 **Shipped:** 2026-05-16  

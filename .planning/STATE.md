@@ -125,6 +125,23 @@ Items acknowledged and deferred at milestone close on 2026-05-16:
 | quick_task | 260516-2sw-readme-md-gsd-superpowers-hookify | missing | 2026-05-16 |
 | quick_task | 260516-dsz-sg-update-gsd-superpowers-hookify | missing | 2026-05-16 |
 
+Items acknowledged and deferred at milestone close on 2026-05-20 (v1.1):
+
+| Category | Item | Status | Deferred At |
+|----------|------|--------|-------------|
+| quick_task | 260516-2qm-readme-md | missing | 2026-05-20 |
+| quick_task | 260516-2sw-readme-md-gsd-superpowers-hookify | missing | 2026-05-20 |
+| quick_task | 260516-dsz-sg-update-gsd-superpowers-hookify | missing | 2026-05-20 |
+| quick_task | 260516-kqe-sg-complete-and-sg-new-command-mapping | missing | 2026-05-20 |
+| quick_task | 260516-kwk-sg-quick-superpowers-execution-mode | missing | 2026-05-20 |
+| quick_task | 260517-0ao-sg-execute-md | missing | 2026-05-20 |
+| quick_task | 260517-0lh-sg-quick-md | missing | 2026-05-20 |
+| quick_task | 260518-wvx-code-review-fixes | missing | 2026-05-20 |
+| quick_task | 260518-x6n-state-transition-timing-fixes | missing | 2026-05-20 |
+| verification | Phase 08 Task 2: 7-scenario manual regression | deferred | 2026-05-20 |
+
+note: 260516/260517 items overlap with v1.0 deferred list above — re-deferred at v1.1 since SUMMARY.md was still missing at close. v1.2 milestone start may include a cleanup phase to retroactively write summaries for these quick-tasks (work itself is in commit history).
+
 ## Session Continuity
 
 Last session: 2026-05-19T15:43:38.392Z

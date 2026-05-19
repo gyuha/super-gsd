@@ -2,6 +2,22 @@
 
 All notable changes to `super-gsd` are documented in this file. Format follows [Keep a Changelog](https://keepachangelog.com/).
 
+## [0.0.14] - 2026-05-20
+
+### Added
+
+- `commands/sg-start.md` — 세션 감지 + Resume/Start new milestone/Cancel 3-옵션 분기 추가. STATE.md `Phase:` 라인 + HANDOFF.md 마지막 행을 읽어 기존 세션 감지(D-01: STATE.md 존재 + `^Phase:` 캡처 단일 트리거); 감지 시 5-라인(Milestone / Phase / Stage / Last activity / Next) emit 후 AskUserQuestion으로 3-옵션 분기. Resume = emit-only 종료(자동 Skill invoke 없음), Start new milestone = `Skill(gsd-new-milestone, args="")`(빈 문자열 lock), Cancel = `Cancelled. No changes made.` 단일 라인. STATE.md 미감지 시 기존 `Skill(gsd-new-project, args="$ARGUMENTS")` 동작 그대로 유지(D-17 후방 호환). 세 옵션 모두 HANDOFF.md read-only — SESS-04 append-only 자연 충족.
+
+### Changed
+
+- `.planning/STATE.md` — Phase 8 (session-restore) 진행 반영, milestone v1.1 progress 3/8 phases (50%), `Phase:` 라인 stale 해소(Phase 6 → 8 갱신).
+- `.planning/HANDOFF.md` — Phase 8 lifecycle 5행(complete→gsd-plan, gsd-plan→superpowers, review→hookify, hookify→ship) + Phase 7 누락된 review/hookify/complete 3행 보강.
+- `.planning/phases/08-session-restore/` — CONTEXT.md(D-01~D-17 17개 lock), 08-01-PLAN.md(2 task, 12 acceptance, SESS-01~04 mapping), 08-01-SUMMARY.md 추가.
+
+### Fixed
+
+- `commands/sg-start.md` — Phase 7 D-07이 사전 lock한 인라인 복제 계약 이행: `commands/sg-status.md` L17-21(Phase 파싱) / L26-48(HANDOFF 마지막 행 + Stage 매핑) / L62-74(NEXT_PHASE) / L78-99(Next case) 4개 블록을 글자 그대로 인라인. drift 시 양쪽 동시 수정 lock.
+
 ## [0.0.13] - 2026-05-19
 
 ### Changed

@@ -12,9 +12,9 @@
 - [x] **Phase 3: sg- Command Set** - 9개 sg- 명령 전체 + README/COMMANDS.md
 - [x] **Phase 4: Auto-Advance Hooks** - Stop/SubagentStop 훅 + transcript_matcher.py
 - [x] **Phase 5: Lessons Loop** - Hookify 완료 시 lessons 자동 저장 + sg-plan Step 0 재표시
-- [ ] **Phase 6: sg-health** - GSD/Superpowers/Hookify 설치 + 훅 등록 + HANDOFF.md 스키마 종합 진단 + transcript_matcher.py 패치
-- [ ] **Phase 7: Status Accuracy** - HANDOFF.md 파싱으로 현재 단계 정확 감지 + STATE.md Phase 파싱 버그 수정
-- [ ] **Phase 8: Session Restore** - sg-start에서 기존 세션 감지 및 재개 프롬프트
+- [x] **Phase 6: sg-health** - GSD/Superpowers/Hookify 설치 + 훅 등록 + HANDOFF.md 스키마 종합 진단 + transcript_matcher.py 패치
+- [x] **Phase 7: Status Accuracy** - HANDOFF.md 파싱으로 현재 단계 정확 감지 + STATE.md Phase 파싱 버그 수정
+- [x] **Phase 8: Session Restore** - sg-start에서 기존 세션 감지 및 재개 프롬프트
 
 ## Phase Details
 
@@ -75,8 +75,8 @@
   5. sg-health 출력 중 transcript_matcher.py가 오발동하지 않는다 (`'hookify'` 패턴 → `'Retrospective complete'` 교체)
 **Plans**: 2 plans
 Plans:
-- [ ] 06-01-PLAN.md — sg-health 진단 명령 파일 생성 (commands/sg-health.md)
-- [ ] 06-02-PLAN.md — transcript_matcher.py HOOKIFY_SIGNALS 패치 ('hookify' 제거)
+- [x] 06-01-PLAN.md — sg-health 진단 명령 파일 생성 (commands/sg-health.md)
+- [x] 06-02-PLAN.md — transcript_matcher.py HOOKIFY_SIGNALS 패치 ('hookify' 제거)
 
 ### Phase 7: Status Accuracy
 **Goal**: `sg-status`가 HANDOFF.md를 파싱하여 현재 workflow 단계를 정확하게 표시한다
@@ -88,7 +88,7 @@ Plans:
   3. STATE.md에 `Phase: Not started`처럼 프로즈 텍스트가 있어도 `sg-status`가 전체 값을 정확하게 표시한다 (`Not`만 반환하는 버그 제거)
 **Plans**: 1 plan
 Plans:
-- [ ] 07-01-PLAN.md — sg-status bash 블록 갱신: display enum 매핑(D-01/D-02) + STATE.md Phase 라인 풀 캡처(D-04/D-05/D-06) + scenario 6 fallback
+- [x] 07-01-PLAN.md — sg-status bash 블록 갱신: display enum 매핑(D-01/D-02) + STATE.md Phase 라인 풀 캡처(D-04/D-05/D-06) + scenario 6 fallback
 
 ### Phase 8: Session Restore
 **Goal**: 사용자가 `sg-start` 실행 시 기존 세션을 감지하고 중단 지점에서 재개할 수 있다
@@ -101,7 +101,7 @@ Plans:
   4. 새 시작을 선택해도 HANDOFF.md는 삭제되지 않고 유지된다 (append-only 감사 로그)
 **Plans**: 1 plan
 Plans:
-- [ ] 08-01-PLAN.md — sg-start.md `<process>` 확장: STATE.md/HANDOFF.md 세션 감지 + 5-line 표시 + AskUserQuestion 3-옵션 분기 (Resume/Start new milestone/Cancel)
+- [x] 08-01-PLAN.md — sg-start.md `<process>` 확장: STATE.md/HANDOFF.md 세션 감지 + 5-line 표시 + AskUserQuestion 3-옵션 분기 (Resume/Start new milestone/Cancel)
 **UI hint**: no
 
 ## Progress
@@ -113,6 +113,6 @@ Plans:
 | 3. sg- Command Set | — | Done | 2026-05-16 |
 | 4. Auto-Advance Hooks | — | Done | 2026-05-16 |
 | 5. Lessons Loop | — | Done | 2026-05-16 |
-| 6. sg-health | 0/2 | Not started | — |
-| 7. Status Accuracy | 0/1 | Not started | — |
-| 8. Session Restore | 0/1 | Not started | — |
+| 6. sg-health | 2/2 | Done | 2026-05-18 |
+| 7. Status Accuracy | 1/1 | Done | 2026-05-19 |
+| 8. Session Restore | 1/1 | Done | 2026-05-20 |

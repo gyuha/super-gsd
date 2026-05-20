@@ -61,7 +61,12 @@ if [ "$CLAUDE_AVAILABLE" = "true" ]; then
     claude plugin install superpowers@claude-plugins-official 2>&1
     PLUGIN_EC=$?
     if [ "$PLUGIN_EC" -eq 0 ]; then
-      SUPERPOWERS_STATUS="updated"
+      SUPERPOWERS_VER=$(claude plugin list 2>&1 | grep -i 'superpowers' | grep -oE '[0-9]+\.[0-9]+\.[0-9]+' | head -1)
+      if [ -n "$SUPERPOWERS_VER" ]; then
+        SUPERPOWERS_STATUS="updated (${SUPERPOWERS_VER})"
+      else
+        SUPERPOWERS_STATUS="updated"
+      fi
     else
       SUPERPOWERS_STATUS="failed (exit ${PLUGIN_EC})"
     fi
@@ -70,7 +75,12 @@ if [ "$CLAUDE_AVAILABLE" = "true" ]; then
     claude plugin install superpowers@claude-plugins-official 2>&1
     PLUGIN_EC=$?
     if [ "$PLUGIN_EC" -eq 0 ]; then
-      SUPERPOWERS_STATUS="installed"
+      SUPERPOWERS_VER=$(claude plugin list 2>&1 | grep -i 'superpowers' | grep -oE '[0-9]+\.[0-9]+\.[0-9]+' | head -1)
+      if [ -n "$SUPERPOWERS_VER" ]; then
+        SUPERPOWERS_STATUS="installed (${SUPERPOWERS_VER})"
+      else
+        SUPERPOWERS_STATUS="installed"
+      fi
     else
       SUPERPOWERS_STATUS="failed (exit ${PLUGIN_EC})"
     fi
@@ -86,7 +96,12 @@ if [ "$CLAUDE_AVAILABLE" = "true" ]; then
     claude plugin install super-gsd@super-gsd 2>&1
     PLUGIN_EC=$?
     if [ "$PLUGIN_EC" -eq 0 ]; then
-      SUPERGSD_STATUS="updated"
+      SUPERGSD_VER=$(claude plugin list 2>&1 | grep -i 'super-gsd' | grep -oE '[0-9]+\.[0-9]+\.[0-9]+' | head -1)
+      if [ -n "$SUPERGSD_VER" ]; then
+        SUPERGSD_STATUS="updated (${SUPERGSD_VER})"
+      else
+        SUPERGSD_STATUS="updated"
+      fi
     else
       SUPERGSD_STATUS="failed (exit ${PLUGIN_EC})"
     fi
@@ -95,7 +110,12 @@ if [ "$CLAUDE_AVAILABLE" = "true" ]; then
     claude plugin install super-gsd@super-gsd 2>&1
     PLUGIN_EC=$?
     if [ "$PLUGIN_EC" -eq 0 ]; then
-      SUPERGSD_STATUS="installed"
+      SUPERGSD_VER=$(claude plugin list 2>&1 | grep -i 'super-gsd' | grep -oE '[0-9]+\.[0-9]+\.[0-9]+' | head -1)
+      if [ -n "$SUPERGSD_VER" ]; then
+        SUPERGSD_STATUS="installed (${SUPERGSD_VER})"
+      else
+        SUPERGSD_STATUS="installed"
+      fi
     else
       SUPERGSD_STATUS="failed (exit ${PLUGIN_EC})"
     fi

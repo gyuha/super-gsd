@@ -1,17 +1,17 @@
 ---
 gsd_state_version: 1.0
-milestone: v1.1
-milestone_name: Reliability
-status: executing
-stopped_at: Phase 8 implementation complete (Task 2 manual verify deferred)
-last_updated: "2026-05-20T01:18:00.000Z"
-last_activity: 2026-05-20 -- Phase 08 sg-start session-restore implemented
+milestone: v1.2
+milestone_name: Self-Contained Retrospection
+status: ready
+stopped_at: v1.2 milestone bootstrapped (Phase 9 ready to plan)
+last_updated: "2026-05-20T10:50:00.000Z"
+last_activity: 2026-05-20 -- v1.2 milestone bootstrapped (REQUIREMENTS + ROADMAP)
 progress:
-  total_phases: 8
-  completed_phases: 3
-  total_plans: 4
-  completed_plans: 4
-  percent: 50
+  total_phases: 5
+  completed_phases: 0
+  total_plans: 0
+  completed_plans: 0
+  percent: 0
 ---
 
 # Project State
@@ -21,14 +21,14 @@ progress:
 See: .planning/PROJECT.md (updated 2026-05-16)
 
 **Core value:** GSD → Superpowers → Hookify 단계 전환을 자동화하여 학습 루프가 끊기지 않도록 한다
-**Current focus:** v1.1 Reliability — Phase 8 implementation complete, manual verify pending before ship
+**Current focus:** v1.2 Self-Contained Retrospection — 내장 retro skill로 hookify 의존성 제거
 
 ## Current Position
 
-Phase: 8 (session-restore) — Implementation complete; Task 2 manual verify deferred
-Plan: 08-01-PLAN.md
-Status: Ready to ship pending Task 2 manual verification
-Last activity: 2026-05-20 -- Phase 08 sg-start session-restore implemented
+Phase: 9 (sg-retro Skill scaffold) — Not started
+Plan: —
+Status: Ready to plan
+Last activity: 2026-05-20 -- v1.2 milestone bootstrapped (REQUIREMENTS + ROADMAP)
 
 ## Performance Metrics
 

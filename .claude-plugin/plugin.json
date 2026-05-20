@@ -22,6 +22,7 @@
     "./commands/sg-new.md",
     "./commands/sg-health.md"
   ],
+  "skills": "./skills/",
   "homepage": "https://github.com/gyuha/super-gsd",
   "repository": "https://github.com/gyuha/super-gsd",
   "license": "MIT",

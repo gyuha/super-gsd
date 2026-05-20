@@ -166,7 +166,7 @@ def archive_mode(args):
             expanded.append(p)
 
     if not expanded:
-        print('[warn] no lessons files found')
+        print('[warn] no lessons files found', file=sys.stderr)
         sys.exit(0)
 
     milestone_ver = args.milestone

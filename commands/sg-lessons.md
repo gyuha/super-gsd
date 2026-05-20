@@ -15,7 +15,7 @@ Self-contained. Reads .planning/lessons/ directory. Writes nothing.
 <process>
 0. **milestone 필터 확인.** $ARGUMENTS가 `--milestone=vX.Y` 또는 `milestone=vX.Y` 형식이면 milestone 아카이브 파일을 직접 읽는다:
    ```bash
-   MILESTONE_ARG=$(echo "$ARGUMENTS" | grep -oE '(?:--)?milestone=([^ ]+)' | head -1 | sed 's/.*=//')
+   MILESTONE_ARG=$(echo "$ARGUMENTS" | grep -oE 'milestone=[^ ]+' | head -1 | sed 's/milestone=//')
    if [ -n "$MILESTONE_ARG" ]; then
      MILESTONE_FILE=".planning/milestones/${MILESTONE_ARG}-LESSONS.md"
      if [ ! -f "$MILESTONE_FILE" ]; then

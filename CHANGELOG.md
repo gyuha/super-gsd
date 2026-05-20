@@ -2,6 +2,17 @@
 
 All notable changes to `super-gsd` are documented in this file. Format follows [Keep a Changelog](https://keepachangelog.com/).
 
+## [0.0.17] - 2026-05-20
+
+### Added
+
+- `skills/sg-retro/SKILL.md`: Phase 10 — 6개 lens(SSC/4Ls/DSPM + Sailboat/Five Whys/Conversation Analyzer), multiSelect:true 다중 선택, LENS_CODES_ARRAY 기반 순차 실행, 내장 transcript analyzer(hookify 의존 없이 4 카테고리 추출), ANALYZE_LENS_RAN auto-suggest guard.
+- 4개 hookify guard 규칙 추가: `warn-shell-empty-array-no-guard`, `warn-flag-init-inside-consumer-block`, `warn-plain-text-wait-for-answer`, `warn-awk-field-extraction-macos`.
+
+### Fixed
+
+- `skills/sg-retro/SKILL.md` review fixes (F-01/02/04/06): multiSelect 빈 응답 guard, ANALYZE_LENS_RAN 루프 전 초기화, LENS_CODE 빈 경우 EXTRA_LENS_CODES fallback, Five Whys 모든 Why 턴에 AskUserQuestion 사용.
+
 ## [0.0.16] - 2026-05-20
 
 ### Added

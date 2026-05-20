@@ -39,3 +39,6 @@
 | 2026-05-20T13:39:37Z | 09-sg-retro-skill-scaffold | hookify | ship | - |
 | 2026-05-20T13:39:37Z | 09-sg-retro-skill-scaffold | ship | complete | - |
 | 2026-05-20T13:47:16Z | 10-conversation-analyzer-lens | complete | gsd-plan | - |
+| 2026-05-20T13:55:41Z | 10-conversation-analyzer-lens | complete | superpowers | 132a52e |
+| 2026-05-20T14:06:54Z | 10-conversation-analyzer-lens | superpowers | review | - |
+| 2026-05-20T14:11:17Z | 10-conversation-analyzer-lens | review | hookify | - |

@@ -53,3 +53,6 @@
 | 2026-05-20T15:03:57Z | 13-sg-learn-routing | hookify | gsd-plan | - |
 | 2026-05-20T15:13:53Z | 13-sg-learn-routing | gsd-plan | review | - |
 | 2026-05-20T15:13:53Z | 13-sg-learn-routing | review | hookify | - |
+| 2026-05-20T15:14:27Z | 13-sg-learn-routing | hookify | ship | - |
+| 2026-05-20T15:14:27Z | 13-sg-learn-routing | ship | complete | - |
+| 2026-05-20T15:15:27Z | 13-sg-learn-routing | init | complete | - |

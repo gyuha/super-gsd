@@ -2,9 +2,9 @@
 gsd_state_version: 1.0
 milestone: v1.2
 milestone_name: Self-Contained Retrospection
-status: ready
-stopped_at: v1.2 milestone bootstrapped (Phase 9 ready to plan)
-last_updated: "2026-05-20T10:50:00.000Z"
+status: planning
+stopped_at: Phase 9 context gathered
+last_updated: "2026-05-20T12:21:35.156Z"
 last_activity: 2026-05-20 -- v1.2 milestone bootstrapped (REQUIREMENTS + ROADMAP)
 progress:
   total_phases: 5
@@ -144,6 +144,6 @@ note: 260516/260517 items overlap with v1.0 deferred list above — re-deferred 
 
 ## Session Continuity
 
-Last session: 2026-05-19T15:43:38.392Z
-Stopped at: Phase 8 context gathered
-Resume file: .planning/phases/08-session-restore/08-CONTEXT.md
+Last session: 2026-05-20T12:21:35.151Z
+Stopped at: Phase 9 context gathered
+Resume file: .planning/phases/09-sg-retro-skill-scaffold/09-CONTEXT.md

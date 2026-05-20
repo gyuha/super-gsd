@@ -26,7 +26,7 @@ Self-contained. Delegates entirely to super-gsd:sg-retro Skill (terminal action)
    [ -z "$PHASE_SLUG_L" ] && PHASE_SLUG_L="${PHASE_NUM_L:-unknown}"
    FROM_STAGE_L=$(grep -E '^\| [0-9]{4}-' "$HANDOFF_FILE" | tail -1 | awk -F'|' '{gsub(/ /,"",$5); print $5}')
    [ -z "$FROM_STAGE_L" ] && FROM_STAGE_L="init"
-   echo "| $TS | $PHASE_SLUG_L | $FROM_STAGE_L | hookify | - |" >> "$HANDOFF_FILE"
+   echo "| $TS | $PHASE_SLUG_L | $FROM_STAGE_L | sg-retro | - |" >> "$HANDOFF_FILE"
    ```
 
 1. Session control transfers to the skill; no steps execute after this point:

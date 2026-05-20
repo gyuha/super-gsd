@@ -112,8 +112,8 @@ None yet.
 | 260517-0lh | sg-quick.md 코드 리뷰 버그 수정 | 2026-05-17 | be57fb9 | [260517-0lh-sg-quick-md](./quick/260517-0lh-sg-quick-md/) |
 | 260518-wvx | 코드 리뷰 지적사항 수정 (P1: HANDOFF 초기화, 상태 머신, SubagentStop; P2: transcript 패턴, lessons 정규화; Extra: plugin.json, COMMANDS.md) | 2026-05-18 | a57e214 | [260518-wvx-code-review-fixes](.planning/quick/260518-wvx-code-review-fixes/) |
 | 260518-x6n | 상태 전이 타이밍 버그 5건 수정 (P1: sg-plan/sg-review/sg-learn 기록 시점; P2: sg-health 경로; P3: COMMANDS.md stale 이름) | 2026-05-18 | 4985921 | [260518-x6n-state-transition-timing-fixes](.planning/quick/260518-x6n-state-transition-timing-fixes/) |
-| 260521-0kt | hookify의 종속성을 모두 제거 해 줘. update와 도움말도. | 2026-05-21 | (pending) | [260521-0kt-hookify-update](./quick/260521-0kt-hookify-update/) |
-| 260521-9bw | sg-update.md: 각 도구 버전 출력 추가 | 2026-05-21 | (pending) | [260521-9bw-sg-update-md](./quick/260521-9bw-sg-update-md/) |
+| 260521-0kt | hookify의 종속성을 모두 제거 해 줘. update와 도움말도. | 2026-05-21 | 70df4d3 | [260521-0kt-hookify-update](./quick/260521-0kt-hookify-update/) |
+| 260521-9bw | sg-update.md: 각 도구 버전 출력 추가 | 2026-05-21 | 6c18cb9 | [260521-9bw-sg-update-md](./quick/260521-9bw-sg-update-md/) |
 
 ## Deferred Items
 

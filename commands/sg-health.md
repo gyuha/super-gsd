@@ -1,10 +1,10 @@
 ---
 name: sg-health
-description: Diagnose super-gsd installation status — GSD, Superpowers, Hookify, hooks, HANDOFF.md, STATE.md
+description: Diagnose super-gsd installation status — GSD, Superpowers, Hookify (optional), hooks, HANDOFF.md, STATE.md
 ---
 
 <objective>
-GSD/Superpowers/Hookify 설치 여부, hooks.json 훅 등록, HANDOFF.md 스키마, STATE.md frontmatter를 라인별 [OK]/[WARN]/[FAIL]로 진단하고 요약 줄로 끝내는 읽기 전용 명령이다. 파일을 생성하거나 수정하지 않는다.
+GSD/Superpowers 설치 여부, Hookify 설치 여부(선택), hooks.json 훅 등록, HANDOFF.md 스키마, STATE.md frontmatter를 라인별 [OK]/[WARN]/[FAIL]/[OPTIONAL]로 진단하고 요약 줄로 끝내는 읽기 전용 명령이다. 파일을 생성하거나 수정하지 않는다.
 </objective>
 
 <execution_context>
@@ -101,7 +101,7 @@ Self-contained — reads ~/.claude/*, ${CLAUDE_PLUGIN_ROOT}/hooks/hooks.json, .p
 
 <success_criteria>
 1. 7개 진단 항목(GSD, Superpowers, Hookify, Stop hook, SubagentStop hook, HANDOFF.md, STATE.md)이 모두 출력된다.
-2. 각 항목은 D-05 형식(`GSD .............. [OK]` 등 점 패딩 + `[OK]`/`[WARN]`/`[FAIL]`)으로 출력된다.
+2. 각 항목은 D-05 형식(`GSD .............. [OK]` 등 점 패딩 + `[OK]`/`[WARN]`/`[FAIL]`/`[OPTIONAL]`)으로 출력된다.
 3. 마지막에 빈 줄 + 요약 줄이 출력된다.
 4. 파일을 생성하거나 수정하지 않는다 (HEALTH-05).
 </success_criteria>

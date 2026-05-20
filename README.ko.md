@@ -32,13 +32,13 @@ sg-new/sg-start → sg-explore → sg-plan → sg-execute → sg-review → sg-l
 | `/super-gsd:sg-plan` | 단계 컨텍스트를 수집하고 실행 계획 생성 (`gsd-discuss-phase` → `gsd-plan-phase` 2단계 체인) | `sg-explore` 이후, 계획할 준비가 됐을 때 |
 | `/super-gsd:sg-execute` | 현재 단계 계획을 패키징하여 Superpowers에 인계 (`superpowers:executing-plans`) | `sg-plan` 완료 후 |
 | `/super-gsd:sg-review` | `superpowers:requesting-code-review`를 통해 코드 리뷰 요청 | 구현 완료 후 |
-| `/super-gsd:sg-learn` | Hookify 회고 실행, 패턴 추출 및 훅 생성 (`hookify:hookify`) | 리뷰 완료 후 |
+| `/super-gsd:sg-learn` | `sg-retro`를 통한 회고 실행, 패턴 추출 및 훅 생성 | 리뷰 완료 후 |
 | `/super-gsd:sg-lessons` | `.planning/lessons/`에서 이전 Hookify 교훈 목록 표시 (옵션: 단계 필터) | `sg-plan` 전 학습 내용 검토 시 |
 | `/super-gsd:sg-ship` | `gsd-ship`을 통해 현재 단계 병합 및 배포 | 학습 캡처 후 |
 | `/super-gsd:sg-complete` | `gsd-complete-milestone`을 통해 마일스톤 아카이브 및 완료 처리 | 모든 단계가 배포된 후 |
 | `/super-gsd:sg-new` | `gsd-new-milestone`을 통해 새 마일스톤 시작 | `sg-complete` 이후, 다음 마일스톤을 시작할 때 |
 | `/super-gsd:sg-status` | 현재 단계, 마지막 인계 시각, 다음 권장 명령 표시 | 언제든 현재 위치 확인 시 |
-| `/super-gsd:sg-update` | GSD, superpowers, hookify, super-gsd 설치 여부 확인 후 설치 또는 업데이트 | 모든 워크플로우 도구를 설치/업데이트할 때 |
+| `/super-gsd:sg-update` | GSD, superpowers, super-gsd 설치 여부 확인 후 설치 또는 업데이트 | 모든 워크플로우 도구를 설치/업데이트할 때 |
 | `/super-gsd:sg-quick` | GSD 보장이 있는 소규모 애드혹 작업 실행 (계획 + 실행 + 커밋) | 메인 단계 워크플로우 외 일회성 작업 |
 
 전체 명령 레퍼런스(인수 및 상세 설명 포함)는 [docs/COMMANDS.md](./docs/COMMANDS.md)를 참고한다.
@@ -163,7 +163,7 @@ super-gsd가 로드되면 다음을 실행한다:
 /super-gsd:sg-update
 ```
 
-`sg-update`는 GSD, Superpowers, Hookify의 설치 여부를 감지하고 없는 것을 자동으로 설치한다. 새 머신에서 실행하면 세 가지를 모두 자동으로 설치한다. 기존 설치 환경에서는 최신 버전으로 업데이트한다.
+`sg-update`는 GSD, Superpowers의 설치 여부를 감지하고 없는 것을 자동으로 설치한다. 새 머신에서 실행하면 두 가지를 모두 자동으로 설치한다. 기존 설치 환경에서는 최신 버전으로 업데이트한다.
 
 `sg-update` 완료 후 **설치 확인** 단계로 넘어간다.
 
@@ -173,7 +173,10 @@ super-gsd가 로드되면 다음을 실행한다:
 
 - **GSD** (`get-shit-done-cc`) — 이 플러그인이 읽는 `/gsd-*` 계획 명령과 `.planning/` 디렉터리 컨벤션을 제공한다.
 - **Superpowers** (`claude-plugins-official/superpowers`) — 빌드/리뷰 단계에서 사용하는 `superpowers:*` 스킬 트리를 제공한다.
-- **Hookify** (`claude-plugins-official/hookify`) — 회고 단계에서 사용하는 `/hookify:*` 명령을 제공한다.
+
+### 선택적 도구
+
+- **Hookify** (`claude-plugins-official/hookify`) — 구버전 회고 도구. `sg-learn`은 이제 내장 `sg-retro` 스킬로 라우팅되므로 Hookify는 더 이상 필수가 아니다.
 
 `super-gsd`는 비침투적이다: 이 도구들의 어떤 파일도 수정, 포크, 교체하지 않는다.
 
@@ -184,9 +187,8 @@ super-gsd가 로드되면 다음을 실행한다:
 1. `/plugin list`를 실행하여 `super-gsd`가 `.claude-plugin/plugin.json`의 이름, 버전, 설명과 일치하는지 확인한다.
 2. `/gsd-progress`(또는 다른 GSD 명령)를 실행하여 GSD가 정상 응답하는지 확인한다 — GSD가 수정되지 않았음을 증명한다.
 3. Skill 트리를 열어 `superpowers:*` 스킬이 발견 가능하고 호출 가능한지 확인한다 — Superpowers가 수정되지 않았음을 증명한다.
-4. `/hookify:help`를 실행하여 Hookify가 정상 응답하는지 확인한다 — Hookify가 수정되지 않았음을 증명한다.
 
-네 가지 확인이 모두 통과하면 `super-gsd`가 올바르게, 비침투적으로 설치된 것이다.
+세 가지 확인이 모두 통과하면 `super-gsd`가 올바르게, 비침투적으로 설치된 것이다.
 
 ## 로드맵
 

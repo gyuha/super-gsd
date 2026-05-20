@@ -1,14 +1,14 @@
 ---
 name: sg-learn
-description: Run a Hookify retrospective to extract patterns and generate hooks from this session.
+description: Run a retrospective via sg-retro to extract patterns and generate hooks from this session.
 ---
 
 <objective>
-Invoke the hookify:hookify Skill to run a retrospective and extract learnable patterns from the current session.
+Invoke the super-gsd:sg-retro Skill to run a retrospective and extract learnable patterns from the current session.
 </objective>
 
 <execution_context>
-Self-contained. Delegates entirely to hookify:hookify Skill (terminal action).
+Self-contained. Delegates entirely to super-gsd:sg-retro Skill (terminal action).
 </execution_context>
 
 <process>
@@ -31,10 +31,10 @@ Self-contained. Delegates entirely to hookify:hookify Skill (terminal action).
 
 1. Session control transfers to the skill; no steps execute after this point:
    ```
-   Skill(skill="hookify:hookify", args="$ARGUMENTS")
+   Skill(skill="super-gsd:sg-retro", args="$ARGUMENTS")
    ```
 </process>
 
 <success_criteria>
-1. hookify:hookify Skill is invoked exactly once.
+1. super-gsd:sg-retro Skill is invoked exactly once.
 </success_criteria>

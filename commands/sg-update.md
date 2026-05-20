@@ -1,6 +1,6 @@
 ---
 name: sg-update
-description: Check, install, or update GSD, superpowers, hookify, and super-gsd to their latest versions.
+description: Check, install, or update GSD, superpowers, and super-gsd to their latest versions.
 argument-hint: "No arguments needed."
 ---
 
@@ -8,7 +8,6 @@ argument-hint: "No arguments needed."
 Check whether each tool in the super-gsd workflow is installed, install it if missing, or update it if present:
 - GSD (get-shit-done-cc) — npm package
 - superpowers — Claude Code plugin
-- hookify — Claude Code plugin
 - super-gsd — Claude Code plugin
 </objective>
 
@@ -24,7 +23,7 @@ echo "Updating workflow tools..."
 
 # Preflight: check for claude CLI
 if ! command -v claude >/dev/null 2>&1; then
-  echo "Warning: 'claude' CLI not found on PATH. Plugin steps (superpowers, hookify, super-gsd) will be skipped."
+  echo "Warning: 'claude' CLI not found on PATH. Plugin steps (superpowers, super-gsd) will be skipped."
   CLAUDE_AVAILABLE=false
 else
   CLAUDE_AVAILABLE=true
@@ -80,31 +79,6 @@ else
   SUPERPOWERS_STATUS="skipped (claude not found)"
 fi
 
-# hookify
-if [ "$CLAUDE_AVAILABLE" = "true" ]; then
-  if claude plugin list 2>&1 | grep -qiF 'hookify'; then
-    echo "Updating hookify..."
-    claude plugin install hookify@claude-plugins-official 2>&1
-    PLUGIN_EC=$?
-    if [ "$PLUGIN_EC" -eq 0 ]; then
-      HOOKIFY_STATUS="updated"
-    else
-      HOOKIFY_STATUS="failed (exit ${PLUGIN_EC})"
-    fi
-  else
-    echo "Installing hookify..."
-    claude plugin install hookify@claude-plugins-official 2>&1
-    PLUGIN_EC=$?
-    if [ "$PLUGIN_EC" -eq 0 ]; then
-      HOOKIFY_STATUS="installed"
-    else
-      HOOKIFY_STATUS="failed (exit ${PLUGIN_EC})"
-    fi
-  fi
-else
-  HOOKIFY_STATUS="skipped (claude not found)"
-fi
-
 # super-gsd
 if [ "$CLAUDE_AVAILABLE" = "true" ]; then
   if claude plugin list 2>&1 | grep -qiF 'super-gsd'; then
@@ -136,7 +110,6 @@ echo ""
 echo "Tools:"
 echo "- GSD (get-shit-done-cc): ${GSD_STATUS}"
 echo "- superpowers: ${SUPERPOWERS_STATUS}"
-echo "- hookify: ${HOOKIFY_STATUS}"
 echo "- super-gsd: ${SUPERGSD_STATUS}"
 echo ""
 echo "Restart Claude Code to activate updated plugins."
@@ -147,6 +120,6 @@ After the bash block completes, relay its output to the user verbatim.
 
 <success_criteria>
 1. GSD npm package installed or updated to latest, with actual status shown.
-2. superpowers, hookify, super-gsd plugins installed or updated (or skipped if claude not on PATH).
+2. superpowers, super-gsd plugins installed or updated (or skipped if claude not on PATH).
 3. Summary shows actual installed/updated/failed/skipped state for each tool — no literal placeholder text.
 </success_criteria>

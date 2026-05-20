@@ -32,13 +32,13 @@ Quick reference for all `/super-gsd:sg-*` slash commands.
 | `/super-gsd:sg-plan` | Gather phase context then create an execution plan (2-step chain: `gsd-discuss-phase` → `gsd-plan-phase`) | After `sg-explore`, when ready to plan |
 | `/super-gsd:sg-execute` | Package the current phase plan and hand off to Superpowers (`superpowers:executing-plans`) | After `sg-plan` is complete |
 | `/super-gsd:sg-review` | Request a code review via `superpowers:requesting-code-review` | After implementation is complete |
-| `/super-gsd:sg-learn` | Run a Hookify retrospective to extract patterns and generate hooks (`hookify:hookify`) | After the review is done |
+| `/super-gsd:sg-learn` | Run a retrospective via `sg-retro` to extract patterns and generate hooks | After the review is done |
 | `/super-gsd:sg-lessons` | List prior Hookify lessons from `.planning/lessons/`; accepts optional phase filter | Before `sg-plan` to review what was learned |
 | `/super-gsd:sg-ship` | Merge and ship the current phase via `gsd-ship` | After learning is captured |
 | `/super-gsd:sg-complete` | Archive and close the current milestone via `gsd-complete-milestone` | After all phases are shipped |
 | `/super-gsd:sg-new` | Start a new milestone via `gsd-new-milestone` | After `sg-complete`, to begin the next milestone |
 | `/super-gsd:sg-status` | Show current stage, last handoff timestamp, and next recommended command | At any point to check where you are |
-| `/super-gsd:sg-update` | Check, install, or update GSD, superpowers, hookify, and super-gsd (installs missing tools automatically) | When you want to install or update all workflow tools at once |
+| `/super-gsd:sg-update` | Check, install, or update GSD, superpowers, and super-gsd (installs missing tools automatically) | When you want to install or update all workflow tools at once |
 | `/super-gsd:sg-quick` | Execute a small, ad-hoc task with GSD guarantees (plan + execute + commit) | For one-off tasks outside the main phase workflow |
 
 See [docs/COMMANDS.md](./docs/COMMANDS.md) for the full per-command reference including arguments and detailed descriptions.
@@ -163,7 +163,7 @@ Once super-gsd is loaded, run:
 /super-gsd:sg-update
 ```
 
-`sg-update` detects whether GSD, Superpowers, and Hookify are already installed and installs any that are missing. Running it on a fresh machine will install all three automatically. On an existing setup it updates them to their latest versions.
+`sg-update` detects whether GSD and Superpowers are already installed and installs any that are missing. Running it on a fresh machine will install both automatically. On an existing setup it updates them to their latest versions.
 
 Move on to **Verify install** once `sg-update` completes.
 
@@ -173,7 +173,10 @@ Move on to **Verify install** once `sg-update` completes.
 
 - **GSD** (`get-shit-done-cc`) — provides the `/gsd-*` planning commands and the `.planning/` directory convention this plugin reads from.
 - **Superpowers** (`claude-plugins-official/superpowers`) — provides the `superpowers:*` skill tree used during the build / review stage.
-- **Hookify** (`claude-plugins-official/hookify`) — provides the `/hookify:*` commands used during the retrospection stage.
+
+### Optional
+
+- **Hookify** (`claude-plugins-official/hookify`) — historical retrospection tool. `sg-learn` now routes to the built-in `sg-retro` skill; Hookify is no longer required.
 
 `super-gsd` is non-invasive: it does not modify, fork, or replace any of these tools.
 
@@ -184,9 +187,8 @@ After installation, confirm `super-gsd` loaded cleanly and your existing tools s
 1. Run `/plugin list` and confirm that `super-gsd` appears in the listing with name, version, and description matching `.claude-plugin/plugin.json`.
 2. Run `/gsd-progress` (or any other GSD command) and confirm GSD responds normally — this proves GSD remains intact and unmodified.
 3. Open the `Skill` tree and confirm that `superpowers:*` skills are still discoverable and invokable — this proves Superpowers remains intact and unmodified.
-4. Run `/hookify:help` and confirm Hookify responds with its usual help output — this proves Hookify remains intact and unmodified.
 
-If all four checks pass, `super-gsd` is installed correctly and non-invasively.
+If all three checks pass, `super-gsd` is installed correctly and non-invasively.
 
 ## Roadmap
 

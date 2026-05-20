@@ -2,6 +2,12 @@
 
 All notable changes to `super-gsd` are documented in this file. Format follows [Keep a Changelog](https://keepachangelog.com/).
 
+## [0.0.25] - 2026-05-21
+
+### Added
+
+- Milestone v1.3 Multi-Platform Support 시작: Codex, Antigravity CLI(Google), Gemini CLI 지원을 위한 planning artifacts (PROJECT.md, REQUIREMENTS.md, ROADMAP.md, research/) 추가.
+
 ## [0.0.24] - 2026-05-21
 
 ### Fixed

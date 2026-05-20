@@ -2,6 +2,13 @@
 
 All notable changes to `super-gsd` are documented in this file. Format follows [Keep a Changelog](https://keepachangelog.com/).
 
+## [0.0.24] - 2026-05-21
+
+### Fixed
+
+- `commands/sg-learn.md`: 주석에 남아 있던 `hookify:hookify` 언급을 `super-gsd:sg-retro`로 수정.
+- `commands/sg-lessons.md`: description의 "prior Hookify lessons"를 "prior lessons … (written by sg-retro)"로 수정.
+
 ## [0.0.23] - 2026-05-21
 
 ### Changed

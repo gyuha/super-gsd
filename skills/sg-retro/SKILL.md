@@ -4,7 +4,7 @@ description: Run a structured retrospective on a GSD phase with one of six lense
 ---
 
 <objective>
-Run a structured retrospective on a GSD phase. Auto-collect phase artifacts and git context. Let the user pick one or more of six lenses — Start/Stop/Continue (ssc), 4Ls (4ls), Decisions/Surprises/Patterns/Mistakes (dspm), Sailboat (sail), Five Whys (5why), Conversation Analyzer (analyze) — via AskUserQuestion multiSelect or directly via arguments. Facilitate each lens (artifact-grounded for ssc/4ls/dspm/sail; user-driven for 5why; transcript-native for analyze), then append all results sequentially to `.planning/lessons/{NN}-{YYYY-MM-DD}.md`. After all lenses complete, auto-suggest hookify rule drafts once.
+Run a structured retrospective on a GSD phase. Auto-collect phase artifacts and git context. Let the user pick one or more of six lenses — Start/Stop/Continue (ssc), 4Ls (4ls), Decisions/Surprises/Patterns/Mistakes (dspm), Sailboat (sail), Five Whys (5why), Conversation Analyzer (analyze) — via AskUserQuestion multiSelect or directly via arguments. Facilitate each lens (artifact-grounded for ssc/4ls/dspm/sail; user-driven for 5why; transcript-native for analyze), then append all results sequentially to `.planning/lessons/{NN}-{YYYY-MM-DD}.md`. After all lenses complete, auto-suggest sg-rule drafts once.
 </objective>
 
 <execution_context>
@@ -250,7 +250,7 @@ Lens-specific sub-blocks:
   - git artifacts는 문맥 보강용으로만 참조 (D-16).
 
 **Sub-block `analyze` (Conversation Analyzer):**
-- Fixed subheadings: `### Analysis Findings` (표) / `### Draft Hookify Rules` / `### Action Items`
+- Fixed subheadings: `### Analysis Findings` (표) / `### Draft sg-rules` / `### Action Items`
 - Facilitation (D-05, D-07, D-08):
   1. TRANSCRIPT_FILE이 비어 있으면 즉시 종료: `echo "No transcript found — skipping Conversation Analyzer." >&2` 후 해당 lens 결과 없이 다음 lens로 진행 또는 종료. ANALYZE_LENS_RAN은 설정하지 않음.
   2. TRANSCRIPT_FILE이 있으면 Claude가 Read 도구로 TRANSCRIPT_FILE을 직접 읽는다 (bash grep 금지 — D-05).
@@ -263,7 +263,7 @@ Lens-specific sub-blocks:
   5. 결과를 D-03 스키마 표로 출력:
      `| category | tool/event | pattern | context | severity |`
      severity: high(즉각 수정 필요) / medium(주의) / low(참고용)
-  6. high/medium severity 항목 기반 Draft Hookify Rules 섹션 생성. 각 rule: `warn-{slug}` 또는 `block-{slug}` — Event: {tool}, Pattern: `{regex}`, Severity: {level} 형식.
+  6. high/medium severity 항목 기반 Draft sg-rules 섹션 생성. 각 rule: `warn-{slug}` 또는 `block-{slug}` — Event: {tool}, Pattern: `{regex}`, Severity: {level} 형식.
   7. Action Items 확정 후 append.
   8. D-02 auto-suggest: `analyze` lens를 명시 선택한 경우, 이 sub-block 내부에서 rule draft를 포함하므로 Step 6의 별도 auto-suggest와 중복되지 않도록 `ANALYZE_LENS_RAN=true` 플래그를 설정.
 
@@ -360,16 +360,16 @@ DELTA=$((AFTER - BEFORE))
 echo "lessons file: ${LESSONS_FILE} +${DELTA} lines" >&2
 ```
 
-After the multi-lens loop completes, auto-suggest hookify rule drafts once:
+After the multi-lens loop completes, auto-suggest sg-rule drafts once:
 
 ```bash
-# D-02: 모든 lens 완료 후 hookify rule draft auto-suggest (1회만)
+# D-02: 모든 lens 완료 후 sg-rule draft auto-suggest (1회만)
 # analyze lens가 이미 rule draft를 생성했으면 별도 출력 없이 reminder만.
 if [ "${ANALYZE_LENS_RAN:-false}" = "true" ]; then
-  echo "Hookify rule drafts were included in the Conversation Analyzer output above." >&2
+  echo "sg-rule drafts were included in the Conversation Analyzer output above." >&2
 else
   # Claude: high/medium severity 분석 결과 기반 또는 Action Items 기반 rule draft 제안
-  echo "[Auto-suggest] Review the Action Items above and consider creating hookify rules for repeated patterns." >&2
+  echo "[Auto-suggest] Review the Action Items above and consider creating sg-rules for repeated patterns." >&2
 fi
 ```
 
@@ -520,7 +520,7 @@ _Captured: {ISO-8601 UTC}_
 | repeated | Bash | `cat` instead of Read | Same correction 3 times | medium |
 | validated-success | Edit | Surgical Edit over Write | User accepted minimal-change approach | low |
 
-### Draft Hookify Rules
+### Draft sg-rules
 
 - `warn-dangerous-rm` — Event: bash, Pattern: `rm\s+-rf`, Severity: high
 - `block-env-write` — Event: file, Pattern: `\.env$`, Severity: high
@@ -543,6 +543,6 @@ _Captured: {ISO-8601 UTC}_
 7. args="10 sail" / "10 5why" / "10 analyze" trigger direct execution of the respective lens without AskUserQuestion (D-19 extension to sail/5why/analyze).
 8. args="10 4ls dspm" builds LENS_CODES_ARRAY=["4ls", "dspm"] and appends both lens sections to the same file in order (D-21).
 9. When TRANSCRIPT_FILE is empty, the analyze lens emits "No transcript found" to stderr and exits the lens gracefully without appending to lessons (D-06).
-10. The Conversation Analyzer reads the JSONL file using Claude's Read tool (not bash grep) and outputs a 5-column findings table (category/tool-event/pattern/context/severity) + Draft Hookify Rules section (ANALYZER-01, ANALYZER-02).
-11. hookify rule draft auto-suggest occurs exactly once per sg-retro invocation — after all lenses complete (D-02). If analyze lens ran, its Draft Hookify Rules section serves as the auto-suggest output; no duplicate suggestion is made.
+10. The Conversation Analyzer reads the JSONL file using Claude's Read tool (not bash grep) and outputs a 5-column findings table (category/tool-event/pattern/context/severity) + Draft sg-rules section (ANALYZER-01, ANALYZER-02).
+11. sg-rule draft auto-suggest occurs exactly once per sg-retro invocation — after all lenses complete (D-02). If analyze lens ran, its Draft sg-rules section serves as the auto-suggest output; no duplicate suggestion is made.
 </success_criteria>

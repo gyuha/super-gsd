@@ -32,14 +32,14 @@ Self-contained — reads ~/.claude/*, ${CLAUDE_PLUGIN_ROOT}/hooks/hooks.json, .p
    - OK → `Superpowers ...... [OK]`
    - FAIL → `Superpowers ...... [FAIL] 디렉토리 없음`, FAIL++
 
-3. **Hookify 설치**
+3. **Hookify 설치** *(선택)*
 
    ```bash
-   test -d "$HOME/.claude/plugins/data/hookify-claude-plugins-official" && echo OK || echo FAIL
+   test -d "$HOME/.claude/plugins/data/hookify-claude-plugins-official" && echo OK || echo OPTIONAL
    ```
 
    - OK → `Hookify .......... [OK]`
-   - FAIL → `Hookify .......... [FAIL] 디렉토리 없음`, FAIL++
+   - OPTIONAL → `Hookify .......... [OPTIONAL] 미설치 (선택적 의존성)` — FAIL 카운트에 포함하지 않는다
 
 4. **Stop hook 등록**
 

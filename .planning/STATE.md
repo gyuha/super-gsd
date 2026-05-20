@@ -1,17 +1,16 @@
 ---
 gsd_state_version: 1.0
-milestone: v1.2
-milestone_name: Self-Contained Retrospection
-status: complete
-stopped_at: Milestone v1.2 complete
-last_updated: "2026-05-21T00:00:00.000Z"
-last_activity: 2026-05-21 -- v1.2 milestone archived (v0.0.20 shipped)
+milestone: v1.3
+milestone_name: Codex Platform Support
+status: planning
+last_updated: "2026-05-20T22:56:08.258Z"
+last_activity: 2026-05-20
 progress:
-  total_phases: 5
-  completed_phases: 5
-  total_plans: 5
-  completed_plans: 5
-  percent: 100
+  total_phases: 0
+  completed_phases: 0
+  total_plans: 0
+  completed_plans: 0
+  percent: 0
 ---
 
 # Project State
@@ -25,10 +24,10 @@ See: .planning/PROJECT.md (updated 2026-05-16)
 
 ## Current Position
 
-Phase: 13 (sg-learn 라우팅 전환 + hookify 의존성 제거)
-Plan: 01
-Status: Complete — Milestone v1.2 archived
-Last activity: 2026-05-21 -- v1.2 milestone archived (v0.0.20 shipped)
+Phase: Not started (defining requirements)
+Plan: —
+Status: Defining requirements
+Last activity: 2026-05-20 — Milestone v1.3 started
 
 ## Performance Metrics
 

@@ -12,7 +12,7 @@ Self-contained. Delegates entirely to super-gsd:sg-retro Skill (terminal action)
 </execution_context>
 
 <process>
-0.9. **HANDOFF.md에 hookify 행 기록.** hookify:hookify는 terminal Skill이므로 호출 직전이 기록 가능한 최후 시점이다:
+0.9. **HANDOFF.md에 sg-retro 행 기록.** super-gsd:sg-retro는 terminal Skill이므로 호출 직전이 기록 가능한 최후 시점이다:
    ```bash
    HANDOFF_FILE=".planning/HANDOFF.md"
    if [ ! -f "$HANDOFF_FILE" ] || ! grep -q "Timestamp.*Phase.*From.*To.*Plan Hash" "$HANDOFF_FILE" 2>/dev/null; then

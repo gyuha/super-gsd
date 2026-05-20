@@ -1,6 +1,6 @@
 ---
 name: sg-lessons
-description: List prior Hookify lessons from .planning/lessons/ and inject them as context for the next GSD phase.
+description: List prior lessons from .planning/lessons/ (written by sg-retro) and inject them as context for the next GSD phase.
 argument-hint: "[phase] - optional. If provided, show only lessons for that phase number."
 ---
 

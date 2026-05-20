@@ -4,6 +4,10 @@
 hookify 미설치 환경에서 .claude/hookify.*.local.md 및
 .claude/sg-rule.*.local.md 규칙을 직접 평가한다.
 hookify가 설치된 환경에서는 즉시 exit 0 (skip).
+
+지원 이벤트: bash (Bash 도구), file (Edit/Write/MultiEdit 도구).
+prompt 이벤트 규칙은 PreToolUse에서 평가 불가 — hookify의
+UserPromptSubmit 훅으로만 처리 가능하므로 hookify 미설치 환경에서 무시된다.
 """
 
 import glob
@@ -161,7 +165,7 @@ def _match_condition(cond: dict, tool_name: str, tool_input: dict) -> bool:
         value = tool_input.get("command", "")
     elif tool_name in ("Edit", "Write", "MultiEdit"):
         if field in ("new_text", "new_string"):
-            value = tool_input.get("new_string", "")
+            value = tool_input.get("new_string") or tool_input.get("content", "")
         elif field == "content":
             value = tool_input.get("content") or tool_input.get("new_string", "")
         elif field == "file_path":

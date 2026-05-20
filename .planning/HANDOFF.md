@@ -34,3 +34,4 @@
 | 2026-05-19T16:31:46Z | 08-session-restore | ship | complete | - |
 | 2026-05-20T12:22:22Z | 09-sg-retro-skill-scaffold | complete | gsd-plan | - |
 | 2026-05-20T12:38:18Z | 09-sg-retro-skill-scaffold | gsd-plan | superpowers | dba1ed4 |
+| 2026-05-20T12:49:43Z | 09-sg-retro-skill-scaffold | superpowers | review | - |

@@ -109,26 +109,30 @@ Extract lens codes from multiSelect response and build LENS_CODES_ARRAY:
 LENS_CODES_ARRAY=$(printf '%s' "$ASKUSERQUESTION_RESPONSE" \
   | grep -oE '\((ssc|4ls|dspm|sail|5why|analyze)\)' \
   | tr -d '()')
+if [ -z "$LENS_CODES_ARRAY" ]; then
+  echo "No lens selected or response not recognized. Exiting." >&2
+  exit 1
+fi
 ```
 
 Single-lens argument 경로 (D-19):
 
 ```bash
 # D-19: 인수 경로 — LENS_CODE가 있으면 배열 구성, EXTRA_LENS_CODES가 있으면 추가
+VALID_EXTRAS=""
+if [ -n "$EXTRA_LENS_CODES" ]; then
+  for EC in $EXTRA_LENS_CODES; do
+    EC_LC=$(printf '%s' "$EC" | tr '[:upper:]' '[:lower:]')
+    case "$EC_LC" in
+      ssc|4ls|dspm|sail|5why|analyze) VALID_EXTRAS="${VALID_EXTRAS} ${EC_LC}" ;;
+    esac
+  done
+fi
 if [ -n "$LENS_CODE" ]; then
-  if [ -n "$EXTRA_LENS_CODES" ]; then
-    # D-21: 3번째 이후 토큰도 배열에 포함
-    VALID_EXTRAS=""
-    for EC in $EXTRA_LENS_CODES; do
-      EC_LC=$(printf '%s' "$EC" | tr '[:upper:]' '[:lower:]')
-      case "$EC_LC" in
-        ssc|4ls|dspm|sail|5why|analyze) VALID_EXTRAS="${VALID_EXTRAS} ${EC_LC}" ;;
-      esac
-    done
-    LENS_CODES_ARRAY="${LENS_CODE}${VALID_EXTRAS}"
-  else
-    LENS_CODES_ARRAY="$LENS_CODE"
-  fi
+  LENS_CODES_ARRAY="${LENS_CODE}${VALID_EXTRAS}"
+elif [ -n "$VALID_EXTRAS" ]; then
+  # F-01 fix: LENS_CODE 빈 경우에도 extras로 배열 구성
+  LENS_CODES_ARRAY="$VALID_EXTRAS"
 fi
 ```
 
@@ -190,6 +194,11 @@ echo "Git range: ${RANGE}" >&2
 
 **Step 5 — Multi-lens execution loop + lens facilitation (artifact-grounded draft-then-confirm).**
 
+```bash
+# F-02 fix: 루프 시작 전 초기화 (analyze sub-block 내부에서 true로 설정됨)
+ANALYZE_LENS_RAN=false
+```
+
 Execute each lens in LENS_CODES_ARRAY sequentially. For each iteration, set LENS_CODE to the current code and run the matching sub-block. After the sub-block completes, run Step 6 append for that lens.
 
 ```
@@ -230,11 +239,14 @@ Lens-specific sub-blocks:
 
 **Sub-block `5why` (Five Whys):**
 - Fixed subheadings: `### Problem Statement` / `### Why 1` ~ `### Why 5` / `### Root Cause`
-- Facilitation (D-14, D-16 — 사용자 주도 대화형):
-  1. AskUserQuestion header `"Five Whys"`, question `"What problem do you want to analyze? (Leave blank to let me suggest from phase artifacts)"` 로 problem statement 수집. 사용자가 공백 입력 시 Claude가 phase artifacts에서 Mistakes 또는 알려진 위험 항목을 후보로 제시하되 사용자 확인 필요.
-  2. Why 1 질문을 plain text로 출력: `"Why did [problem statement] happen?"`. 사용자 답변 대기.
-  3. Why 2~5까지 답변을 입력받으며 순차 진행. 각 단계에서 이전 답변을 why 질문의 대상으로 사용.
-  4. 5번 완료 후 Root Cause 도출 요약 + Action Items 확정 후 append.
+- Facilitation (D-14, D-16 — 사용자 주도 대화형; F-06 fix: all turns use AskUserQuestion):
+  1. AskUserQuestion header `"Five Whys — Problem"`, question `"What problem do you want to analyze? (Leave blank to let me suggest from phase artifacts)"` 로 problem statement 수집. 사용자가 공백 입력 시 Claude가 phase artifacts에서 Mistakes 또는 알려진 위험 항목을 후보로 제시하되 사용자 확인 필요.
+  2. AskUserQuestion header `"Why 1"`, question `"Why did [problem statement] happen?"` 으로 Why 1 수집.
+  3. AskUserQuestion header `"Why 2"`, question `"Why did [Why 1 answer] happen?"` 으로 Why 2 수집.
+  4. AskUserQuestion header `"Why 3"`, question `"Why did [Why 2 answer] happen?"` 으로 Why 3 수집.
+  5. AskUserQuestion header `"Why 4"`, question `"Why did [Why 3 answer] happen?"` 으로 Why 4 수집.
+  6. AskUserQuestion header `"Why 5"`, question `"Why did [Why 4 answer] happen?"` 으로 Why 5 수집.
+  7. 5번 완료 후 Root Cause 도출 요약 + Action Items AskUserQuestion 확정 후 append.
   - git artifacts는 문맥 보강용으로만 참조 (D-16).
 
 **Sub-block `analyze` (Conversation Analyzer):**
@@ -256,7 +268,7 @@ Lens-specific sub-blocks:
   8. D-02 auto-suggest: `analyze` lens를 명시 선택한 경우, 이 sub-block 내부에서 rule draft를 포함하므로 Step 6의 별도 auto-suggest와 중복되지 않도록 `ANALYZE_LENS_RAN=true` 플래그를 설정.
 
 ```bash
-ANALYZE_LENS_RAN=false
+ANALYZE_LENS_RAN=true
 ```
 
 **Step 6 — Append to lessons file (per lens iteration).**

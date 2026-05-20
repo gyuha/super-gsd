@@ -25,7 +25,8 @@
   2. `sg-retro` 호출 시 phase argument로 해당 phase의 CONTEXT/PLAN/SUMMARY와 git diff/log를 자동 수집한다
   3. 3가지 lens 중 하나를 사용자가 AskUserQuestion으로 선택할 수 있다
   4. 회고 결과가 `.planning/lessons/{phase}-{YYYY-MM-DD}.md`에 lens별 섹션 구조로 저장된다
-**Plans**: TBD
+**Plans**: 1 plan
+- [ ] 09-01-PLAN.md — skills/sg-retro/SKILL.md 작성(argument 파싱 + 컨텍스트 수집 + 3 lens facilitation + lessons append) + plugin.json skills 등록
 
 ### Phase 10: 내장 conversation analyzer + 추가 lens
 **Goal**: hookify의 conversation-analyzer 의존을 제거하고 자체 analyzer를 통해 frustration/correction/repeated/validated-success 4 카테고리를 추출하며, Sailboat·Five Whys lens가 추가되어 총 5 lens가 다중 선택 가능하다
@@ -75,7 +76,7 @@
 
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
-| 9. sg-retro Skill scaffold | 0/? | Not started | — |
+| 9. sg-retro Skill scaffold | 0/1 | Planning | — |
 | 10. analyzer + 추가 lens | 0/? | Not started | — |
 | 11. 자체 rule runner | 0/? | Not started | — |
 | 12. lessons aggregation + 재발 방지 | 0/? | Not started | — |

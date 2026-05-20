@@ -1,80 +1,187 @@
-# Research Summary — v1.1 Reliability
+# 프로젝트 리서치 요약
 
-**프로젝트:** super-gsd v1.1  
-**리서치 일자:** 2026-05-16  
-**신뢰도:** HIGH
-
----
-
-## Stack 추가사항
-
-기존 스택(Python 3 stdlib, Markdown 기반 skill 파일, Bash 인라인)으로 충분. 추가 패키지 없음.
-
-| 추가 항목 | 용도 | 이유 |
-|----------|------|------|
-| `re` stdlib 하드닝 | STATE.md Phase 파싱 정확도 | `r'^Phase:\s*(\S+)'`이 `Phase: Not started`에서 `Not`만 추출하는 버그 |
-| `parse_handoff.py` 헬퍼 | HANDOFF.md 파싱 중앙화 | sg-status와 sg-start에서 동일 awk 로직 중복 → Python 함수로 단일화 |
-
-추가하지 말아야 할 것: PyYAML, SQLite, 새 hook 타입, pathlib, `session.json`.
+**프로젝트:** super-gsd v1.3 Codex Platform Support
+**도메인:** 멀티 플랫폼 AI 코딩 에이전트 워크플로우 플러그인
+**리서치 완료:** 2026-05-21
+**신뢰도:** HIGH (공식 Codex 문서 기반)
 
 ---
 
-## 기능 우선순위
+## 핵심 요약
 
-### Table Stakes (v1.1 필수)
+super-gsd v1.3의 목표는 OpenAI Codex 사용자에게 기존 GSD → Superpowers → sg-retro 3단계 워크플로우를 제공하는 것이다. 이는 전체 포팅이 아니다. 13개 commands/*.md 파일을 복제하거나 Python 훅을 재작성할 필요 없다. 올바른 접근은 3개 레이어다: (1) AGENTS.md 교체 — Codex가 세션 시작 시 읽는 워크플로우 안내문, (2) `.agents/skills/` 신규 생성 — Codex의 스킬 디스커버리 경로, (3) `.codex/hooks.json` 신규 생성 — SubagentStop 없이 Stop + PreToolUse만 포함. 총 범위: 신규 파일 약 9개, 기존 파일 수정 2개 (Python hook 경로 1줄 픽스), README 섹션 추가.
 
-- **STATUS-01:** HANDOFF.md 마지막 데이터 행으로 stage 판정 / 파일 없으면 `init` 기본값 / D-29 포맷 엄격 준수
-- **SESS-01:** sg-start 호출 시 기존 세션 감지 → milestone + stage + 마지막 시각 표시 → 재개 여부 질의 / 재개 경로에서 gsd-new-project 건너뜀
-- **HEALTH-01:** GSD/Superpowers/Hookify 설치 확인 + hooks.json 등록 + HANDOFF.md 스키마 검증 / `[OK]`/`[WARN]`/`[FAIL]` 라인별 출력 / FAIL 시 exit code 1 / 읽기 전용
+가장 중요한 아키텍처 결정은 무엇을 하지 않을지다. SubagentStop은 Codex에 존재하지 않으며 대안이 없다. Superpowers:executing-plans 스킬은 Codex에서 실행 불가다. 이 두 가지 제약을 숨기려 하면 사용자가 작동한다고 믿는 기능이 실제로는 침묵 속에 실패하는 상황이 된다. v1.3은 Codex에서 가능한 것(sg-retro, 워크플로우 안내, Stop 훅, 상태 파일 공유)을 명확하게 제공하고, 불가능한 것(SubagentStop 자동 핸드오프, Superpowers 연동)을 문서에서 명시적으로 인정해야 한다.
 
-### Differentiators (v1.1 포함 권장)
-
-- stale 세션 경고 (7일 초과 시) — SESS-01
-- 상대 시각 표시 ("6일 전") — SESS-01
-- 설치 체크 시 복수 경로 탐색 + 탐색 경로 표시 — HEALTH-01
-
-### v2+ 연기
-
-- `--json` 플래그, sg-repair, sg-learn → HANDOFF.md hookify 행 자동 추가
+리스크는 기술적이기보다 범위적이다. 13개 명령어를 Codex 스킬로 완전 동등하게 포팅하려는 충동이 가장 큰 위험이다. 그 결과는 즉시 stale해지고, 유지보수 부담이 2배가 되며, 실제로는 핵심 동작(SubagentStop, Superpowers)이 빠진 채 완전한 것처럼 보이는 코드다. 올바른 scope는 "prompt-helper 스킬 + 상태 파일 공유 + 정직한 기능 테이블"이다.
 
 ---
 
-## 빌드 순서
+## 주요 발견
 
-```
-Phase 1: sg-health.md 신규 생성 (독립, 기존 파일 무변경)
-    + transcript_matcher.py 'hookify' 패턴 수정 (sg-health 배포와 묶어야 함)
-         ↓
-Phase 2: sg-status.md 갭 수정 (HANDOFF.md 파싱 + STATE.md Phase 파싱 정확도)
-         ↓
-Phase 3: sg-start.md 세션 복원 분기 추가 (Phase 2 파싱 패턴 재사용)
-```
+### 스택 추가 항목 (STACK.md)
 
-**Phase 1 이유:** sg-health는 독립적, 기존 파일 건드리지 않음. transcript_matcher.py 패치는 sg-health와 같은 Phase여야 한다 — sg-health 배포 직후 첫 실행에서 오발동 발생하기 때문.
+Codex 지원에 npm 패키지나 새 언어가 필요하지 않다. 기존 Python 3 stdlib 훅은 Codex에서 그대로 실행된다.
 
-**Phase 2 이유:** sg-start 복원이 Stage 파싱 로직을 sg-status와 공유함. sg-status 파싱 검증 전에 sg-start 구현하면 버그가 복사된다.
+| 항목 | 액션 | 설명 |
+|------|------|------|
+| `AGENTS.md` (repo root) | 교체 | stale GSD 템플릿 → 실제 sg- 워크플로우 지침 |
+| `.agents/skills/sg-retro/SKILL.md` | 신규 | skills/sg-retro/SKILL.md 어댑터 (경로 수정) |
+| `.agents/skills/sg-start/SKILL.md` | 신규 | 경량 래퍼 스킬 |
+| `.agents/skills/sg-plan/SKILL.md` | 신규 | 경량 래퍼 스킬 |
+| `.agents/skills/sg-execute/SKILL.md` | 신규 | 경량 래퍼 스킬 ("manual prompt assistant" 명시) |
+| `.agents/skills/sg-review/SKILL.md` | 신규 | 경량 래퍼 스킬 |
+| `.agents/skills/sg-status/SKILL.md` | 신규 | 경량 래퍼 스킬 |
+| `.codex/hooks.json` | 신규 | Stop + PreToolUse만, SubagentStop 제외 |
+| `hooks/rule_runner.py` | 1줄 수정 | CLAUDE_PLUGIN_ROOT 폴백 처리 |
+| `hooks/stop_hook.py` | 1줄 수정 | CLAUDE_PLUGIN_ROOT 폴백 처리 |
+| `README.md` | 섹션 추가 | Codex 설치 + 기능 차이 테이블 |
+
+**수정하지 않는 파일:** `commands/*.md` (13개), `skills/sg-retro/SKILL.md`, `hooks/hooks.json`, `hooks/lessons_ranker.py`, `.claude-plugin/plugin.json`, `.planning/**`
+
+**버전 요건:** `@openai/codex` CLI는 Node 22+ 필요 (사용자 책임, super-gsd 의존성 아님)
+
+### 기능 구분 (FEATURES.md)
+
+**테이블 스테이크 (없으면 Codex 지원이라 할 수 없음):**
+- `AGENTS.md` 교체 — Codex가 워크플로우를 이해하는 유일한 진입점 (복잡도: 낮음)
+- `.agents/skills/` sg-retro 어댑터 — AskUserQuestion 제거 필요 (복잡도: 중간)
+- `.codex/hooks.json` — Stop 훅 활성화, SubagentStop 제외 (복잡도: 낮음)
+- README Codex 섹션 — 설치 경로, 기능 제한 명시 (복잡도: 낮음)
+
+**차별화 기능 (v1.3 이후):**
+- 13개 sg-* 전체 `.agents/skills/` SKILL.md
+- `agents/openai.yaml` UI 메타데이터
+- Codex용 sg-health 변형
+- `~/.codex/AGENTS.md` 글로벌 템플릿
+
+**명시적 비목표 (v1.3에서 구현하지 않음):**
+- SubagentStop 대체 훅 — Codex GitHub 이슈 #21753 미해결, 대안 없음
+- Superpowers:executing-plans 에뮬레이션 — Superpowers 미포팅
+- 13개 명령 bash-동등 full-parity 포팅 — 즉시 stale, 유지보수 불가
+- lessons_ranker.py Codex 훅 포팅 — plugin_hooks 기본 off, scope 초과
+- 플러그인 마켓플레이스 자동 게시 — 외부 요인
+
+### 아키텍처 결정 (ARCHITECTURE.md)
+
+3개 영역 분리:
+
+**Claude Code 전용 (무수정):** `commands/*.md`, `skills/sg-retro/`, `hooks/hooks.json`, `.claude-plugin/`
+
+**공유 영역 (무수정):** `.planning/` (STATE.md, HANDOFF.md, lessons/, config.json), `hooks/*.py` (Python 로직 자체는 플랫폼 독립)
+
+**Codex 신규:** `AGENTS.md` (교체), `.agents/skills/sg-*/SKILL.md` (신규), `.codex/hooks.json` (신규)
+
+핵심 패턴: SKILL.md 형식은 두 플랫폼 모두 동일 (YAML frontmatter + instructions). `.planning/` 공유로 양 플랫폼이 동일한 상태를 읽는다.
+
+Codex 데이터 플로우: `AGENTS.md 주입 → $sg-* 스킬 호출 → .planning/ 읽기/쓰기 → Stop 이벤트 → stop_hook.py → systemMessage`
+
+### 핵심 함정 (PITFALLS.md)
+
+**CRITICAL (구현 전 반드시 확인):**
+
+1. **SubagentStop 부재** — 리뷰 완료 후 sg-retro 자동 안내가 Codex에서 절대 발생하지 않는다. AGENTS.md에 "수동으로 $sg-retro 호출" 명시. 자동 핸드오프 암시 금지.
+
+2. **`${CLAUDE_PLUGIN_ROOT}` 미정의** — Codex에서 이 환경변수가 없다. `.codex/hooks.json`의 모든 hook command를 상대경로로 작성. Python 파일에 1줄 폴백 픽스: `PLUGIN_ROOT = os.environ.get('CLAUDE_PLUGIN_ROOT') or os.path.dirname(os.path.dirname(os.path.abspath(__file__)))`
+
+3. **`.codex/skills/` 잘못된 디렉토리** — Codex 스킬 디스커버리는 `.agents/skills/`만 스캔. `.codex/`는 config/hooks 전용. 모든 스킬 파일을 `.agents/skills/sg-*/SKILL.md`에 생성.
+
+4. **AGENTS.md에서 슬래시 명령 문법** — `/sg-execute`는 Codex에서 "command not found". AGENTS.md 전체에서 `$sg-execute` 또는 `@sg-execute` 사용.
+
+5. **sg-execute가 Superpowers 호출 암시** — Superpowers는 Codex 미포팅. sg-execute Codex 스킬은 "manual prompt assistant"로 명시.
+
+**MODERATE (구현 중 주의):**
+- AGENTS.md 32 KiB 제한 — 8 KiB 이하 유지, 상세는 `.agents/skills/`에 위임
+- 상대 경로 `.planning/` 실패 — 모든 bash 블록에서 `git rev-parse --show-toplevel` 사용
+- Full-parity 포팅 충동 — prompt-helper 스킬만, bash 로직 복제 금지
+- Codex Stop 훅 `decision: "block"` — 세션 루프 계속 유발. 안내 메시지엔 `"pass"` 또는 decision 필드 생략
 
 ---
 
-## 주요 함정 및 예방
+## 로드맵 시사점
 
-| 우선순위 | 함정 | 예방 | 해당 Phase |
-|---------|------|------|----------|
-| HIGH | transcript_matcher.py bare `'hookify'`가 sg-health 출력에 오발동 | `'hookify'` → `'Retrospective complete'`로 교체 | Phase 1 |
-| HIGH | STATE.md `Phase: Not started` 파싱 시 `Not` 반환 | frontmatter YAML `---` 구분자로 별도 파싱 | Phase 2 |
-| HIGH | HANDOFF.md에 hookify 완료 행 없어 SESS-01이 잘못된 다음 명령 권장 | 복원 로직에서 lessons 디렉토리 교차 검증 (sg-learn 수정은 v2) | Phase 3 |
-| HIGH | sg-health 비표준 경로에서 false positive | 복수 경로 탐색, FAIL 아닌 WARN 처리 | Phase 1 |
-| MEDIUM | 서브디렉토리에서 `.planning/` 상대 경로 실패 | cwd에서 상위로 walk하며 `.planning/` 탐색 | Phase 2–3 |
+연구 기반 권장 페이즈 구조 (4개 페이즈):
+
+### 페이즈 1: AGENTS.md 교체
+**근거:** 의존성 없음. 현재 파일이 stale 템플릿. Codex 사용자의 첫 번째 진입점.
+**산출물:** `AGENTS.md` 교체 (Codex 어휘, 8 KiB 이하, SubagentStop 부재 명시)
+**대응 기능:** TS-01 (AGENTS.md)
+**피해야 할 함정:** Pitfall 3 (슬래시 명령), Pitfall 4 (32 KiB 초과)
+
+### 페이즈 2: `.codex/hooks.json` + Python hook 픽스
+**근거:** Python 재사용으로 최소 작업. 페이즈 3과 독립적이므로 병행 가능.
+**산출물:** `.codex/hooks.json` (신규), `hooks/rule_runner.py` + `hooks/stop_hook.py` (각 1줄 수정)
+**대응 기능:** TS-04 (Codex hooks)
+**피해야 할 함정:** Pitfall 2 (CLAUDE_PLUGIN_ROOT), Pitfall 12 (block 오용)
+
+### 페이즈 3: `.agents/skills/` 스킬 파일 생성
+**근거:** AGENTS.md가 참조하는 스킬 구현. sg-retro만 실질적 수정 필요, 나머지 5개는 기계적.
+**산출물:** `.agents/skills/sg-{retro,start,plan,execute,review,status}/SKILL.md` (6개)
+**대응 기능:** TS-03 (.agents/skills/ adapted skills)
+**피해야 할 함정:** Pitfall 5 (Superpowers 암시), Pitfall 6 (잘못된 디렉토리), Pitfall 9 (상대경로), Pitfall 10 (full-parity 충동)
+
+### 페이즈 4: README Codex 섹션
+**근거:** 모든 구현 완료 후 문서화. 기능 델타 테이블로 정직한 기능 범위 명시.
+**산출물:** `README.md` 수정 (설치 절차, trust 설정, 기능 delta 테이블)
+**대응 기능:** TS-02 (README Codex section)
+**피해야 할 함정:** Pitfall 11 (AGENTS.md 자동 발견 오해)
+
+### 페이즈 순서 근거
+
+페이즈 1 (AGENTS.md) → 의존성 없음, 진입점 먼저 확립
+페이즈 2 (hooks.json) → 페이즈 1과 독립, 최소 작업으로 Stop 훅 활성화
+페이즈 3 (.agents/skills/) → 페이즈 1이 참조하는 스킬 구현
+페이즈 4 (README) → 전체 구현 후 문서화
+
+FEATURES.md 빌드 순서(TS-01 → TS-03 → TS-04 → TS-02) 및 ARCHITECTURE.md 빌드 순서와 일치.
+
+### 연구 플래그
+
+**추가 연구 불필요한 페이즈 (전체):** 공식 Codex 문서에서 직접 검증된 패턴.
+
+**구현 중 확인 필요한 불확실성:**
+- GSD/Superpowers가 `.agents/skills/`에 설치된 Codex 환경에서 `$gsd-plan-phase` 호출 가능 여부 [낮음 신뢰도] — sg-execute Codex 스킬을 "manual prompt assistant"로 명시해 대응
+- Codex hooks 실행 환경의 cwd 기준 — git rev-parse 사용으로 대응
 
 ---
 
-## 핵심 통찰 (3개)
+## 신뢰도 평가
 
-**1. 의존성 순서가 빌드 순서다 — STATUS-01 먼저, SESS-01 나중.**  
-sg-start 복원은 HANDOFF.md 파싱 로직을 sg-status와 공유한다. sg-status 파싱 검증 전에 sg-start 구현하면 버그를 복사한다. 로드맵은 이 순서를 강제해야 한다.
+| 영역 | 신뢰도 | 근거 |
+|------|--------|------|
+| Stack | HIGH | 공식 Codex 개발자 문서에서 직접 확인 (AGENTS.md 형식, `.agents/skills/` 경로, hooks.json 스키마) |
+| Features | HIGH | 공식 Codex 문서 + SubagentStop GitHub 이슈(#21753)로 기능 제한 확인 |
+| Architecture | HIGH | 기존 코드베이스 직접 분석 + Codex docs 교차 검증 |
+| Pitfalls | HIGH | 공식 docs에서 직접 확인된 pitfall. practitioner 출처는 MEDIUM |
 
-**2. transcript_matcher.py 패치는 sg-health와 같은 Phase에 묶어야 한다.**  
-sg-health 배포 직후 첫 실행에서 오발동 발생. 두 작업을 분리하면 사용자에게 broken 상태를 배포하게 된다.
+**전체 신뢰도: HIGH**
 
-**3. sg-health는 완전 read-only여야 한다 — 완료 기준에 명시할 것.**  
-진단 도구가 상태를 변경하면 스페큘레이티브 실행 시 부작용이 생긴다. Phase 완료 기준에 "어떤 파일도 생성/수정하지 않음"을 포함해야 한다.
+### 해소되지 않은 갭
+
+- **GSD/Superpowers Codex 지원 여부 [낮음]:** 실제 환경에서 `$gsd-plan-phase` 작동 여부 미확인. 완화: sg-execute를 "manual prompt assistant"로 명시.
+- **Codex hooks.json 신뢰 설정 UX [중간]:** 버전별로 절차가 달라질 수 있음. README에 최신 절차 기술.
+- **`.codex-plugin/plugin.json` 필요 여부 [낮음]:** 마켓플레이스 등록은 v1.3 비목표이므로 연기.
+
+---
+
+## 출처
+
+### Primary (HIGH 신뢰도)
+- Codex AGENTS.md Guide: https://developers.openai.com/codex/guides/agents-md
+- Codex Skills docs: https://developers.openai.com/codex/skills
+- Codex Hooks docs: https://developers.openai.com/codex/hooks
+- Codex CLI Slash Commands: https://developers.openai.com/codex/cli/slash-commands
+- SubagentStop 미지원 이슈: https://github.com/openai/codex/issues/21753
+- Codex Custom Prompts (deprecated): https://developers.openai.com/codex/custom-prompts
+- Codex Plugin Build: https://developers.openai.com/codex/plugins/build
+- Codex Config Reference: https://developers.openai.com/codex/config-reference
+
+### Secondary (MEDIUM 신뢰도)
+- Codex vs Claude Code 비교: https://www.builder.io/blog/codex-vs-claude-code
+- Superpowers Codex 설치 가이드: https://restato.github.io/blog/installing-codex-superpowers-guide/
+- Skill 경로 참고: https://www.agensi.io/learn/where-are-codex-cli-skills-stored
+
+---
+
+*리서치 완료: 2026-05-21*
+*로드맵 준비 완료: yes*

@@ -1,296 +1,292 @@
-# Pitfalls Research — v1.1 Reliability
+# Pitfalls Research — v1.3 Codex Platform Support
 
-**Domain:** Claude Code plugin — session state management, TSV parsing, diagnostic tooling
-**Researched:** 2026-05-16
-**Scope:** Adding session restoration to sg-start, HANDOFF.md-based stage detection for sg-status, and sg-health diagnostic command
+**Domain:** Claude Code plugin — cross-platform adaptation to OpenAI Codex
+**Researched:** 2026-05-21
+**Scope:** Adding Codex environment support (AGENTS.md, .codex/skills/, README section) to existing super-gsd plugin
+**Confidence:** HIGH (official Codex docs), MEDIUM (migration patterns from practitioner sources)
 
 ---
 
-## Session Restoration Pitfalls
+## Critical Pitfalls
 
-### Pitfall 1: STATE.md frontmatter vs. body desync
+### Pitfall 1: SubagentStop has no Codex equivalent — the core hook is a dead letter
 
-**What goes wrong:** `Phase:` in the YAML frontmatter says `3` but the `## Current Position` body says `Phase: Not started`. `_read_current_phase()` in `stop_hook.py` searches `re.search(r'^Phase:\s*(\S+)', content, re.MULTILINE)` — this hits the body line before the frontmatter equivalent on some files (frontmatter `Phase:` does not exist in current STATE.md; body line is `Phase: Not started`). When sg-start restoration reads this, it surfaces the wrong human-readable state to the user.
+**What goes wrong:** `stop_hook.py` fires on both `Stop` and `SubagentStop` in Claude Code. `SubagentStop` is the hook that detects Superpowers' review completion and nudges the user toward sg-retro. Codex has a `Stop` event, but **no `SubagentStop`**. The entire review-complete → retro transition signal disappears silently in Codex.
 
-**Why it happens:** STATE.md has two authoring paths — GSD's automated updater writes frontmatter, humans or the AI patch the body section. They can diverge between sessions with no enforcement.
+**Why it happens:** Claude Code's subagent model is interactive — a parent agent observes reasoning in real-time and `SubagentStop` fires when the child finishes. Codex subagents return summaries to a main thread; there is no lifecycle callback for "subagent finished." Codex docs confirm: only `SessionStart`, `PreToolUse`, `PermissionRequest`, `PostToolUse`, `UserPromptSubmit`, `Stop` exist.
 
-**Consequence:** sg-start shows "you were on Phase 3" but the actual work was never started, or vice versa. User resumes from wrong context, wastes a prompt turn correcting it.
+**Consequences:**
+- Super-gsd's review-complete → retro nudge does not fire in Codex
+- User gets zero guidance to run sg-retro after Superpowers review
+- The core value proposition (automatic stage handoff) loses its most important trigger
+
+**Prevention:** Do not claim AGENTS.md-only or `.codex/skills/`-only approaches preserve the hook behavior. They don't. The Codex-targeted docs must explicitly state: "In Codex, there is no automatic post-review nudge. After Superpowers review, manually invoke sg-retro." Do not paper over this gap with vague language. This is a hard architectural limitation, not a configuration issue.
+
+**Detection:** User runs Superpowers review in Codex, no sg-retro prompt appears. Assumed working because no error was thrown.
+
+**Phase:** Phase 1 (AGENTS.md) — must document clearly. Phase 2 (.codex/skills/) — do not attempt to replicate hook behavior with a skill workaround; it will be misleading.
+
+---
+
+### Pitfall 2: `${CLAUDE_PLUGIN_ROOT}` is undefined in Codex — all hook paths silently fail
+
+**What goes wrong:** `hooks.json` uses `python3 "${CLAUDE_PLUGIN_ROOT}/hooks/rule_runner.py"`. The env variable `CLAUDE_PLUGIN_ROOT` is injected by Claude Code's plugin loader. In Codex, this variable does not exist. If a user tries to register the hooks manually in `.codex/config.toml`, every hook command expands to `python3 "/hooks/rule_runner.py"` and fails with file-not-found.
+
+**Why it happens:** Plugin root injection is a Claude Code-specific mechanism. Codex's hook configuration in `~/.codex/config.toml` or `.codex/config.toml` (TOML format) requires absolute paths or paths relative to a known anchor. No equivalent of `CLAUDE_PLUGIN_ROOT` is provided.
+
+**Consequences:**
+- Any attempt to transplant `hooks.json` to Codex produces silent failures
+- `rule_runner.py` (PreToolUse hook for lesson rules) does not fire
+- If a user copies hooks.json verbatim to `.codex/hooks.json`, all three hooks fail without error messages visible to the user
+
+**Prevention:** AGENTS.md and `.codex/` artifacts must never reference `${CLAUDE_PLUGIN_ROOT}`. For any Codex-targeted hook configuration: use `$HOME`-relative paths or document that the user must substitute the absolute path at install time. More practically: do not provide a Codex hooks.json at all in v1.3. Hook transplantation is out of scope without a proper install script.
+
+**Phase:** Phase 2 (.codex/skills/) — if any hook files are provided for Codex, they must be clearly labeled "requires path substitution." Phase 1 (AGENTS.md) — AGENTS.md should not reference hook files.
+
+---
+
+### Pitfall 3: Codex has no native custom slash commands — sg- commands do not exist as typed commands
+
+**What goes wrong:** In Claude Code, `sg-execute`, `sg-plan`, `sg-retro` etc. are slash commands registered via `plugin.json` → command files. In Codex, the equivalent is custom prompts (now **deprecated**) or skills. Codex's built-in slash commands are fixed: `/model`, `/review`, `/skills`, `/hooks` etc. A user typing `/sg-execute` in Codex gets "command not found."
+
+**Why it happens:** Codex has no mechanism for registering custom Markdown-based slash commands via a plugin manifest. The `plugin.json` `commands:` array is a Claude Code construct. Codex's `/prompts:` system existed but was deprecated in favor of skills.
+
+**Consequences:**
+- Every AGENTS.md instruction that says "run `/sg-execute`" produces user confusion
+- Users attempting to follow Claude Code workflow steps in Codex hit dead ends immediately
+- If AGENTS.md is written from Claude Code vocabulary (slash commands) it is actively misleading in Codex
+
+**Prevention:** AGENTS.md must use Codex vocabulary exclusively — reference skill names (`$sg-execute` style or `@sg-execute`) or plain English ("ask Codex to execute the current phase"). Do not copy-paste Claude Code slash command instructions into AGENTS.md. The command vocabulary section must be Codex-native.
+
+**Phase:** Phase 1 (AGENTS.md) — highest risk area. All command references need Codex-native reformulation.
+
+---
+
+### Pitfall 4: AGENTS.md byte limit silently truncates instructions at 32 KiB
+
+**What goes wrong:** AGENTS.md has a hard cap of **32 KiB** by default (`project_doc_max_bytes`). super-gsd's full workflow includes sg-retro (6 lenses), state machine logic, lessons ranking rationale, hook behavior explanations, and 13+ command descriptions. If the AGENTS.md for Codex naively mirrors CLAUDE.md or the full project context, it will exceed 32 KiB and be silently truncated mid-instruction.
+
+**Why it happens:** Codex reads AGENTS.md "once per session" and caps total instruction bytes. The cap is configurable but most users won't override it. Truncation happens without warning to the user or author — the instruction chain is simply cut off.
+
+**Consequences:**
+- Instructions after the truncation point are never seen by Codex
+- If the truncation cuts mid-way through a command list, some sg-* skills appear undefined
+- Critical constraints (non-invasive, append-only HANDOFF) silently absent from context
+
+**Prevention:** AGENTS.md for Codex must be written as a *summary reference*, not a full specification. Target ≤ 8 KiB. Key information: what the workflow is, which skills exist and when to invoke them, where state files live, and what not to modify. Link to `.codex/skills/` for full per-command instructions. Never paste PLAN.md bodies or lesson rule text into AGENTS.md.
+
+**Phase:** Phase 1 (AGENTS.md) — structure decision. AGENTS.md must be intentionally minimal.
+
+---
+
+### Pitfall 5: sg-execute invokes `superpowers:executing-plans` Skill — undefined in Codex
+
+**What goes wrong:** `sg-execute.md` step 9 ends with `Skill(skill="superpowers:executing-plans", args=...)`. Superpowers is a Claude Code plugin. In Codex, there is no Superpowers plugin, no `executing-plans` skill, and no `Skill()` invocation syntax. The entire execution handoff mechanism is Claude Code-specific.
+
+**Why it happens:** Superpowers is not ported to Codex. The tool call `Skill(skill=...)` is a Claude Code API construct. Codex has its own skill invocation via `$skill-name` in prompts or implicit matching, but these are different mechanisms.
+
+**Consequences:**
+- `.codex/skills/sg-execute` cannot replicate the actual behavior of `sg-execute.md`
+- A Codex-adapted sg-execute would be a degraded stub: it can prepare the plan prompt but cannot invoke Superpowers
+- If the Codex skill pretends to do the full handoff, users will assume Superpowers ran when it didn't
+
+**Prevention:** Codex-adapted sg-execute in `.codex/skills/` must be explicitly a *manual prompt helper* — it assembles the plan context and tells the user "paste this into Codex to execute." It must not claim to be a full replacement. Name it clearly: "sg-execute-codex" or label it "(Codex — manual prompt variant)."
+
+**Phase:** Phase 2 (.codex/skills/) — each adapted skill must document its degradation vs. the Claude Code original.
+
+---
+
+## Moderate Pitfalls
+
+### Pitfall 6: Codex skills live in `.agents/skills/`, not `.codex/skills/`
+
+**What goes wrong:** The milestone target document specifies `.codex/skills/` as the skill directory. Codex's actual skill discovery order is: `.agents/skills/` (cwd), parent directories' `.agents/skills/`, `$REPO_ROOT/.agents/skills/`, `$HOME/.agents/skills/`. The `.codex/` directory is for configuration (config.toml, hooks.json), not skills.
+
+**Why it happens:** The directory name intuition `.codex/skills/` sounds correct but is not an official Codex path. Official docs confirm only `.agents/skills/` hierarchy for skill discovery.
+
+**Consequences:**
+- Skills placed in `.codex/skills/` are invisible to Codex's auto-discovery
+- User sees no sg-* skills in `/skills` list despite files existing
+- Time lost debugging why skills "don't appear" when the location is simply wrong
+
+**Prevention:** Use `.agents/skills/` for all Codex skills. The `.codex/` directory is for `config.toml` and `hooks.json` only. Update the milestone target before implementation begins.
+
+**Phase:** Phase 2 planning — catch before any files are created.
+
+---
+
+### Pitfall 7: AGENTS.md instruction chain rebuilds every session — no persistent HANDOFF.md awareness
+
+**What goes wrong:** AGENTS.md is read "once per run." Codex has no mechanism to inject dynamic content (current HANDOFF.md state, current phase) into the AGENTS.md context automatically. Claude Code's stop_hook.py reads `.planning/HANDOFF.md` at runtime and generates context-specific guidance. In Codex, AGENTS.md is static.
+
+**Why it happens:** AGENTS.md is a static file. Codex's `Stop` hook can inject a `systemMessage`, but it receives no equivalent of Claude Code's `${CLAUDE_PLUGIN_ROOT}` context. Writing a Codex hook that reads HANDOFF.md is possible but requires a functioning hooks setup (see Pitfall 2).
+
+**Consequences:**
+- AGENTS.md can describe the workflow but cannot tell the user "you are on Phase 3, Stage superpowers"
+- Users must know their current state from `.planning/HANDOFF.md` themselves
+- The session continuity that sg-start/sg-status provides in Claude Code is absent in Codex
+
+**Prevention:** AGENTS.md must instruct the user to manually check `.planning/HANDOFF.md` and `.planning/STATE.md` for current state. Include a one-line bash command in AGENTS.md for quick state check. Do not promise dynamic context injection — it requires a working Codex hooks setup.
+
+**Phase:** Phase 1 (AGENTS.md) — state-check instructions must be explicit and manual.
+
+---
+
+### Pitfall 8: Two-platform divergence accelerates as sg-* commands evolve
+
+**What goes wrong:** sg-execute.md is updated in Claude Code (e.g., new idempotency logic, new HANDOFF column). The `.agents/skills/sg-execute/SKILL.md` for Codex is a static copy from the day it was authored. Now they describe different behavior. Users with both environments get inconsistent results.
+
+**Why it happens:** There is no shared source-of-truth mechanism. GSD handles this by maintaining a canonical codebase and running a convert-at-install translation pipeline. super-gsd v1.3 has no such pipeline — it will author Codex files by hand.
+
+**Consequences:**
+- Every Claude Code change requires a manual matching update to the Codex skills
+- Divergence is invisible until a user files a bug: "this doesn't work in Codex"
+- At 13 commands + sg-retro skill + 6 lenses, the delta surface is large
 
 **Prevention:**
-- Read HANDOFF.md last row as the authoritative stage source (it is append-only and machine-written). Use STATE.md only for phase number/name metadata, not for stage truth.
-- When reading STATE.md body, extract phase number from the `^Phase: (\d[\w.-]*)` pattern rather than the `Phase: Not started` prose. Fall back to frontmatter `milestone:` if body is unparseable.
-- Restoration should display both sources and flag a mismatch explicitly rather than silently picking one.
+- Minimize Codex skill content. Each `.agents/skills/sg-*/SKILL.md` should describe *what the command achieves* (goal, inputs, outputs) not *how to implement it* (no inline bash, no regex). This way, the implementation diverges but the contract stays in sync.
+- Add a comment block at the top of each Codex skill: `<!-- Codex adaptation of commands/sg-<name>.md — update this file when the Claude Code command changes -->` so drift is at least flagged.
+- Explicitly mark v1.3 as "documentation-first Codex support." Do not promise behavior parity.
 
-**Phase:** SESS-01
-
----
-
-### Pitfall 2: HANDOFF.md missing or empty — no graceful default
-
-**What goes wrong:** sg-start runs on a fresh clone or after someone manually deleted `.planning/HANDOFF.md`. The restoration logic attempts to read the file, gets FileNotFoundError, and either crashes silently or presents a misleading "no prior session" without distinguishing "truly fresh" from "file was deleted."
-
-**Why it happens:** The file is created on first `sg-execute` call; it does not exist at project init time. `sg-start` currently does not touch HANDOFF.md at all.
-
-**Consequence:** False "no prior session" message even though STATE.md shows work was done. User does not get the resume prompt that would have re-oriented them.
-
-**Prevention:**
-- Check for file existence before opening. If missing and STATE.md shows phase > 0, surface warning: "HANDOFF.md missing — cannot determine stage. Check .planning/STATE.md manually."
-- If both are missing/empty, stage defaults to `init` (same as sg-status D-27 rule). This is the one case where "no prior session" is correct.
-
-**Phase:** SESS-01
+**Phase:** Cross-cutting — maintenance strategy must be decided before Phase 2 authoring.
 
 ---
 
-### Pitfall 3: Conflicting signals — HANDOFF.md says `superpowers`, STATE.md says `hookify`-era phase
+### Pitfall 9: `.planning/` relative path assumptions break when Codex cwd differs
 
-**What goes wrong:** User ran hookify but did not run sg-execute for the next phase. HANDOFF.md last row `To` is `superpowers` (from the previous cycle), but STATE.md body says the phase is further along. sg-start restoration reads HANDOFF.md `To` and tells the user to go back to `/hookify`, skipping the phase that was already done.
+**What goes wrong:** Every sg-* command uses relative paths: `.planning/HANDOFF.md`, `.planning/STATE.md`, `.planning/config.json`. In Claude Code, the plugin executes with cwd at project root (same issue documented in v1.1 CC-3). In Codex, `codex exec` or a subagent may run from a subdirectory or a temp working directory. Relative paths fail silently.
 
-**Why it happens:** HANDOFF.md tracks only explicit `sg-execute` handoffs. Hookify completion does not write a row. The gap between `superpowers` → `hookify` is not recorded unless sg-learn explicitly appended a row.
+**Why it happens:** Codex's `codex exec` subcommand and subagent model have independent working directories. The Codex skill invocation inherits whatever cwd Codex was launched from — not necessarily the git root.
 
-**Consequence:** Session restoration recommends wrong next command. User re-runs hookify unnecessarily.
+**Consequences:**
+- `.agents/skills/sg-*/SKILL.md` bash blocks fail with "No such file or directory" when run from non-root
+- HANDOFF.md is not found; skill falls back to `init` state silently
+- Errors look like missing files rather than wrong cwd, making debugging harder
 
-**Prevention:**
-- sg-learn should append a `hookify` row to HANDOFF.md on execution (if not already present for this phase + plan hash). This closes the tracking gap.
-- Restoration logic should cross-check: if HANDOFF.md says `superpowers` but STATE.md phase is the same phase and lessons file exists for that phase, infer that hookify already ran and suggest next phase instead.
-- Clearly document in HANDOFF.md schema that hookify completion must be recorded.
+**Prevention:** All Codex skill bash blocks should resolve project root via `git rev-parse --show-toplevel` before any `.planning/` access:
+```bash
+PROJECT_ROOT=$(git rev-parse --show-toplevel 2>/dev/null) || PROJECT_ROOT="."
+HANDOFF="$PROJECT_ROOT/.planning/HANDOFF.md"
+```
+This is the same fix as CC-3 in v1.1. Apply it systematically to all Codex skills.
 
-**Phase:** SESS-01 (detection); depends on sg-learn writing HANDOFF.md row — may require a sub-task in that command.
-
----
-
-### Pitfall 4: Empty last row / trailing whitespace mistaken for data
-
-**What goes wrong:** The table has a visual trailing blank line or a row of only `| | | | | |`. The `grep -E '^\| [0-9]{4}-'` pattern in sg-status correctly skips it (requires timestamp-shaped start), but a raw Python restoration that splits on `\n` and takes `lines[-1]` will get an empty string and crash on column extraction.
-
-**Why it happens:** Markdown table editors often add trailing newlines. Append-only write code that uses `f.write(row + '\n')` is fine, but if a human edits the file or a tool reformats it, blank lines appear.
-
-**Prevention:**
-- In Python: strip lines and filter empty before taking `[-1]`.
-- Prefer the same `grep -E '^\| [0-9]{4}-' | tail -1` idiom used in sg-status for all parsers — it is whitespace-immune.
-
-**Phase:** SESS-01, STATUS-01
+**Phase:** Phase 2 (.codex/skills/) — apply to all bash blocks in Codex skills.
 
 ---
 
-## HANDOFF.md Parsing Pitfalls
+### Pitfall 10: Over-engineering Codex skills as full Claude Code behavior replicas
 
-### Pitfall 1: TSV-ish Markdown table column misalignment from padding inconsistency
+**What goes wrong:** The impulse is to port all 13 sg-* commands as full `.agents/skills/` with complete bash blocks, idempotency logic, HANDOFF.md writes, phase resolution, lessons ranking, etc. The result is 13 × 100-200 lines of Codex-specific bash that is immediately stale, partially broken (no SubagentStop, no Superpowers skill), and maintenance-heavy.
 
-**What goes wrong:** The table uses `|`-delimited rows. Column extraction via `awk -F'|' '{print $5}'` assumes exactly 5 data columns plus leading/trailing pipes = 7 `|`-split fields. If a value in any column contains a `|` character (e.g., a plan hash that was manually patched with a note like `abc123|fix`), awk shifts all subsequent columns by one and extracts the wrong value for `To`.
+**Why it happens:** The natural instinct when adding platform support is to achieve parity. But parity is impossible here — hooks are missing, Superpowers is missing, the command system is different. Full-parity attempts hide the gaps behind complexity instead of surfacing them honestly.
 
-**Why it happens:** Markdown table pipes are not escaped. Plan Hash column is 7-char hex (safe), but Phase column can contain arbitrary text if a human edits it.
+**Consequences:**
+- Users believe they have full super-gsd in Codex but are silently missing the most important behaviors
+- Maintenance burden is 2× immediately, heading toward abandonment of Codex files
+- Bug reports for "Codex version" are impossible to triage because the bash logic is duplicated
 
-**Consequence:** `To` column extracts garbage, sg-status prints "Unknown stage" error, the user sees a broken status line every time.
+**Prevention:** The correct Codex support scope for v1.3 is:
+1. **AGENTS.md** — workflow overview, state file locations, skill reference list, manual state check command
+2. **`.agents/skills/`** — light-wrapper skills that generate the right *prompts* but delegate execution to Codex's native agent loop, not replicate Claude Code's bash
+3. **README Codex section** — explicit capability table: what works, what is degraded, what is absent
 
-**Prevention:**
-- Add schema validation in sg-health: assert each data row has exactly 7 pipe characters (`echo "$ROW" | tr -cd '|' | wc -c` should equal 6 — 5 fields + 2 border pipes).
-- Lock Phase column to the `\d+-[\w-]+` pattern in sg-execute before appending.
-- In Python parsers, split on `|` and assert `len(parts) == 7` before extracting by index.
+Do not port lessons_ranker.py, rule_runner.py, stop_hook.py to Codex in v1.3.
 
-**Phase:** HEALTH-01 (validation); STATUS-01 (parser hardening)
-
----
-
-### Pitfall 2: `To` column extraction returns empty string on malformed row
-
-**What goes wrong:** `awk -F'|' '{gsub(/ /,"",$5); print $5}'` — if $5 is just spaces (separator row `| --- | --- |...`) or the row matched by grep is actually the schema separator, the result is an empty string. sg-status then hits the "not one of init/gsd-plan/..." branch and prints a corruption error, which is a false positive.
-
-**Why it happens:** The `grep -E '^\| [0-9]{4}-'` pattern anchors on a timestamp, so separator rows (`| ---- |`) are already excluded. The real risk is if a data row has a space-only `To` column (human forgot to fill it in).
-
-**Prevention:**
-- After awk extraction, check `[ -z "$STAGE" ]` before the enum validation — map empty string to `init` and log a warning rather than hard error.
-- sg-execute must validate `To` is non-empty before appending. This prevents the malformed row from entering.
-
-**Phase:** STATUS-01
+**Phase:** Planning decision — scope must be fixed before authoring begins.
 
 ---
 
-### Pitfall 3: Concurrent write collision — sg-execute appending while sg-status reads
+## Minor Pitfalls
 
-**What goes wrong:** On a fast machine, sg-execute runs in one Claude Code subagent while sg-status is invoked in the same session. The append (`>>`) to HANDOFF.md is not atomic on all filesystems. sg-status reads a partial row (truncated mid-write) and gets a column count mismatch.
+### Pitfall 11: AGENTS.md placed in repo root conflicts with project-level AGENTS.md
 
-**Why it happens:** Bash `>>` append is not atomic for writes > pipe buffer size. A 150-byte TSV row is well under the 4KB pipe buffer, so this is low probability — but not zero, especially over network filesystems (NFS, SMB) or Docker volumes.
+**What goes wrong:** super-gsd ships an AGENTS.md file in the repo root. When a user clones super-gsd itself as a project to develop, Codex reads this AGENTS.md and applies super-gsd's own workflow guidance to super-gsd development. This is correct. But when super-gsd is *installed as a plugin* into another project, the AGENTS.md in the super-gsd plugin directory is not at that project's root — Codex won't discover it automatically.
 
-**Consequence:** sg-status reads truncated row, extracts garbled stage, prints false corruption warning.
+**Why it happens:** AGENTS.md discovery is cwd-upward from the user's current directory. A plugin installed at `~/.claude/plugins/super-gsd/` is not on the cwd-upward path.
 
-**Prevention:**
-- Write to a `.tmp` file, then `mv` (atomic rename) to the final path. This is the standard POSIX write-then-rename pattern.
-- Alternatively, use a Python writer with `fcntl.flock(f, fcntl.LOCK_EX)` before append and release after. This handles concurrent writes but not concurrent read-during-write scenarios.
-- For this system's actual usage pattern (single user, sequential commands), the risk is low. Flag as LOW priority — document the known limitation in sg-health output.
+**Consequences:**
+- AGENTS.md in the plugin directory is never read by Codex in normal usage
+- Users must manually copy or symlink AGENTS.md to their project root
 
-**Phase:** Cross-cutting; LOW priority for v1.1. Document in HEALTH-01 output as known limitation.
+**Prevention:** README must explain: "To use super-gsd guidance in Codex, copy `.agents/AGENTS.md` to your project root or add a `[project_doc_fallback_filenames]` entry in your Codex config." Do not assume AGENTS.md auto-discovery for installed plugins.
 
----
-
-### Pitfall 4: File encoding issues — UTF-8 BOM or non-UTF-8 phase names
-
-**What goes wrong:** A phase name like `인계-테스트` appears in the Phase column. Bash `awk` with default locale on macOS and some Linux systems treats multi-byte characters correctly, but `wc -c` pipe counts bytes not characters — pipe count check for `|` characters passes, but column content is garbled in the extracted string.
-
-**Why it happens:** Phase column is free-form text that GSD's Korean-language conventions can populate with Korean characters.
-
-**Prevention:**
-- `awk` column extraction is fine — it splits on `|` and prints raw bytes, which Python then decodes correctly.
-- The real risk is if a phase name contains a literal `|` character — prevent that in sg-execute by validating the phase name pattern before writing.
-- sg-health should open HANDOFF.md with `encoding='utf-8'` (not system default) in Python parsers.
-
-**Phase:** HEALTH-01 (validation), STATUS-01 (parser)
+**Phase:** Phase 3 (README) — documentation clarity.
 
 ---
 
-## sg-health Pitfalls
+### Pitfall 12: Codex `Stop` hook can auto-continue — different semantics from Claude Code `Stop`
 
-### Pitfall 1: False negative — showing "healthy" when a dependency is not actually usable
+**What goes wrong:** Claude Code's `Stop` hook outputs a `systemMessage` to display guidance and the session stops. Codex's `Stop` hook can return `decision: "block"` to *automatically continue* the session with the stop reason as a new prompt. A naive port of stop_hook.py that returns the `systemMessage` guidance text in a `block` decision would cause Codex to treat the guidance as a user prompt and start a new agent turn — executing workflow steps the user didn't request.
 
-**What goes wrong:** sg-health checks that `gsd-new-project` skill file exists on disk, but the Claude Code plugin registration is broken (plugin not in marketplace, or hooks.json path is wrong). The disk check passes, but the skill cannot actually be invoked.
+**Why it happens:** The semantics of `Stop` differ: Claude Code's stop hook is purely advisory (display a message), Codex's stop hook can be loop-continuing. Same JSON field names, different behavior on specific output patterns.
 
-**Why it happens:** File existence and plugin registration are two separate states. A plugin can be installed but not registered with Claude Code's active session.
+**Consequences:**
+- If anyone ports stop_hook.py to Codex and uses `decision: "block"`, it may trigger unintended automatic task execution
+- Silent behavior divergence that looks correct (guidance shown) but acts wrong (session continues)
 
-**Consequence:** User runs sg-start expecting GSD to launch and gets "skill not found" error mid-session. They already passed the health check, so they trust the tool.
+**Prevention:** For any Codex stop hook, always use `decision: "pass"` or no decision field. Never use `decision: "block"` for guidance-only messages. Document this difference prominently if providing a Codex hooks template.
 
-**Prevention:**
-- Check the hooks registration separately from file existence: verify `${CLAUDE_PLUGIN_ROOT}/hooks/hooks.json` exists AND is valid JSON AND contains at least one `Stop` hook with the correct command path.
-- For dependency plugins (GSD, Superpowers, Hookify), check both the skill file AND whether the `.claude-plugin/plugin.json` for that plugin exists in the expected location. If the location is unknown, document that sg-health can only verify file presence, not live registration — and say so in the output.
-- Never report "All systems go" without hedging: "Installation files found — live registration not verifiable without invoking the skill."
-
-**Phase:** HEALTH-01
+**Phase:** If hooks are provided — Phase 2 or later. For v1.3 scope (no hooks), note in README.
 
 ---
 
-### Pitfall 2: False positive — reporting broken when the user has a non-standard install path
+### Pitfall 13: Codex `UserPromptSubmit` hook has no Claude Code equivalent — rule_runner scope gap
 
-**What goes wrong:** sg-health hard-codes the expected location of GSD as `~/.claude/plugins/get-shit-done-cc/`. A user who installed GSD via a different method (e.g., from a fork, at a custom path, or via npm global) will get "GSD not found" even though GSD works fine.
+**What goes wrong:** The migration research note in `PROJECT.md` confirms: "rule_runner.py prompt 이벤트 미지원 — PreToolUse hook 아키텍처 제약 — prompt submit 이벤트는 Claude Code PreToolUse로 캐치 불가." Ironically, Codex *does* have `UserPromptSubmit`. This creates a gap in the other direction: if super-gsd eventually adds prompt-level rule checks in Claude Code, the Codex hook could fire them — but the current Claude Code version cannot. Authors may mistakenly add Codex-only functionality and not notice the asymmetry.
 
-**Why it happens:** Claude Code has no standardized plugin discovery API. The install paths vary by installation method.
+**Prevention:** Keep rule_runner.py out of Codex scope entirely in v1.3. Flag in README: "Prompt-level rule hooks are not implemented in this release."
 
-**Consequence:** User runs sg-health on a working system and gets false "GSD missing" error. They lose trust in the diagnostic tool or waste time reinstalling a working dependency.
-
-**Prevention:**
-- Try multiple known paths in order: `~/.claude/plugins/`, `~/.config/claude/plugins/`, `${CLAUDE_PLUGIN_ROOT}/../`. Report which paths were checked.
-- Clearly label the check as "looking for known install paths" — not "definitively confirming GSD is installed."
-- Offer a manual override: if `SG_HEALTH_GSD_PATH` environment variable is set, use that path instead.
-- Treat missing dependency as WARNING, not ERROR, and show the checked paths so the user can diagnose.
-
-**Phase:** HEALTH-01
+**Phase:** Future — not v1.3 scope.
 
 ---
 
-### Pitfall 3: Slow checks blocking the user — sequential file I/O and path traversal
+## Phase-Specific Warning Table
 
-**What goes wrong:** sg-health checks 10+ paths sequentially (hooks.json, plugin.json for 3 plugins, STATE.md, HANDOFF.md schema, config.json, lessons directory, etc.). On a network filesystem or a slow machine, this takes 3-5 seconds. The user sees nothing and assumes the command hung.
-
-**Why it happens:** Shell `ls` and `cat` calls are sequential by default. Each takes a filesystem round-trip.
-
-**Prevention:**
-- Run all file existence checks in parallel using `&` + `wait`: group checks into: (a) local `.planning/` files, (b) hooks files, (c) dependency plugin paths. Launch all three groups simultaneously.
-- Print a "Checking..." header immediately before checks start so the user knows the command is running.
-- Set a hard timeout: if any single check takes > 2s, report "check timed out" for that item and continue. Never block the entire diagnostic on one slow path.
-- Keep total expected runtime under 1 second on local filesystem.
-
-**Phase:** HEALTH-01
-
----
-
-### Pitfall 4: HANDOFF.md schema validation is too strict, breaking on valid future rows
-
-**What goes wrong:** sg-health validates each HANDOFF.md data row against the v1.0 schema (exactly 5 columns, `To` must be one of 5 enum values). v1.1 adds a new stage (e.g., `session-restored`) to HANDOFF.md. sg-health, written in v1.1, then flags its own newly written rows as schema violations.
-
-**Why it happens:** Enum validation and column count validation are written against the schema at time of coding, not against a versioned schema file. As the system evolves, the validator becomes stale.
-
-**Prevention:**
-- Read the allowed `To` enum from a single source of truth — either a constant in a shared Python module or from the schema comment at the top of HANDOFF.md itself.
-- For v1.1, the enum is: `init`, `gsd-plan`, `superpowers`, `review`, `hookify`. Do not add new values without updating the validator simultaneously.
-- Schema validation warnings should be WARNING severity, not ERROR — a schema mismatch does not break the workflow, it only signals drift.
-
-**Phase:** HEALTH-01
+| Phase Topic | Likely Pitfall | Severity | Mitigation |
+|-------------|---------------|----------|------------|
+| AGENTS.md authoring | Uses Claude Code slash command syntax (`/sg-execute`) | CRITICAL | Rewrite all command references in Codex vocabulary |
+| AGENTS.md size | Exceeds 32 KiB from full workflow documentation | HIGH | Target ≤ 8 KiB; link to `.agents/skills/` for detail |
+| AGENTS.md discovery | Plugin AGENTS.md not auto-discovered when installed | MEDIUM | Explain manual copy/symlink in README |
+| `.codex/skills/` location | Skills placed in `.codex/skills/` instead of `.agents/skills/` | HIGH | Use `.agents/skills/` — Codex discovery only scans `.agents/skills/` |
+| Codex skill — sg-execute | Claims to invoke Superpowers, which does not exist in Codex | CRITICAL | Explicit "manual prompt assistant" framing, not a Superpowers replacement |
+| Codex skill — review→retro | Implies SubagentStop hook fires after review, which it cannot | CRITICAL | Remove any implication of automatic post-review nudge |
+| Codex skill — hooks | References `${CLAUDE_PLUGIN_ROOT}` which is undefined | HIGH | No hook file in v1.3; document separately |
+| Codex skill — paths | Relative `.planning/` paths fail in non-root cwd | HIGH | Use `git rev-parse --show-toplevel` as path anchor |
+| README Codex section | Presents Codex and Claude Code as feature-equivalent | HIGH | Explicit capability delta table: works / degraded / absent |
+| Scope creep | Full bash-parity skills for all 13 commands | HIGH | Scope = prompt-helper skills only, not behavior replicas |
+| Codex Stop hook | `decision: "block"` causes unintended loop-continue | MEDIUM | Always use `decision: "pass"` for advisory messages |
+| Maintenance drift | Codex skills diverge silently as Claude Code commands evolve | MEDIUM | Canonical source comment in each Codex skill file |
 
 ---
 
-### Pitfall 5: Stop hook fires on sg-health completion, triggering false workflow advance prompt
+## Cross-Cutting: Honest Capability Statement
 
-**What goes wrong:** sg-health outputs text containing the word `hookify` (e.g., "Hookify: installed"). The `stop_hook.py` transcript scanner finds `hookify` in the last 200 lines and emits "Hookify complete. Run sg-plan..." — a spurious workflow advance message.
+The most dangerous pitfall is not technical — it is documentation that implies feature equivalence when none exists. The honest capability delta for Codex vs. Claude Code:
 
-**Why it happens:** `transcript_matcher.py` pattern `'hookify'` is a substring match. It triggers on any mention of the word, including diagnostic output. `HOOKIFY_SIGNALS = ['hookify', ...]` — the first pattern is the entire word in any case.
+| Feature | Claude Code | Codex |
+|---------|------------|-------|
+| sg-* commands as slash commands | Native (plugin.json) | Not available; skills only |
+| Automatic post-plan nudge (Stop hook) | Yes | Possible with hooks setup |
+| Automatic post-review nudge (SubagentStop) | Yes | **Not possible — no SubagentStop** |
+| Superpowers:executing-plans invocation | Native | Not possible — Superpowers not ported |
+| Rule enforcement (rule_runner.py PreToolUse) | Yes | Possible with hooks setup |
+| Lessons ranking reminder at sg-plan/sg-execute | Yes (automatic) | Manual (user must ask) |
+| sg-retro 6-lens retrospective | Full skill | Portable as `.agents/skills/sg-retro` |
+| .planning/STATE.md + HANDOFF.md state tracking | Full | Manual inspection only |
+| sg-health diagnostics | Full Claude Code plugin check | Codex-specific version needed |
 
-**Consequence:** User runs sg-health, finishes, and immediately gets a "Hookify complete" message telling them to run sg-plan. This is confusing and erodes trust.
-
-**Prevention:**
-- Make HOOKIFY_SIGNALS patterns more specific: use `'Retrospective complete'`, `'hooks generated'`, `'patterns extracted'` — drop the bare `'hookify'` string, or require `'hookify complete'` (lowercase, full phrase).
-- Alternatively, sg-health output should avoid containing the signal phrases. Use "Hookify plugin" instead of bare "hookify" in output.
-- Add a negative signal check: if the transcript also contains `sg-health` near the hookify mention, suppress the hookify signal. This is the more robust fix.
-
-**Phase:** HEALTH-01 (output phrasing); cross-references stop hook behavior. Also affects transcript_matcher.py (independent fix).
-
----
-
-## Cross-cutting Concerns
-
-### CC-1: Single regex `^Phase:\s*(\S+)` is fragile across STATE.md evolutions
-
-`_read_current_phase()` in `stop_hook.py` uses this regex. The current STATE.md has `Phase: Not started` in the body and no `Phase:` key in the frontmatter. The regex returns `Not` — silently wrong. Any code building on this for session restoration will inherit the bug.
-
-**Fix:** Parse frontmatter YAML separately using Python's `yaml.safe_load()` between the `---` delimiters. Fall back to body section only if frontmatter has no phase info. Do not mix the two with a single regex scan.
-
-**Affects:** stop_hook.py (existing), sg-start restoration (new SESS-01), sg-status (STATUS-01).
+Producing documentation that covers up the "Not possible" cells is the highest-severity pitfall in this entire milestone.
 
 ---
 
-### CC-2: `auto_advance: false` guard exists only in stop_hook.py — not in commands
+## Sources
 
-sg-start restoration and sg-status read HANDOFF.md regardless of `auto_advance` setting. This is correct — those are read-only status commands, not auto-advance actions. But sg-health should also check and display the `auto_advance` config value so the user understands why hooks are silent.
-
-**Fix:** sg-health output should include a "Config" section showing `auto_advance` current value. No behavior change — just visibility.
-
-**Affects:** HEALTH-01.
-
----
-
-### CC-3: All three new features assume `.planning/` exists in cwd
-
-sg-start, sg-status, and sg-health all open `.planning/HANDOFF.md`, `.planning/STATE.md` with relative paths. If the user invokes a command from a subdirectory of the project, all reads fail silently.
-
-**Why this happens:** `load_config()` uses `open('.planning/config.json')` — relative to cwd, not script location. The existing hook uses `__file__`-based resolution for the hook script itself but not for data files.
-
-**Fix:** All file opens for `.planning/` should resolve relative to the project root. Detect project root by walking up from cwd until `.planning/` is found (same pattern as git root detection). If not found, report error clearly.
-
-**Affects:** All three v1.1 features.
-
----
-
-### CC-4: No idempotency guard on session restoration prompt
-
-sg-start is documented as idempotent — "same phase, called multiple times, no duplicate context." But a restoration prompt shown on second invocation would be confusing ("you were working on phase 3" when the user just completed phase 3 and is starting phase 4). There is no "last restoration timestamp" tracking.
-
-**Fix:** Record restoration in HANDOFF.md as a `session-restored` row (or equivalent), or check if HANDOFF.md last row is already more recent than the session gap threshold (e.g., < 1 hour ago means no restoration needed). The simplest version: only show the restoration prompt if last HANDOFF.md timestamp is more than N minutes old.
-
-**Affects:** SESS-01.
-
----
-
-### CC-5: Diagnostic tool (sg-health) must not modify state
-
-sg-health must be a pure read operation. If it creates missing directories, writes config defaults, or "fixes" the HANDOFF.md schema, it becomes dangerous to run speculatively. Users run health checks before understanding the system — a health check that mutates state violates the principle of least surprise.
-
-**Fix:** sg-health outputs only. Any remediation must be a separate `sg-repair` command (out of scope for v1.1) or clear manual instructions shown in the output. No writes, no `mkdir`, no file creation.
-
-**Affects:** HEALTH-01.
-
----
-
-## Phase-Specific Summary
-
-| Phase | Pitfall | Severity | Mitigation |
-|-------|---------|----------|------------|
-| SESS-01 | STATE.md phase extraction returns prose (`Not`) not number | HIGH | Parse frontmatter YAML, not body prose |
-| SESS-01 | HANDOFF.md missing on fresh clone | MEDIUM | FileNotFoundError → `init` default + warning |
-| SESS-01 | Conflicting stage signals (HANDOFF last = superpowers, but hookify already ran) | HIGH | sg-learn must append hookify row; restoration cross-checks lessons dir |
-| SESS-01 | Restoration prompt shown when session is recent (false resume) | MEDIUM | Timestamp threshold or session marker row |
-| STATUS-01 | Empty `To` column after awk extraction | MEDIUM | Map empty → `init` + warning instead of hard error |
-| STATUS-01 | Column misalignment from `|` in Phase name | LOW | Validate pipe count in sg-health; lock Phase column pattern in sg-execute |
-| HEALTH-01 | False negative: files present, plugin not live-registered | HIGH | Hedge output: "files found, live registration unverifiable" |
-| HEALTH-01 | False positive: non-standard GSD install path | HIGH | Check multiple known paths; accept env var override; use WARNING not ERROR |
-| HEALTH-01 | sg-health output triggers stop hook false positive | HIGH | Fix transcript_matcher.py bare `'hookify'` pattern; use `'hookify complete'` |
-| HEALTH-01 | Slow sequential checks block user > 2s | MEDIUM | Parallel checks with `&` + `wait`; hard timeout per check |
-| HEALTH-01 | Schema validation too strict for future rows | LOW | Read enum from single source of truth; use WARNING severity |
-| HEALTH-01 | sg-health must not mutate state | HIGH | Read-only contract; no mkdir, no writes |
-| Cross-cut | Relative `.planning/` path breaks in subdirectories | MEDIUM | Walk up to project root before opening files |
-| Cross-cut | `auto_advance: false` invisible to user in health output | LOW | Show config value in HEALTH-01 output |
+- [Codex AGENTS.md Guide](https://developers.openai.com/codex/guides/agents-md) — official, HIGH confidence
+- [Codex Hooks Documentation](https://developers.openai.com/codex/hooks) — official, HIGH confidence
+- [Codex Agent Skills](https://developers.openai.com/codex/skills) — official, HIGH confidence
+- [Codex CLI Slash Commands](https://developers.openai.com/codex/cli/slash-commands) — official, HIGH confidence
+- [Codex Custom Prompts (deprecated)](https://developers.openai.com/codex/custom-prompts) — official, HIGH confidence
+- [Codex Config Reference](https://developers.openai.com/codex/config-reference) — official, HIGH confidence
+- [Codex Subagents](https://developers.openai.com/codex/concepts/subagents) — official, HIGH confidence
+- [Migration: Claude Code → Codex CLI](https://codex.danielvaughan.com/2026/03/26/migrating-claude-code-to-codex-cli/) — practitioner, MEDIUM confidence
+- [Codex vs Claude Code Comparison](https://www.builder.io/blog/codex-vs-claude-code) — MEDIUM confidence

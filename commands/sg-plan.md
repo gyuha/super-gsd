@@ -13,12 +13,24 @@ Self-contained. Reads .planning/STATE.md for phase resolution when no argument p
 </execution_context>
 
 <process>
-0. **Prior lessons 주입.** .planning/lessons/ 아래 Markdown 파일이 있으면 내용을 먼저 출력한다 (lessons는 프로젝트 전체 범위이며 특정 phase에 한정되지 않는다):
+0. **Prior lessons 주입.** .planning/lessons/ 아래 Markdown 파일이 있으면 weighted top-N을 먼저 표시한 뒤 전체 lessons를 출력한다 (lessons는 프로젝트 전체 범위이며 특정 phase에 한정되지 않는다):
    ```bash
    if ls .planning/lessons/*.md 2>/dev/null | grep -q .; then
-     echo "=== Prior Lessons (auto-injected) ==="
+     echo "=== Weighted Top-N Patterns ==="
+     python3 hooks/lessons_ranker.py --top 5 .planning/lessons/*.md 2>/dev/null \
+       | python3 -c "
+   import sys, json
+   lines = [l for l in sys.stdin if l.strip()]
+   for i, line in enumerate(lines, 1):
+       try:
+           d = json.loads(line)
+           print(f\"{i}. [score {d['score']:.2f}] {d['pattern']} ({d['source']})\")
+       except Exception:
+           pass
+   " || echo "(weighted ranking unavailable)"
+     echo "=== All Lessons (below) ==="
      cat .planning/lessons/*.md
-     echo "=== End of Prior Lessons ==="
+     echo "=== End of Lessons ==="
    fi
    ```
    파일이 없으면 이 단계를 조용히 건너뛴다.
@@ -76,7 +88,7 @@ Self-contained. Reads .planning/STATE.md for phase resolution when no argument p
 </process>
 
 <success_criteria>
-0. .planning/lessons/ 에 파일이 있으면 Step 0(lessons injection)이 phase resolve나 Skill 호출보다 먼저 내용을 출력한다. 파일이 없으면 Step 0이 조용히 건너뛰어진다.
+0. .planning/lessons/ 에 파일이 있으면 Step 0이 weighted top-N을 먼저 표시하고 전체 lessons를 "=== Weighted Top-N Patterns ===" → ranked list → "=== All Lessons (below) ===" → cat 내용 → "=== End of Lessons ===" 순서로 출력한다. 파일이 없으면 Step 0이 조용히 건너뛰어진다.
 1. PHASE_NUM이 비어 있으면 명시적 오류 메시지를 출력하고 종료한다.
 2. gsd-discuss-phase는 Agent()로 서브에이전트에서 실행되고, 완료 후 제어가 반환된다.
 3. gsd-discuss-phase Agent가 에러로 종료되면 오류 메시지를 출력하고 Step 3(gsd-plan-phase)을 실행하지 않는다.

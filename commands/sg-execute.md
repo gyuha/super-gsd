@@ -13,6 +13,25 @@ This command is self-contained — no external workflow files imported. Reads .p
 </execution_context>
 
 <process>
+0. **Lessons reminder.** .planning/lessons/ 에 파일이 있으면 weighted top-N 한 줄 요약을 출력한다:
+   ```bash
+   if ls .planning/lessons/*.md 2>/dev/null | grep -q .; then
+     echo "=== Top Recurring Patterns (reminder) ==="
+     python3 hooks/lessons_ranker.py --top 5 .planning/lessons/*.md 2>/dev/null \
+       | python3 -c "
+   import sys, json
+   for i, line in enumerate((l for l in sys.stdin if l.strip()), 1):
+       try:
+           d = json.loads(line)
+           print(f\"{i}. [score {d['score']:.2f}] {d['pattern']}\")
+       except Exception:
+           pass
+   " || true
+     echo "============================================"
+   fi
+   ```
+   파일이 없으면 조용히 건너뛴다.
+
 1. **Resolve phase.** If `$ARGUMENTS` is non-empty, use it as the phase identifier. Otherwise, extract the current phase from `.planning/STATE.md` by grepping the `## Current Position` section for `Phase: <N>`:
    ```bash
    if [ -n "$ARGUMENTS" ]; then
@@ -145,6 +164,7 @@ This command is self-contained — no external workflow files imported. Reads .p
 </process>
 
 <success_criteria>
+0. .planning/lessons/ 에 파일이 있으면 Step 0 reminder가 Step 1(phase resolve)보다 먼저 출력된다. 파일이 없으면 Step 0이 조용히 건너뛰어진다.
 1. The prompt blob shown to the user contains the Phase number, Goal, Success Criteria list, all REQ-IDs with their one-line definitions, and the full body of every `*-PLAN.md` in the phase directory.
 2. The `superpowers:executing-plans` Skill is invoked exactly once per run, or zero times when the idempotency check short-circuits.
 3. `.planning/HANDOFF.md` gains at most one new row per run, and that row matches the 5-column schema `| Timestamp | Phase | From | To | Plan Hash |`.

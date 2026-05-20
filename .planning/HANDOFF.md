@@ -47,3 +47,6 @@
 | 2026-05-20T14:31:22Z | 11-rule-runner | complete | gsd-plan | - |
 | 2026-05-20T14:36:32Z | 11-rule-runner | superpowers | review | - |
 | 2026-05-20T14:42:14Z | 11-rule-runner | review | hookify | - |
+| 2026-05-20T14:48:56Z | 12-lessons-aggregation | hookify | gsd-plan | - |
+| 2026-05-20T14:58:56Z | 12-lessons-aggregation | gsd-plan | review | - |
+| 2026-05-20T15:01:23Z | 12-lessons-aggregation | review | hookify | - |

@@ -3,15 +3,15 @@ gsd_state_version: 1.0
 milestone: v1.2
 milestone_name: Self-Contained Retrospection
 status: planning
-stopped_at: Phase 12 planning
-last_updated: "2026-05-20T16:00:00.000Z"
-last_activity: 2026-05-20 -- Phase 11 complete (v0.0.18 shipped)
+stopped_at: Phase 13 planning
+last_updated: "2026-05-21T00:00:00.000Z"
+last_activity: 2026-05-21 -- Phase 12 complete (v0.0.19 shipped)
 progress:
   total_phases: 5
-  completed_phases: 2
-  total_plans: 3
-  completed_plans: 2
-  percent: 40
+  completed_phases: 3
+  total_plans: 4
+  completed_plans: 3
+  percent: 60
 ---
 
 # Project State
@@ -25,10 +25,10 @@ See: .planning/PROJECT.md (updated 2026-05-16)
 
 ## Current Position
 
-Phase: 12 (lessons aggregation + 재발 방지 가드)
+Phase: 13 (sg-learn 라우팅 전환 + hookify 의존성 제거)
 Plan: —
 Status: Ready to plan
-Last activity: 2026-05-20 -- Phase 11 complete (v0.0.18 shipped)
+Last activity: 2026-05-21 -- Phase 12 complete (v0.0.19 shipped)
 
 ## Performance Metrics
 

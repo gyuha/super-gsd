@@ -2,6 +2,15 @@
 
 All notable changes to `super-gsd` are documented in this file. Format follows [Keep a Changelog](https://keepachangelog.com/).
 
+## [0.0.16] - 2026-05-20
+
+### Added
+
+- `skills/sg-retro/SKILL.md`: Phase 9 — GSD phase 회고를 위한 내장 Skill. SSC(Start/Stop/Continue), 4Ls, DSPM(Decisions/Surprises/Patterns/Mistakes) 3가지 lens 지원. 결과를 `.planning/lessons/{NN}-{YYYY-MM-DD}.md`에 자동 append.
+- `plugin.json`: `"skills": "./skills/"` 등록 — sg-retro Skill 자동 로드.
+- 4개 hookify guard 규칙 추가: `warn-sg-ship-preconditions`, `warn-sg-execute-without-plan`, `warn-grep-c-echo-fallback`, `warn-plan-banned-literal-in-prose`.
+- README.md / README.ko.md: 진행 중인 milestone Phase CRUD(`/gsd:phase --insert`) 사용법 추가.
+
 ## [0.0.15] - 2026-05-20
 
 ### Changed

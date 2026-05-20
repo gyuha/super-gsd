@@ -2,6 +2,16 @@
 
 All notable changes to `super-gsd` are documented in this file. Format follows [Keep a Changelog](https://keepachangelog.com/).
 
+## [0.0.20] - 2026-05-21
+
+### Changed
+
+- `commands/sg-learn.md`: Phase 13 — sg-learn now routes to `super-gsd:sg-retro` instead of `hookify:hookify`. HANDOFF stage value "hookify" preserved for sg-status routing compatibility.
+- `commands/sg-update.md`: Removed hookify install/update block; sg-update now manages GSD, superpowers, and super-gsd only.
+- `README.md` / `README.ko.md`: Hookify demoted to Optional prerequisite. All top-level descriptions updated from "GSD → Superpowers → Hookify" to "GSD → Superpowers → sg-retro".
+- `docs/COMMANDS.md`: sg-learn entry updated to reflect `super-gsd:sg-retro` routing.
+- `.claude-plugin/plugin.json`: description and keywords updated; "hookify" keyword removed.
+
 ## [0.0.19] - 2026-05-21
 
 ### Added

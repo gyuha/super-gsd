@@ -3,15 +3,15 @@ gsd_state_version: 1.0
 milestone: v1.2
 milestone_name: Self-Contained Retrospection
 status: executing
-stopped_at: Phase 10 context gathered
-last_updated: "2026-05-20T13:54:59.706Z"
-last_activity: 2026-05-20 -- Phase 10 planning complete
+stopped_at: Phase 10 complete, Phase 11 next
+last_updated: "2026-05-20T14:30:00.000Z"
+last_activity: 2026-05-20 -- Phase 10 complete (v0.0.17 shipped)
 progress:
   total_phases: 5
-  completed_phases: 0
+  completed_phases: 1
   total_plans: 2
-  completed_plans: 0
-  percent: 0
+  completed_plans: 2
+  percent: 20
 ---
 
 # Project State
@@ -25,10 +25,10 @@ See: .planning/PROJECT.md (updated 2026-05-16)
 
 ## Current Position
 
-Phase: 10 (conversation analyzer + extended lenses)
+Phase: 11 (sg-retro 자체 rule runner)
 Plan: —
-Status: Ready to execute
-Last activity: 2026-05-20 -- Phase 10 planning complete
+Status: Ready to plan
+Last activity: 2026-05-20 -- Phase 10 complete (v0.0.17 shipped)
 
 ## Performance Metrics
 

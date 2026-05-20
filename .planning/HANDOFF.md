@@ -44,3 +44,6 @@
 | 2026-05-20T14:11:17Z | 10-conversation-analyzer-lens | review | hookify | - |
 | 2026-05-20T14:25:39Z | 10-conversation-analyzer-lens | hookify | ship | - |
 | 2026-05-20T14:25:39Z | 10-conversation-analyzer-lens | ship | complete | - |
+| 2026-05-20T14:31:22Z | 11-rule-runner | complete | gsd-plan | - |
+| 2026-05-20T14:36:32Z | 11-rule-runner | superpowers | review | - |
+| 2026-05-20T14:42:14Z | 11-rule-runner | review | hookify | - |

@@ -2,6 +2,18 @@
 
 All notable changes to `super-gsd` are documented in this file. Format follows [Keep a Changelog](https://keepachangelog.com/).
 
+## [0.0.18] - 2026-05-20
+
+### Added
+
+- `hooks/rule_runner.py`: Phase 11 — hookify 미설치 환경에서 `.claude/hookify.*.local.md` + `.claude/sg-rule.*.local.md` 규칙을 독립 Python PreToolUse hook으로 직접 평가. hookify 설치 환경에서는 exit 0 skip. warn/block 두 action 지원. sg-rule이 hookify 동명 rule보다 우선.
+- `hooks/hooks.json`: PreToolUse hook 항목 추가 (`rule_runner.py` 연결).
+- 2개 hookify guard 규칙 추가: `warn-write-tool-content-key`, `warn-git-review-on-main-branch`.
+
+### Fixed
+
+- `hooks/rule_runner.py`: Write 도구에서 `new_text` 필드 규칙이 동작하지 않던 버그 수정 — `content` 키 fallback 추가.
+
 ## [0.0.17] - 2026-05-20
 
 ### Added

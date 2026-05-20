@@ -196,9 +196,20 @@ super-gsd가 로드되면 다음을 실행한다:
 
 - **Phase 1 — 플러그인 스캐폴드 (완료):** 설치 가능한 플러그인 셸(매니페스트, 마켓플레이스 메타데이터, README, 검증 체크리스트). 아직 명령이나 훅 없음.
 - **Phase 2 — 수동 인계 및 상태 (완료):** `/super-gsd:sg-execute`(완성된 GSD 단계를 Superpowers 준비 프롬프트로 패키징)와 `/super-gsd:sg-status`(현재 단계, 마지막 인계, 다음 권장 명령 확인) 도입.
-- **Phase 3 — sg- 명령 세트 및 README (완료):** 전체 GSD → Superpowers → Hookify 사이클을 커버하는 8개 명령 인터페이스와 업데이트된 문서 제공.
-- **Phase 4 — 자동 진행 훅 (완료):** `Stop` 훅을 등록하여 단계 전환을 자동 감지 — `plan-phase` 완료 시 인계 프롬프트를 표시하고, 코드 리뷰어 완료 시 Hookify를 자동 실행.
-- **Phase 5 — 학습 루프 (완료):** Hookify 교훈을 `.planning/lessons/`에 저장하고, 다음 GSD 단계 시작 시 `sg-plan` Step 0 주입 및 새 `sg-lessons` 명령을 통해 자동으로 표시하여 학습 루프를 완성.
+- **Phase 3 — sg- 명령 세트 및 README (완료):** 전체 GSD → Superpowers → Hookify 사이클을 커버하는 9개 명령 인터페이스와 업데이트된 문서 제공.
+- **Phase 4 — 자동 진행 훅 (완료):** `Stop` 훅을 등록하여 단계 전환을 자동 감지 — `plan-phase` 완료 시 인계 프롬프트 표시, 코드 리뷰어 완료 시 Hookify 제안.
+- **Phase 5 — 학습 루프 (완료):** Hookify 교훈을 `.planning/lessons/`에 저장하고 다음 GSD 단계 시작 시 자동 표시하여 학습 루프 완성.
+- **Phase 6 — sg-health (완료):** `sg-health` 자기진단 명령 도입 — GSD/Superpowers 설치 여부, 훅 등록, HANDOFF.md 스키마 무결성을 `[OK]`/`[WARN]`/`[FAIL]`로 출력.
+- **Phase 7 — 상태 정확도 (완료):** `sg-status`의 STATE.md Phase 라인 파싱 및 저장/표시 enum 분리 수정으로 현재 워크플로우 단계를 항상 정확하게 표시.
+- **Phase 8 — 세션 복원 (완료):** `sg-start`가 기존 세션을 감지하여 재개 / 새 마일스톤 시작 / 취소 3가지 옵션을 제시해 중단 후 안전하게 복귀 가능.
+- **Phase 9 — sg-retro Skill 스캐폴드 (완료):** 3가지 회고 렌즈를 지원하는 내장 `sg-retro` 스킬 도입. Hookify 없이 `.planning/lessons/`에 결과 저장.
+- **Phase 10 — 대화 분석기 + 렌즈 확장 (완료):** frustration/correction/repeated/validated-success 4가지 패턴을 추출하는 자체 transcript 분석기 추가, Sailboat·Five Whys 포함 총 6개 렌즈로 확장.
+- **Phase 11 — 자체 rule runner (완료):** `PreToolUse` 훅을 직접 등록해 `.claude/sg-rule.*.local.md` 규칙을 실행 — Hookify 없이도 가드 동작.
+- **Phase 12 — lessons 집계 + 재발 방지 가드 (완료):** lessons를 phase·milestone별로 묶고, `sg-plan`/`sg-execute`에서 weighted top-N 패턴을 우선 노출하여 같은 실수 반복 방지.
+- **Phase 13 — sg-learn 라우팅 전환 + Hookify 제거 (완료):** `sg-learn`을 내장 `sg-retro` 스킬로 재라우팅하고 명령·문서에서 Hookify 의존성 전부 제거.
+- **Phase 14 — Codex 진입점 + .agents/skills/ (v1.3 — 진행 중):** `AGENTS.md`를 Codex 어휘로 재작성하고 `.agents/skills/` 스킬 6개를 신규 생성하여 Codex, Gemini CLI, Antigravity CLI 사용자가 Claude Code 슬래시 명령 없이 워크플로우를 진행 가능.
+- **Phase 15 — 플랫폼별 훅 설정 + Python 픽스 (v1.3 — 계획):** `.codex/hooks.json`과 `.gemini/settings.json` 훅 설정 파일 신규 생성, `CLAUDE_PLUGIN_ROOT` 없이도 `hooks/*.py`가 실행되도록 경로 폴백 수정.
+- **Phase 16 — README Multi-Platform 섹션 (v1.3 — 계획):** 플랫폼별 설치 가이드와 기능 델타 테이블(동작 가능 / 제한 있음 / 불가)을 README에 추가.
 
 ## 라이선스
 

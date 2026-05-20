@@ -196,9 +196,20 @@ If all three checks pass, `super-gsd` is installed correctly and non-invasively.
 
 - **Phase 1 — Plugin Scaffold (shipped):** installable plugin shell with manifest, marketplace metadata, README, and verify checklist. No commands or hooks yet.
 - **Phase 2 — Manual Handoff & Status (shipped):** introduces `/super-gsd:sg-execute` (package a finished GSD phase as a Superpowers-ready prompt) and `/super-gsd:sg-status` (inspect current stage, last handoff, next recommended command).
-- **Phase 3 — sg- Command Set & README (shipped):** delivers the full 8-command `sg-` interface and updated documentation so the entire GSD → Superpowers → Hookify cycle has discoverable slash commands.
-- **Phase 4 — Auto-Advance Hooks (shipped):** registers `Stop` hooks so stage transitions are auto-detected — completed `plan-phase` surfaces a handoff prompt, completed `code-reviewer` suggests Hookify via `systemMessage` (Claude Code hooks API does not support auto-executing slash commands; suggestions require user confirmation).
-- **Phase 5 — Lessons Feedback Loop (shipped):** persists Hookify findings into `.planning/lessons/` and surfaces them automatically when the next GSD phase begins via `sg-plan` Step 0 injection and the new `sg-lessons` command, closing the learning loop.
+- **Phase 3 — sg- Command Set & README (shipped):** delivers the full 9-command `sg-` interface and updated documentation so the entire GSD → Superpowers → Hookify cycle has discoverable slash commands.
+- **Phase 4 — Auto-Advance Hooks (shipped):** registers `Stop` hooks so stage transitions are auto-detected — completed `plan-phase` surfaces a handoff prompt, completed `code-reviewer` suggests Hookify via `systemMessage`.
+- **Phase 5 — Lessons Feedback Loop (shipped):** persists Hookify findings into `.planning/lessons/` and surfaces them automatically when the next GSD phase begins, closing the learning loop.
+- **Phase 6 — sg-health (shipped):** introduces `sg-health` self-diagnosis command — checks GSD/Superpowers installation, hook registration, and HANDOFF.md schema integrity with `[OK]`/`[WARN]`/`[FAIL]` output.
+- **Phase 7 — Status Accuracy (shipped):** fixes `sg-status` STATE.md Phase line parsing and storage/display enum separation so the current workflow stage is always correctly shown.
+- **Phase 8 — Session Restore (shipped):** `sg-start` detects an existing session and presents Resume / Start new milestone / Cancel so users can safely return after a break.
+- **Phase 9 — sg-retro Skill Scaffold (shipped):** introduces the built-in `sg-retro` skill with 3 retrospection lenses; results are saved to `.planning/lessons/` without requiring Hookify.
+- **Phase 10 — Conversation Analyzer + Lens Expansion (shipped):** adds a self-contained transcript analyzer that extracts frustration/correction/repeated/validated-success patterns, and expands to 6 total lenses (Sailboat, Five Whys, and more).
+- **Phase 11 — Self-Contained Rule Runner (shipped):** registers a `PreToolUse` hook that runs `.claude/sg-rule.*.local.md` rules directly — Hookify is no longer required for guard execution.
+- **Phase 12 — Lessons Aggregation & Recurrence Guard (shipped):** groups lessons by phase and milestone, surfaces weighted top-N patterns in `sg-plan`/`sg-execute` to prevent repeated mistakes.
+- **Phase 13 — sg-learn Routing Switch + Hookify Removal (shipped):** reroutes `sg-learn` to the built-in `sg-retro` skill and removes all Hookify dependencies from commands and documentation.
+- **Phase 14 — Codex Entry Point + .agents/skills/ (v1.3 — in progress):** rewrites `AGENTS.md` with Codex vocabulary and creates 6 `.agents/skills/` skill files so Codex, Gemini CLI, and Antigravity CLI users can follow the workflow without Claude Code slash commands.
+- **Phase 15 — Platform Hooks + Python Fix (v1.3 — planned):** creates `.codex/hooks.json` and `.gemini/settings.json` hook configs, and fixes `hooks/*.py` path fallback so hooks run without `CLAUDE_PLUGIN_ROOT` in Codex/Gemini environments.
+- **Phase 16 — README Multi-Platform Section (v1.3 — planned):** adds per-platform install guides and a feature delta table (works / limited / not available) to the README.
 
 ## License
 

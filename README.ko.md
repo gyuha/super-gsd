@@ -43,6 +43,34 @@ sg-new/sg-start → sg-explore → sg-plan → sg-execute → sg-review → sg-l
 
 전체 명령 레퍼런스(인수 및 상세 설명 포함)는 [docs/COMMANDS.md](./docs/COMMANDS.md)를 참고한다.
 
+## Phase 관리 (추가 / 삽입 / 제거 / 편집)
+
+`super-gsd`는 GSD의 phase CRUD를 wrapping하지 않는다. GSD의 `/gsd:phase` 명령을 직접 호출하며, 네 가지 모드를 같은 명령에서 플래그로 라우팅한다.
+
+| 플래그 | 동작 | 사용 시점 |
+|--------|------|-----------|
+| (없음) | 현재 milestone 끝에 새 정수 phase 추가 | 다음 계획된 phase를 정상 추가할 때 |
+| `--insert <N> <설명>` | Phase N 뒤에 십진 phase(예: `7.1`) 삽입 — 기존 정수 phase 번호는 변하지 않음 | milestone 진행 중 발견된 긴급 작업이 다음 milestone까지 미룰 수 없을 때 |
+| `--remove <N>` | 미래 phase(미착수)를 제거하고 이후 phase 번호를 재정렬 | 작업이 시작되기 전 계획된 phase를 취소할 때 |
+| `--edit <N>` | 기존 phase의 필드(Goal / Requirements / Plans 등)를 in-place 수정 | scope나 메타데이터를 renumbering 없이 정정할 때 |
+
+**milestone 진행 중 phase 끼워넣기:**
+
+```shell
+/gsd:phase --insert 7 critical auth bypass fix
+# → ROADMAP.md에 Phase 7.1 (INSERTED) 마커와 함께 항목 추가
+# → .planning/phases/7.1-critical-auth-bypass-fix/ 디렉터리 생성
+# → STATE.md의 다음 단계 포인터가 7.1로 이동
+```
+
+같은 기준 phase 뒤에 또 삽입하면 `7.2`, `7.3`... 순으로 자동 부여된다. 정수 phase 번호가 보존되므로 기존 의존성과 참조가 그대로 유지된다. 삽입 후에는 일반 phase와 동일하게 `sg-plan` → `sg-execute` → `sg-review` → `sg-learn` → `sg-ship` 체인으로 진행한다.
+
+**Anti-patterns (GSD가 거부함):**
+
+- milestone 끝에 계획된 작업을 추가할 때는 `--insert` 대신 플래그 없는 형태를 사용한다.
+- Phase 1 앞에 삽입(`Phase 0.1`)은 허용되지 않는다.
+- 기존 정수 phase 번호를 재정렬하지 않는다 — 십진 방식이 존재하는 이유가 정확히 이것이다.
+
 ## 사용 예시
 
 ### End-to-End 워크플로우

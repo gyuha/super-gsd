@@ -1,17 +1,17 @@
 ---
 gsd_state_version: 1.0
-milestone: v1.1
-milestone_name: Reliability
-status: executing
-stopped_at: Phase 8 implementation complete (Task 2 manual verify deferred)
-last_updated: "2026-05-20T01:18:00.000Z"
-last_activity: 2026-05-20 -- Phase 08 sg-start session-restore implemented
+milestone: v1.2
+milestone_name: Self-Contained Retrospection
+status: active
+stopped_at: Phase 9 complete — proceeding to Phase 10
+last_updated: "2026-05-20T13:39:37.000Z"
+last_activity: 2026-05-20 -- Phase 9 sg-retro Skill scaffold shipped
 progress:
-  total_phases: 8
-  completed_phases: 3
-  total_plans: 4
-  completed_plans: 4
-  percent: 50
+  total_phases: 5
+  completed_phases: 1
+  total_plans: 1
+  completed_plans: 1
+  percent: 20
 ---
 
 # Project State
@@ -21,14 +21,14 @@ progress:
 See: .planning/PROJECT.md (updated 2026-05-16)
 
 **Core value:** GSD → Superpowers → Hookify 단계 전환을 자동화하여 학습 루프가 끊기지 않도록 한다
-**Current focus:** v1.1 Reliability — Phase 8 implementation complete, manual verify pending before ship
+**Current focus:** v1.2 Self-Contained Retrospection — 내장 retro skill로 hookify 의존성 제거
 
 ## Current Position
 
-Phase: 8 (session-restore) — Implementation complete; Task 2 manual verify deferred
-Plan: 08-01-PLAN.md
-Status: Ready to ship pending Task 2 manual verification
-Last activity: 2026-05-20 -- Phase 08 sg-start session-restore implemented
+Phase: 10 (conversation analyzer + extended lenses)
+Plan: —
+Status: Ready to plan
+Last activity: 2026-05-20 -- Phase 9 sg-retro Skill scaffold complete, shipping v0.0.16
 
 ## Performance Metrics
 
@@ -144,6 +144,6 @@ note: 260516/260517 items overlap with v1.0 deferred list above — re-deferred 
 
 ## Session Continuity
 
-Last session: 2026-05-19T15:43:38.392Z
-Stopped at: Phase 8 context gathered
-Resume file: .planning/phases/08-session-restore/08-CONTEXT.md
+Last session: 2026-05-20T12:21:35.151Z
+Stopped at: Phase 9 context gathered
+Resume file: .planning/phases/09-sg-retro-skill-scaffold/09-CONTEXT.md

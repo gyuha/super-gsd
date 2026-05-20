@@ -43,6 +43,34 @@ Quick reference for all `/super-gsd:sg-*` slash commands.
 
 See [docs/COMMANDS.md](./docs/COMMANDS.md) for the full per-command reference including arguments and detailed descriptions.
 
+## Phase management (add / insert / remove / edit)
+
+`super-gsd` does not wrap GSD's phase CRUD operations — they are invoked directly through GSD's own `/gsd:phase` command. All four modes share the same command, routed by a flag.
+
+| Flag | Action | When to use |
+|------|--------|-------------|
+| (none) | Add a new integer phase at the end of the current milestone | Planning the next planned phase normally |
+| `--insert <N> <description>` | Insert a decimal phase (e.g. `7.1`) after Phase N — no renumbering of existing phases | Urgent work discovered mid-milestone that cannot wait for the next milestone |
+| `--remove <N>` | Remove a future (unstarted) phase and renumber subsequent phases | Cancelling a planned phase before any work has begun |
+| `--edit <N>` | Edit fields (Goal / Requirements / Plans / etc.) of an existing phase in place | Correcting scope or metadata without renumbering |
+
+**Inserting a phase mid-milestone:**
+
+```shell
+/gsd:phase --insert 7 critical auth bypass fix
+# → creates Phase 7.1 with (INSERTED) marker in ROADMAP.md
+# → creates .planning/phases/7.1-critical-auth-bypass-fix/
+# → updates STATE.md to point next steps at 7.1
+```
+
+Subsequent inserts after the same anchor produce `7.2`, `7.3`, etc. — integer phase numbers are preserved so existing references and dependencies stay intact. After insertion, drive the new phase through the standard `sg-plan` → `sg-execute` → `sg-review` → `sg-learn` → `sg-ship` chain like any other phase.
+
+**Anti-patterns (rejected by GSD):**
+
+- Don't use `--insert` for planned work at the end of a milestone — use the no-flag form instead.
+- Don't insert before Phase 1 (`Phase 0.1` is not allowed).
+- Don't try to renumber existing integer phases — the decimal scheme exists precisely to avoid that.
+
 ## Usage Examples
 
 ### End-to-End Workflow

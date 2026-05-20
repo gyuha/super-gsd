@@ -1,14 +1,14 @@
 # super-gsd
 
-Orchestrator plugin that auto-chains GSD → Superpowers → Hookify so planning, implementation, and retrospection stay connected as a single learning loop.
+Orchestrator plugin that auto-chains GSD → Superpowers → sg-retro so planning, implementation, and retrospection stay connected as a single learning loop.
 
 ## What this is
 
-`super-gsd` is a Claude Code plugin whose only job is to keep three other Claude Code plugins talking to each other. Strategy lives in GSD. Implementation lives in Superpowers. Retrospection lives in Hookify. When one of them finishes a stage, `super-gsd` is responsible for handing the context to the next one — so the user does not have to remember which command comes next, and so lessons learned in one cycle actually reach the next plan.
+`super-gsd` is a Claude Code plugin whose only job is to keep GSD, Superpowers, and the built-in `sg-retro` skill talking to each other. Strategy lives in GSD. Implementation lives in Superpowers. Retrospection lives in `sg-retro`. When one of them finishes a stage, `super-gsd` is responsible for handing the context to the next one — so the user does not have to remember which command comes next, and so lessons learned in one cycle actually reach the next plan.
 
 The problem this solves is that manual handoff between these three tools is fragile. People forget to run the review, skip the retro, lose context between sessions, or re-run a planning command that overwrites half-finished work. By separating roles and then orchestrating the seams between them, the same mistakes stop showing up.
 
-All thirteen slash commands covering the full GSD → Superpowers → Hookify cycle are available — from starting a new milestone to closing it out and beginning the next. See the **Commands** section below for the quick-reference table, and `docs/COMMANDS.md` for the full per-command reference.
+All thirteen slash commands covering the full GSD → Superpowers → sg-retro cycle are available — from starting a new milestone to closing it out and beginning the next. See the **Commands** section below for the quick-reference table, and `docs/COMMANDS.md` for the full per-command reference.
 
 ## Workflow
 
@@ -33,7 +33,7 @@ Quick reference for all `/super-gsd:sg-*` slash commands.
 | `/super-gsd:sg-execute` | Package the current phase plan and hand off to Superpowers (`superpowers:executing-plans`) | After `sg-plan` is complete |
 | `/super-gsd:sg-review` | Request a code review via `superpowers:requesting-code-review` | After implementation is complete |
 | `/super-gsd:sg-learn` | Run a retrospective via `sg-retro` to extract patterns and generate hooks | After the review is done |
-| `/super-gsd:sg-lessons` | List prior Hookify lessons from `.planning/lessons/`; accepts optional phase filter | Before `sg-plan` to review what was learned |
+| `/super-gsd:sg-lessons` | List prior lessons from `.planning/lessons/`; accepts optional phase filter | Before `sg-plan` to review what was learned |
 | `/super-gsd:sg-ship` | Merge and ship the current phase via `gsd-ship` | After learning is captured |
 | `/super-gsd:sg-complete` | Archive and close the current milestone via `gsd-complete-milestone` | After all phases are shipped |
 | `/super-gsd:sg-new` | Start a new milestone via `gsd-new-milestone` | After `sg-complete`, to begin the next milestone |
@@ -95,7 +95,7 @@ The typical flow for adding a new feature milestone to an existing project (e.g.
 # 5. Review — requests a Superpowers code review when implementation is complete
 /super-gsd:sg-review
 
-# 6. Learn — runs Hookify retrospective; findings are saved to .planning/lessons/
+# 6. Learn — runs sg-retro retrospective; findings are saved to .planning/lessons/
 /super-gsd:sg-learn
 
 # 7. Ship — merges the phase via gsd-ship (repeat steps 3–7 for each phase)

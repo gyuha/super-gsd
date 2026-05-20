@@ -1,14 +1,14 @@
 # super-gsd
 
-GSD → Superpowers → Hookify를 자동으로 연결하여 계획, 구현, 회고가 하나의 학습 루프로 이어지는 Claude Code 플러그인.
+GSD → Superpowers → sg-retro를 자동으로 연결하여 계획, 구현, 회고가 하나의 학습 루프로 이어지는 Claude Code 플러그인.
 
 ## 이 플러그인이 하는 일
 
-`super-gsd`는 세 가지 Claude Code 플러그인이 서로 대화하도록 연결하는 역할만 한다. 전략은 GSD가, 구현은 Superpowers가, 회고는 Hookify가 담당한다. 각 단계가 끝나면 `super-gsd`가 컨텍스트와 함께 다음 단계로 자동 인계한다. 사용자는 다음에 어떤 명령을 실행해야 하는지 기억할 필요가 없고, 한 사이클에서 배운 교훈이 다음 계획에 자동으로 반영된다.
+`super-gsd`는 GSD, Superpowers, 내장 `sg-retro` 스킬이 서로 대화하도록 연결하는 역할만 한다. 전략은 GSD가, 구현은 Superpowers가, 회고는 `sg-retro`가 담당한다. 각 단계가 끝나면 `super-gsd`가 컨텍스트와 함께 다음 단계로 자동 인계한다. 사용자는 다음에 어떤 명령을 실행해야 하는지 기억할 필요가 없고, 한 사이클에서 배운 교훈이 다음 계획에 자동으로 반영된다.
 
 이 플러그인이 해결하는 문제는 도구 간 수동 전환의 취약성이다. 리뷰를 잊거나, 회고를 건너뛰거나, 세션 간 컨텍스트를 잃거나, 진행 중인 작업을 덮어쓰는 계획 명령을 다시 실행하는 실수가 반복된다. 역할을 분리하고 경계면을 자동화함으로써 동일한 실수가 반복되지 않는다.
 
-새 마일스톤 시작부터 완료 및 다음 마일스톤 시작까지 전체 GSD → Superpowers → Hookify 사이클을 커버하는 13개 슬래시 명령이 제공된다. 명령 빠른 참조는 **명령어** 섹션을, 전체 명령 레퍼런스는 `docs/COMMANDS.md`를 참고한다.
+새 마일스톤 시작부터 완료 및 다음 마일스톤 시작까지 전체 GSD → Superpowers → sg-retro 사이클을 커버하는 13개 슬래시 명령이 제공된다. 명령 빠른 참조는 **명령어** 섹션을, 전체 명령 레퍼런스는 `docs/COMMANDS.md`를 참고한다.
 
 ## 워크플로우
 
@@ -33,7 +33,7 @@ sg-new/sg-start → sg-explore → sg-plan → sg-execute → sg-review → sg-l
 | `/super-gsd:sg-execute` | 현재 단계 계획을 패키징하여 Superpowers에 인계 (`superpowers:executing-plans`) | `sg-plan` 완료 후 |
 | `/super-gsd:sg-review` | `superpowers:requesting-code-review`를 통해 코드 리뷰 요청 | 구현 완료 후 |
 | `/super-gsd:sg-learn` | `sg-retro`를 통한 회고 실행, 패턴 추출 및 훅 생성 | 리뷰 완료 후 |
-| `/super-gsd:sg-lessons` | `.planning/lessons/`에서 이전 Hookify 교훈 목록 표시 (옵션: 단계 필터) | `sg-plan` 전 학습 내용 검토 시 |
+| `/super-gsd:sg-lessons` | `.planning/lessons/`에서 이전 교훈 목록 표시 (옵션: 단계 필터) | `sg-plan` 전 학습 내용 검토 시 |
 | `/super-gsd:sg-ship` | `gsd-ship`을 통해 현재 단계 병합 및 배포 | 학습 캡처 후 |
 | `/super-gsd:sg-complete` | `gsd-complete-milestone`을 통해 마일스톤 아카이브 및 완료 처리 | 모든 단계가 배포된 후 |
 | `/super-gsd:sg-new` | `gsd-new-milestone`을 통해 새 마일스톤 시작 | `sg-complete` 이후, 다음 마일스톤을 시작할 때 |
@@ -95,7 +95,7 @@ sg-new/sg-start → sg-explore → sg-plan → sg-execute → sg-review → sg-l
 # 5. 리뷰 — 구현 완료 후 Superpowers 코드 리뷰 요청
 /super-gsd:sg-review
 
-# 6. 학습 — Hookify 회고 실행; 교훈이 .planning/lessons/에 저장됨
+# 6. 학습 — sg-retro 회고 실행; 교훈이 .planning/lessons/에 저장됨
 /super-gsd:sg-learn
 
 # 7. 배포 — gsd-ship을 통해 단계 병합 (단계마다 3~7번 반복)

@@ -2,16 +2,16 @@
 gsd_state_version: 1.0
 milestone: v1.2
 milestone_name: Self-Contained Retrospection
-status: planning
-stopped_at: Phase 9 context gathered
-last_updated: "2026-05-20T12:21:35.156Z"
-last_activity: 2026-05-20 -- v1.2 milestone bootstrapped (REQUIREMENTS + ROADMAP)
+status: active
+stopped_at: Phase 9 complete — proceeding to Phase 10
+last_updated: "2026-05-20T13:39:37.000Z"
+last_activity: 2026-05-20 -- Phase 9 sg-retro Skill scaffold shipped
 progress:
   total_phases: 5
-  completed_phases: 0
-  total_plans: 0
-  completed_plans: 0
-  percent: 0
+  completed_phases: 1
+  total_plans: 1
+  completed_plans: 1
+  percent: 20
 ---
 
 # Project State
@@ -25,10 +25,10 @@ See: .planning/PROJECT.md (updated 2026-05-16)
 
 ## Current Position
 
-Phase: 9 (sg-retro Skill scaffold) — Not started
+Phase: 10 (conversation analyzer + extended lenses)
 Plan: —
 Status: Ready to plan
-Last activity: 2026-05-20 -- v1.2 milestone bootstrapped (REQUIREMENTS + ROADMAP)
+Last activity: 2026-05-20 -- Phase 9 sg-retro Skill scaffold complete, shipping v0.0.16
 
 ## Performance Metrics
 

@@ -53,10 +53,11 @@
 
 ## Traceability
 
-| Requirement | Phase |
-|-------------|-------|
-| CODEX-01, CODEX-02, CODEX-03 | Phase 14 |
-| CODEX-04, MULTI-01 | Phase 15 |
-| MULTI-02 | Phase 16 |
-
-*Traceability to be confirmed by roadmapper*
+| Requirement | Phase | Status |
+|-------------|-------|--------|
+| CODEX-01 | Phase 14 | Pending |
+| CODEX-02 | Phase 14 | Pending |
+| CODEX-03 | Phase 14 | Pending |
+| CODEX-04 | Phase 15 | Pending |
+| MULTI-01 | Phase 15 | Pending |
+| MULTI-02 | Phase 16 | Pending |

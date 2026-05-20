@@ -1,12 +1,12 @@
 ---
 gsd_state_version: 1.0
 milestone: v1.3
-milestone_name: Codex Platform Support
+milestone_name: Multi-Platform Support
 status: planning
-last_updated: "2026-05-20T22:56:08.258Z"
-last_activity: 2026-05-20
+last_updated: "2026-05-21"
+last_activity: 2026-05-21
 progress:
-  total_phases: 0
+  total_phases: 3
   completed_phases: 0
   total_plans: 0
   completed_plans: 0
@@ -17,17 +17,24 @@ progress:
 
 ## Project Reference
 
-See: .planning/PROJECT.md (updated 2026-05-16)
+See: .planning/PROJECT.md (updated 2026-05-21)
 
-**Core value:** GSD → Superpowers → Hookify 단계 전환을 자동화하여 학습 루프가 끊기지 않도록 한다
-**Current focus:** v1.2 Self-Contained Retrospection — 내장 retro skill로 hookify 의존성 제거
+**Core value:** GSD → Superpowers → sg-retro 단계 전환을 자동화하여 학습 루프가 끊기지 않도록 한다
+**Current focus:** v1.3 Multi-Platform Support — Codex, Gemini CLI, Antigravity CLI 사용자 지원
 
 ## Current Position
 
-Phase: Not started (defining requirements)
+Phase: Not started (roadmap defined, ready for Phase 14)
 Plan: —
-Status: Defining requirements
-Last activity: 2026-05-20 — Milestone v1.3 started
+Status: Roadmap ready
+Last activity: 2026-05-21 — v1.3 roadmap created (Phase 14-16)
+
+```
+[Phase 14] → [Phase 15] → [Phase 16]
+  Codex 진입점    플랫폼 훅     README
+  + .agents/      + Python      Multi-Platform
+    skills/         픽스
+```
 
 ## Performance Metrics
 
@@ -88,6 +95,9 @@ Recent decisions affecting current work:
 - v1.1 research: transcript_matcher.py bare `'hookify'` 패치는 sg-health Phase와 묶어야 함 (오발동 방지)
 - v1.1 research: HANDOFF.md 파싱은 parse_handoff.py 헬퍼로 중앙화 — sg-status와 sg-start 공유
 - v1.1 research: STATE.md Phase 파싱 정규식 `r'^Phase:\s*(\S+)'` → 전체 라인 캡처로 수정 필요
+- v1.3 roadmap: coarse 그래뉼래리티로 4→3 페이즈 압축 (CODEX-01/02/03 묶음) — AGENTS.md와 스킬들은 하나의 배포 단위
+- v1.3 roadmap: CODEX-04 + MULTI-01은 Python 훅 폴백 픽스를 공유하므로 Phase 15에 묶음
+- v1.3 roadmap: SubagentStop 미지원 사실을 AGENTS.md success criteria에 명시 — 사용자 혼란 방지
 
 ### Pending Todos
 
@@ -95,7 +105,7 @@ None yet.
 
 ### Blockers/Concerns
 
-None yet.
+- MULTI-01 (.gemini/settings.json): Antigravity CLI 훅 스키마 공식 확정 전 — 리서치 신뢰도 MEDIUM. 구현 시 재확인 필요.
 
 ### Quick Tasks Completed
 
@@ -145,6 +155,6 @@ note: 260516/260517 items overlap with v1.0 deferred list above — re-deferred 
 
 ## Session Continuity
 
-Last session: 2026-05-20T14:31:01.321Z
-Stopped at: Phase 11 context gathered
-Resume file: .planning/phases/11-rule-runner/11-CONTEXT.md
+Last session: 2026-05-21
+Stopped at: v1.3 roadmap created
+Resume file: .planning/ROADMAP.md (Phase 14 ready to plan)

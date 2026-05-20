@@ -146,7 +146,7 @@ Common flow for all three lenses (D-09 hybrid + D-10 artifact-grounded draft-the
 2. For each lens-specific subheading, propose 2–5 draft bullet items grounded in the artifacts above. Each bullet must cite the source (file path or commit hash). Present the full draft as a single markdown block.
 3. Ask the user to confirm/edit/add/delete each subheading's items. Use the user's input language (D-16 — auto-detect; this is the body content language, not the markdown structure markers). Single round-trip preferred — present all subheadings at once, not one-by-one.
 4. After items are finalized, propose 2–4 Action Items rows: priority (`P1`/`P2`/`P3`) | one-sentence item | concrete next step or `deferred to Phase N` label. **No owner column (D-12).** User confirms/edits the table.
-5. Assemble the final lens section (header + `_Captured: {NOW_ISO}_` + subheadings + Action Items) and append to `${LESSONS_FILE}` using the bash block in Step 6. Emit `Lessons saved to ${LESSONS_FILE}.` to stdout. No other output.
+5. Assemble the final lens section (header + `_Captured: {NOW_ISO}_` + subheadings + Action Items) and append to `${LESSONS_FILE}` using the bash block in Step 6 — **replace the `BODY_PRINTF` and `ACTION_ITEMS_PRINTF` placeholder comments with explicit `printf` lines** that emit each fixed subheading (`### Start` / `### Liked` / `### Decisions` / etc.) plus the user-confirmed bullet items and action item rows. Empty body or empty action items violates RETRO-04. Emit `Lessons saved to ${LESSONS_FILE}.` to stdout. No other output.
 
 Lens-specific sub-blocks:
 
@@ -187,7 +187,8 @@ esac
 # 파일이 있으면 같은 lens 헤더 개수를 세서 (run N) 접미사 결정
 RUN_SUFFIX=""
 if [ -f "$LESSONS_FILE" ]; then
-  COUNT=$(grep -cE "^## Lens: ${LENS_NAME}( \(run [0-9]+\))?\$" "$LESSONS_FILE" 2>/dev/null || echo 0)
+  COUNT=$(grep -cE "^## Lens: ${LENS_NAME}( \(run [0-9]+\))?\$" "$LESSONS_FILE" 2>/dev/null)
+  COUNT=${COUNT:-0}
   if [ "$COUNT" -gt 0 ]; then
     RUN_SUFFIX=" (run $((COUNT + 1)))"
   fi
@@ -210,22 +211,36 @@ if [ ! -f "$LESSONS_FILE" ]; then
 fi
 
 # D-19/D-21: lens 섹션 전체를 한 번에 >> append (partial-write 회피)
-# Claude가 Step 5 facilitation으로 생성한 lens 본문 markdown을 다음 블록 안에 삽입한다.
+#
+# IMPORTANT — Claude execution contract:
+# Before running this block, Claude MUST replace the BODY_PRINTF placeholder
+# below with explicit `printf` lines that emit:
+#   1. Each lens-specific fixed subheading (`### Start`/`### Liked`/etc.) per
+#      `LENS_CODE` (Step 5 sub-blocks list the exact subheadings — 3 for ssc,
+#      4 for 4ls, 4 for dspm).
+#   2. The user-confirmed bullet items under each subheading as `- {item}`
+#      lines (user input language, D-16).
+# AND replace the ACTION_ITEMS_PRINTF placeholder with explicit `printf` lines
+# emitting the confirmed 2–4 action item rows in the exact 3-column format.
+#
+# Do NOT leave the body or action item rows empty — that violates RETRO-04
+# (consistent output structure) and breaks Phase 12 LESSONS-02 parsing.
 {
   printf '%s\n' "$LENS_HEADER"
   printf '_Captured: %s_\n\n' "$NOW_ISO"
-  # ... lens별 fixed subheading 본문 (Step 5에서 확정된 내용) ...
-  # 예시 구조:
-  #   ### Start
-  #   - [user-language item]
-  #   ### Stop
-  #   - [user-language item]
-  #   ### Continue
-  #   - [user-language item]
+  # BODY_PRINTF — Claude inserts subheading + bullet `printf` lines here.
+  # Example for ssc (replace at execution time with confirmed content):
+  #   printf '### Start\n'
+  #   printf '%s\n' "- ${ITEM_START_1}"
+  #   printf '### Stop\n'
+  #   printf '%s\n' "- ${ITEM_STOP_1}"
+  #   printf '### Continue\n'
+  #   printf '%s\n' "- ${ITEM_CONTINUE_1}"
   printf '\n### Action Items\n'
   printf '| priority | item | next step |\n'
   printf '|----------|------|-----------|\n'
-  # ... action items 행 (Step 5에서 확정된 내용) ...
+  # ACTION_ITEMS_PRINTF — Claude inserts row `printf` lines here, e.g.:
+  #   printf '| P1 | %s | %s |\n' "$ITEM_TEXT" "$NEXT_STEP_TEXT"
   printf '\n'
 } >> "$LESSONS_FILE"
 

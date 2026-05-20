@@ -37,7 +37,9 @@
   2. analyzer 기본 스캔 범위가 최근 20-30 메시지이며, 명시 시 더 깊이 스캔 가능
   3. Sailboat, Five Whys lens가 추가되어 다섯 lens가 모두 제공된다
   4. 한 번의 `sg-retro` 호출에서 여러 lens를 다중 선택 가능하고 결과가 단일 lessons 파일에 lens별 섹션으로 묶인다
-**Plans**: TBD
+**Plans**: 1 plan
+Plans:
+- [ ] 10-01-PLAN.md — SKILL.md Phase 10 확장(6 lens, multiSelect, transcript analyzer, multi-lens loop) + 수동 검증
 
 ### Phase 11: 자체 rule runner
 **Goal**: super-gsd가 자체 PreToolUse hook을 등록해 `.claude/sg-rule.*.local.md` (또는 `.claude/hookify.*.local.md` 호환 위치)의 rule을 직접 실행하며, hookify 플러그인 미설치 환경에서도 가드가 동작한다
@@ -77,7 +79,7 @@
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
 | 9. sg-retro Skill scaffold | 0/1 | Planning | — |
-| 10. analyzer + 추가 lens | 0/? | Not started | — |
+| 10. analyzer + 추가 lens | 0/1 | Planning | — |
 | 11. 자체 rule runner | 0/? | Not started | — |
 | 12. lessons aggregation + 재발 방지 | 0/? | Not started | — |
 | 13. sg-learn 라우팅 전환 + hookify 제거 | 0/? | Not started | — |

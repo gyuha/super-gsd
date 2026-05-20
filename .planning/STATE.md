@@ -123,6 +123,7 @@ None yet.
 | 260518-x6n | 상태 전이 타이밍 버그 5건 수정 (P1: sg-plan/sg-review/sg-learn 기록 시점; P2: sg-health 경로; P3: COMMANDS.md stale 이름) | 2026-05-18 | 4985921 | [260518-x6n-state-transition-timing-fixes](.planning/quick/260518-x6n-state-transition-timing-fixes/) |
 | 260521-0kt | hookify의 종속성을 모두 제거 해 줘. update와 도움말도. | 2026-05-21 | 70df4d3 | [260521-0kt-hookify-update](./quick/260521-0kt-hookify-update/) |
 | 260521-9bw | sg-update.md: 각 도구 버전 출력 추가 | 2026-05-21 | 6c18cb9 | [260521-9bw-sg-update-md](./quick/260521-9bw-sg-update-md/) |
+| 260521-cdw | README.md와 README.ko.md 의 마일스톤을 업데이트 해 줘 | 2026-05-21 | (pending) | [260521-cdw-readme-md-readme-ko-md](./quick/260521-cdw-readme-md-readme-ko-md/) |
 
 ## Deferred Items
 

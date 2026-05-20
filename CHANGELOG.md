@@ -2,6 +2,12 @@
 
 All notable changes to `super-gsd` are documented in this file. Format follows [Keep a Changelog](https://keepachangelog.com/).
 
+## [0.0.23] - 2026-05-21
+
+### Changed
+
+- `commands/sg-update.md`: superpowers/super-gsd 업데이트 결과에 버전 번호 표시 추가 (`updated (5.1.0)` 형태). 버전 미추출 시 graceful fallback.
+
 ## [0.0.22] - 2026-05-21
 
 ### Changed

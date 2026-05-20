@@ -2,6 +2,17 @@
 
 All notable changes to `super-gsd` are documented in this file. Format follows [Keep a Changelog](https://keepachangelog.com/).
 
+## [0.0.19] - 2026-05-21
+
+### Added
+
+- `hooks/lessons_ranker.py`: Phase 12 — weighted top-N lesson ranking (score = 0.4×freq + 0.4×recency + 0.2×severity) and milestone archive mode. Outputs JSON lines sorted by score; `--archive --milestone vX.Y` copies `.planning/lessons/*.md` to `.planning/milestones/vX.Y-LESSONS.md` (originals preserved).
+- `commands/sg-plan.md`: Step 0 updated — calls `lessons_ranker.py` to show weighted top-N patterns first, then displays all lessons in fold format (`=== Weighted Top-N Patterns ===` → `=== All Lessons (below) ===`).
+- `commands/sg-execute.md`: Step 0 reminder added — shows top-N recurring patterns before phase execution begins.
+- `commands/sg-lessons.md`: `--milestone=vX.Y` argument parsing — routes directly to `.planning/milestones/vX.Y-LESSONS.md` archive file.
+- `commands/sg-complete.md`: Step 1.3 lessons archive block — reads `milestone:` from STATE.md and runs `lessons_ranker.py --archive` before milestone close (warn-only on failure, never blocks completion).
+- 2개 hookify guard 규칙 추가: `warn-grep-pcre-macos` (BSD grep PCRE 비캡처 그룹 미지원), `warn-command-step-physical-order` (commands/ Step 번호 물리적 순서 불일치).
+
 ## [0.0.18] - 2026-05-20
 
 ### Added

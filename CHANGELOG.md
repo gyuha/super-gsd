@@ -2,6 +2,13 @@
 
 All notable changes to `super-gsd` are documented in this file. Format follows [Keep a Changelog](https://keepachangelog.com/).
 
+## [0.0.21] - 2026-05-21
+
+### Changed
+
+- v1.2 마일스톤 아카이브 완료: `.planning/milestones/v1.2-ROADMAP.md` + `v1.2-REQUIREMENTS.md` 생성, `REQUIREMENTS.md` 삭제, `ROADMAP.md` milestone grouping, `PROJECT.md` 업데이트
+- Git tag `v1.2` 생성 및 push
+
 ## [0.0.20] - 2026-05-21
 
 ### Changed

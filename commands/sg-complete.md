@@ -26,6 +26,18 @@ Self-contained. Reads .planning/STATE.md for phase resolution when no argument p
    fi
    ```
 
+0.5. **Lessons archive (milestone close).** STATE.md에서 milestone 버전을 읽고 lessons_ranker.py --archive를 실행한다. 실패해도 sg-complete를 차단하지 않는다:
+   ```bash
+   MILESTONE_VER=$(grep -E '^milestone:' .planning/STATE.md | head -1 | awk '{print $2}' | tr -d ' ')
+   if [ -z "$MILESTONE_VER" ]; then
+     echo "[warn] sg-complete: milestone version not found in STATE.md — skipping lessons archive"
+   else
+     echo "[sg-complete] Archiving lessons to .planning/milestones/${MILESTONE_VER}-LESSONS.md ..."
+     python3 hooks/lessons_ranker.py --archive --milestone "$MILESTONE_VER" .planning/lessons/*.md 2>&1 || \
+       echo "[warn] lessons archive failed — continuing"
+   fi
+   ```
+
 1.5. **Record HANDOFF.md row (`complete` stage) — before invoking the Skill.**
    ```bash
    HANDOFF_FILE=".planning/HANDOFF.md"
@@ -53,4 +65,5 @@ Self-contained. Reads .planning/STATE.md for phase resolution when no argument p
 2. $ARGUMENTS is used as phase number when provided.
 3. `.planning/HANDOFF.md` gains a `complete` row immediately before the Skill is invoked, enabling `/super-gsd:sg-status` to recommend `/super-gsd:sg-new` after milestone completion.
 4. If phase cannot be resolved, the command exits with the prescribed error message and does not invoke the Skill.
+5. Step 0.5가 STATE.md에서 milestone 버전을 읽어 lessons archive를 실행한다. 버전 읽기 실패 시 warn만 출력하고 Step 2(Skill 호출)로 진행한다.
 </success_criteria>

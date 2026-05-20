@@ -13,6 +13,25 @@ Self-contained. Reads .planning/lessons/ directory. Writes nothing.
 </execution_context>
 
 <process>
+0. **milestone 필터 확인.** $ARGUMENTS가 `--milestone=vX.Y` 또는 `milestone=vX.Y` 형식이면 milestone 아카이브 파일을 직접 읽는다:
+   ```bash
+   MILESTONE_ARG=$(echo "$ARGUMENTS" | grep -oE '(?:--)?milestone=([^ ]+)' | head -1 | sed 's/.*=//')
+   if [ -n "$MILESTONE_ARG" ]; then
+     MILESTONE_FILE=".planning/milestones/${MILESTONE_ARG}-LESSONS.md"
+     if [ ! -f "$MILESTONE_FILE" ]; then
+       echo "No milestone archive found: $MILESTONE_FILE"
+       echo "Run /super-gsd:sg-complete to create the archive when closing a milestone."
+       exit 0
+     fi
+     echo "--- $MILESTONE_FILE ---"
+     cat "$MILESTONE_FILE"
+     echo ""
+     echo "Milestone lessons loaded: $MILESTONE_ARG"
+     exit 0
+   fi
+   ```
+   milestone 필터가 없으면 기존 Step 1~4 흐름을 그대로 실행한다.
+
 1. **Glob으로 파일 목록 수집:**
    ```bash
    FILES=$(ls .planning/lessons/*.md 2>/dev/null | sort)
@@ -57,4 +76,6 @@ Self-contained. Reads .planning/lessons/ directory. Writes nothing.
 2. 파일이 없으면 안내 메시지만 출력되고 오류 없이 종료된다.
 3. phase 필터가 주어지면 해당 phase 파일만 출력된다.
 4. 필터 후 결과가 없으면 "No lessons found for phase..." 메시지를 출력하고 오류 없이 종료된다.
+5. --milestone=vX.Y 인수가 있으면 .planning/milestones/vX.Y-LESSONS.md를 읽어 출력한다.
+6. milestone 아카이브 파일이 없으면 안내 메시지를 출력하고 오류 없이 종료된다.
 </success_criteria>

@@ -2,6 +2,13 @@
 
 All notable changes to `super-gsd` are documented in this file. Format follows [Keep a Changelog](https://keepachangelog.com/).
 
+## [0.0.22] - 2026-05-21
+
+### Changed
+
+- `skills/sg-retro/SKILL.md`: "hookify rule drafts" → "sg-rule drafts" 전면 교체 (10곳). Conversation Analyzer 출력 섹션명 `### Draft Hookify Rules` → `### Draft sg-rules`.
+- `commands/sg-health.md`: Hookify 설치 체크를 `[FAIL]++` → `[OPTIONAL]` 변경. hookify는 선택적 의존성이므로 FAIL 카운트에 포함되지 않음.
+
 ## [0.0.21] - 2026-05-21
 
 ### Changed

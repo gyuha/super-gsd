@@ -1,17 +1,16 @@
 ---
 gsd_state_version: 1.0
-milestone: v1.3
-milestone_name: Multi-Platform Support
-status: Phase 16 shipped — v1.3 milestone complete
-stopped_at: v1.3 all phases shipped
-last_updated: "2026-05-21T12:00:00.000Z"
+milestone: v1.4
+milestone_name: Team Agent Parallel Execution
+status: planning
+last_updated: "2026-05-21T13:28:20.092Z"
 last_activity: 2026-05-21
 progress:
-  total_phases: 3
-  completed_phases: 3
-  total_plans: 3
-  completed_plans: 3
-  percent: 100
+  total_phases: 0
+  completed_phases: 0
+  total_plans: 0
+  completed_plans: 0
+  percent: 0
 ---
 
 # Project State
@@ -25,18 +24,10 @@ See: .planning/PROJECT.md (updated 2026-05-21)
 
 ## Current Position
 
-Phase: 16
-Plan: 16-01
-Status: Phase 16 shipped — v1.3 milestone complete
-Last activity: 2026-05-21
-
-```
-[Phase 14] → [Phase 15] → [Phase 16]
-  Codex 진입점    플랫폼 훅     README
-
-  + .agents/      + Python      Multi-Platform
-    skills/         픽스
-```
+Phase: Not started (defining requirements)
+Plan: —
+Status: Defining requirements
+Last activity: 2026-05-21 — Milestone v1.4 started
 
 ## Performance Metrics
 

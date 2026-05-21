@@ -57,3 +57,4 @@
 | 2026-05-20T15:14:27Z | 13-sg-learn-routing | ship | complete | - |
 | 2026-05-20T15:15:27Z | 13-sg-learn-routing | init | complete | - |
 | 2026-05-20T22:34:44Z | post-v1.2 | superpowers | review | - |
+| 2026-05-21T00:04:59Z | unknown | review | sg-retro | - |

@@ -129,6 +129,38 @@ Plans:
 
 **Plans**: TBD
 
+---
+
+## v1.5 Visual Companion UI Integration
+
+### Phase 20: sg-plan Visual Companion 통합
+
+**Goal**: sg-plan 실행 시 UI 설계 여부를 사용자에게 질문하고, 수락하면 `superpowers:brainstorming`을 gsd-discuss-phase 이전에 호출한다
+**Requirements**: VC-01, VC-02
+**Success Criteria** (what must be TRUE):
+
+  1. sg-plan 실행 시 phase resolve 직후 AskUserQuestion으로 "UI 설계 포함 여부"를 묻는다
+  2. 사용자가 "UI 설계 포함"을 선택하면 `superpowers:brainstorming` 스킬이 호출된다
+  3. brainstorming 완료 후 기존 gsd-discuss-phase → gsd-plan-phase 흐름이 정상 실행된다
+  4. 사용자가 "UI 없음"을 선택하면 AskUserQuestion 없이 기존 흐름을 그대로 진행한다
+
+**Plans**: TBD
+
+### Phase 21: sg-ui-plan 명령 + 등록 + 문서화
+
+**Goal**: UI 전용 설계 명령 `sg-ui-plan`을 추가하고, plugin.json과 문서에 등록한다
+**Depends on**: Phase 20
+**Requirements**: VC-03, VC-04, VC-05, VC-06, VC-07
+**Success Criteria** (what must be TRUE):
+
+  1. `commands/sg-ui-plan.md`가 존재하며 phase 컨텍스트를 ROADMAP.md에서 읽어 `superpowers:brainstorming`을 호출한다
+  2. sg-ui-plan 실행 후 HANDOFF.md에 `To: ui-plan` 행이 append된다
+  3. `plugin.json` commands 배열에 `./commands/sg-ui-plan.md`가 포함된다
+  4. `README.md` 명령표에 sg-ui-plan이 설명과 함께 등재된다
+  5. `docs/COMMANDS.md`에 sg-ui-plan 전체 설명이 추가된다
+
+**Plans**: TBD
+
 ## Progress
 
 | Phase | Milestone | Plans Complete | Status | Completed |
@@ -144,3 +176,5 @@ Plans:
 | 17. PLAN.md 의존성 분석 | v1.4 | 0/1 | Not started | - |
 | 18. sg-parallel-execute 스킬 + 라우팅 | v1.4 | 0/TBD | Not started | - |
 | 19. 결과 통합 + 호환성 회귀 테스트 | v1.4 | 0/TBD | Not started | - |
+| 20. sg-plan Visual Companion 통합 | v1.5 | 0/TBD | Not started | - |
+| 21. sg-ui-plan 명령 + 등록 + 문서화 | v1.5 | 0/TBD | Not started | - |

@@ -125,7 +125,150 @@ This command is self-contained — no external workflow files imported. Reads .p
    echo "| $TS | $PHASE_SLUG | $FROM_STAGE | superpowers | $PLAN_HASH |" >> .planning/HANDOFF.md
    ```
 
-9. **Build prompt and invoke Skill.** Assemble a single markdown blob in this exact order (English labels only):
+8.5. **PLAN.md 의존성 분석.** 모든 PLAN.md에서 wave/depends_on/files_modified를 파싱하여 독립 병렬 그룹(PARALLEL_GROUPS)을 계산하고 JSON 파일로 저장한다.
+
+   ```bash
+   PARALLEL_GROUPS=""
+   GROUPS_JSON_FILE="$PHASE_DIR/parallel_groups.json"
+
+   # wave 필드 존재 여부 확인 (하나라도 있으면 분석 진행)
+   HAS_WAVE=$(grep -rl '^wave:' "$PHASE_DIR"/*-PLAN.md 2>/dev/null | head -1)
+
+   if [ -z "$HAS_WAVE" ]; then
+     echo "wave 필드 없음 — 기존 순차 실행 경로 유지"
+   else
+     # 각 PLAN.md에서 wave 번호와 files_modified 추출
+     # 결과: "wave|planfile|file1,file2,..."
+     PLAN_WAVE_FILES=""
+     for PLAN_FILE in "$PHASE_DIR"/*-PLAN.md; do
+       PLAN_BASE=$(basename "$PLAN_FILE")
+       WAVE_NUM=$(grep -E '^wave:' "$PLAN_FILE" | head -1 | sed 's/wave:[[:space:]]*//')
+       if [ -z "$WAVE_NUM" ]; then
+         WAVE_NUM="99"
+       fi
+       # files_modified 블록: "  - path/to/file" 형식 파싱 (YAML 목록)
+       FILES_IN_PLAN=$(awk '/^files_modified:/{found=1; next} found && /^[[:space:]]*-[[:space:]]/{gsub(/^[[:space:]]*-[[:space:]]*/,""); printf "%s,", $0} found && /^[^[:space:]-]/{exit}' "$PLAN_FILE" | sed 's/,$//')
+       PLAN_WAVE_FILES="$PLAN_WAVE_FILES
+   ${WAVE_NUM}|${PLAN_BASE}|${FILES_IN_PLAN}"
+     done
+     PLAN_WAVE_FILES=$(echo "$PLAN_WAVE_FILES" | grep -v '^$')
+
+     # wave 값 목록 (중복 제거, 정렬)
+     WAVE_NUMS=$(echo "$PLAN_WAVE_FILES" | awk -F'|' '{print $1}' | sort -n | uniq)
+
+     # 각 wave별로 plan 목록과 files 수집
+     # files_modified 교집합이 있는 plan은 같은 그룹으로 강제 병합
+     GROUP_COUNT=0
+     GROUPS_JSON="["
+     FIRST_GROUP=1
+
+     for W in $WAVE_NUMS; do
+       # 이 wave의 plan들
+       WAVE_PLANS=$(echo "$PLAN_WAVE_FILES" | awk -F'|' -v w="$W" '$1==w {print $2}')
+       WAVE_FILES=$(echo "$PLAN_WAVE_FILES" | awk -F'|' -v w="$W" '$1==w {print $3}')
+
+       PLAN_LIST=$(echo "$WAVE_PLANS" | tr '\n' ' ' | sed 's/ $//')
+       PLAN_COUNT=$(echo "$WAVE_PLANS" | grep -c '.')
+
+       INDEXED=""
+       IDX=0
+       while IFS= read -r pline; do
+         FILES_OF=$(echo "$PLAN_WAVE_FILES" | awk -F'|' -v p="$pline" '$2==p {print $3}')
+         INDEXED="$INDEXED
+   ${IDX}:${pline}:${FILES_OF}"
+         IDX=$((IDX + 1))
+       done <<PLANEOL
+   $(echo "$WAVE_PLANS")
+   PLANEOL
+       INDEXED=$(echo "$INDEXED" | grep -v '^$')
+
+       ALL_FILES_RAW=$(echo "$WAVE_FILES" | tr ',' '\n' | grep -v '^$')
+       DUP_FILES=$(echo "$ALL_FILES_RAW" | sort | uniq -d)
+
+       if [ -n "$DUP_FILES" ] && [ "$PLAN_COUNT" -gt 1 ]; then
+         MERGED_PLANS=""
+         SOLO_PLANS=""
+         while IFS= read -r pline; do
+           FILES_OF=$(echo "$PLAN_WAVE_FILES" | awk -F'|' -v p="$pline" '$2==p {print $3}' | tr ',' '\n')
+           HAS_DUP=""
+           while IFS= read -r df; do
+             if echo "$FILES_OF" | grep -qxF "$df"; then
+               HAS_DUP=1
+               break
+             fi
+           done <<DUPEOF
+   $(echo "$DUP_FILES")
+   DUPEOF
+           if [ -n "$HAS_DUP" ]; then
+             MERGED_PLANS="$MERGED_PLANS $pline"
+           else
+             SOLO_PLANS="$SOLO_PLANS $pline"
+           fi
+         done <<WAVEEOF
+   $(echo "$WAVE_PLANS")
+   WAVEEOF
+
+         if [ -n "$MERGED_PLANS" ]; then
+           PLANS_JSON=$(echo "$MERGED_PLANS" | tr ' ' '\n' | grep -v '^$' | awk '{printf "\"%s\",", $0}' | sed 's/,$//')
+           [ "$FIRST_GROUP" -eq 0 ] && GROUPS_JSON="$GROUPS_JSON,"
+           GROUPS_JSON="$GROUPS_JSON{\"wave\":${W},\"plans\":[${PLANS_JSON}],\"merged\":true}"
+           GROUP_COUNT=$((GROUP_COUNT + 1))
+           FIRST_GROUP=0
+         fi
+         for SP in $SOLO_PLANS; do
+           [ -z "$SP" ] && continue
+           [ "$FIRST_GROUP" -eq 0 ] && GROUPS_JSON="$GROUPS_JSON,"
+           GROUPS_JSON="$GROUPS_JSON{\"wave\":${W},\"plans\":[\"${SP}\"],\"merged\":false}"
+           GROUP_COUNT=$((GROUP_COUNT + 1))
+           FIRST_GROUP=0
+         done
+       else
+         while IFS= read -r pline; do
+           [ -z "$pline" ] && continue
+           [ "$FIRST_GROUP" -eq 0 ] && GROUPS_JSON="$GROUPS_JSON,"
+           GROUPS_JSON="$GROUPS_JSON{\"wave\":${W},\"plans\":[\"${pline}\"],\"merged\":false}"
+           GROUP_COUNT=$((GROUP_COUNT + 1))
+           FIRST_GROUP=0
+         done <<WAVEEOF
+   $(echo "$WAVE_PLANS")
+   WAVEEOF
+       fi
+     done
+
+     GROUPS_JSON="$GROUPS_JSON]"
+
+     if [ "$GROUP_COUNT" -lt 2 ]; then
+       echo "병렬 그룹 감지 안됨 — 기존 순차 실행"
+       rm -f "$GROUPS_JSON_FILE"
+     else
+       PARALLEL_GROUPS="$GROUPS_JSON"
+       printf '%s\n' "$GROUPS_JSON" > "$GROUPS_JSON_FILE"
+       echo "병렬 그룹 ${GROUP_COUNT}개 감지 — parallel_groups.json 저장 완료"
+     fi
+   fi
+   ```
+
+9. **Build prompt and invoke Skill.**
+
+   **라우팅 분기.** Step 8.5에서 계산된 `PARALLEL_GROUPS` 변수를 확인한다:
+   - `PARALLEL_GROUPS`가 비어 있지 않으면 (독립 그룹 2개 이상): `sg-parallel-execute` 스킬로 라우팅한다 (Phase 18에서 구현).
+   - `PARALLEL_GROUPS`가 비어 있으면: 기존 순차 실행 경로(`superpowers:executing-plans`)를 그대로 사용한다.
+
+   ```bash
+   if [ -n "$PARALLEL_GROUPS" ]; then
+     echo "=== 병렬 실행 경로 선택 ==="
+     echo "PARALLEL_GROUPS: $PARALLEL_GROUPS"
+     echo "sg-parallel-execute 스킬 라우팅 (Phase 18에서 구현 예정)"
+     # TODO Phase 18: Skill(skill="sg-parallel-execute", args="$GROUPS_JSON_FILE")
+     echo "현재 Phase 17에서는 병렬 그룹이 감지되었으나 sg-parallel-execute 스킬이 미구현 상태입니다."
+     echo "parallel_groups.json이 저장되었습니다: $GROUPS_JSON_FILE"
+     echo "Phase 18 완료 후 이 경로가 활성화됩니다."
+     echo ""
+     echo "임시로 기존 순차 실행 경로로 폴백합니다."
+   fi
+   ```
+
+   Assemble a single markdown blob in this exact order (English labels only):
    ```
    # Superpowers Execution Handoff — Phase <N> (<PHASE_NAME>)
 

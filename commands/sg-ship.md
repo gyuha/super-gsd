@@ -18,7 +18,7 @@ Self-contained. Reads .planning/STATE.md for phase resolution when no argument p
    if [ -n "$ARGUMENTS" ]; then
      PHASE_NUM="$ARGUMENTS"
    else
-     PHASE_NUM=$(grep -E '^Phase: [0-9]+' .planning/STATE.md | head -1 | awk '{print $2}')
+     PHASE_NUM=$(grep -E '^Phase:' .planning/STATE.md | head -1 | sed -E 's/^Phase:[[:space:]]*//' | awk '{print $1}')
    fi
    if [ -z "$PHASE_NUM" ]; then
      echo "Could not resolve current phase. Pass phase number explicitly: /super-gsd:sg-ship <phase>"

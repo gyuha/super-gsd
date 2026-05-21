@@ -115,17 +115,17 @@ def main():
             msg = "Superpowers implementation complete. Run /super-gsd:sg-review to request a code review."
             print(json.dumps({"systemMessage": msg}), file=sys.stdout)
         elif signal == 'superpowers-review-complete':
-            msg = "Superpowers review complete. Run /super-gsd:sg-learn to capture lessons with Hookify."
+            msg = "Superpowers review complete. Run /super-gsd:sg-learn to capture lessons via sg-retro."
             print(json.dumps({"systemMessage": msg}), file=sys.stdout)
         elif signal == 'hookify-complete':
             lesson_file = save_hookify_lessons(transcript_path)
             if lesson_file:
                 msg = (
-                    f"Hookify complete. Lessons saved to {lesson_file}. "
+                    f"Retrospective complete. Lessons saved to {lesson_file}. "
                     "Run /super-gsd:sg-plan to start the next phase — prior lessons will be included as context."
                 )
             else:
-                msg = "Hookify complete. Run /super-gsd:sg-plan to start the next phase."
+                msg = "Retrospective complete. Run /super-gsd:sg-plan to start the next phase."
             print(json.dumps({"systemMessage": msg}), file=sys.stdout)
         else:
             print(json.dumps({}), file=sys.stdout)

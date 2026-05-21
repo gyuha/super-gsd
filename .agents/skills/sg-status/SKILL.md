@@ -101,7 +101,7 @@ Self-contained — reads .planning/HANDOFF.md, .planning/STATE.md, .planning/ROA
          NEXT_CMD="/super-gsd:sg-complete"
        fi
        ;;
-     complete) NEXT_CMD="/super-gsd:sg-plan" ;;
+     complete) NEXT_CMD="/super-gsd:sg-new" ;;
      *) NEXT_CMD="(unknown stage: $STAGE_RAW)" ;;
    esac
    ```

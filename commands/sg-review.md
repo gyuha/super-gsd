@@ -42,7 +42,7 @@ Self-contained. Reads git history to derive BASE_SHA and HEAD_SHA, then delegate
 
 3. **Read plan/requirements (best-effort).** If a PLAN.md for the current phase exists, read its `<objective>` section as requirements context. Otherwise use a default string:
    ```bash
-   PHASE_NUM=$(grep -E '^Phase: [0-9]+' .planning/STATE.md 2>/dev/null | head -1 | awk '{print $2}')
+   PHASE_NUM=$(grep -E '^Phase:' .planning/STATE.md 2>/dev/null | head -1 | sed -E 's/^Phase:[[:space:]]*//' | awk '{print $1}')
    if [ -n "$PHASE_NUM" ]; then
      PHASE_PAD=$(printf "%02d" "$PHASE_NUM")
    else
@@ -69,7 +69,7 @@ Self-contained. Reads git history to derive BASE_SHA and HEAD_SHA, then delegate
      printf '| Timestamp | Phase | From | To | Plan Hash |\n| --- | --- | --- | --- | --- |\n' > "$HANDOFF_FILE"
    fi
    TS=$(date -u +%Y-%m-%dT%H:%M:%SZ)
-   PHASE_NUM_R=$(grep -E '^Phase: [0-9]+' .planning/STATE.md 2>/dev/null | head -1 | awk '{print $2}')
+   PHASE_NUM_R=$(grep -E '^Phase:' .planning/STATE.md 2>/dev/null | head -1 | sed -E 's/^Phase:[[:space:]]*//' | awk '{print $1}')
    PHASE_PAD_R=$(printf "%02d" "${PHASE_NUM_R:-0}" 2>/dev/null || echo "${PHASE_NUM_R:-0}")
    PHASE_SLUG_R=$(ls -d .planning/phases/${PHASE_PAD_R}-* 2>/dev/null | head -1 | xargs basename 2>/dev/null)
    [ -z "$PHASE_SLUG_R" ] && PHASE_SLUG_R="${PHASE_NUM_R:-unknown}"

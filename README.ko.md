@@ -40,6 +40,7 @@ sg-new/sg-start → sg-explore → sg-plan → sg-execute → sg-review → sg-l
 | `/super-gsd:sg-status` | 현재 단계, 마지막 인계 시각, 다음 권장 명령 표시 | 언제든 현재 위치 확인 시 |
 | `/super-gsd:sg-update` | GSD, superpowers, super-gsd 설치 여부 확인 후 설치 또는 업데이트 | 모든 워크플로우 도구를 설치/업데이트할 때 |
 | `/super-gsd:sg-quick` | GSD 보장이 있는 소규모 애드혹 작업 실행 (계획 + 실행 + 커밋) | 메인 단계 워크플로우 외 일회성 작업 |
+| `/super-gsd:sg-health` | 설치 자기진단: GSD/Superpowers 존재 여부, 훅 등록, HANDOFF.md 스키마 확인 | 문제가 발생했거나 새 설치 후 |
 
 전체 명령 레퍼런스(인수 및 상세 설명 포함)는 [docs/COMMANDS.md](./docs/COMMANDS.md)를 참고한다.
 

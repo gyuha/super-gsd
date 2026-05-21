@@ -80,3 +80,6 @@
 | 2026-05-21T14:03:14Z | 17-plan-md-dependency-analysis | hookify | ship | - |
 | 2026-05-21T14:09:48Z | 18-sg-parallel-execute | ship | gsd-plan | - |
 | 2026-05-21T14:20:43Z | 18-sg-parallel-execute | gsd-plan | superpowers | d1f36fe |
+| 2026-05-21T14:26:37Z | 18-sg-parallel-execute | superpowers | review | - |
+| 2026-05-21T14:29:34Z | 17-plan-md-dependency-analysis | review | hookify | - |
+| 2026-05-21T14:32:09Z | 18-sg-parallel-execute | init | ship | - |

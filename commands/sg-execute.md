@@ -243,15 +243,9 @@ This command is self-contained — no external workflow files imported. Reads .p
 
    ```bash
    if [ -n "$PARALLEL_GROUPS" ]; then
-     echo "=== 병렬 실행 경로 선택 ==="
-     echo "PARALLEL_GROUPS: $PARALLEL_GROUPS"
-     echo "sg-parallel-execute 스킬 라우팅 (Phase 18에서 구현 예정)"
-     # TODO Phase 18: Skill(skill="sg-parallel-execute", args="$GROUPS_JSON_FILE")
-     echo "현재 Phase 17에서는 병렬 그룹이 감지되었으나 sg-parallel-execute 스킬이 미구현 상태입니다."
-     echo "parallel_groups.json이 저장되었습니다: $GROUPS_JSON_FILE"
-     echo "Phase 18 완료 후 이 경로가 활성화됩니다."
-     echo ""
-     echo "임시로 기존 순차 실행 경로로 폴백합니다."
+     echo "=== 병렬 실행 경로 선택: ${GROUP_COUNT}개 그룹 감지 ==="
+     Skill(skill="sg-parallel-execute", args="$GROUPS_JSON_FILE")
+     return
    fi
    ```
 

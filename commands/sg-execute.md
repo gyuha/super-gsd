@@ -146,8 +146,8 @@ This command is self-contained — no external workflow files imported. Reads .p
        if [ -z "$WAVE_NUM" ]; then
          WAVE_NUM="99"
        fi
-       # files_modified 블록: "  - path/to/file" 형식 파싱 (YAML 목록)
-       FILES_IN_PLAN=$(awk '/^files_modified:/{found=1; next} found && /^[[:space:]]*-[[:space:]]/{gsub(/^[[:space:]]*-[[:space:]]*/,""); printf "%s,", $0} found && /^[^[:space:]-]/{exit}' "$PLAN_FILE" | sed 's/,$//')
+       # files_modified 블록: "  - path/to/file" 형식 파싱 (YAML 목록, frontmatter 경계 보호)
+       FILES_IN_PLAN=$(awk '/^---$/{if(front++>0) exit} /^files_modified:/{found=1; next} found && /^[[:space:]]*-[[:space:]]/{gsub(/^[[:space:]]*-[[:space:]]*/,""); printf "%s,", $0} found && /^[^[:space:]-]/{found=0}' "$PLAN_FILE" | sed 's/,$//')
        PLAN_WAVE_FILES="$PLAN_WAVE_FILES
    ${WAVE_NUM}|${PLAN_BASE}|${FILES_IN_PLAN}"
      done
@@ -167,20 +167,7 @@ This command is self-contained — no external workflow files imported. Reads .p
        WAVE_PLANS=$(echo "$PLAN_WAVE_FILES" | awk -F'|' -v w="$W" '$1==w {print $2}')
        WAVE_FILES=$(echo "$PLAN_WAVE_FILES" | awk -F'|' -v w="$W" '$1==w {print $3}')
 
-       PLAN_LIST=$(echo "$WAVE_PLANS" | tr '\n' ' ' | sed 's/ $//')
        PLAN_COUNT=$(echo "$WAVE_PLANS" | grep -c '.')
-
-       INDEXED=""
-       IDX=0
-       while IFS= read -r pline; do
-         FILES_OF=$(echo "$PLAN_WAVE_FILES" | awk -F'|' -v p="$pline" '$2==p {print $3}')
-         INDEXED="$INDEXED
-   ${IDX}:${pline}:${FILES_OF}"
-         IDX=$((IDX + 1))
-       done <<PLANEOL
-   $(echo "$WAVE_PLANS")
-   PLANEOL
-       INDEXED=$(echo "$INDEXED" | grep -v '^$')
 
        ALL_FILES_RAW=$(echo "$WAVE_FILES" | tr ',' '\n' | grep -v '^$')
        DUP_FILES=$(echo "$ALL_FILES_RAW" | sort | uniq -d)

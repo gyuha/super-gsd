@@ -167,6 +167,44 @@ super-gsd가 로드되면 다음을 실행한다:
 
 `sg-update` 완료 후 **설치 확인** 단계로 넘어간다.
 
+## 멀티 플랫폼 지원
+
+super-gsd 훅은 Claude Code 플러그인 마켓플레이스 없이 Codex, Gemini/Antigravity CLI에서도 동작한다. 저장소를 수동으로 클론하면 훅 설정 파일이 이미 포함되어 있다.
+
+### 기능 델타
+
+| 기능 | Claude Code | Codex | Gemini / Antigravity CLI |
+|------|:-----------:|:-----:|:------------------------:|
+| `/sg-*` 슬래시 명령 | ✅ | ❌ `$sg-*` 스킬 사용 | ❌ `$sg-*` 스킬 사용 |
+| Stop 훅 자동 인계 | ✅ | ✅ `.codex/hooks.json` | ✅ `.gemini/settings.json` |
+| SubagentStop 훅 | ✅ | ❌ 미지원 | ❌ 미지원 |
+| PreToolUse / BeforeTool 훅 | ✅ | ✅ | ✅ |
+| Superpowers 연동 | ✅ | ❌ | ❌ |
+| AskUserQuestion UI | ✅ | ❌ numbered list 대체 | ❌ numbered list 대체 |
+| sg-retro / sg-plan / sg-execute | ✅ | ✅ `.agents/skills/` 경유 | ✅ `.agents/skills/` 경유 |
+
+### Codex
+
+```bash
+git clone https://github.com/gyuha/super-gsd.git
+cd your-project
+# 훅 설정 파일 복사 또는 심볼릭 링크:
+cp /path/to/super-gsd/.codex/hooks.json .codex/hooks.json
+```
+
+`.codex/hooks.json`이 Stop 및 PreToolUse 훅을 자동 등록한다. `$sg-retro`, `$sg-plan`, `$sg-execute` 스킬 문법을 사용한다. 전체 워크플로우는 `AGENTS.md`를 참조한다.
+
+### Gemini / Antigravity CLI
+
+```bash
+git clone https://github.com/gyuha/super-gsd.git
+cd your-project
+# 훅 설정 파일 복사 또는 심볼릭 링크:
+cp /path/to/super-gsd/.gemini/settings.json .gemini/settings.json
+```
+
+`.gemini/settings.json`이 SessionEnd 및 BeforeTool 훅을 등록한다. `.agents/skills/` 스킬을 사용한다. 전체 워크플로우는 `AGENTS.md`를 참조한다.
+
 ## 필수 도구
 
 `super-gsd`는 세 가지 도구를 오케스트레이션한다. `sg-update`(위)가 자동으로 설치하며, 이 섹션은 각 도구가 무엇을 하는지에 대한 참고 자료다.

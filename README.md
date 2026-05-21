@@ -167,6 +167,44 @@ Once super-gsd is loaded, run:
 
 Move on to **Verify install** once `sg-update` completes.
 
+## Multi-Platform Support
+
+super-gsd hooks work on Codex and Gemini/Antigravity CLI without the Claude Code plugin marketplace. Clone the repository manually — the hook configuration files are already in place.
+
+### Feature Delta
+
+| Feature | Claude Code | Codex | Gemini / Antigravity CLI |
+|---------|:-----------:|:-----:|:------------------------:|
+| `/sg-*` slash commands | ✅ | ❌ use `$sg-*` skills | ❌ use `$sg-*` skills |
+| Stop hook auto-handoff | ✅ | ✅ `.codex/hooks.json` | ✅ `.gemini/settings.json` |
+| SubagentStop hook | ✅ | ❌ not supported | ❌ not supported |
+| PreToolUse / BeforeTool hook | ✅ | ✅ | ✅ |
+| Superpowers integration | ✅ | ❌ | ❌ |
+| AskUserQuestion UI | ✅ | ❌ numbered list fallback | ❌ numbered list fallback |
+| sg-retro / sg-plan / sg-execute | ✅ | ✅ via `.agents/skills/` | ✅ via `.agents/skills/` |
+
+### Codex
+
+```bash
+git clone https://github.com/gyuha/super-gsd.git
+cd your-project
+# Copy or symlink hook config:
+cp /path/to/super-gsd/.codex/hooks.json .codex/hooks.json
+```
+
+`.codex/hooks.json` registers Stop and PreToolUse hooks automatically. Use `$sg-retro`, `$sg-plan`, `$sg-execute` skill syntax. See `AGENTS.md` for the full workflow.
+
+### Gemini / Antigravity CLI
+
+```bash
+git clone https://github.com/gyuha/super-gsd.git
+cd your-project
+# Copy or symlink hook config:
+cp /path/to/super-gsd/.gemini/settings.json .gemini/settings.json
+```
+
+`.gemini/settings.json` registers SessionEnd and BeforeTool hooks. Use `.agents/skills/` skills. See `AGENTS.md` for the full workflow.
+
 ## Prerequisites
 
 `super-gsd` orchestrates three tools. `sg-update` (above) installs them automatically — this section is a reference for what each one does.

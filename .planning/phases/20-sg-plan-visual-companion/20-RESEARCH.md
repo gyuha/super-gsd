@@ -270,17 +270,19 @@ fi
 
 ---
 
-## Open Questions
+## Open Questions (RESOLVED)
 
 1. **brainstorming 완료 후 writing-plans 억제 보장**
    - What we know: SKILL.md가 "The terminal state is invoking writing-plans"라고 명시. Agent 프롬프트로 억제 가능하다고 [ASSUMED].
    - What's unclear: Claude가 Skill 문서의 terminal action을 Agent 프롬프트로 얼마나 신뢰성 있게 재정의하는가.
    - Recommendation: 억제 지시를 Agent prompt의 첫 줄과 마지막 줄 양쪽에 넣어 강조도를 높인다. 검증 기준(success criteria)에 "brainstorming 완료 후 writing-plans가 호출되지 않음" 명시.
+   - **RESOLVED:** 20-01-PLAN.md Task 1 action에서 brainstorming Agent 프롬프트의 첫 줄과 마지막 줄 양쪽에 "Do NOT invoke writing-plans or any other Skill after brainstorming finishes" 억제 지시를 명시적으로 포함하도록 결정. 성공 기준에도 이 항목 추가됨.
 
 2. **PHASE_SECTION 변수 치환 방식**
    - What we know: sg-plan.md는 `$PHASE_NUM` 치환을 "Before calling Agent, replace every occurrence of `$PHASE_NUM` with the actual resolved value"로 명시한다.
    - What's unclear: `$PHASE_SECTION` (여러 줄, 특수문자 포함)을 Agent prompt에 주입할 때 어떤 형식이 안전한가.
    - Recommendation: 플래너가 "PHASE_SECTION을 Agent prompt 내에 직접 텍스트로 치환(triple-backtick 구분)"을 task action에 명시.
+   - **RESOLVED:** 20-01-PLAN.md Task 1 action에서 PHASE_SECTION을 Agent prompt 내에 literal 텍스트로 직접 치환하도록 명시. "Before calling Agent, replace $PHASE_SECTION with the actual roadmap section text" 패턴 채택.
 
 ---
 

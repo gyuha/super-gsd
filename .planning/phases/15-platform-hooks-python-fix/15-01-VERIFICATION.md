@@ -11,6 +11,7 @@
 | 3 | timeout 단위가 ms인지 (10000 = 10초) | Gemini CLI는 ms 명시, Antigravity 전용 문서 없음 | 타임아웃 로그 관찰 | [ ] |
 | 4 | `$GEMINI_PROJECT_DIR` 환경변수가 Antigravity에서도 주입되는지 | 마이그레이션 가이드에 묵시적 언급만 있음 | SessionStart 훅으로 `printenv GEMINI_PROJECT_DIR` 실행 | [ ] |
 | 5 | `_schema_note` 키를 Antigravity CLI가 무시하는지 (거부하지 않는지) | CLI가 알 수 없는 키 처리 방식 문서 없음 | 훅 설정 로드 후 오류 없음 확인 | [ ] |
+| 6 | Codex Stop 이벤트 시 `transcript_path`가 stdin JSON에 포함되는지 | Codex의 Stop 이벤트 스펙 미확인 — `stop_hook.py`가 `transcript_path` 없이 실행되면 신호 감지 불가 | Codex Stop 이벤트 시 stdin JSON을 로그로 출력해 확인 | [ ] |
 
 ## 검증 완료 시
 

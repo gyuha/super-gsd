@@ -1,63 +1,49 @@
-# Requirements: super-gsd v1.3 Multi-Platform Support
+# Requirements: super-gsd v1.4 Team Agent Parallel Execution
 
-**Milestone:** v1.3 Multi-Platform Support
+**Milestone:** v1.4 Team Agent Parallel Execution
 **Defined:** 2026-05-21
-**Core Value:** Codex, Gemini CLI, Antigravity CLI 사용자도 super-gsd 워크플로우를 사용할 수 있도록 설치 방법과 적응형 파일을 제공한다
+**Core Value:** sg-execute에서 PLAN.md의 wave/depends_on 구조를 활용해 독립 태스크를 병렬 Agent로 동시 실행하여 구현 속도를 높인다
 
-## v1.3 Requirements
+## v1.4 Requirements
 
-### Cross-Platform Foundation (CODEX)
+### 의존성 분석 (Dependency Analysis)
 
-- [ ] **CODEX-01**: Codex 및 Antigravity CLI 사용자가 AGENTS.md를 통해 super-gsd 워크플로우를 이해하고 시작할 수 있다
-  - *Outcome: pending*
-  - AGENTS.md를 Codex/Antigravity 어휘($sg-* 문법)로 재작성, 8 KiB 이하, SubagentStop 부재 명시
+- [ ] **TE-01a**: sg-execute가 PLAN.md frontmatter에서 `wave`, `depends_on`, `files_modified` 필드를 파싱하여 독립 그룹(PARALLEL_GROUPS)을 계산한다
+- [ ] **TE-01b**: `files_modified` 교집합이 있는 plan은 무조건 동일 그룹으로 병합한다 (파일 충돌 방지)
+- [ ] **TE-01c**: 독립 그룹이 2개 미만이면 기존 `superpowers:executing-plans` 경로로 폴백한다
 
-- [ ] **CODEX-02**: Codex, Gemini CLI, Antigravity CLI 사용자가 `.agents/skills/sg-retro`를 통해 sg-retro를 AskUserQuestion 없이 실행할 수 있다
-  - *Outcome: pending*
-  - skills/sg-retro/SKILL.md에서 AskUserQuestion 제거, .agents/skills/sg-retro/SKILL.md 신규 생성
+### 병렬 실행 (Parallel Execution)
 
-- [ ] **CODEX-03**: Codex, Gemini CLI, Antigravity CLI 사용자가 `.agents/skills/sg-{start,plan,execute,review,status}` 래퍼 스킬 5개를 통해 핵심 워크플로우 단계를 실행할 수 있다
-  - *Outcome: pending*
-  - 각 스킬은 platform-agnostic prose 지침 제공, Superpowers 연동 불가 명시
+- [ ] **TE-02a**: sg-parallel-execute 스킬이 PARALLEL_GROUPS를 받아 각 그룹을 Task()로 동시 실행한다
+- [ ] **TE-02b**: 병렬 에이전트는 bare Task() 직접 구현 — `superpowers:executing-plans` 호출 금지
+- [ ] **TE-03a**: 에이전트 수는 wave별 독립 plan 수 기반으로 자동 결정, 상한 3개
 
-- [ ] **CODEX-04**: Codex 사용자가 `.codex/hooks.json`을 통해 Stop과 PreToolUse 훅을 사용할 수 있고, hooks/*.py가 CLAUDE_PLUGIN_ROOT 없이도 동작한다
-  - *Outcome: pending*
-  - .codex/hooks.json 신규 생성 (Stop + PreToolUse, SubagentStop 제외)
-  - hooks/stop_hook.py 및 hooks/rule_runner.py CLAUDE_PLUGIN_ROOT 폴백 1줄 추가
+### 결과 통합 (Result Integration)
 
-### Multi-Platform Completion (MULTI)
+- [ ] **TE-04a**: 오케스트레이터가 모든 에이전트 완료 후 HANDOFF.md에 단독으로 기록한다 (동시 쓰기 race condition 방지)
+- [ ] **TE-04b**: wave가 1개(또는 없음)이면 기존 `superpowers:executing-plans` 경로를 그대로 사용한다
 
-- [ ] **MULTI-01**: Antigravity CLI 및 Gemini CLI 사용자가 `.gemini/settings.json`을 통해 SessionEnd와 BeforeTool 훅을 사용할 수 있다
-  - *Outcome: pending*
-  - .gemini/settings.json 신규 생성 (SessionEnd + BeforeTool)
-  - hooks/rule_runner.py hookEventName BeforeTool 호환 처리
+### 폴백 및 호환성 (Fallback & Compatibility)
 
-- [ ] **MULTI-02**: README에 Codex, Gemini CLI, Antigravity CLI 플랫폼별 설치 방법과 기능 델타 테이블(동작/제한/불가 3분류)을 포함한 Multi-Platform 섹션이 존재한다
-  - *Outcome: pending*
+- [ ] **TE-05a**: wave 정보가 없는 PLAN.md는 항상 순차 실행 — 기존 sg-execute 동작 완전 보존
+- [ ] **TE-05b**: sg-execute의 idempotency 검사, HANDOFF.md 기록, lessons 주입 로직은 변경하지 않는다
 
-## Future Requirements (v1.4+)
+## Future Requirements (Deferred)
 
-- 13개 sg-* 전체 .agents/skills/ SKILL.md (v1.3 이후 — stale 위험, 유지보수 부담)
-- Antigravity CLI 훅 스키마 확정 후 .gemini/settings.json 검증 및 보완
-- sg-health Antigravity/Codex 변형 (설치 환경 자기진단)
-- .codex-plugin/plugin.json 마켓플레이스 등록 (절차 미문서화)
-- ~/.antigravity/AGENTS.md 글로벌 템플릿
+- **isolation: worktree**: 병렬 에이전트별 git worktree 격리 — v1.4는 files_modified 교집합 검사로 충분, worktree merge 복잡성 회피
+- **자동 재시도 로직**: 실패 에이전트 자동 재시도 — v1.4는 실패 시 수동 재실행 안내로 충분
+- `--parallel` 플래그: wave 자동 감지가 UX 우월 — 플래그 불필요
 
-## Out of Scope (v1.3)
+## Out of Scope
 
-- SubagentStop 대체 훅 — Codex, Antigravity CLI 모두 미지원. GitHub 이슈 #21753 미해결.
-- Superpowers:executing-plans Codex/Antigravity 에뮬레이션 — Superpowers는 Claude Code 전용
-- 13개 commands/*.md bash-동등 full-parity 포팅 — 즉시 stale, 유지보수 불가
-- lessons_ranker.py Codex/Antigravity 훅 포팅 — scope 초과
-- 플러그인 마켓플레이스 자동 게시 — 외부 요인
+- Agent Teams (TeamCreate 도구): 실험적, opt-in, 세션 재개 불가 등 제약 과다
+- `superpowers:executing-plans` 내부 수정: non-invasive 원칙 유지
+- HANDOFF.md 스키마 변경: 하위 호환성 위험 — Plan Hash에 `[w:N/M]` 인코딩만 추가
 
 ## Traceability
 
-| Requirement | Phase | Status |
-|-------------|-------|--------|
-| CODEX-01 | Phase 14 | Pending |
-| CODEX-02 | Phase 14 | Pending |
-| CODEX-03 | Phase 14 | Pending |
-| CODEX-04 | Phase 15 | Pending |
-| MULTI-01 | Phase 15 | Pending |
-| MULTI-02 | Phase 16 | Pending |
+| REQ-ID | Phase |
+|--------|-------|
+| TE-01a, TE-01b, TE-01c | Phase 17 |
+| TE-02a, TE-02b, TE-03a | Phase 18 |
+| TE-04a, TE-04b, TE-05a, TE-05b | Phase 19 |

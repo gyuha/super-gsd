@@ -19,11 +19,17 @@ import re
 
 from transcript_matcher import detect_signal
 
+# Platform-agnostic plugin root detection
+PLUGIN_ROOT = (
+    os.environ.get("CLAUDE_PLUGIN_ROOT")
+    or os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+)
+
 
 def load_config():
     """Return super_gsd config dict from .planning/config.json, or {}."""
     try:
-        with open('.planning/config.json', 'r') as f:
+        with open(os.path.join(PLUGIN_ROOT, '.planning', 'config.json'), 'r') as f:
             cfg = json.load(f)
         return cfg.get('super_gsd', {})
     except (FileNotFoundError, json.JSONDecodeError, PermissionError):
@@ -33,7 +39,7 @@ def load_config():
 def _read_current_phase():
     """STATE.md에서 현재 phase 번호를 읽어 반환한다. 실패 시 'unknown' 반환."""
     try:
-        with open('.planning/STATE.md', 'r') as f:
+        with open(os.path.join(PLUGIN_ROOT, '.planning', 'STATE.md'), 'r') as f:
             content = f.read()
         m = re.search(r'^Phase:\s*(.+)', content, re.MULTILINE)
         if m:
@@ -76,7 +82,7 @@ def save_hookify_lessons(transcript_path):
         except (ValueError, TypeError):
             padded = phase
         filename = f"{padded}-{today}.md"
-        filepath = os.path.join('.planning', 'lessons', filename)
+        filepath = os.path.join(PLUGIN_ROOT, '.planning', 'lessons', filename)
         os.makedirs(os.path.dirname(filepath), exist_ok=True)
         if os.path.exists(filepath):
             return filepath

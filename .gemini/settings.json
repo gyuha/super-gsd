@@ -1,0 +1,7 @@
+{
+  "_schema_note": "Based on Gemini CLI docs. Antigravity CLI compatibility not confirmed — see .planning/phases/15-platform-hooks-python-fix/15-01-VERIFICATION.md",
+  "hooks": {
+    "SessionEnd": [{"hooks": [{"name": "stop-hook", "type": "command", "command": "python3 $GEMINI_PROJECT_DIR/hooks/stop_hook.py", "timeout": 10000}]}],
+    "BeforeTool": [{"hooks": [{"name": "rule-runner", "type": "command", "command": "python3 $GEMINI_PROJECT_DIR/hooks/rule_runner.py", "timeout": 5000}]}]
+  }
+}

@@ -18,6 +18,12 @@ import sys
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 
+# Platform-agnostic plugin root detection
+PLUGIN_ROOT = (
+    os.environ.get("CLAUDE_PLUGIN_ROOT")
+    or os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+)
+
 
 def _hookify_installed() -> bool:
     hookify_cache = os.path.expanduser(
@@ -146,8 +152,8 @@ def _load_rules(event_filter: str) -> list:
             if existing is None or priority > existing["priority"]:
                 seen_names[name] = rule
 
-    _load_glob(os.path.join(".claude", "hookify.*.local.md"), priority=1)
-    _load_glob(os.path.join(".claude", "sg-rule.*.local.md"), priority=2)
+    _load_glob(os.path.join(PLUGIN_ROOT, ".claude", "hookify.*.local.md"), priority=1)
+    _load_glob(os.path.join(PLUGIN_ROOT, ".claude", "sg-rule.*.local.md"), priority=2)
     return list(seen_names.values())
 
 
@@ -194,7 +200,7 @@ def _match_condition(cond: dict, tool_name: str, tool_input: dict) -> bool:
     return False
 
 
-def _evaluate(rules: list, input_data: dict) -> dict:
+def _evaluate(rules: list, input_data: dict, event_name: str = "PreToolUse") -> dict:
     tool_name = input_data.get("tool_name", "")
     tool_input = input_data.get("tool_input", {})
 
@@ -214,7 +220,7 @@ def _evaluate(rules: list, input_data: dict) -> dict:
         msg = "\n\n".join(blocking)
         return {
             "hookSpecificOutput": {
-                "hookEventName": "PreToolUse",
+                "hookEventName": event_name,
                 "permissionDecision": "deny",
             },
             "systemMessage": msg,
@@ -234,7 +240,7 @@ def main() -> None:
 
         # Load super_gsd config — respect auto_advance: false
         try:
-            with open(".planning/config.json") as f:
+            with open(os.path.join(PLUGIN_ROOT, ".planning", "config.json")) as f:
                 cfg = json.load(f).get("super_gsd", {})
             if not cfg.get("auto_advance", True):
                 print(json.dumps({}))
@@ -243,6 +249,11 @@ def main() -> None:
             pass
 
         input_data = json.load(sys.stdin)
+        event_name = (
+            input_data.get("hook_event_name")
+            or input_data.get("hookEventName")
+            or "PreToolUse"
+        )
         tool_name = input_data.get("tool_name", "")
 
         if tool_name == "Bash":
@@ -254,7 +265,7 @@ def main() -> None:
             sys.exit(0)
 
         rules = _load_rules(event_filter)
-        result = _evaluate(rules, input_data)
+        result = _evaluate(rules, input_data, event_name)
         print(json.dumps(result))
 
     except Exception as e:

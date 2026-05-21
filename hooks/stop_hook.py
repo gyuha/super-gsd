@@ -36,6 +36,17 @@ def load_config():
         return {}
 
 
+def _detect_platform():
+    """Claude Code, Gemini CLI, Codex 플랫폼을 감지한다.
+
+    CLAUDE_PLUGIN_ROOT가 설정된 경우 Claude Code 플러그인 환경.
+    그 외에는 Codex/Gemini CLI 환경으로 간주한다.
+    """
+    if os.environ.get("CLAUDE_PLUGIN_ROOT"):
+        return "claude-code"
+    return "other"
+
+
 def _read_current_phase():
     """STATE.md에서 현재 phase 번호를 읽어 반환한다. 실패 시 'unknown' 반환."""
     try:
@@ -108,24 +119,36 @@ def main():
         transcript_path = input_data.get('transcript_path', '')
         signal = detect_signal(transcript_path)
 
+        platform = _detect_platform()
+        if platform == "claude-code":
+            cmd_execute = "/super-gsd:sg-execute"
+            cmd_review = "/super-gsd:sg-review"
+            cmd_learn = "/super-gsd:sg-learn"
+            cmd_plan = "/super-gsd:sg-plan"
+        else:
+            cmd_execute = "$sg-execute"
+            cmd_review = "$sg-review"
+            cmd_learn = "$sg-retro"
+            cmd_plan = "$sg-plan"
+
         if signal == 'gsd-plan-complete':
-            msg = "GSD plan-phase complete. Run /super-gsd:sg-execute to hand off to Superpowers."
+            msg = f"GSD plan-phase complete. Run {cmd_execute} to hand off to implementation."
             print(json.dumps({"systemMessage": msg}), file=sys.stdout)
         elif signal == 'superpowers-implementation-complete':
-            msg = "Superpowers implementation complete. Run /super-gsd:sg-review to request a code review."
+            msg = f"Implementation complete. Run {cmd_review} to request a code review."
             print(json.dumps({"systemMessage": msg}), file=sys.stdout)
         elif signal == 'superpowers-review-complete':
-            msg = "Superpowers review complete. Run /super-gsd:sg-learn to capture lessons via sg-retro."
+            msg = f"Review complete. Run {cmd_learn} to capture lessons via sg-retro."
             print(json.dumps({"systemMessage": msg}), file=sys.stdout)
         elif signal == 'hookify-complete':
             lesson_file = save_hookify_lessons(transcript_path)
             if lesson_file:
                 msg = (
                     f"Retrospective complete. Lessons saved to {lesson_file}. "
-                    "Run /super-gsd:sg-plan to start the next phase — prior lessons will be included as context."
+                    f"Run {cmd_plan} to start the next phase — prior lessons will be included as context."
                 )
             else:
-                msg = "Retrospective complete. Run /super-gsd:sg-plan to start the next phase."
+                msg = f"Retrospective complete. Run {cmd_plan} to start the next phase."
             print(json.dumps({"systemMessage": msg}), file=sys.stdout)
         else:
             print(json.dumps({}), file=sys.stdout)

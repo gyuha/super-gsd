@@ -39,8 +39,8 @@ if [ -z "$PHASE_RAW" ]; then
   # --- END STATE.md Phase parsing block ---
 fi
 
-if ! printf '%s' "$PHASE_RAW" | grep -qE '^[0-9]+$'; then
-  echo "Phase token must be a number. Got: '${PHASE_RAW}'." >&2
+if ! printf '%s' "$PHASE_RAW" | grep -qE '^[0-9]+(\.[0-9]+)?$'; then
+  echo "Phase token must be a number (integer or decimal like 7.1). Got: '${PHASE_RAW}'." >&2
   if [ -d .planning/phases ]; then
     echo "Available phases:" >&2
     ls .planning/phases/ 2>/dev/null >&2 || echo "  (no phases yet)" >&2
@@ -48,7 +48,11 @@ if ! printf '%s' "$PHASE_RAW" | grep -qE '^[0-9]+$'; then
   exit 1
 fi
 
-PHASE_PAD=$(printf "%02d" "$PHASE_RAW")
+if echo "$PHASE_RAW" | grep -qE '\.'; then
+  PHASE_PAD="$PHASE_RAW"
+else
+  PHASE_PAD=$(printf "%02d" "$PHASE_RAW")
+fi
 PHASE_DIR=$(ls -d .planning/phases/${PHASE_PAD}-*/ 2>/dev/null | head -1)
 
 if [ -z "$PHASE_DIR" ]; then

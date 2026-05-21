@@ -46,8 +46,7 @@ Reads .planning/STATE.md, .planning/ROADMAP.md, .planning/REQUIREMENTS.md, .plan
      PHASE_NUM=$(grep -E '^Phase:' .planning/STATE.md 2>/dev/null | head -1 \
                  | sed -E 's/^Phase:[[:space:]]*//' \
                  | sed -E 's/[[:space:]]+$//' \
-                 | awk '{print $1}' \
-                 | grep -oE '^[0-9]+')
+                 | awk '{print $1}')
    fi
    if [ -z "$PHASE_NUM" ]; then
      echo "Could not resolve current phase. Pass phase number explicitly: /super-gsd:sg-execute <phase>"

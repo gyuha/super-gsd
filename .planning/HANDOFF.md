@@ -85,3 +85,6 @@
 | 2026-05-21T14:32:09Z | 18-sg-parallel-execute | init | ship | - |
 | 2026-05-21T14:38:21Z | 19-result-integration-regression | init | gsd-plan | - |
 | 2026-05-21T14:43:57Z | 19-result-integration-regression | gsd-plan | superpowers | 992a8d7 |
+| 2026-05-21T14:46:50Z | 19-result-integration-regression | superpowers | review | - |
+| 2026-05-21T14:49:37Z | 19-result-integration-regression | review | hookify | - |
+| 2026-05-21T14:52:05Z | 19-result-integration-regression | hookify | ship | - |

@@ -129,6 +129,7 @@ This command is self-contained — no external workflow files imported. Reads .p
 
    ```bash
    PARALLEL_GROUPS=""
+   GROUP_COUNT=0
    GROUPS_JSON_FILE="$PHASE_DIR/parallel_groups.json"
 
    # wave 필드 존재 여부 확인 (하나라도 있으면 분석 진행)
@@ -290,7 +291,7 @@ This command is self-contained — no external workflow files imported. Reads .p
 <success_criteria>
 0. .planning/lessons/ 에 파일이 있으면 Step 0 reminder가 Step 1(phase resolve)보다 먼저 출력된다. 파일이 없으면 Step 0이 조용히 건너뛰어진다.
 1. The prompt blob shown to the user contains the Phase number, Goal, Success Criteria list, all REQ-IDs with their one-line definitions, and the full body of every `*-PLAN.md` in the phase directory.
-2. The `superpowers:executing-plans` Skill is invoked exactly once per run, or zero times when the idempotency check short-circuits.
+2. The `superpowers:executing-plans` Skill is invoked exactly once per run when PARALLEL_GROUPS is empty, zero times when the idempotency check short-circuits, or `sg-parallel-execute` is invoked instead when PARALLEL_GROUPS is non-empty (parallel path).
 3. `.planning/HANDOFF.md` gains at most one new row per run, and that row matches the 5-column schema `| Timestamp | Phase | From | To | Plan Hash |`.
 4. Re-running the command with an unchanged plan hash produces the `Already handed off ...` message and appends no row.
 </success_criteria>

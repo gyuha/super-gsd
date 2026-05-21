@@ -60,3 +60,6 @@
 | 2026-05-21T00:04:59Z | unknown | review | sg-retro | - |
 | 2026-05-21T00:24:25Z | 14-codex-agents-skills | sg-retro | gsd-plan | - |
 | 2026-05-21T10:13:24Z | 14-codex-agents-skills | sg-retro | superpowers | 42d6e99 |
+| 2026-05-21T10:46:45Z | 14-codex-agents-skills | superpowers | review | - |
+| 2026-05-21T10:49:37Z | 14-codex-agents-skills | review | hookify | - |
+| 2026-05-21T11:11:49Z | 14-codex-agents-skills | hookify | ship | - |

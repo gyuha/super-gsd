@@ -181,26 +181,28 @@ super-gsd hooks work on Codex and Gemini/Antigravity CLI without the Claude Code
 | PreToolUse / BeforeTool hook | ✅ | ✅ | ✅ |
 | Superpowers integration | ✅ | ❌ | ❌ |
 | AskUserQuestion UI | ✅ | ❌ numbered list fallback | ❌ numbered list fallback |
-| sg-retro / sg-plan / sg-execute | ✅ | ✅ via `.agents/skills/` | ✅ via `.agents/skills/` |
+| 6 skills (sg-retro, sg-plan, sg-execute, etc.) | ✅ | ✅ via `.agents/skills/` | ✅ via `.agents/skills/` |
 
 ### Codex
 
 ```bash
-git clone https://github.com/gyuha/super-gsd.git
+git clone https://github.com/gyuha/super-gsd.git ~/super-gsd
 cd your-project
 # Copy or symlink hook config:
-cp /path/to/super-gsd/.codex/hooks.json .codex/hooks.json
+cp ~/super-gsd/.codex/hooks.json .codex/hooks.json
 ```
 
-`.codex/hooks.json` registers Stop and PreToolUse hooks automatically. Use `$sg-retro`, `$sg-plan`, `$sg-execute` skill syntax. See `AGENTS.md` for the full workflow.
+`.codex/hooks.json` registers Stop and PreToolUse hooks automatically. Use `$sg-retro`, `$sg-plan`, `$sg-execute`, `$sg-review`, `$sg-start`, `$sg-status` skill syntax. See `AGENTS.md` for the full workflow.
 
 ### Gemini / Antigravity CLI
 
+Gemini CLI is supported. Antigravity CLI compatibility has not been independently verified — see `.planning/phases/15-platform-hooks-python-fix/15-01-VERIFICATION.md`.
+
 ```bash
-git clone https://github.com/gyuha/super-gsd.git
+git clone https://github.com/gyuha/super-gsd.git ~/super-gsd
 cd your-project
 # Copy or symlink hook config:
-cp /path/to/super-gsd/.gemini/settings.json .gemini/settings.json
+cp ~/super-gsd/.gemini/settings.json .gemini/settings.json
 ```
 
 `.gemini/settings.json` registers SessionEnd and BeforeTool hooks. Use `.agents/skills/` skills. See `AGENTS.md` for the full workflow.
@@ -245,9 +247,9 @@ If all three checks pass, `super-gsd` is installed correctly and non-invasively.
 - **Phase 11 — Self-Contained Rule Runner (shipped):** registers a `PreToolUse` hook that runs `.claude/sg-rule.*.local.md` rules directly — Hookify is no longer required for guard execution.
 - **Phase 12 — Lessons Aggregation & Recurrence Guard (shipped):** groups lessons by phase and milestone, surfaces weighted top-N patterns in `sg-plan`/`sg-execute` to prevent repeated mistakes.
 - **Phase 13 — sg-learn Routing Switch + Hookify Removal (shipped):** reroutes `sg-learn` to the built-in `sg-retro` skill and removes all Hookify dependencies from commands and documentation.
-- **Phase 14 — Codex Entry Point + .agents/skills/ (v1.3 — in progress):** rewrites `AGENTS.md` with Codex vocabulary and creates 6 `.agents/skills/` skill files so Codex, Gemini CLI, and Antigravity CLI users can follow the workflow without Claude Code slash commands.
-- **Phase 15 — Platform Hooks + Python Fix (v1.3 — planned):** creates `.codex/hooks.json` and `.gemini/settings.json` hook configs, and fixes `hooks/*.py` path fallback so hooks run without `CLAUDE_PLUGIN_ROOT` in Codex/Gemini environments.
-- **Phase 16 — README Multi-Platform Section (v1.3 — planned):** adds per-platform install guides and a feature delta table (works / limited / not available) to the README.
+- **Phase 14 — Codex Entry Point + .agents/skills/ (v1.3 — shipped):** rewrites `AGENTS.md` with Codex vocabulary and creates 6 `.agents/skills/` skill files so Codex, Gemini CLI, and Antigravity CLI users can follow the workflow without Claude Code slash commands.
+- **Phase 15 — Platform Hooks + Python Fix (v1.3 — shipped):** creates `.codex/hooks.json` and `.gemini/settings.json` hook configs, and fixes `hooks/*.py` path fallback so hooks run without `CLAUDE_PLUGIN_ROOT` in Codex/Gemini environments.
+- **Phase 16 — README Multi-Platform Section (v1.3 — shipped):** adds per-platform install guides and a feature delta table (works / limited / not available) to the README.
 
 ## License
 

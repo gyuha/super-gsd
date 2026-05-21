@@ -181,26 +181,28 @@ super-gsd 훅은 Claude Code 플러그인 마켓플레이스 없이 Codex, Gemin
 | PreToolUse / BeforeTool 훅 | ✅ | ✅ | ✅ |
 | Superpowers 연동 | ✅ | ❌ | ❌ |
 | AskUserQuestion UI | ✅ | ❌ numbered list 대체 | ❌ numbered list 대체 |
-| sg-retro / sg-plan / sg-execute | ✅ | ✅ `.agents/skills/` 경유 | ✅ `.agents/skills/` 경유 |
+| 스킬 6개 (sg-retro, sg-plan, sg-execute 등) | ✅ | ✅ `.agents/skills/` 경유 | ✅ `.agents/skills/` 경유 |
 
 ### Codex
 
 ```bash
-git clone https://github.com/gyuha/super-gsd.git
+git clone https://github.com/gyuha/super-gsd.git ~/super-gsd
 cd your-project
 # 훅 설정 파일 복사 또는 심볼릭 링크:
-cp /path/to/super-gsd/.codex/hooks.json .codex/hooks.json
+cp ~/super-gsd/.codex/hooks.json .codex/hooks.json
 ```
 
-`.codex/hooks.json`이 Stop 및 PreToolUse 훅을 자동 등록한다. `$sg-retro`, `$sg-plan`, `$sg-execute` 스킬 문법을 사용한다. 전체 워크플로우는 `AGENTS.md`를 참조한다.
+`.codex/hooks.json`이 Stop 및 PreToolUse 훅을 자동 등록한다. `$sg-retro`, `$sg-plan`, `$sg-execute`, `$sg-review`, `$sg-start`, `$sg-status` 스킬 문법을 사용한다. 전체 워크플로우는 `AGENTS.md`를 참조한다.
 
 ### Gemini / Antigravity CLI
 
+Gemini CLI는 지원된다. Antigravity CLI 호환성은 독립적으로 검증되지 않았다 — `.planning/phases/15-platform-hooks-python-fix/15-01-VERIFICATION.md` 참조.
+
 ```bash
-git clone https://github.com/gyuha/super-gsd.git
+git clone https://github.com/gyuha/super-gsd.git ~/super-gsd
 cd your-project
 # 훅 설정 파일 복사 또는 심볼릭 링크:
-cp /path/to/super-gsd/.gemini/settings.json .gemini/settings.json
+cp ~/super-gsd/.gemini/settings.json .gemini/settings.json
 ```
 
 `.gemini/settings.json`이 SessionEnd 및 BeforeTool 훅을 등록한다. `.agents/skills/` 스킬을 사용한다. 전체 워크플로우는 `AGENTS.md`를 참조한다.
@@ -245,9 +247,9 @@ cp /path/to/super-gsd/.gemini/settings.json .gemini/settings.json
 - **Phase 11 — 자체 rule runner (완료):** `PreToolUse` 훅을 직접 등록해 `.claude/sg-rule.*.local.md` 규칙을 실행 — Hookify 없이도 가드 동작.
 - **Phase 12 — lessons 집계 + 재발 방지 가드 (완료):** lessons를 phase·milestone별로 묶고, `sg-plan`/`sg-execute`에서 weighted top-N 패턴을 우선 노출하여 같은 실수 반복 방지.
 - **Phase 13 — sg-learn 라우팅 전환 + Hookify 제거 (완료):** `sg-learn`을 내장 `sg-retro` 스킬로 재라우팅하고 명령·문서에서 Hookify 의존성 전부 제거.
-- **Phase 14 — Codex 진입점 + .agents/skills/ (v1.3 — 진행 중):** `AGENTS.md`를 Codex 어휘로 재작성하고 `.agents/skills/` 스킬 6개를 신규 생성하여 Codex, Gemini CLI, Antigravity CLI 사용자가 Claude Code 슬래시 명령 없이 워크플로우를 진행 가능.
-- **Phase 15 — 플랫폼별 훅 설정 + Python 픽스 (v1.3 — 계획):** `.codex/hooks.json`과 `.gemini/settings.json` 훅 설정 파일 신규 생성, `CLAUDE_PLUGIN_ROOT` 없이도 `hooks/*.py`가 실행되도록 경로 폴백 수정.
-- **Phase 16 — README Multi-Platform 섹션 (v1.3 — 계획):** 플랫폼별 설치 가이드와 기능 델타 테이블(동작 가능 / 제한 있음 / 불가)을 README에 추가.
+- **Phase 14 — Codex 진입점 + .agents/skills/ (v1.3 — 완료):** `AGENTS.md`를 Codex 어휘로 재작성하고 `.agents/skills/` 스킬 6개를 신규 생성하여 Codex, Gemini CLI, Antigravity CLI 사용자가 Claude Code 슬래시 명령 없이 워크플로우를 진행 가능.
+- **Phase 15 — 플랫폼별 훅 설정 + Python 픽스 (v1.3 — 완료):** `.codex/hooks.json`과 `.gemini/settings.json` 훅 설정 파일 신규 생성, `CLAUDE_PLUGIN_ROOT` 없이도 `hooks/*.py`가 실행되도록 경로 폴백 수정.
+- **Phase 16 — README Multi-Platform 섹션 (v1.3 — 완료):** 플랫폼별 설치 가이드와 기능 델타 테이블(동작 가능 / 제한 있음 / 불가)을 README에 추가.
 
 ## 라이선스
 

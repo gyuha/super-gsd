@@ -63,3 +63,5 @@
 | 2026-05-21T10:46:45Z | 14-codex-agents-skills | superpowers | review | - |
 | 2026-05-21T10:49:37Z | 14-codex-agents-skills | review | hookify | - |
 | 2026-05-21T11:11:49Z | 14-codex-agents-skills | hookify | ship | - |
+| 2026-05-21T11:30:00Z | 15-platform-hooks-python-fix | sg-discuss | context-done | - |
+| 2026-05-21T11:28:47Z | 15-platform-hooks-python-fix | context-done | gsd-plan | - |

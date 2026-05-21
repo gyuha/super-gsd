@@ -2,6 +2,20 @@
 
 All notable changes to `super-gsd` are documented in this file. Format follows [Keep a Changelog](https://keepachangelog.com/).
 
+## [0.0.27] - 2026-05-22
+
+### Fixed
+
+- stop_hook.py: add platform detection — Codex/Gemini now receive `$sg-*` skill syntax instead of `/super-gsd:sg-*` slash commands that those platforms cannot run
+- README / README.ko.md: Codex and Gemini install instructions now include `cp -r ~/super-gsd/hooks .` so hook scripts are available alongside the hook config files
+- .agents/skills/sg-retro: decimal phase support (e.g. `7.1`) — validation regex and PHASE_PAD logic updated
+- .agents/skills/sg-plan, sg-execute: remove `grep -oE '^[0-9]+'` truncation from STATE.md parsing so decimal phases are preserved
+
+### Added
+
+- .agents/skills/sg-ship: new skill for Codex/Gemini environments to complete the ship step (GSD delegation or manual git merge/push/PR flow)
+- commands/sg-health: Hook scripts check (item 4) — warns when `hooks/stop_hook.py` or `hooks/rule_runner.py` is missing from the project root
+
 ## [0.0.26] - 2026-05-21
 
 ### Added

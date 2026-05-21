@@ -2,6 +2,23 @@
 
 All notable changes to `super-gsd` are documented in this file. Format follows [Keep a Changelog](https://keepachangelog.com/).
 
+## [0.0.26] - 2026-05-21
+
+### Added
+
+- v1.4 Team Agent Parallel Execution 마일스톤 완료 (Phase 17-19)
+- sg-execute: PLAN.md wave/depends_on/files_modified 파싱으로 독립 병렬 그룹(PARALLEL_GROUPS) 자동 계산 (Phase 17)
+- sg-parallel-execute 스킬: parallel_groups.json을 읽어 최대 3개 Task()를 병렬 디스패치 (Phase 18)
+- sg-execute Step 9: PARALLEL_GROUPS 감지 시 sg-parallel-execute 스킬로 자동 라우팅 (Phase 18)
+- sg-execute Step 8: HANDOFF_TO 변수로 HANDOFF.md To 셀 분기 (parallel/superpowers) (Phase 19)
+- sg-status: parallel stage 지원 추가 — 미지원 시 exit 1 crash 방지 (Phase 19)
+- sg-execute Step 8.5: [TE-05a] 로그 태그로 wave 없는 경로 보존 명시 (Phase 19)
+
+### Changed
+
+- sg-execute idempotency 검사: (superpowers|parallel) OR 패턴으로 확장 (Phase 19)
+- sg-execute objective 설명 업데이트 — parallel 경로 언급 추가
+
 ## [0.0.25] - 2026-05-21
 
 ### Added

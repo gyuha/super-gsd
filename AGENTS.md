@@ -1,92 +1,107 @@
-<!-- GSD:project-start source:PROJECT.md -->
 ## Project
 
 **super-gsd**
 
-GSD → Superpowers → Hookify 3단계 AI 개발 워크플로우를 자동으로 연결해 주는 Codex 플러그인이다. GSD가 전략과 계획을, Superpowers가 구현과 검증을, Hookify가 회고와 학습을 담당하도록 역할을 분리해 주면서, 각 단계가 끝나면 다음 단계로 자연스럽게 인계되도록 명령과 훅을 제공한다.
+GSD → sg-retro 2단계 AI 개발 워크플로우를 Codex, Gemini CLI, Antigravity CLI에서 실행하는 플러그인이다. GSD가 전략과 계획을, sg-retro가 회고와 학습을 담당하며, 각 단계가 끝나면 다음 단계로 자연스럽게 인계되도록 스킬과 훅을 제공한다.
 
-**Core Value:** 각 도구의 단계 종료 시점에 다음 단계 도구로 컨텍스트와 함께 자동으로 인계되어, 사용자가 도구 간 전환을 직접 기억하거나 명령을 다시 입력하지 않아도 같은 실수가 반복되지 않는 학습 루프를 유지한다.
+**Core Value:** 각 도구의 단계 종료 시점에 다음 단계로 컨텍스트와 함께 자동 인계되어, 사용자가 도구 간 전환을 직접 기억하지 않아도 같은 실수가 반복되지 않는 학습 루프를 유지한다.
 
 ### Constraints
 
-- **Tech stack**: Codex 플러그인 시스템 (skills + commands + hooks). Bash/Python/Markdown 위주.
-- **Dependencies**: `Codex-plugins-official/superpowers`, `Codex-plugins-official/hookify`, `get-shit-done-cc` (또는 동등 GSD 설치).
-- **Compatibility**: Codex 최신 버전 — `Stop`/`SubagentStop` hook 및 플러그인 marketplace 메커니즘 사용.
-- **Idempotency**: 인계 명령은 같은 phase에서 여러 번 호출해도 중복 컨텍스트를 생성하지 않아야 한다.
-- **Non-invasive**: 기존 GSD/Superpowers/Hookify의 파일을 수정하지 않고 외부에서 orchestrate한다.
-<!-- GSD:project-end -->
+- **Tech stack**: Bash/Python/Markdown 위주. `.agents/skills/` 스킬 파일로 동작.
+- **Dependencies**: `get-shit-done-cc` (GSD) 설치 권장. GSD 없이도 prose 폴백으로 실행 가능.
+- **Non-invasive**: 기존 GSD 파일을 수정하지 않고 외부에서 orchestrate한다.
 
-<!-- GSD:stack-start source:STACK.md -->
-## Technology Stack
+## Quick Start
 
-Technology stack not yet documented. Will populate after codebase mapping or first phase.
-<!-- GSD:stack-end -->
+**Step 1: 사전 조건 확인**
 
-<!-- GSD:conventions-start source:CONVENTIONS.md -->
-## Conventions
+```bash
+# GSD 설치 여부 확인 (권장)
+which gsd-sdk 2>/dev/null && echo "GSD installed" || echo "GSD not found — prose fallback mode"
+```
 
-### 버전 관리
+**Step 2: 새 프로젝트 또는 기존 세션 시작**
 
-버전을 올릴 때는 반드시 다음 두 파일을 함께 업데이트한다:
+```
+$sg-start
+```
 
-1. `.Codex-plugin/plugin.json` — `version` 필드 변경
-2. `CHANGELOG.md` — 새 버전 섹션 추가 (변경 내용 요약 포함)
+기존 `.planning/STATE.md`가 감지되면 Resume / Start new milestone / Cancel 옵션을 텍스트로 출력한다. 세션이 없으면 GSD `new-project`에 위임하거나 prose 폴백으로 `.planning/` 구조를 생성한다.
 
-CHANGELOG.md 업데이트 없이 버전만 올리는 커밋은 허용하지 않는다.
+**Step 3: 워크플로우 순서**
 
-### 배포 트리거
+```
+$sg-plan N → $sg-execute → $sg-review → $sg-retro → $sg-ship
+```
 
-프롬프트에 **"배포"** 라고 입력하면 다음 절차를 순서대로 실행한다:
+각 단계는 `.agents/skills/` 아래 SKILL.md를 직접 읽어 실행한다.
 
-1. **버전 결정** — `.Codex-plugin/plugin.json`의 현재 `version`을 읽고 patch를 1 올린다 (예: `0.0.9` → `0.0.10`).
-2. **plugin.json 업데이트** — `version` 필드를 새 버전으로 교체한다.
-3. **CHANGELOG.md 업데이트** — 파일 상단(첫 번째 `## [x.x.x]` 블록 바로 위)에 새 버전 섹션을 삽입한다. 형식:
-   ```
-   ## [NEW_VERSION] - YYYY-MM-DD
+## Platform Limitations
 
-   ### Changed
+> **Codex / Gemini CLI / Antigravity CLI 사용자는 반드시 읽을 것**
 
-   - (git log에서 마지막 버전 태그 이후 커밋 메시지를 요약하여 기재)
-   ```
-4. **git commit** — 변경된 두 파일을 스테이징하고 커밋한다. 메시지: `chore(release): bump version to NEW_VERSION`
-5. **git push** — 현재 브랜치를 원격에 push한다.
+### SubagentStop 미지원
 
-**주의 사항:**
-- push 전에 사용자에게 확인을 구하지 않고 바로 실행한다 (배포 트리거는 명시적 의도가 있는 명령이다).
-- 커밋·push 외의 파일(테스트, 문서 등)은 건드리지 않는다.
-- git push가 실패하면(예: 원격에 앞선 커밋이 있는 경우) 강제 push 없이 오류를 그대로 보고한다.
-<!-- GSD:conventions-end -->
+Codex, Gemini CLI, Antigravity CLI에서는 `SubagentStop` 훅이 동작하지 않는다. Claude Code에서는 단계 종료 시 다음 단계가 자동 안내되지만, 이 플랫폼에서는 **각 단계 완료 후 다음 스킬을 수동으로 호출해야 한다**.
 
-<!-- GSD:architecture-start source:ARCHITECTURE.md -->
-## Architecture
+- `$sg-execute` 완료 후 → `$sg-review` 수동 실행
+- `$sg-review` 완료 후 → `$sg-retro` 수동 실행
 
-Architecture not yet mapped. Follow existing patterns found in the codebase.
-<!-- GSD:architecture-end -->
+### Superpowers 연동 불가
 
-<!-- GSD:skills-start source:skills/ -->
-## Project Skills
+`superpowers:executing-plans`, `superpowers:requesting-code-review` 등 Superpowers 스킬은 Claude Code 전용이다. 이 플랫폼에서:
 
-No project skills found. Add skills to any of: `.Codex/skills/`, `.agents/skills/`, `.cursor/skills/`, `.github/skills/`, or `.codex/skills/` with a `SKILL.md` index file.
-<!-- GSD:skills-end -->
+- `$sg-execute` → PLAN.md를 직접 읽고 태스크를 순차 실행하는 **직접 구현 모드**로 동작
+- `$sg-review` → 변경 파일을 직접 읽고 코드 리뷰를 prose로 수행하는 **직접 리뷰 모드**로 동작
 
-<!-- GSD:workflow-start source:GSD defaults -->
-## GSD Workflow Enforcement
+### AskUserQuestion 미지원
 
-Before using Edit, Write, or other file-changing tools, start work through a GSD command so planning artifacts and execution context stay in sync.
+대화형 선택지는 numbered list 텍스트로 출력된다. 응답은 번호 또는 텍스트로 자유 입력한다.
 
-Use these entry points:
-- `/gsd-quick` for small fixes, doc updates, and ad-hoc tasks
-- `/gsd-debug` for investigation and bug fixing
-- `/gsd-execute-phase` for planned phase work
+## Skills
 
-Do not make direct repo edits outside a GSD workflow unless the user explicitly asks to bypass it.
-<!-- GSD:workflow-end -->
+스킬 파일 위치: `.agents/skills/`
 
+| 스킬 | 설명 |
+|------|------|
+| `sg-start` | 기존 세션 감지 또는 신규 프로젝트 시작 |
+| `sg-plan N` | 컨텍스트 수집 후 GSD phase 계획 생성 |
+| `sg-execute` | PLAN.md를 읽고 태스크를 순차 실행 |
+| `sg-review` | 변경 파일 코드 리뷰를 직접 수행 |
+| `sg-status` | 현재 워크플로우 단계 및 다음 권장 명령 표시 |
+| `sg-retro` | phase 회고 (6개 렌즈, numbered list fallback) |
 
+**스킬 호출 방법:**
 
-<!-- GSD:profile-start -->
-## Developer Profile
+```
+# 달러 문법 (Codex 표준)
+$sg-plan 14
 
-> Profile not yet configured. Run `/gsd-profile-user` to generate your developer profile.
-> This section is managed by `generate-Codex-profile` -- do not edit manually.
-<!-- GSD:profile-end -->
+# 또는 Skill 도구 직접 사용
+Skill(skill="sg-plan", args="14")
+```
+
+각 스킬의 상세 동작, argument, 완료 조건은 해당 `.agents/skills/{name}/SKILL.md`를 참조한다.
+
+## Workflow Overview
+
+```
+$sg-start → $sg-plan N → $sg-execute → $sg-review → $sg-retro → $sg-ship
+                ↑                                         |
+                └──── lessons 자동 주입 ←─────────────────┘
+                      (.planning/lessons/)
+```
+
+| 단계 | 스킬 | 설명 |
+|------|------|------|
+| 시작 | `$sg-start` | 세션 감지 또는 신규 프로젝트 |
+| 계획 | `$sg-plan N` | phase N 계획 생성 (GSD 위임 또는 prose 폴백) |
+| 실행 | `$sg-execute` | PLAN.md 태스크 순차 실행 (직접 구현 모드) |
+| 리뷰 | `$sg-review` | 코드 리뷰 prose 수행 → SUMMARY.md 작성 |
+| 회고 | `$sg-retro` | 6개 렌즈 회고 → .planning/lessons/ 저장 (**수동 호출 필수**) |
+| 배포 | `$sg-ship` | GSD ship 또는 git merge |
+
+`$sg-status`는 언제든지 실행해 현재 단계와 다음 권장 명령을 확인할 수 있다.
+
+**sg-retro는 SubagentStop 미지원으로 자동 실행되지 않는다.** `$sg-review` 완료 후 반드시 `$sg-retro`를 수동으로 호출해 회고를 실행하라.

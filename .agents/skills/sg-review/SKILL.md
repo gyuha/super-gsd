@@ -11,7 +11,7 @@ Perform a code review directly by reading changed files, checking against plan r
 <constraints>
 ## Platform Constraints (Codex / Gemini CLI / Antigravity CLI)
 - Superpowers 연동 불가: superpowers:requesting-code-review 스킬을 사용할 수 없습니다. Prose 리뷰 모드로 실행됩니다.
-- SubagentStop 미지원: 완료 후 /super-gsd:sg-learn을 수동 실행하세요.
+- SubagentStop 미지원: 완료 후 $sg-retro를 수동 실행하세요.
 - AskUserQuestion 미지원
 </constraints>
 

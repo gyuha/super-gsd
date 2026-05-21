@@ -167,7 +167,7 @@ This command is self-contained — no external workflow files imported. Reads .p
        WAVE_PLANS=$(echo "$PLAN_WAVE_FILES" | awk -F'|' -v w="$W" '$1==w {print $2}')
        WAVE_FILES=$(echo "$PLAN_WAVE_FILES" | awk -F'|' -v w="$W" '$1==w {print $3}')
 
-       PLAN_COUNT=$(echo "$WAVE_PLANS" | grep -c '.')
+       PLAN_COUNT=$(echo "$WAVE_PLANS" | grep -c '[^[:space:]]')
 
        ALL_FILES_RAW=$(echo "$WAVE_FILES" | tr ',' '\n' | grep -v '^$')
        DUP_FILES=$(echo "$ALL_FILES_RAW" | sort | uniq -d)

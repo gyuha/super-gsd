@@ -45,8 +45,10 @@ Self-contained — reads .planning/HANDOFF.md, .planning/STATE.md, .planning/ROA
      init)         STAGE_DISPLAY="init" ;;
      gsd-plan)     STAGE_DISPLAY="gsd" ;;
      superpowers)  STAGE_DISPLAY="superpowers" ;;
+     parallel)     STAGE_DISPLAY="superpowers" ;;
      execute)      STAGE_DISPLAY="execute" ;;
      review)       STAGE_DISPLAY="review" ;;
+     sg-retro)     STAGE_DISPLAY="hookify" ;;
      hookify)      STAGE_DISPLAY="hookify" ;;
      ship)         STAGE_DISPLAY="ship" ;;
      complete)     STAGE_DISPLAY="complete" ;;
@@ -91,8 +93,10 @@ Self-contained — reads .planning/HANDOFF.md, .planning/STATE.md, .planning/ROA
        ;;
      gsd-plan)    NEXT_CMD="/super-gsd:sg-execute" ;;
      superpowers) NEXT_CMD="/super-gsd:sg-review" ;;
+     parallel)    NEXT_CMD="/super-gsd:sg-review" ;;
      execute)     NEXT_CMD="/super-gsd:sg-review" ;;
      review)      NEXT_CMD="/super-gsd:sg-learn" ;;
+     sg-retro)    NEXT_CMD="/super-gsd:sg-ship" ;;
      hookify)     NEXT_CMD="/super-gsd:sg-ship" ;;
      ship)
        if [ "${NEXT_PHASE_EXISTS:-0}" = "1" ]; then

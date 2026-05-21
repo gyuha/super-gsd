@@ -11,7 +11,7 @@ Package the current phase's PLAN.md, extract goal and success criteria, then dir
 <constraints>
 ## Platform Constraints (Codex / Gemini CLI / Antigravity CLI)
 - Superpowers 연동 불가: superpowers:executing-plans 스킬을 사용할 수 없습니다. 직접 구현 모드로 실행됩니다.
-- SubagentStop 미지원: 단계 종료 시 자동 트리거 없음. 완료 후 /super-gsd:sg-review를 수동 실행하세요.
+- SubagentStop 미지원: 단계 종료 시 자동 트리거 없음. 완료 후 $sg-review를 수동 실행하세요.
 - AskUserQuestion 미지원
 </constraints>
 

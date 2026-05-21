@@ -2,6 +2,19 @@
 
 All notable changes to `super-gsd` are documented in this file. Format follows [Keep a Changelog](https://keepachangelog.com/).
 
+## [0.0.28] - 2026-05-22
+
+### Fixed
+
+- sg-learn: `Skill(skill="super-gsd:sg-retro")` → `Skill(skill="sg-retro")` — 동일 플러그인 내부 스킬은 prefix 없이 호출해야 하므로 수정 (런타임 실패 방지)
+- sg-learn: Phase 파싱 패턴을 표준 파이프라인으로 통일 (`grep -E '^Phase: [0-9]+'` → `grep -E '^Phase:' | sed | awk`) — decimal phase 지원
+- sg-start: 검증 case에 `parallel` stage 추가 — sg-execute 병렬 경로 실행 후 sg-start 재개 시 "Unknown stage" 오류로 exit하던 버그 수정
+- sg-start: display 매핑에 `parallel) STAGE_DISPLAY="superpowers"` 추가
+- sg-execute: PLAN_COUNT 계산 `grep -c '.'` → `grep -c '[^[:space:]]'` — 빈 줄 오계산으로 인한 단일 플랜 wave 오분류 방지
+- .agents/skills/sg-status: STAGE_DISPLAY 매핑에 `parallel`, `sg-retro` 추가 — Codex/Gemini 환경에서 이상 출력 방지
+- .agents/skills/sg-status: NEXT_CMD 매핑에 `parallel → sg-review`, `sg-retro → sg-ship` 라우팅 추가
+- .agents/skills/sg-execute, sg-review: 안내 명령을 Claude Code 슬래시(`/super-gsd:sg-*`) → Codex 스킬(`$sg-*`) 문법으로 수정
+
 ## [0.0.27] - 2026-05-22
 
 ### Fixed

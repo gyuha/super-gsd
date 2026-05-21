@@ -114,7 +114,7 @@ This command is self-contained — no external workflow files imported. Reads .p
    fi
    ```
 
-8. **Append HANDOFF.md row.** Append a new 5-column line:
+8. **Append HANDOFF.md row (변수 계산).** HANDOFF_TO는 Step 8.5 완료 후 결정되므로, 이 단계에서는 메타 변수만 계산한다:
    ```bash
    TS=$(date -u +%Y-%m-%dT%H:%M:%SZ)
    FROM_STAGE=$(grep -E '^\| [0-9]{4}-' .planning/HANDOFF.md | tail -1 | awk -F'|' '{gsub(/ /,"",$5); print $5}')
@@ -122,7 +122,6 @@ This command is self-contained — no external workflow files imported. Reads .p
      FROM_STAGE="init"
    fi
    PHASE_SLUG=$(basename "$PHASE_DIR")
-   echo "| $TS | $PHASE_SLUG | $FROM_STAGE | superpowers | $PLAN_HASH |" >> .planning/HANDOFF.md
    ```
 
 8.5. **PLAN.md 의존성 분석.** 모든 PLAN.md에서 wave/depends_on/files_modified를 파싱하여 독립 병렬 그룹(PARALLEL_GROUPS)을 계산하고 JSON 파일로 저장한다.
@@ -136,7 +135,7 @@ This command is self-contained — no external workflow files imported. Reads .p
    HAS_WAVE=$(grep -rl '^wave:' "$PHASE_DIR"/*-PLAN.md 2>/dev/null | head -1)
 
    if [ -z "$HAS_WAVE" ]; then
-     echo "wave 필드 없음 — 기존 순차 실행 경로 유지"
+     echo "[TE-05a] wave 필드 없음 — 기존 순차 실행 경로 유지. v1.3 이전 동작 보존."
    else
      # 각 PLAN.md에서 wave 번호와 files_modified 추출
      # 결과: "wave|planfile|file1,file2,..."
@@ -234,6 +233,14 @@ This command is self-contained — no external workflow files imported. Reads .p
        echo "병렬 그룹 ${GROUP_COUNT}개 감지 — parallel_groups.json 저장 완료"
      fi
    fi
+
+   # HANDOFF_TO 결정 및 HANDOFF.md 기록
+   if [ -n "$PARALLEL_GROUPS" ]; then
+     HANDOFF_TO="parallel"
+   else
+     HANDOFF_TO="superpowers"
+   fi
+   echo "| $TS | $PHASE_SLUG | $FROM_STAGE | $HANDOFF_TO | $PLAN_HASH |" >> .planning/HANDOFF.md
    ```
 
 9. **Build prompt and invoke Skill.**

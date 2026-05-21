@@ -6,6 +6,7 @@
 - [x] **v1.1 Reliability** (2026-05-20) — sg-health 자기진단 + sg-status 정확도 + sg-start 세션 복원 → [Archive](.planning/milestones/v1.1-ROADMAP.md)
 - [x] **v1.2 Self-Contained Retrospection** (2026-05-21) — 내장 sg-retro Skill(6 lens) + 자체 rule runner + weighted lessons 랭킹 + hookify 의존성 제거 → [Archive](.planning/milestones/v1.2-ROADMAP.md)
 - [ ] **v1.3 Multi-Platform Support** — AGENTS.md 재작성 + .agents/skills/ 6개 + 플랫폼별 hooks + README Multi-Platform 섹션
+- [ ] **v1.4 Team Agent Parallel Execution** — PLAN.md 의존성 분석 + 병렬 Agent 실행 + 결과 통합
 
 ## Phases
 
@@ -25,6 +26,12 @@
 - [ ] **Phase 14: Codex 진입점 + .agents/skills/** — AGENTS.md 재작성(Codex 어휘) + .agents/skills/ 스킬 6개 신규 생성
 - [ ] **Phase 15: 플랫폼별 훅 설정 + Python 픽스** — .codex/hooks.json + .gemini/settings.json 신규 생성 + hooks/*.py 경로 폴백 수정
 - [ ] **Phase 16: README Multi-Platform 섹션** — 플랫폼별 설치 가이드 + 기능 델타 테이블 추가
+
+### v1.4 Team Agent Parallel Execution (Planned)
+
+- [ ] **Phase 17: PLAN.md 의존성 분석** — wave/depends_on/files_modified 파싱 + 독립 그룹(PARALLEL_GROUPS) 계산 + 폴백 분기
+- [ ] **Phase 18: sg-parallel-execute 스킬 + 라우팅** — 신규 SKILL.md 생성 + sg-execute.md Step 9 병렬 라우팅 추가
+- [ ] **Phase 19: 결과 통합 + 호환성 회귀 테스트** — 오케스트레이터 HANDOFF 기록 + wave 없는 경로 완전 보존 검증
 
 ## Phase Details
 
@@ -60,6 +67,39 @@
   3. SubagentStop 미지원, Superpowers 연동 불가 등 핵심 제약이 표에 명시되어 있다
 **Plans**: TBD
 
+### Phase 17: PLAN.md 의존성 분석
+**Goal**: sg-execute가 PLAN.md의 wave/depends_on/files_modified 구조를 파싱하여 병렬 실행 가능 여부와 그룹을 자동 결정한다
+**Depends on**: Phase 16 (v1.4 신규 시작)
+**Requirements**: TE-01a, TE-01b, TE-01c
+**Success Criteria** (what must be TRUE):
+  1. wave/depends_on/files_modified 필드가 있는 PLAN.md에서 독립 그룹(PARALLEL_GROUPS)이 올바르게 계산된다
+  2. files_modified 교집합이 있는 plan들은 같은 그룹으로 병합되어 파일 충돌 경로가 원천 차단된다
+  3. 독립 그룹이 2개 미만이면 기존 `superpowers:executing-plans` 경로가 그대로 실행된다
+  4. wave 필드가 없는 PLAN.md는 분석을 건너뛰고 기존 동작을 완전히 보존한다
+**Plans**: TBD
+
+### Phase 18: sg-parallel-execute 스킬 + 라우팅
+**Goal**: sg-execute가 PARALLEL_GROUPS를 감지하면 sg-parallel-execute 스킬로 라우팅되어 Task()로 병렬 실행된다
+**Depends on**: Phase 17
+**Requirements**: TE-02a, TE-02b, TE-03a
+**Success Criteria** (what must be TRUE):
+  1. `skills/sg-parallel-execute/SKILL.md`가 존재하고 PARALLEL_GROUPS를 입력받아 각 그룹을 Task()로 동시 실행한다
+  2. 병렬 에이전트 내부에서 `superpowers:executing-plans`를 호출하지 않는다 (bare Task() 직접 구현)
+  3. 에이전트 수가 wave별 독립 plan 수 기반으로 자동 결정되고 상한 3개가 적용된다
+  4. sg-execute.md Step 9에 병렬/순차 분기 라우팅이 추가되어 PARALLEL_GROUPS 유무에 따라 경로가 선택된다
+**Plans**: TBD
+
+### Phase 19: 결과 통합 + 호환성 회귀 테스트
+**Goal**: 오케스트레이터가 모든 에이전트 완료 후 단독으로 HANDOFF.md를 기록하고, wave 없는 기존 경로가 완전히 보존된다
+**Depends on**: Phase 18
+**Requirements**: TE-04a, TE-04b, TE-05a, TE-05b
+**Success Criteria** (what must be TRUE):
+  1. 병렬 실행 완료 후 HANDOFF.md 기록은 오케스트레이터만 수행하고 에이전트는 직접 기록하지 않는다
+  2. wave가 1개(또는 없음)인 PLAN.md는 기존 `superpowers:executing-plans` 경로를 변경 없이 실행한다
+  3. wave 정보가 없는 PLAN.md로 sg-execute를 실행했을 때 v1.3 이전과 동일한 동작이 보장된다
+  4. sg-execute의 idempotency 검사, HANDOFF.md 기록, lessons 주입 로직이 변경되지 않았다
+**Plans**: TBD
+
 ## Progress
 
 | Phase | Milestone | Plans Complete | Status | Completed |
@@ -72,3 +112,6 @@
 | 14. Codex 진입점 + .agents/skills/ | v1.3 | 0/TBD | Not started | - |
 | 15. 플랫폼별 훅 설정 + Python 픽스 | v1.3 | 0/TBD | Not started | - |
 | 16. README Multi-Platform 섹션 | v1.3 | 0/TBD | Not started | - |
+| 17. PLAN.md 의존성 분석 | v1.4 | 0/TBD | Not started | - |
+| 18. sg-parallel-execute 스킬 + 라우팅 | v1.4 | 0/TBD | Not started | - |
+| 19. 결과 통합 + 호환성 회귀 테스트 | v1.4 | 0/TBD | Not started | - |

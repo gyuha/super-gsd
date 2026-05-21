@@ -6,7 +6,7 @@ status: planning
 last_updated: "2026-05-21T13:28:20.092Z"
 last_activity: 2026-05-21
 progress:
-  total_phases: 0
+  total_phases: 3
   completed_phases: 0
   total_plans: 0
   completed_plans: 0
@@ -20,14 +20,14 @@ progress:
 See: .planning/PROJECT.md (updated 2026-05-21)
 
 **Core value:** GSD → Superpowers → sg-retro 단계 전환을 자동화하여 학습 루프가 끊기지 않도록 한다
-**Current focus:** v1.3 Multi-Platform Support — Codex, Gemini CLI, Antigravity CLI 사용자 지원
+**Current focus:** v1.4 Team Agent Parallel Execution — PLAN.md 의존성 분석 + 병렬 Agent 실행 + 결과 통합
 
 ## Current Position
 
-Phase: Not started (defining requirements)
+Phase: 17 (Not started)
 Plan: —
-Status: Defining requirements
-Last activity: 2026-05-21 — Milestone v1.4 started
+Status: Roadmap created, ready for Phase 17 planning
+Last activity: 2026-05-21 — v1.4 roadmap created (3 phases: 17-19)
 
 ## Performance Metrics
 
@@ -91,6 +91,10 @@ Recent decisions affecting current work:
 - v1.3 roadmap: coarse 그래뉼래리티로 4→3 페이즈 압축 (CODEX-01/02/03 묶음) — AGENTS.md와 스킬들은 하나의 배포 단위
 - v1.3 roadmap: CODEX-04 + MULTI-01은 Python 훅 폴백 픽스를 공유하므로 Phase 15에 묶음
 - v1.3 roadmap: SubagentStop 미지원 사실을 AGENTS.md success criteria에 명시 — 사용자 혼란 방지
+- v1.4 roadmap: coarse 그래뉼래리티 → 3 페이즈 (17-19). 의존성 분석 / 병렬 실행 / 결과 통합+호환성 자연 경계
+- v1.4 roadmap: superpowers:executing-plans는 순차 폴백에서만 사용 — 병렬 에이전트에서 호출 금지 (non-invasive 원칙)
+- v1.4 roadmap: HANDOFF.md는 오케스트레이터만 기록 — 동시 쓰기 race condition 방지
+- v1.4 roadmap: wave 없는 PLAN.md는 v1.3 이전 동작 완전 보존 — Phase 19 회귀 테스트로 검증
 
 ### Pending Todos
 
@@ -149,6 +153,6 @@ note: 260516/260517 items overlap with v1.0 deferred list above — re-deferred 
 
 ## Session Continuity
 
-Last session: 2026-05-21T11:46:50.888Z
-Stopped at: Phase 16 context gathered
-Resume file: .planning/phases/16-readme-multi-platform/16-CONTEXT.md
+Last session: 2026-05-21T13:28:20.092Z
+Stopped at: v1.4 roadmap created — Phase 17 ready for planning
+Resume file: .planning/ROADMAP.md

@@ -1,292 +1,303 @@
-# Pitfalls Research — v1.3 Codex Platform Support
+# Pitfalls Research — v1.4 Parallel Agent Execution
 
-**Domain:** Claude Code plugin — cross-platform adaptation to OpenAI Codex
+**Domain:** Claude Code plugin — adding parallel agent execution to sg-execute
 **Researched:** 2026-05-21
-**Scope:** Adding Codex environment support (AGENTS.md, .codex/skills/, README section) to existing super-gsd plugin
-**Confidence:** HIGH (official Codex docs), MEDIUM (migration patterns from practitioner sources)
+**Scope:** 7 specific failure modes when parallelizing PLAN.md task execution via independent subagents
+**Confidence:** HIGH (Claude Code official docs, worktree patterns), MEDIUM (multi-agent failure research)
 
 ---
 
 ## Critical Pitfalls
 
-### Pitfall 1: SubagentStop has no Codex equivalent — the core hook is a dead letter
+### Pitfall 1: Git conflicts — two agents modify the same file
 
-**What goes wrong:** `stop_hook.py` fires on both `Stop` and `SubagentStop` in Claude Code. `SubagentStop` is the hook that detects Superpowers' review completion and nudges the user toward sg-retro. Codex has a `Stop` event, but **no `SubagentStop`**. The entire review-complete → retro transition signal disappears silently in Codex.
+**What goes wrong:** Two agents receive tasks that are classified as "independent" at the PLAN.md analysis level but both write to a shared file at runtime. Examples that happen constantly in practice:
 
-**Why it happens:** Claude Code's subagent model is interactive — a parent agent observes reasoning in real-time and `SubagentStop` fires when the child finishes. Codex subagents return summaries to a main thread; there is no lifecycle callback for "subagent finished." Codex docs confirm: only `SessionStart`, `PreToolUse`, `PermissionRequest`, `PostToolUse`, `UserPromptSubmit`, `Stop` exist.
+- Agent A adds a function to `hooks/rule_runner.py`. Agent B adds a different function to the same file. Worktrees prevent filesystem collision, but the merge step produces an unresolvable conflict when both branches are integrated.
+- Both agents update `CHANGELOG.md` or `plugin.json` version fields as part of their task completion.
+- Two agents both write to `.planning/HANDOFF.md` (see Pitfall 2).
+- Agent A creates a new command and adds its entry to `plugin.json`. Agent B does the same. Both edits are at different line numbers, but `git merge` cannot choose between two valid orderings.
 
-**Consequences:**
-- Super-gsd's review-complete → retro nudge does not fire in Codex
-- User gets zero guidance to run sg-retro after Superpowers review
-- The core value proposition (automatic stage handoff) loses its most important trigger
+**Why it happens:** Task dependency analysis from PLAN.md operates on task descriptions, not file-level write surfaces. A task described as "implement TE-01 dependency analyzer" and "implement TE-02 parallel runner" sounds independent, but if the implementor puts both in the same file, the conflict is invisible to the orchestrator.
 
-**Prevention:** Do not claim AGENTS.md-only or `.codex/skills/`-only approaches preserve the hook behavior. They don't. The Codex-targeted docs must explicitly state: "In Codex, there is no automatic post-review nudge. After Superpowers review, manually invoke sg-retro." Do not paper over this gap with vague language. This is a hard architectural limitation, not a configuration issue.
+**Consequences:** Integration merge requires human intervention. In the worst case, the orchestrator attempts automated merge and produces silently corrupt output (git merge succeeds syntactically but the resulting code is wrong). The phase is blocked until conflicts are resolved.
 
-**Detection:** User runs Superpowers review in Codex, no sg-retro prompt appears. Assumed working because no error was thrown.
+**Prevention:**
 
-**Phase:** Phase 1 (AGENTS.md) — must document clearly. Phase 2 (.codex/skills/) — do not attempt to replicate hook behavior with a skill workaround; it will be misleading.
+The only prevention that actually works is **file-level task partitioning enforced before agents start**, not detected after. Implementation strategy:
 
----
+1. The dependency analyzer (TE-01) must output a file manifest per task group, not just task names.
+2. Before launching agents, check file manifest intersection: if any two groups share a file in their write surface, either merge those groups or split one task so the shared file belongs exclusively to one group.
+3. Shared files that cannot be assigned exclusively (e.g., `plugin.json`, `HANDOFF.md`, `CHANGELOG.md`) must be flagged as **integration-only files** — no agent writes them during parallel execution. The orchestrator writes them after all agents complete.
 
-### Pitfall 2: `${CLAUDE_PLUGIN_ROOT}` is undefined in Codex — all hook paths silently fail
+**Warning signs:**
+- PLAN.md tasks that both touch "configuration files" or "registration files"
+- Multiple tasks that each add a new entry to the same list/table
+- Any task described as "update X to support Y" where X is a central registry
 
-**What goes wrong:** `hooks.json` uses `python3 "${CLAUDE_PLUGIN_ROOT}/hooks/rule_runner.py"`. The env variable `CLAUDE_PLUGIN_ROOT` is injected by Claude Code's plugin loader. In Codex, this variable does not exist. If a user tries to register the hooks manually in `.codex/config.toml`, every hook command expands to `python3 "/hooks/rule_runner.py"` and fails with file-not-found.
-
-**Why it happens:** Plugin root injection is a Claude Code-specific mechanism. Codex's hook configuration in `~/.codex/config.toml` or `.codex/config.toml` (TOML format) requires absolute paths or paths relative to a known anchor. No equivalent of `CLAUDE_PLUGIN_ROOT` is provided.
-
-**Consequences:**
-- Any attempt to transplant `hooks.json` to Codex produces silent failures
-- `rule_runner.py` (PreToolUse hook for lesson rules) does not fire
-- If a user copies hooks.json verbatim to `.codex/hooks.json`, all three hooks fail without error messages visible to the user
-
-**Prevention:** AGENTS.md and `.codex/` artifacts must never reference `${CLAUDE_PLUGIN_ROOT}`. For any Codex-targeted hook configuration: use `$HOME`-relative paths or document that the user must substitute the absolute path at install time. More practically: do not provide a Codex hooks.json at all in v1.3. Hook transplantation is out of scope without a proper install script.
-
-**Phase:** Phase 2 (.codex/skills/) — if any hook files are provided for Codex, they must be clearly labeled "requires path substitution." Phase 1 (AGENTS.md) — AGENTS.md should not reference hook files.
+**Implementation phase:** TE-01 (dependency analyzer) — file manifest extraction must be part of the analyzer, not optional. This is a design constraint, not a nice-to-have.
 
 ---
 
-### Pitfall 3: Codex has no native custom slash commands — sg- commands do not exist as typed commands
+### Pitfall 2: State corruption — HANDOFF.md concurrent writes
 
-**What goes wrong:** In Claude Code, `sg-execute`, `sg-plan`, `sg-retro` etc. are slash commands registered via `plugin.json` → command files. In Codex, the equivalent is custom prompts (now **deprecated**) or skills. Codex's built-in slash commands are fixed: `/model`, `/review`, `/skills`, `/hooks` etc. A user typing `/sg-execute` in Codex gets "command not found."
+**What goes wrong:** `.planning/HANDOFF.md` is an append-only file read by `stop_hook.py` to determine current workflow stage. If two agents both complete and both attempt to append a row simultaneously, several bad outcomes are possible:
 
-**Why it happens:** Codex has no mechanism for registering custom Markdown-based slash commands via a plugin manifest. The `plugin.json` `commands:` array is a Claude Code construct. Codex's `/prompts:` system existed but was deprecated in favor of skills.
+- **Interleaved bytes:** If both agents write via `echo >> file` (the current sg-execute implementation), the OS may interleave the two writes. The resulting file has a single row that is a byte-level mix of both, which is not valid pipe-delimited Markdown. `stop_hook.py` reads the last row and gets garbage.
+- **Lost write:** One agent's append silently disappears because the other's write replaced the file offset both were targeting.
+- **Row ordering violation:** Both agents write valid rows, but the last row seen by `stop_hook.py` reflects whichever agent finished last — not the orchestrator's intended final state.
 
-**Consequences:**
-- Every AGENTS.md instruction that says "run `/sg-execute`" produces user confusion
-- Users attempting to follow Claude Code workflow steps in Codex hit dead ends immediately
-- If AGENTS.md is written from Claude Code vocabulary (slash commands) it is actively misleading in Codex
+The current `echo >> .planning/HANDOFF.md` pattern in sg-execute step 8 has zero locking. With a single agent this is safe. With two or more agents completing near-simultaneously, it is a race condition.
 
-**Prevention:** AGENTS.md must use Codex vocabulary exclusively — reference skill names (`$sg-execute` style or `@sg-execute`) or plain English ("ask Codex to execute the current phase"). Do not copy-paste Claude Code slash command instructions into AGENTS.md. The command vocabulary section must be Codex-native.
+**Why it happens:** `echo >>` (append redirect) on most Unix filesystems is atomic only if the write is under the pipe buffer size (typically 4096 bytes for Linux, 512 bytes for macOS POSIX requirement). A single HANDOFF.md row is under this limit, so in practice the OS will usually keep writes atomic. However, "usually" is not "always," and more importantly: even with atomic writes, the **order of rows** is non-deterministic when two agents race.
 
-**Phase:** Phase 1 (AGENTS.md) — highest risk area. All command references need Codex-native reformulation.
+**Consequences:** `stop_hook.py` reads the wrong last row and displays the wrong next-step guidance. The `sg-status` command shows an incorrect stage. In edge cases, the idempotency check in sg-execute reads a corrupted Plan Hash and either wrongly skips a re-handoff or incorrectly re-triggers one.
 
----
+**Prevention:**
 
-### Pitfall 4: AGENTS.md byte limit silently truncates instructions at 32 KiB
+1. **Only the orchestrator writes to HANDOFF.md.** Parallel agents must not write to HANDOFF.md. Instead, agents write their results to a per-agent scratch file (e.g., `.planning/phases/<phase>/agent-<N>-result.md`). The orchestrator reads all scratch files after agents complete and writes a single consolidated HANDOFF.md row.
+2. If agents must write to HANDOFF.md (simpler implementation), use a lock file: `flock .planning/HANDOFF.md.lock -c 'echo "| ..." >> .planning/HANDOFF.md'`. This requires the `flock` utility which is available on Linux and macOS with coreutils.
+3. The integration step (TE-04) owns HANDOFF.md writes. No TE-02/TE-03 agent code should reference HANDOFF.md.
 
-**What goes wrong:** AGENTS.md has a hard cap of **32 KiB** by default (`project_doc_max_bytes`). super-gsd's full workflow includes sg-retro (6 lenses), state machine logic, lessons ranking rationale, hook behavior explanations, and 13+ command descriptions. If the AGENTS.md for Codex naively mirrors CLAUDE.md or the full project context, it will exceed 32 KiB and be silently truncated mid-instruction.
+**Warning signs:**
+- Any agent prompt that includes the phrase "append to HANDOFF.md"
+- Parallel agent code that copies the step 8 pattern from sg-execute verbatim
+- HANDOFF.md rows whose timestamps are identical or within 1 second of each other
 
-**Why it happens:** Codex reads AGENTS.md "once per session" and caps total instruction bytes. The cap is configurable but most users won't override it. Truncation happens without warning to the user or author — the instruction chain is simply cut off.
-
-**Consequences:**
-- Instructions after the truncation point are never seen by Codex
-- If the truncation cuts mid-way through a command list, some sg-* skills appear undefined
-- Critical constraints (non-invasive, append-only HANDOFF) silently absent from context
-
-**Prevention:** AGENTS.md for Codex must be written as a *summary reference*, not a full specification. Target ≤ 8 KiB. Key information: what the workflow is, which skills exist and when to invoke them, where state files live, and what not to modify. Link to `.codex/skills/` for full per-command instructions. Never paste PLAN.md bodies or lesson rule text into AGENTS.md.
-
-**Phase:** Phase 1 (AGENTS.md) — structure decision. AGENTS.md must be intentionally minimal.
+**Implementation phase:** TE-04 (result integration) — HANDOFF.md write must happen only in the integration step, after all agents return.
 
 ---
 
-### Pitfall 5: sg-execute invokes `superpowers:executing-plans` Skill — undefined in Codex
+### Pitfall 3: Task dependency violations — agent starts B before A completes
 
-**What goes wrong:** `sg-execute.md` step 9 ends with `Skill(skill="superpowers:executing-plans", args=...)`. Superpowers is a Claude Code plugin. In Codex, there is no Superpowers plugin, no `executing-plans` skill, and no `Skill()` invocation syntax. The entire execution handoff mechanism is Claude Code-specific.
+**What goes wrong:** The dependency analyzer classifies tasks into independent groups and dependent sequences. A group classified as "independent" launches all agents simultaneously. But the analysis is based on PLAN.md text, not execution semantics. Two categories of hidden dependencies that the analyzer will systematically miss:
 
-**Why it happens:** Superpowers is not ported to Codex. The tool call `Skill(skill=...)` is a Claude Code API construct. Codex has its own skill invocation via `$skill-name` in prompts or implicit matching, but these are different mechanisms.
+**Category A — Output-input dependencies:** Task B requires a file, function, or module that Task A will create. If the analyzer sees no explicit "B depends on A" annotation in PLAN.md, it classifies them as independent. Agent B starts, finds the file missing, either fails or hallucinates a stub.
 
-**Consequences:**
-- `.codex/skills/sg-execute` cannot replicate the actual behavior of `sg-execute.md`
-- A Codex-adapted sg-execute would be a degraded stub: it can prepare the plan prompt but cannot invoke Superpowers
-- If the Codex skill pretends to do the full handoff, users will assume Superpowers ran when it didn't
+**Category B — Semantic ordering constraints:** Task A is "create the TaskGraph data structure." Task B is "implement task scheduling using TaskGraph." PLAN.md may describe both tasks with no dependency link if the author assumed sequential execution. The analyzer has no way to infer that `TaskGraph` is a new artifact created by A, not an existing module.
 
-**Prevention:** Codex-adapted sg-execute in `.codex/skills/` must be explicitly a *manual prompt helper* — it assembles the plan context and tells the user "paste this into Codex to execute." It must not claim to be a full replacement. Name it clearly: "sg-execute-codex" or label it "(Codex — manual prompt variant)."
+**Why it happens:** PLAN.md is written for sequential execution. Dependency annotations (if any) are added for human readers, not machine parsing. The analyzer must infer dependencies from textual descriptions, which is an imperfect, low-confidence classification task.
 
-**Phase:** Phase 2 (.codex/skills/) — each adapted skill must document its degradation vs. the Claude Code original.
+**Consequences:** Agent B fails mid-task when it discovers the precondition is missing. Or worse: Agent B succeeds by making incorrect assumptions about A's output format, producing code that is syntactically valid but semantically incompatible. Integration then produces a silent functional bug, not a merge conflict.
+
+**Prevention:**
+
+1. **Require explicit dependency markers in PLAN.md.** Define a convention: `depends: [task-id]` frontmatter or a `## Dependencies` section in each task block. The analyzer only classifies a task as independent if it has zero dependency markers AND a file-manifest check confirms no shared write surfaces. Without explicit markers, default to sequential.
+2. **Strict conservative classification:** When uncertain, classify as dependent. The cost of false sequential classification is slower execution. The cost of false parallel classification is broken builds and debugging time. Always prefer the conservative error.
+3. **Dry-run validation:** Before launching agents, simulate the dependency graph: for each task, enumerate what it reads and what it creates. If task B reads something that only task A creates, flag it. This requires the analyzer to have file-surface awareness, not just task-name awareness.
+
+**Warning signs:**
+- Tasks with verbs like "implement X using Y" where Y doesn't exist yet
+- Tasks that reference data structures, modules, or APIs defined by a sibling task
+- PLAN.md written before parallel execution existed (all v1.0–v1.3 plans) — these have zero dependency annotations
+
+**Implementation phase:** TE-01 (dependency analyzer) — this is the core algorithmic problem. The analyzer must default to sequential and require affirmative evidence of independence, not assume independence and require evidence of dependency.
+
+---
+
+### Pitfall 4: Context bloat — each agent duplicates full project context
+
+**What goes wrong:** Each parallel agent in Claude Code receives its own context window. To execute a task, an agent needs: the task description, success criteria, relevant files, and enough project context to understand conventions. If the orchestrator naively injects the entire sg-execute prompt (all PLAN.md bodies, all REQ-IDs, ROADMAP goals) into each agent, every agent carries O(N) context for N tasks — most of which is irrelevant to its specific assignment.
+
+Concrete numbers: sg-execute's current prompt for a 3-task phase is roughly 2,000–4,000 tokens. With 3 parallel agents each receiving the full prompt, that is 6,000–12,000 tokens just for context injection before any work begins. As phase complexity grows, this becomes the dominant cost factor.
+
+**Why it happens:** The simplest implementation of "spawn an agent" is to pass it the same prompt the orchestrator has. This requires zero additional engineering. The cost is invisible until bills arrive or context limits are hit.
+
+**Consequences:** 3× to N× token cost with no proportional benefit. In extreme cases, an agent's context window fills up with cross-task information, leaving insufficient space for the actual implementation (file reads, edit operations, test output). The agent starts truncating tool output to fit, producing incomplete work.
+
+**Prevention:**
+
+1. **Per-agent minimal context:** Each agent receives only: (a) its own task block from PLAN.md, (b) the REQ-IDs relevant to that task, (c) the phase goal and success criteria, (d) a short conventions summary (≤200 tokens: non-invasive, append-only HANDOFF, macOS awk rules). Everything else is excluded.
+2. **Reference, don't paste:** Instead of embedding file contents, instruct the agent to read specific files by path. The agent reads only what it actually needs.
+3. **Registry mode for orchestrator:** The orchestrator maintains a lightweight summary of each agent's claimed task and status (≤100 tokens per agent). Full context lives inside each agent's own window.
+
+**Warning signs:**
+- Agent prompt construction that copies the full sg-execute blob and appends "you handle task 2"
+- Agent prompts that include PLAN.md bodies for tasks other than the agent's own
+- Token counts per agent that are >50% of the single-agent execution cost
+
+**Implementation phase:** TE-02/TE-03 (agent spawning and count determination) — the prompt construction logic must be written with per-task scoping from day one.
+
+---
+
+### Pitfall 5: False independence — tasks that conflict at runtime, not at analysis time
+
+**What goes wrong:** The dependency analyzer correctly identifies that tasks A, B, C have no declared dependencies on each other. They are classified as independent. Agents are launched in parallel. All three agents complete without errors. Integration fails because:
+
+- Agent A added a test fixture to `tests/conftest.py`. Agent B added a different test fixture to the same file. Neither task description mentioned `conftest.py` — both said "add tests for X."
+- Agent A created `hooks/new_runner.py` as a new file. Agent B also created `hooks/new_runner.py` for a completely different purpose. Same filename, different content, both valid in isolation.
+- Agent A updated the README to document feature X in section 3. Agent B updated the README to document feature Y, also in section 3. Both edits target the same line range.
+- Agent A created a git commit. Agent B also created a git commit. Now the branch has two commits with non-linear history from a single logical phase.
+
+**Why it happens:** False independence has two sources: (1) tasks share implicit write surfaces that their descriptions don't mention, and (2) tasks share output naming conventions that produce collisions. The first is detectable with file-surface analysis. The second requires knowing the implementation choices agents will make, which is unknowable in advance.
+
+**Consequences:** Integration step discovers conflicts that were invisible at planning time. The orchestrator must either resolve them manually or abort and restart sequentially. The wasted parallel execution cost is unrecoverable.
+
+**Prevention:**
+
+1. **Reserved file registry:** Before launching agents, establish a registry of files each agent is allowed to create or modify. Agents that attempt to create a file not in their registry either request permission from the orchestrator or abort their specific sub-task.
+2. **Convention-based naming:** For files agents create (new modules, new test files), enforce a naming convention that includes the task identifier: `hooks/te01_analyzer.py`, not `hooks/analyzer.py`. This prevents two agents from independently picking the same filename.
+3. **Integration-only files:** Identify files that aggregate contributions from multiple tasks (README, CHANGELOG, plugin.json, any `__init__.py` that imports new modules) and prohibit agents from writing them. These files are written by the orchestrator during TE-04 integration.
+4. **Accept residual false-independence risk.** File-surface analysis catches ~80% of false independence cases. The remaining ~20% (shared implicit output naming, shared test infrastructure) will only be caught at integration. Design TE-04 to handle this gracefully rather than trying to eliminate it.
+
+**Warning signs:**
+- Tasks that say "add tests" without specifying test file locations
+- Tasks that say "update documentation" without specifying which section
+- Multiple tasks that create new Python modules in the same package directory
+- Any task set where more than 2 tasks touch the same directory
+
+**Implementation phase:** TE-01 and TE-04 — TE-01 must produce a file manifest, TE-04 must be designed to handle residual conflicts as a normal case, not an exceptional one.
 
 ---
 
 ## Moderate Pitfalls
 
-### Pitfall 6: Codex skills live in `.agents/skills/`, not `.codex/skills/`
+### Pitfall 6: Recovery — one of N agents fails mid-task
 
-**What goes wrong:** The milestone target document specifies `.codex/skills/` as the skill directory. Codex's actual skill discovery order is: `.agents/skills/` (cwd), parent directories' `.agents/skills/`, `$REPO_ROOT/.agents/skills/`, `$HOME/.agents/skills/`. The `.codex/` directory is for configuration (config.toml, hooks.json), not skills.
+**What goes wrong:** Three agents run in parallel. Agent 1 completes successfully. Agent 2 completes successfully. Agent 3 fails at 60% completion — it edited three files, ran into an error, and stopped. The question is: can Agents 1 and 2's work be preserved while replaying Agent 3?
 
-**Why it happens:** The directory name intuition `.codex/skills/` sounds correct but is not an official Codex path. Official docs confirm only `.agents/skills/` hierarchy for skill discovery.
+The answer depends entirely on design choices made before execution:
 
-**Consequences:**
-- Skills placed in `.codex/skills/` are invisible to Codex's auto-discovery
-- User sees no sg-* skills in `/skills` list despite files existing
-- Time lost debugging why skills "don't appear" when the location is simply wrong
+- **If agents work in shared worktree with no isolation:** Agent 3's partial changes are intermixed with Agents 1 and 2's changes. There is no clean way to identify which uncommitted edits belong to Agent 3. The only safe recovery is `git restore .` (loses everything) or manual file-by-file triage.
+- **If each agent works in its own branch or worktree:** Agent 3's branch contains only Agent 3's changes. The branch can be reset or deleted without touching Agents 1 and 2. Agent 3 restarts on a clean branch.
+- **If the orchestrator has no checkpoint mechanism:** There is no record of which tasks completed. After any failure, the orchestrator must re-analyze from scratch, risking re-running completed tasks.
 
-**Prevention:** Use `.agents/skills/` for all Codex skills. The `.codex/` directory is for `config.toml` and `hooks.json` only. Update the milestone target before implementation begins.
+**Why it happens:** Parallel execution creates partial completion states that do not exist in sequential execution. Sequential execution either completes or fails cleanly. Parallel execution can complete 2/3 of a phase and fail 1/3 in a state that is difficult to inspect or recover.
 
-**Phase:** Phase 2 planning — catch before any files are created.
-
----
-
-### Pitfall 7: AGENTS.md instruction chain rebuilds every session — no persistent HANDOFF.md awareness
-
-**What goes wrong:** AGENTS.md is read "once per run." Codex has no mechanism to inject dynamic content (current HANDOFF.md state, current phase) into the AGENTS.md context automatically. Claude Code's stop_hook.py reads `.planning/HANDOFF.md` at runtime and generates context-specific guidance. In Codex, AGENTS.md is static.
-
-**Why it happens:** AGENTS.md is a static file. Codex's `Stop` hook can inject a `systemMessage`, but it receives no equivalent of Claude Code's `${CLAUDE_PLUGIN_ROOT}` context. Writing a Codex hook that reads HANDOFF.md is possible but requires a functioning hooks setup (see Pitfall 2).
-
-**Consequences:**
-- AGENTS.md can describe the workflow but cannot tell the user "you are on Phase 3, Stage superpowers"
-- Users must know their current state from `.planning/HANDOFF.md` themselves
-- The session continuity that sg-start/sg-status provides in Claude Code is absent in Codex
-
-**Prevention:** AGENTS.md must instruct the user to manually check `.planning/HANDOFF.md` and `.planning/STATE.md` for current state. Include a one-line bash command in AGENTS.md for quick state check. Do not promise dynamic context injection — it requires a working Codex hooks setup.
-
-**Phase:** Phase 1 (AGENTS.md) — state-check instructions must be explicit and manual.
-
----
-
-### Pitfall 8: Two-platform divergence accelerates as sg-* commands evolve
-
-**What goes wrong:** sg-execute.md is updated in Claude Code (e.g., new idempotency logic, new HANDOFF column). The `.agents/skills/sg-execute/SKILL.md` for Codex is a static copy from the day it was authored. Now they describe different behavior. Users with both environments get inconsistent results.
-
-**Why it happens:** There is no shared source-of-truth mechanism. GSD handles this by maintaining a canonical codebase and running a convert-at-install translation pipeline. super-gsd v1.3 has no such pipeline — it will author Codex files by hand.
-
-**Consequences:**
-- Every Claude Code change requires a manual matching update to the Codex skills
-- Divergence is invisible until a user files a bug: "this doesn't work in Codex"
-- At 13 commands + sg-retro skill + 6 lenses, the delta surface is large
+**Consequences:** Without isolation and checkpointing, a single agent failure forces a full phase restart, wasting the work of successful agents. This eliminates any speed benefit from parallelism when failure rates are non-trivial. LLM agents fail more often than deterministic code — 10–30% per complex task is realistic.
 
 **Prevention:**
-- Minimize Codex skill content. Each `.agents/skills/sg-*/SKILL.md` should describe *what the command achieves* (goal, inputs, outputs) not *how to implement it* (no inline bash, no regex). This way, the implementation diverges but the contract stays in sync.
-- Add a comment block at the top of each Codex skill: `<!-- Codex adaptation of commands/sg-<name>.md — update this file when the Claude Code command changes -->` so drift is at least flagged.
-- Explicitly mark v1.3 as "documentation-first Codex support." Do not promise behavior parity.
 
-**Phase:** Cross-cutting — maintenance strategy must be decided before Phase 2 authoring.
+1. **Branch-per-agent isolation (non-negotiable):** Each agent operates on its own branch (or git worktree). On failure, the agent's branch is reset. On success, the branch is merged by the orchestrator.
+2. **Per-task completion checkpoints:** After each agent completes, the orchestrator writes a checkpoint: task ID, agent branch name, success/failure, commit SHA. This is written before integration. On restart, the orchestrator reads the checkpoint and skips completed tasks.
+3. **Partial-success integration:** TE-04 must handle the case where 2 of 3 agents succeeded. It integrates the two successful branches and marks the failed task for sequential retry. The phase is not declared failed until at least one retry has been attempted.
+4. **Idempotent agent prompts:** Agent prompts must produce the same output if re-run from scratch. If Agent 3 partially created a file and is re-run, it must be able to detect and overwrite the partial work, not append to it.
+
+**Warning signs:**
+- Agent spawning code that does not create a branch per agent
+- No checkpoint file written after each agent completes
+- Integration code that assumes all N agents either all succeed or all fail
+- Agent prompts that append to shared files incrementally (cannot be replayed safely)
+
+**Implementation phase:** TE-02 (agent spawning) — branch isolation must be built into spawning. TE-04 (integration) — partial-success handling must be explicitly designed.
 
 ---
 
-### Pitfall 9: `.planning/` relative path assumptions break when Codex cwd differs
+### Pitfall 7: Cost/speed tradeoff — when parallelism actively hurts
 
-**What goes wrong:** Every sg-* command uses relative paths: `.planning/HANDOFF.md`, `.planning/STATE.md`, `.planning/config.json`. In Claude Code, the plugin executes with cwd at project root (same issue documented in v1.1 CC-3). In Codex, `codex exec` or a subagent may run from a subdirectory or a temp working directory. Relative paths fail silently.
+**What goes wrong:** The assumption is that N parallel agents complete work N times faster. This is false in all but the most ideal conditions. The actual speedup is:
 
-**Why it happens:** Codex's `codex exec` subcommand and subagent model have independent working directories. The Codex skill invocation inherits whatever cwd Codex was launched from — not necessarily the git root.
-
-**Consequences:**
-- `.agents/skills/sg-*/SKILL.md` bash blocks fail with "No such file or directory" when run from non-root
-- HANDOFF.md is not found; skill falls back to `init` state silently
-- Errors look like missing files rather than wrong cwd, making debugging harder
-
-**Prevention:** All Codex skill bash blocks should resolve project root via `git rev-parse --show-toplevel` before any `.planning/` access:
-```bash
-PROJECT_ROOT=$(git rev-parse --show-toplevel 2>/dev/null) || PROJECT_ROOT="."
-HANDOFF="$PROJECT_ROOT/.planning/HANDOFF.md"
 ```
-This is the same fix as CC-3 in v1.1. Apply it systematically to all Codex skills.
+speedup = sequential_time / (slowest_parallel_agent_time + integration_overhead)
+```
 
-**Phase:** Phase 2 (.codex/skills/) — apply to all bash blocks in Codex skills.
+Where integration overhead includes: merge time, conflict resolution, code review across N branches, and coordination messages between orchestrator and agents.
 
----
+Parallelism hurts (net negative) when:
 
-### Pitfall 10: Over-engineering Codex skills as full Claude Code behavior replicas
+- **Tasks are small:** If each task takes 2 minutes sequentially and integration takes 5 minutes, 3 parallel agents take 7 minutes total vs. 6 minutes sequential. You paid 3× the tokens for a 1-minute slowdown.
+- **One agent is a bottleneck:** If Task A takes 10 minutes and Tasks B and C take 2 minutes each, the speedup is 10 minutes (limited by A) vs. 14 minutes sequential. Parallelism saves 4 minutes but cost 3× tokens. The token/minute tradeoff may not be worth it.
+- **High false-independence rate:** If 30% of "independent" tasks turn out to conflict, the integration step repeatedly fails and restarts. Total time: parallel execution time + integration failures + sequential re-runs. Often worse than pure sequential.
+- **The phase has 2 tasks:** With 2 tasks, the overhead of branch creation, agent context injection, coordination, and merge typically exceeds the sequential time saved. The breakeven for parallelism is approximately 3 tasks, each taking >5 minutes, with genuine independence.
 
-**What goes wrong:** The impulse is to port all 13 sg-* commands as full `.agents/skills/` with complete bash blocks, idempotency logic, HANDOFF.md writes, phase resolution, lessons ranking, etc. The result is 13 × 100-200 lines of Codex-specific bash that is immediately stale, partially broken (no SubagentStop, no Superpowers skill), and maintenance-heavy.
+Quantified cost from community observations: running 5 parallel agents consumes approximately 5× the tokens of a single agent over the same clock time. If the speedup is 2×, the cost-per-unit-of-work is 2.5× higher. This is often not a good trade.
 
-**Why it happens:** The natural instinct when adding platform support is to achieve parity. But parity is impossible here — hooks are missing, Superpowers is missing, the command system is different. Full-parity attempts hide the gaps behind complexity instead of surfacing them honestly.
+**Why it happens:** Parallelism has visible speed benefits and invisible cost and complexity costs. The feature is built because "faster" is an obvious positive. The token cost, integration overhead, and failure recovery costs are discovered later.
 
-**Consequences:**
-- Users believe they have full super-gsd in Codex but are silently missing the most important behaviors
-- Maintenance burden is 2× immediately, heading toward abandonment of Codex files
-- Bug reports for "Codex version" are impossible to triage because the bash logic is duplicated
+**Consequences:** Phases that should run in 10 minutes sequentially now take 15 minutes with parallel execution due to coordination overhead, while costing 3× more. Users disable the parallel feature after experiencing this, which means the feature investment provides no value.
 
-**Prevention:** The correct Codex support scope for v1.3 is:
-1. **AGENTS.md** — workflow overview, state file locations, skill reference list, manual state check command
-2. **`.agents/skills/`** — light-wrapper skills that generate the right *prompts* but delegate execution to Codex's native agent loop, not replicate Claude Code's bash
-3. **README Codex section** — explicit capability table: what works, what is degraded, what is absent
+**Prevention:**
 
-Do not port lessons_ranker.py, rule_runner.py, stop_hook.py to Codex in v1.3.
+1. **Minimum parallelism threshold:** Only parallelize when: (a) there are ≥ 3 genuinely independent tasks, AND (b) each task is estimated to take > 5 minutes (proxied by PLAN.md task complexity), AND (c) the phase has ≥ 3 tasks that pass the file-manifest independence check.
+2. **Default to sequential.** The user must explicitly opt into parallel execution (`--parallel` flag or config setting). Do not enable it by default. The failure modes are too costly for a default-on feature.
+3. **Agent count cap at 3.** Community data shows coordination overhead dominates benefit beyond 3 parallel agents for typical development tasks. Hard cap TE-03's output at 3 agents regardless of independent group count.
+4. **Cost visibility:** Before launching parallel agents, display the estimated token cost multiplier so users can make an informed choice.
 
-**Phase:** Planning decision — scope must be fixed before authoring begins.
+**Warning signs:**
+- TE-03 returning N > 3 agent groups from a phase with 4–5 small tasks
+- No mechanism for users to override parallel execution back to sequential
+- Parallel execution enabled for phases with tasks that take < 3 minutes each
+- No cost estimate displayed before spawning agents
+
+**Implementation phase:** TE-03 (agent count determination) — the decision algorithm must have conservative defaults and hard caps. The feature should be opt-in.
 
 ---
 
 ## Minor Pitfalls
 
-### Pitfall 11: AGENTS.md placed in repo root conflicts with project-level AGENTS.md
+### Pitfall 8: Orchestrator context growth during multi-agent coordination
 
-**What goes wrong:** super-gsd ships an AGENTS.md file in the repo root. When a user clones super-gsd itself as a project to develop, Codex reads this AGENTS.md and applies super-gsd's own workflow guidance to super-gsd development. This is correct. But when super-gsd is *installed as a plugin* into another project, the AGENTS.md in the super-gsd plugin directory is not at that project's root — Codex won't discover it automatically.
+**What goes wrong:** The orchestrator agent that manages parallel workers must receive status updates from each agent. With naive implementation, the orchestrator's context accumulates: the initial prompt, all agent results, all error messages, and all inter-agent coordination messages. For a 3-agent phase, the orchestrator context grows to 3× the size of a single-agent context by the time integration begins. If any agent produces verbose output (test results, error traces), the orchestrator may hit context limits before integration completes.
 
-**Why it happens:** AGENTS.md discovery is cwd-upward from the user's current directory. A plugin installed at `~/.claude/plugins/super-gsd/` is not on the cwd-upward path.
+**Prevention:** Agent results should be written to scratch files and the orchestrator reads summaries only (task ID, success/fail, branch name, key outputs). Full output lives in the scratch file, not in the orchestrator's message history.
 
-**Consequences:**
-- AGENTS.md in the plugin directory is never read by Codex in normal usage
-- Users must manually copy or symlink AGENTS.md to their project root
-
-**Prevention:** README must explain: "To use super-gsd guidance in Codex, copy `.agents/AGENTS.md` to your project root or add a `[project_doc_fallback_filenames]` entry in your Codex config." Do not assume AGENTS.md auto-discovery for installed plugins.
-
-**Phase:** Phase 3 (README) — documentation clarity.
+**Implementation phase:** TE-04 — define the agent result schema before any agent code is written. Agents must write structured results, not verbose prose.
 
 ---
 
-### Pitfall 12: Codex `Stop` hook can auto-continue — different semantics from Claude Code `Stop`
+### Pitfall 9: PLAN.md written for sequential execution — no task IDs, no file manifest
 
-**What goes wrong:** Claude Code's `Stop` hook outputs a `systemMessage` to display guidance and the session stops. Codex's `Stop` hook can return `decision: "block"` to *automatically continue* the session with the stop reason as a new prompt. A naive port of stop_hook.py that returns the `systemMessage` guidance text in a `block` decision would cause Codex to treat the guidance as a user prompt and start a new agent turn — executing workflow steps the user didn't request.
+**What goes wrong:** All PLAN.md files written for phases 1–13 (and future phases written before parallel support exists) have no task IDs, no dependency annotations, and no file manifest. The TE-01 analyzer must parse free-form Markdown to extract tasks, which is inherently ambiguous. It may split a single logical task into two "independent" items or merge two independent tasks into one group.
 
-**Why it happens:** The semantics of `Stop` differ: Claude Code's stop hook is purely advisory (display a message), Codex's stop hook can be loop-continuing. Same JSON field names, different behavior on specific output patterns.
+**Prevention:** Define a PLAN.md convention extension for v1.4: tasks may optionally include `task-id:`, `depends:`, and `writes:` frontmatter fields. The analyzer uses these when present. When absent, it uses heuristic parsing with conservative (sequential) defaults. Do not require retrofitting existing PLAN.md files.
 
-**Consequences:**
-- If anyone ports stop_hook.py to Codex and uses `decision: "block"`, it may trigger unintended automatic task execution
-- Silent behavior divergence that looks correct (guidance shown) but acts wrong (session continues)
-
-**Prevention:** For any Codex stop hook, always use `decision: "pass"` or no decision field. Never use `decision: "block"` for guidance-only messages. Document this difference prominently if providing a Codex hooks template.
-
-**Phase:** If hooks are provided — Phase 2 or later. For v1.3 scope (no hooks), note in README.
+**Implementation phase:** TE-01 — the convention must be documented before any plans are written for v1.4 phases.
 
 ---
 
-### Pitfall 13: Codex `UserPromptSubmit` hook has no Claude Code equivalent — rule_runner scope gap
+### Pitfall 10: Superpowers:executing-plans is not designed for parallel invocation
 
-**What goes wrong:** The migration research note in `PROJECT.md` confirms: "rule_runner.py prompt 이벤트 미지원 — PreToolUse hook 아키텍처 제약 — prompt submit 이벤트는 Claude Code PreToolUse로 캐치 불가." Ironically, Codex *does* have `UserPromptSubmit`. This creates a gap in the other direction: if super-gsd eventually adds prompt-level rule checks in Claude Code, the Codex hook could fire them — but the current Claude Code version cannot. Authors may mistakenly add Codex-only functionality and not notice the asymmetry.
+**What goes wrong:** sg-execute currently ends by invoking `superpowers:executing-plans` as a single skill call with the full phase prompt. Parallel execution changes this: multiple agents must each invoke Superpowers (or equivalent) for their individual task subsets. But Superpowers is a sequential skill — it processes one plan from start to finish and writes to `.planning/STATE.md`. Multiple simultaneous Superpowers invocations would produce conflicting STATE.md writes.
 
-**Prevention:** Keep rule_runner.py out of Codex scope entirely in v1.3. Flag in README: "Prompt-level rule hooks are not implemented in this release."
+**Why it happens:** The current architecture is 1 phase → 1 Superpowers invocation → 1 STATE.md write. Parallel execution requires N simultaneous executions, which violates Superpowers' design assumptions.
 
-**Phase:** Future — not v1.3 scope.
+**Consequences:** If parallel agents each attempt `Skill(skill="superpowers:executing-plans", args=...)`, the results are non-deterministic. STATE.md reflects whichever invocation wrote last.
+
+**Prevention:** Parallel agents must NOT invoke `superpowers:executing-plans`. Instead, parallel agents implement their tasks directly using standard Claude Code tools (Read, Edit, Write, Bash). The orchestrator invokes Superpowers exactly once for the integration/review step after all agents complete. This is a fundamental architecture decision for TE-02.
+
+**Implementation phase:** TE-02 — agent prompt design must explicitly exclude Superpowers invocation. This is a hard constraint, not a style preference.
 
 ---
 
 ## Phase-Specific Warning Table
 
-| Phase Topic | Likely Pitfall | Severity | Mitigation |
-|-------------|---------------|----------|------------|
-| AGENTS.md authoring | Uses Claude Code slash command syntax (`/sg-execute`) | CRITICAL | Rewrite all command references in Codex vocabulary |
-| AGENTS.md size | Exceeds 32 KiB from full workflow documentation | HIGH | Target ≤ 8 KiB; link to `.agents/skills/` for detail |
-| AGENTS.md discovery | Plugin AGENTS.md not auto-discovered when installed | MEDIUM | Explain manual copy/symlink in README |
-| `.codex/skills/` location | Skills placed in `.codex/skills/` instead of `.agents/skills/` | HIGH | Use `.agents/skills/` — Codex discovery only scans `.agents/skills/` |
-| Codex skill — sg-execute | Claims to invoke Superpowers, which does not exist in Codex | CRITICAL | Explicit "manual prompt assistant" framing, not a Superpowers replacement |
-| Codex skill — review→retro | Implies SubagentStop hook fires after review, which it cannot | CRITICAL | Remove any implication of automatic post-review nudge |
-| Codex skill — hooks | References `${CLAUDE_PLUGIN_ROOT}` which is undefined | HIGH | No hook file in v1.3; document separately |
-| Codex skill — paths | Relative `.planning/` paths fail in non-root cwd | HIGH | Use `git rev-parse --show-toplevel` as path anchor |
-| README Codex section | Presents Codex and Claude Code as feature-equivalent | HIGH | Explicit capability delta table: works / degraded / absent |
-| Scope creep | Full bash-parity skills for all 13 commands | HIGH | Scope = prompt-helper skills only, not behavior replicas |
-| Codex Stop hook | `decision: "block"` causes unintended loop-continue | MEDIUM | Always use `decision: "pass"` for advisory messages |
-| Maintenance drift | Codex skills diverge silently as Claude Code commands evolve | MEDIUM | Canonical source comment in each Codex skill file |
+| Implementation Step | Likely Pitfall | Severity | Mitigation |
+|---------------------|----------------|----------|------------|
+| TE-01: dependency analyzer | Classifies semantically dependent tasks as independent due to missing annotations | CRITICAL | Default to sequential; require affirmative evidence of independence |
+| TE-01: dependency analyzer | File-manifest intersection not checked; only task names compared | HIGH | Analyzer must produce file manifest per group, check intersections |
+| TE-01: PLAN.md parsing | Free-form text parsing produces wrong task splits | HIGH | Conservative heuristics; expose parsed groups for user confirmation before spawning |
+| TE-02: agent spawning | No branch-per-agent isolation; partial failures contaminate shared workspace | CRITICAL | Each agent must operate on its own branch; non-negotiable |
+| TE-02: agent spawning | Agent receives full phase prompt instead of per-task context | HIGH | Scope agent context to its own task block only |
+| TE-02: agent spawning | Agent invokes superpowers:executing-plans | CRITICAL | Prohibit Superpowers invocation from parallel agents |
+| TE-03: agent count | Count > 3 for typical phases; coordination overhead exceeds benefit | MEDIUM | Hard cap at 3; default-off; opt-in only |
+| TE-03: agent count | Parallelism triggered for < 3 small tasks | MEDIUM | Minimum threshold: ≥ 3 tasks, each estimated complex |
+| TE-04: integration | HANDOFF.md written by multiple agents simultaneously | HIGH | Only orchestrator writes HANDOFF.md, after all agents complete |
+| TE-04: integration | Integration assumes all agents succeed; no partial-success path | HIGH | Handle 2-of-3 success explicitly; failed task → sequential retry |
+| TE-04: integration | Agent results passed as in-context messages; orchestrator context bloat | MEDIUM | Agents write results to scratch files; orchestrator reads summaries |
+| Cross-cutting | Feature enabled by default | HIGH | Parallel execution opt-in only (`--parallel` flag or config) |
+| Cross-cutting | No cost estimate before spawning | MEDIUM | Display token multiplier estimate before user confirms parallel launch |
 
 ---
 
-## Cross-Cutting: Honest Capability Statement
+## Non-Technical Pitfall: The "Faster Is Better" Fallacy
 
-The most dangerous pitfall is not technical — it is documentation that implies feature equivalence when none exists. The honest capability delta for Codex vs. Claude Code:
+The most dangerous pitfall is not technical — it is the assumption that parallelism is always beneficial. The evidence from multi-agent research and community practice consistently shows:
 
-| Feature | Claude Code | Codex |
-|---------|------------|-------|
-| sg-* commands as slash commands | Native (plugin.json) | Not available; skills only |
-| Automatic post-plan nudge (Stop hook) | Yes | Possible with hooks setup |
-| Automatic post-review nudge (SubagentStop) | Yes | **Not possible — no SubagentStop** |
-| Superpowers:executing-plans invocation | Native | Not possible — Superpowers not ported |
-| Rule enforcement (rule_runner.py PreToolUse) | Yes | Possible with hooks setup |
-| Lessons ranking reminder at sg-plan/sg-execute | Yes (automatic) | Manual (user must ask) |
-| sg-retro 6-lens retrospective | Full skill | Portable as `.agents/skills/sg-retro` |
-| .planning/STATE.md + HANDOFF.md state tracking | Full | Manual inspection only |
-| sg-health diagnostics | Full Claude Code plugin check | Codex-specific version needed |
+**Parallelism is net positive when:** tasks are genuinely independent (verified by file manifest), each task takes ≥ 5 minutes, there are 3–4 tasks in the group, and the team can afford N× token cost.
 
-Producing documentation that covers up the "Not possible" cells is the highest-severity pitfall in this entire milestone.
+**Parallelism is net negative when:** tasks have hidden dependencies, integration failures require restarts, tasks are small, or the token cost cannot be justified by the time savings.
+
+The honest recommendation for sg-execute v1.4: implement parallel execution as a well-designed opt-in feature with conservative defaults, clear capability documentation, and explicit cost visibility. Do not position it as a default improvement. The sequential path must remain the primary path.
 
 ---
 
 ## Sources
 
-- [Codex AGENTS.md Guide](https://developers.openai.com/codex/guides/agents-md) — official, HIGH confidence
-- [Codex Hooks Documentation](https://developers.openai.com/codex/hooks) — official, HIGH confidence
-- [Codex Agent Skills](https://developers.openai.com/codex/skills) — official, HIGH confidence
-- [Codex CLI Slash Commands](https://developers.openai.com/codex/cli/slash-commands) — official, HIGH confidence
-- [Codex Custom Prompts (deprecated)](https://developers.openai.com/codex/custom-prompts) — official, HIGH confidence
-- [Codex Config Reference](https://developers.openai.com/codex/config-reference) — official, HIGH confidence
-- [Codex Subagents](https://developers.openai.com/codex/concepts/subagents) — official, HIGH confidence
-- [Migration: Claude Code → Codex CLI](https://codex.danielvaughan.com/2026/03/26/migrating-claude-code-to-codex-cli/) — practitioner, MEDIUM confidence
-- [Codex vs Claude Code Comparison](https://www.builder.io/blog/codex-vs-claude-code) — MEDIUM confidence
+- [Claude Code Worktrees Guide — claudefa.st](https://claudefa.st/blog/guide/development/worktree-guide) — HIGH confidence, current
+- [Claude Code Agent Teams: Shared Task List — MindStudio](https://www.mindstudio.ai/blog/claude-code-agent-teams-shared-task-list) — MEDIUM confidence
+- [Multi-Agent Workflows Often Fail — GitHub Blog](https://github.blog/ai-and-ml/generative-ai/multi-agent-workflows-often-fail-heres-how-to-engineer-ones-that-dont/) — HIGH confidence
+- [Why Multi-Agent LLM Systems Fail — Augment Code](https://www.augmentcode.com/guides/why-multi-agent-llm-systems-fail-and-how-to-fix-them) — MEDIUM confidence
+- [Error Handling in Agentic Systems — Agents Arcade](https://agentsarcade.com/blog/error-handling-agentic-systems-retries-rollbacks-graceful-failure) — MEDIUM confidence
+- [Your AI Agent Didn't Fail — It Stopped Halfway — Medium](https://medium.com/data-science-collective/your-ai-agent-didnt-fail-it-stopped-halfway-cc5a6cc58b0c) — MEDIUM confidence
+- [Parallel Agentic Development — MindStudio](https://www.mindstudio.ai/blog/parallel-agentic-development-claude-code-worktrees) — MEDIUM confidence
+- [Context Engineering in LLM-Based Agents — Medium](https://jtanruan.medium.com/context-engineering-in-llm-based-agents-d670d6b439bc) — MEDIUM confidence

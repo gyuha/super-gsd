@@ -1,7 +1,7 @@
-# 프로젝트 리서치 요약
+# 프로젝트 리서치 요약 — v1.4 Team Agent Parallel Execution
 
-**프로젝트:** super-gsd v1.3 Codex Platform Support
-**도메인:** 멀티 플랫폼 AI 코딩 에이전트 워크플로우 플러그인
+**프로젝트:** super-gsd v1.4 Team Agent Parallel Execution
+**도메인:** sg-execute 병렬 에이전트 실행
 **리서치 완료:** 2026-05-21
 **신뢰도:** HIGH (공식 Codex 문서 기반)
 

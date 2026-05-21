@@ -1,213 +1,330 @@
-# Feature Landscape — v1.3 Codex Platform Support
+# Feature Landscape — v1.4 병렬 에이전트 실행 (sg-execute)
 
-**Domain:** Multi-platform AI coding agent workflow plugin
+**Domain:** Claude Code 플러그인 — PLAN.md 병렬 실행 오케스트레이터
 **Researched:** 2026-05-21
-**Confidence:** MEDIUM-HIGH — Codex docs verified directly; cross-platform patterns confirmed via multiple sources
+**Confidence:** HIGH — 실제 PLAN.md 파일, sg-execute.md, HANDOFF.md 직접 분석 기반
 
 ---
 
-## Context: What "Codex Support" Means for super-gsd
+## 컨텍스트: 현재 sg-execute가 하는 일
 
-OpenAI Codex and Claude Code share the same plugin structural primitives (plugin.json manifest, skills, hooks, AGENTS.md/CLAUDE.md), but the API surfaces diverge in critical places. Codex support for super-gsd means:
+현재 `sg-execute`는 단계(Phase)의 모든 `*-PLAN.md` 파일을 순차적으로 하나의 blob으로 합쳐서
+`superpowers:executing-plans` Skill에 한 번에 넘긴다. Superpowers는 이를 내부적으로 순차 처리한다.
 
-1. A workflow instruction file (AGENTS.md) that Codex loads before any task
-2. Skills adapted into `.agents/skills/` or `.codex/skills/` for Codex's discovery path
-3. A plugin manifest (`.codex-plugin/plugin.json`) if distributing via Codex marketplace
-4. Documentation that separates Claude Code installation from Codex installation
+**문제:** Wave 1과 Wave 2 PLAN.md가 섞여 있어도 Superpowers는 순서를 모른다.
+이미 PLAN.md 프론트매터에 `wave`와 `depends_on` 필드가 있지만 sg-execute는 이를 완전히 무시한다.
 
-This is NOT a full port. The core workflow (GSD → Superpowers → sg-retro) is platform-agnostic — it is pure markdown files and filesystem state. What changes is the invocation and hook layer.
-
----
-
-## Platform Delta: Claude Code vs Codex
-
-| Capability | Claude Code | Codex | Impact |
-|------------|-------------|-------|--------|
-| Instruction file | CLAUDE.md | AGENTS.md | New file to create |
-| Skill discovery | `.claude/skills/` | `.agents/skills/` | New symlink / directory |
-| Plugin manifest | `.claude-plugin/plugin.json` | `.codex-plugin/plugin.json` | New manifest |
-| Commands (slash) | `commands/*.md` (slash commands) | Skills invoked via `@skill` or `/skills` | Commands → Skills adaptation |
-| Hook: Stop | `Stop` event — supported | `Stop` event — supported | Compatible |
-| Hook: SubagentStop | `SubagentStop` — supported | **NOT documented** — likely not supported | Codex hooks can't use SubagentStop |
-| Hook: PreToolUse | `PreToolUse` — supported | `PreToolUse` — supported | Compatible |
-| Hook env var | `${CLAUDE_PLUGIN_ROOT}` | `${PLUGIN_ROOT}` | hooks.json env var rename |
-| Plugin hooks default | on | **off by default** — requires `[features].plugin_hooks = true` | Users must explicitly enable |
-| Skill invocation | `AskUserQuestion` tool available | No `AskUserQuestion` — interactive via text | sg-retro multiSelect needs adaptation |
-
-[HIGH confidence on all items — verified directly in Codex developer docs]
+**목표:** PLAN.md의 `wave` + `depends_on` 구조를 읽어 독립 태스크 그룹을 감지하고,
+각 wave를 별도 에이전트로 병렬 실행한 뒤 결과를 통합한다.
 
 ---
 
-## Table Stakes (Must Have for Codex Support)
+## PLAN.md 포맷 — 실제 구조 (직접 분석)
 
-Features where their absence means "super-gsd doesn't support Codex" — the minimum viable Codex support.
+PLAN.md 프론트매터는 이미 의존성 정보를 포함한다:
 
-| Feature | Why Required | Complexity | Dependency on Existing Code |
-|---------|--------------|------------|----------------------------|
-| **AGENTS.md** — workflow instruction file | Codex reads AGENTS.md before any task. Without it, the user gets no guidance about sg-* commands, GSD → Superpowers workflow, or the learning loop. This is the system prompt equivalent. | Low | None — new file, mirrors CLAUDE.md content |
-| **README Codex section** — platform-specific install + usage docs | Without documentation, a Codex user cannot discover how to install super-gsd. Claude Code docs reference `.claude-plugin/`; Codex users need `.codex-plugin/` and `.agents/skills/` instructions. | Low | Depends on AGENTS.md existing |
-| **.codex/skills/ or .agents/skills/ adapted skills** — at minimum sg-retro | Codex skill discovery uses `.agents/skills/`. The sg-retro SKILL.md uses `AskUserQuestion` (Claude Code specific). Codex users invoking `@sg-retro` will fail unless the skill is adapted to text-prompt-based lens selection. | Medium | sg-retro SKILL.md needs AskUserQuestion removal |
-| **Codex plugin manifest** (`.codex-plugin/plugin.json`) | Required to appear in Codex plugin marketplace. Without it, installation is manual and undiscoverable. Structure mirrors `.claude-plugin/plugin.json` with `${PLUGIN_ROOT}` env var. | Low | Mirrors existing `.claude-plugin/plugin.json`; different env var |
+```yaml
+---
+phase: 03-sg-command-set-readme
+plan: 04
+type: execute
+wave: 2                # 실행 순서 그룹 (1 = 최초, 2 = wave 1 완료 후)
+depends_on:
+  - 03-01              # 같은 phase 내 plan 번호 참조
+  - 03-02
+  - 03-03
+files_modified:
+  - README.md
+autonomous: true
+---
+```
+
+**실제 관찰된 패턴 (v1.0 milestones 분석):**
+- `wave: 1` + `depends_on: []` — 독립 태스크, 병렬 실행 가능
+- `wave: 2` + `depends_on: [NN-NN, NN-NN]` — wave 1 완료 후에만 실행 가능
+- 모든 PLAN.md 15개 중 wave 1이 11개, wave 2가 4개
+
+**핵심 발견:** `wave` 필드가 그룹핑의 기본 단위다.
+같은 wave 내 PLAN.md들은 서로 독립이며 병렬 실행 대상이다.
 
 ---
 
-## Feature Details: Table Stakes
+## Table Stakes (없으면 기능 자체가 없는 것)
 
-### TS-01: AGENTS.md — Workflow Instruction File
-
-**What Codex does with it:** Codex reads AGENTS.md before doing any work — it functions as the persistent system-prompt equivalent, encoding workflow conventions, sg-command list, and GSD → Superpowers → sg-retro ordering.
-
-**Content requirements:**
-- sg-* command list with one-line descriptions (replace slash commands with skill-invocation syntax)
-- GSD → Superpowers → sg-retro workflow sequence and when to use each
-- `.planning/` directory structure and what each file means
-- Lessons replay behavior (sg-plan and sg-execute automatically surface top lessons)
-- "Do NOT run direct edits outside an sg- workflow" enforcement rule
-
-**Scope decision:** AGENTS.md should be the _canonical_ instruction file. The existing CLAUDE.md in the project root was auto-generated by GSD and contains project-specific context, not platform-level workflow instructions. The new AGENTS.md is workflow-level, not project-level.
-
-**Discovery:** Codex reads from repo root or walks up from current directory. Place AGENTS.md at repo root. It overlaps with but does not replace CLAUDE.md.
-
-**Cross-platform bonus:** Claude Code reads AGENTS.md as a fallback when no CLAUDE.md is present in a directory. This means a well-written AGENTS.md at repo root also provides guidance to Claude Code users who don't have CLAUDE.md configured — a free cross-platform win.
-
-**Complexity:** Low. This is pure markdown authoring, no code changes.
+| Feature | 없을 때 결과 | 복잡도 | 구현 위치 |
+|---------|------------|--------|----------|
+| **TE-01: wave 기반 태스크 그룹 분석** | 병렬 실행 불가 — 현재와 동일 | 중간 | sg-execute.md process 확장 |
+| **TE-02: 독립 그룹 병렬 에이전트 실행** | 핵심 기능 미제공 | 높음 | sg-execute.md + Task tool 활용 |
+| **TE-03: 에이전트 수 자동 결정** | 사용자가 수동 지정해야 함 | 낮음 | wave별 PLAN.md 수 카운트 |
+| **TE-04: 실행 결과 통합 + HANDOFF.md 기록** | 상태 추적 불가 | 중간 | HANDOFF.md 스키마 확장 |
 
 ---
 
-### TS-02: README Codex Section
+## Feature 상세: Table Stakes
 
-**What's needed:** The README currently documents Claude Code installation (`/claude mcp add`, `.claude-plugin/` paths). Codex users need a parallel section covering:
+### TE-01: PLAN.md 태스크 의존성 분석
 
-1. Codex skill discovery path: `~/.agents/skills/super-gsd` symlink or `.agents/skills/`
-2. Plugin installation: `.codex-plugin/` directory, `plugin.json` pointing to skills
-3. Enabling plugin hooks: `[features] plugin_hooks = true` in `~/.codex/config.toml`
-4. Verification: how to confirm sg-retro and other skills are discoverable (`/skills` in Codex)
+**분석 방법:**
 
-**Scope:** Single new section in README.md. No new files except what TS-01 and TS-03/TS-04 create.
+PLAN.md 프론트매터에서 `wave`와 `depends_on`을 파싱한다.
+두 필드가 없는 PLAN.md는 wave 1 독립 태스크로 취급한다 (하위 호환성).
 
----
+```bash
+# wave별 PLAN.md 그룹핑
+for plan in "$PHASE_DIR"/*-PLAN.md; do
+  wave=$(grep -E '^wave:' "$plan" | head -1 | awk '{print $2}')
+  wave=${wave:-1}   # 기본값 1
+  echo "$wave $plan"
+done | sort -n
+```
 
-### TS-03: `.agents/skills/` Adapted Skills
+**그룹핑 규칙:**
+1. `wave: 1` + `depends_on: []` → Group A (첫 번째 병렬 배치)
+2. `wave: 2` + `depends_on: [...]` → Group B (Group A 완료 후 실행)
+3. `wave` 없음 → wave 1로 간주
 
-**Codex skill discovery path:** `.agents/skills/` (project-level) or `$HOME/.agents/skills/` (global). The path `.codex/skills/` is mentioned in some Codex docs as an alternative; `.agents/skills/` is the canonical path confirmed by official Codex skill docs.
+**독립성 판단 기준:**
+- 같은 wave 내 PLAN.md들이 `files_modified` 목록이 겹치지 않으면 진정한 독립 (추가 검증 가능)
+- `files_modified` 충돌 시 경고 출력 후 순차 처리
 
-**Which skills need adaptation:**
-
-| Skill | Adaptation Needed | Reason |
-|-------|------------------|--------|
-| `sg-retro` | Yes — significant | Uses `AskUserQuestion` for lens multiSelect — not available in Codex |
-| All other commands | Minor — text changes | Commands use slash-command syntax; Codex uses `@skill-name` |
-
-**sg-retro adaptation strategy:** Replace `AskUserQuestion multiSelect` with a text-prompt asking the user to type lens codes (e.g., "Type lens codes separated by spaces: ssc, 4ls, dspm, sail, 5why, analyze"). The logic and artifact collection remain identical — only the input mechanism changes.
-
-**Other commands:** The 13 sg-* commands live in `commands/*.md` (Claude Code slash commands). Codex does not have slash commands — it invokes skills. Each command needs a parallel SKILL.md in `.agents/skills/sg-*/SKILL.md` with the same logic but wrapped as a Skill rather than a Command. This is mechanical — the executable content is identical.
-
-**Prioritization for MVP:** sg-retro is the only skill with a hard Claude Code API dependency (AskUserQuestion). Adapt it first. The 13 commands can be symlinked or soft-adapted in later iterations; their logic works as SKILL.md content since Codex skills use the same SKILL.md → instruction format.
-
----
-
-### TS-04: Codex Plugin Manifest (`.codex-plugin/plugin.json`)
-
-**Structure:** Mirrors `.claude-plugin/plugin.json`. Key differences:
-- Env var references use `${PLUGIN_ROOT}` not `${CLAUDE_PLUGIN_ROOT}` in hooks
-- `hooks` field points to adapted `hooks/hooks-codex.json`
-- `skills` field points to `./skills/` (same directory, different discovery path)
-
-**Hook compatibility for Codex manifest:**
-- `PreToolUse` → compatible, use as-is (rule_runner.py works)
-- `Stop` → compatible, use stop_hook.py
-- `SubagentStop` → NOT in Codex hook docs — must be omitted from Codex hooks.json
-- Plugin hooks default to OFF → document `plugin_hooks = true` requirement
-
-**Recommended approach:** Create a separate `hooks/hooks-codex.json` that omits SubagentStop and uses `${PLUGIN_ROOT}`. Do NOT modify the existing `hooks/hooks.json` (non-invasive principle).
+**신뢰도:** HIGH — 실제 PLAN.md 15개를 분석한 결과, 이 패턴이 일관적으로 사용됨
 
 ---
 
-## Differentiators (Valuable, Not Minimum)
+### TE-02: 병렬 에이전트 실행
 
-Features that make Codex support better than baseline "it works," but omitting them doesn't block Codex users.
+**Claude Code Task tool 활용:**
 
-| Feature | Value | Complexity | Notes |
-|---------|-------|------------|-------|
-| **Codex-specific SKILL.md for all 13 sg-* commands** | Users can discover and invoke any sg-* workflow from Codex's skill browser | Medium | 13 × SKILL.md files; mechanical but tedious |
-| **`agents/openai.yaml` UI metadata** for sg-retro | sg-retro appears in Codex's skill picker with description and invocation hints | Low | Optional field; purely cosmetic |
-| **Codex setup verification skill** (`sg-health` adaptation) | Codex users can run `@sg-health` to verify GSD + Superpowers are installed in their Codex environment | Medium | Needs Codex-path checks (`~/.agents/skills/` instead of `~/.claude/skills/`) |
-| **AGENTS.md global template** (`~/.codex/AGENTS.md`) | Users can install once globally rather than per-project | Low | Document-only; no code change |
+Claude Code는 서브에이전트를 `Task` tool로 생성한다. sg-execute는 이미 Skill을 invoke하므로,
+wave별로 별도 Task를 spawn하거나 각 PLAN.md를 개별 Skill 호출로 분리하는 방식이 현실적이다.
 
----
-
-## Anti-Features (Explicit Non-Goals)
-
-| What NOT to Build | Why | What to Do Instead |
-|-------------------|-----|-------------------|
-| **Full SubagentStop replacement hook for Codex** | SubagentStop is undocumented in Codex. Building a fake equivalent via PostToolUse matching would be fragile and maintenance-heavy. | Omit SubagentStop from Codex hooks.json. The Stop hook already fires at session end and covers the review-complete signal. |
-| **Claude Code command compatibility shim in Codex** | Slash commands (`/sg-execute`) don't exist in Codex. Trying to emulate them via hooks or system prompt tricks will break with any Codex update. | Adapt commands to Skills natively using Codex's `@skill-name` invocation pattern. |
-| **Modifying existing `.claude-plugin/` for Codex** | The non-invasive principle. Changing the Claude Code plugin structure risks breaking existing Claude Code users. | Create new `.codex-plugin/` directory in parallel. |
-| **Automated cross-platform sync** between CLAUDE.md and AGENTS.md | Keeping two instruction files in sync programmatically adds maintenance overhead with no user-visible benefit. | Write AGENTS.md as the canonical file; optionally `@import` it from CLAUDE.md using Claude Code's import syntax. Single source of truth. |
-| **Codex hooks for lessons_ranker.py** | lessons_ranker.py calls `AskUserQuestion` indirectly and uses Claude Code-specific output formatting. Porting it to Codex's hook pipeline requires rewriting logic for a hook system where plugin_hooks are disabled by default. | Include lessons in AGENTS.md as static top lessons display until Codex hooks are stable. |
-| **Plugin marketplace auto-publish** | `.codex-plugin/plugin.json` is sufficient for manual install. Marketplace submission requires OpenAI review and is outside this project's control. | Document manual install; marketplace submission is future work. |
-
----
-
-## Feature Dependencies
-
-The Codex support features depend on each other in this order:
+**실행 모델:**
 
 ```
-TS-01 AGENTS.md (no dependencies)
-    ↓ referenced by
-TS-02 README Codex section (needs AGENTS.md to exist to document)
+Wave 1: [PLAN-01, PLAN-02, PLAN-03] → 각각 독립 에이전트로 동시 실행
+                      ↓ 모두 완료 대기
+Wave 2: [PLAN-04] → 단일 에이전트 실행
+```
+
+**Superpowers:executing-plans와의 관계:**
+- 현재 sg-execute는 모든 PLAN.md를 하나의 blob으로 합쳐 Skill에 넘긴다
+- 병렬화는 wave별로 분리된 blob을 각각 개별 Task/Skill 호출로 넘기는 방식으로 구현
+- Superpowers Skill 자체는 수정하지 않는다 (non-invasive 원칙)
+
+**에이전트당 입력:**
+- 해당 wave의 PLAN.md 1개 (또는 같은 wave 내 묶음)
+- Phase Goal + Success Criteria + REQ-IDs (공통 컨텍스트)
+- "이 태스크는 Wave N의 병렬 배치입니다" 명시
+
+---
+
+### TE-03: 에이전트 수 자동 결정
+
+**결정 기준: 독립 그룹(wave) 수가 아니라 wave 내 PLAN.md 수 기반**
+
+```
+Wave 1에 PLAN.md 3개 → 에이전트 3개 (또는 설정된 max_agents 한도 내)
+Wave 2에 PLAN.md 1개 → 에이전트 1개
+```
+
+**상한선 필요:**
+- 기본 상한: 5개 (설정 오버라이드 가능)
+- `.planning/config.json`의 `super_gsd.max_parallel_agents` 필드로 조정 가능
+- PLAN.md가 1개만 있는 phase → 자동으로 순차 모드
+
+**결정 로직:**
+```
+wave별 plan 수 = 에이전트 수 (max_agents 초과 시 순차 배치)
+wave가 1개뿐이고 plan이 1개 → 기존 sg-execute와 동일 동작
+```
+
+**신뢰도:** MEDIUM — 이 접근 방식은 합리적이지만 Claude Code Task tool의 동시 실행 제한에 대한 공식 문서 확인 필요
+
+---
+
+### TE-04: 실행 결과 통합 + HANDOFF.md 기록
+
+**현재 HANDOFF.md 스키마:**
+```
+| Timestamp | Phase | From | To | Plan Hash |
+```
+
+**병렬 실행 이벤트를 위한 새 레코드 형식:**
+
+Wave별로 행을 추가한다. Plan Hash 컬럼에 wave 정보를 인코딩하는 방식이 가장 단순하다:
+
+```
+| 2026-05-21T12:00:00Z | 14-codex-agents-skills | gsd-plan | superpowers-w1 | abc1234 |
+| 2026-05-21T12:05:00Z | 14-codex-agents-skills | superpowers-w1 | superpowers-w2 | def5678 |
+| 2026-05-21T12:08:00Z | 14-codex-agents-skills | superpowers-w2 | review | - |
+```
+
+**대안: To 컬럼에 wave 태그 추가**
+- `superpowers-w1` → Wave 1 완료
+- `superpowers-w2` → Wave 2 완료
+- 기존 stage enum 확장 (하위 호환성 주의)
+
+**더 단순한 대안: 기존 스키마 유지 + Plan Hash에 wave 정보 인코딩**
+```
+| 2026-05-21T12:00:00Z | 14-codex-agents-skills | gsd-plan | superpowers | abc1234[w1:3/3] |
+```
+
+**권장:** To 컬럼에 `superpowers-parallel-N` 태그 추가. sg-status가 이를 파싱해서
+"N개 wave 중 M번째 완료" 상태를 표시할 수 있다. 기존 `superpowers` stage도 그대로 인식.
+
+---
+
+## Differentiators (있으면 더 좋은 것)
+
+| Feature | 가치 | 복잡도 | 비고 |
+|---------|------|--------|------|
+| **files_modified 충돌 감지** | wave가 같아도 파일 충돌 시 자동 순차 전환 | 중간 | 안전망 |
+| **병렬 실행 시각화** | Wave 진행 상황을 ASCII 프로그레스로 표시 | 낮음 | UX 개선 |
+| **--sequential 폴백 플래그** | 병렬 실행이 실패할 때 순차 재시도 옵션 | 낮음 | 디버깅용 |
+| **config.json max_parallel_agents 설정** | 프로젝트별 병렬도 조정 | 낮음 | 기존 config.json 확장 |
+| **Wave 완료 체크포인트** | Wave 1 완료 후 wave 2 시작 전 사용자 확인 | 낮음 | 안전 모드 |
+
+---
+
+## Anti-Features (만들지 말아야 할 것)
+
+| 만들지 말 것 | 이유 | 대안 |
+|-------------|------|------|
+| **--parallel 플래그** | 자동 감지가 가능한데 플래그를 요구하는 것은 UX 퇴보. 사용자가 wave 구조를 알아야 한다는 뜻이 된다. | wave 필드 존재 시 자동 병렬화. 단일 wave이거나 wave 없으면 기존 동작 |
+| **PLAN.md 포맷 변경** | 기존 PLAN.md들이 wave/depends_on을 이미 가지고 있다. 새 필드를 추가하면 기존 계획들을 전부 수정해야 한다. | 현재 wave/depends_on 필드를 그대로 활용 |
+| **Superpowers Skill 내부 수정** | non-invasive 원칙 위반 | sg-execute 레벨에서 wave별 분리 실행 |
+| **분산 실행 상태 DB** | 과도한 복잡성. Python/JSON DB가 아니라 HANDOFF.md append-only로 충분 | HANDOFF.md에 wave 행 추가 |
+| **실패한 에이전트 자동 재시도** | 재시도 로직은 복잡도를 크게 올리고, Superpowers가 이미 실패 태스크를 처리한다. | 실패 시 명확한 에러 메시지 + 수동 재실행 안내 |
+| **wave 필드 없는 PLAN.md 자동 분석** | LLM이 태스크 독립성을 추론하는 것은 불결정적이고 위험하다. | wave 필드 없으면 순차 처리 (안전 기본값) |
+
+---
+
+## UX 패턴: --parallel 플래그 vs 자동 감지
+
+**결론: 자동 감지가 옳다. 플래그 불필요.**
+
+**근거:**
+1. PLAN.md에 `wave` 필드가 이미 있다 — 이 정보를 버리고 플래그를 요구하는 것은 역행
+2. wave 1 PLAN.md가 1개뿐이면 "병렬화"는 의미 없음 → 자동으로 기존 동작 유지
+3. wave가 여러 개면 항상 병렬화 이득이 있음 → 자동 활성화가 맞음
+4. 플래그를 추가하면 "wave가 있는데 --parallel을 안 붙였다" 버그 패턴이 생긴다
+
+**자동 감지 규칙:**
+```
+phase 내 PLAN.md wave 수 <= 1 → 기존 sg-execute 동작 (단일 Skill 호출)
+phase 내 PLAN.md wave 수 >= 2 → 자동 병렬 모드 활성화
+```
+
+**사용자에게 보여줄 것:**
+```
+[Phase 14] Wave 분석:
+  Wave 1: 3개 태스크 (병렬 실행)
+  Wave 2: 1개 태스크 (Wave 1 완료 후)
+
+Wave 1 에이전트 3개 시작...
+```
+
+---
+
+## 실패 처리: 에이전트 실패 시 나머지 어떻게?
+
+**원칙: fail-fast per wave, 다음 wave 차단**
+
+**Wave 내 에이전트 실패 시나리오:**
+- Wave 1의 에이전트 A가 실패 → Wave 2는 시작하지 않음
+- Wave 1의 다른 에이전트 B, C는 이미 실행 중 → 완료까지 기다림 (중단하지 않음)
+- 실패 후: 에러 메시지 + 어떤 PLAN.md가 실패했는지 명시 + 수동 재실행 안내
+
+**실패 메시지 형식:**
+```
+[Wave 1] 완료: 2/3 성공
+  실패: 14-02-PLAN.md (Superpowers 실행 실패)
+  
+Wave 2 시작 차단됨. 실패한 태스크를 수동으로 확인하세요:
+  /super-gsd:sg-execute 14 --wave 2  (Wave 2만 재실행)
+```
+
+**HANDOFF.md 기록:**
+```
+| 2026-05-21T12:00:00Z | 14-codex | gsd-plan | superpowers-w1-partial | abc1234 |
+```
+
+**신뢰도:** MEDIUM — Claude Code Task tool의 실패 전파 동작은 구현 시 실제 확인 필요
+
+---
+
+## HANDOFF.md: 병렬 실행 이벤트 기록 방식
+
+**권장 스키마 확장:**
+
+기존 5컬럼 스키마를 유지하면서 `To` 컬럼과 `Plan Hash` 컬럼만 확장한다.
+
+| 시나리오 | To 값 | Plan Hash 값 |
+|---------|-------|-------------|
+| Wave 1 시작 | `superpowers` | `abc1234` (기존과 동일) |
+| Wave 1 완료, Wave 2 시작 | `superpowers-w2` | `def5678` |
+| Wave 전체 완료 | `review` | `-` |
+| Wave 1 부분 실패 | `superpowers-w1-partial` | `abc1234` |
+
+**sg-status 파싱 규칙 추가:**
+- `superpowers-w*` prefix를 `superpowers` stage로 표시 매핑 (하위 호환)
+- `*-partial` suffix가 있으면 경고 표시
+
+**대안으로 더 단순한 방식:** Plan Hash에 `[wave:N]` suffix 붙이기
+```
+| 2026-05-21T12:00:00Z | 14-codex | gsd-plan | superpowers | abc1234[w:1/2] |
+```
+
+Plan Hash 컬럼이 이미 자유 형식이라 이 방식이 기존 stage enum을 건드리지 않아 더 안전하다.
+
+**최종 권장:** Plan Hash에 `[w:완료wave/전체wave]` 인코딩. sg-status는 이를 파싱해 진행 상황 표시.
+To 컬럼은 `superpowers` 그대로 유지 → stage enum 변경 없음, 하위 호환 완전 유지.
+
+---
+
+## Feature 의존성 다이어그램
+
+```
+TE-01 PLAN.md wave 분석 (기반)
     ↓
-TS-04 .codex-plugin/plugin.json (needs AGENTS.md path + skills path)
-    ↓ hooks-codex.json references
-TS-03 .agents/skills/ adapted skills (sg-retro AskUserQuestion removal)
+TE-03 에이전트 수 결정 (wave별 plan 수)
+    ↓
+TE-02 병렬 에이전트 실행
+    ↓
+TE-04 결과 통합 + HANDOFF.md 기록
 ```
 
-Build order: TS-01 → TS-03 (sg-retro adaptation) → TS-04 → TS-02.
+---
+
+## MVP 권장 범위
+
+**Phase에 포함:**
+1. TE-01: wave 파싱 + 그룹 분석 (bash 스크립트 확장)
+2. TE-03: 에이전트 수 자동 결정 (wave별 plan 수)
+3. TE-02: 병렬 실행 (Task tool 또는 개별 Skill 호출)
+4. TE-04: HANDOFF.md Plan Hash에 `[w:N/M]` 인코딩
+
+**미룰 것:**
+- files_modified 충돌 감지 (복잡도 대비 실제 발생 빈도 낮음)
+- Wave 완료 체크포인트 (사용자가 원하면 --interactive 플래그로 나중에 추가)
+- config.json max_parallel_agents (기본 5로 충분, 나중에 추가)
 
 ---
 
-## Claude Code vs Codex User Experience Comparison
+## 구현 제약 (Claude Code 플러그인 아키텍처)
 
-| User Action | Claude Code UX | Codex UX | Gap |
-|-------------|---------------|----------|-----|
-| Start workflow | `/sg-start` slash command | `@sg-start` skill invocation | Invocation syntax differs; behavior identical |
-| Run retrospective | `/sg-retro` → multiSelect popup | `@sg-retro` → text prompt for lens codes | Input method differs; same lenses, same output |
-| Workflow guidance | CLAUDE.md auto-loaded | AGENTS.md auto-loaded | File names differ; content equivalent |
-| Hook: auto-advance hint | Stop + SubagentStop hooks fire | Stop hook fires; SubagentStop absent | Codex users lose SubagentStop signal (review-complete hint) |
-| Rule enforcement | PreToolUse → rule_runner.py | PreToolUse → rule_runner.py (if plugin_hooks enabled) | Same, but Codex requires explicit opt-in |
-| Lessons replay | sg-plan/sg-execute auto-display | Same via SKILL.md content | Compatible |
-| Plugin install | Marketplace or manual `.claude-plugin/` | Marketplace or manual `.codex-plugin/` + `.agents/skills/` | Different paths, documented separately |
-| sg-health check | Full check including Claude Code paths | Needs Codex path variant | Differentiator, not table stakes |
+1. **commands/*.md는 Claude Code가 직접 실행하는 지시문** — Python이나 외부 프로세스를 spawn하는 게 아니라 Claude가 읽고 수행
+2. **Task tool 가용 여부** — Claude Code 세션 내에서 Task를 spawn할 수 있는지 확인 필요. 현재 sg-execute는 Skill invoke를 사용
+3. **병렬 Task는 Claude Code의 서브에이전트 기능** — `/super-gsd:sg-execute`가 Claude에게 "여러 개의 서브에이전트를 spawn하라"고 지시하는 형태
+4. **non-invasive 원칙** — superpowers:executing-plans Skill은 수정하지 않음. sg-execute.md에서 wave별 분리 후 각각 Skill 호출
 
-**Net assessment:** A Codex user gets ~85% of the Claude Code experience. The gaps are: (1) SubagentStop-triggered review hint is absent, (2) sg-retro uses text input instead of a checkbox picker, (3) plugin hooks require manual opt-in. These are tolerable for an initial Codex support milestone.
+**신뢰도:** MEDIUM — Task tool의 동시 실행 의미론은 실제 구현에서 확인 필요
 
 ---
 
-## Complexity Estimates
+## 소스
 
-| Feature | Complexity | Reason |
-|---------|-----------|--------|
-| AGENTS.md | Low | Markdown authoring; no code |
-| README Codex section | Low | Documentation only |
-| sg-retro Codex adaptation | Medium | Remove AskUserQuestion, replace with text prompt; test lens selection flow |
-| `.codex-plugin/plugin.json` | Low | Copy-adapt from `.claude-plugin/plugin.json`; rename env var, omit SubagentStop |
-| `hooks/hooks-codex.json` | Low | Copy hooks.json, remove SubagentStop, rename env var |
-| Codex SKILL.md for 13 sg-* commands | Medium-High | 13 files, mechanical but requires wrapping each command as a skill |
-| `agents/openai.yaml` for sg-retro | Low | Optional metadata file |
-
-MVP (TS-01 through TS-04) is entirely achievable in one phase. The 13 Codex skill adaptations (Differentiator) are a separate phase.
-
----
-
-## Sources
-
-- [OpenAI Codex AGENTS.md guide](https://developers.openai.com/codex/guides/agents-md) — HIGH confidence
-- [OpenAI Codex Skills docs](https://developers.openai.com/codex/skills) — HIGH confidence
-- [OpenAI Codex Build plugins](https://developers.openai.com/codex/plugins/build) — HIGH confidence
-- [OpenAI Codex Hooks](https://developers.openai.com/codex/hooks) — HIGH confidence
-- [OpenAI Codex Best practices](https://developers.openai.com/codex/learn/best-practices) — HIGH confidence
-- [OpenAI Codex Customization concepts](https://developers.openai.com/codex/concepts/customization) — HIGH confidence
-- [AGENTS.md vs CLAUDE.md comparison](https://www.deployhq.com/blog/ai-coding-config-files-guide) — MEDIUM confidence
-- [Superpowers in Codex installation guide](https://restato.github.io/blog/installing-codex-superpowers-guide/) — MEDIUM confidence
-- [Codex hooks.json format example](https://github.com/openai/codex-plugin-cc/blob/main/plugins/codex/hooks/hooks.json) — HIGH confidence
+- `/Users/gyuha/workspace/super-gsd/commands/sg-execute.md` — 현재 구현 직접 분석 [HIGH]
+- `/Users/gyuha/workspace/super-gsd/.planning/milestones/v1.0-phases/` — 실제 wave/depends_on 패턴 분석 [HIGH]
+- `/Users/gyuha/workspace/super-gsd/.planning/HANDOFF.md` — 현재 스키마 직접 분석 [HIGH]
+- `/Users/gyuha/workspace/super-gsd/.planning/PROJECT.md` — v1.4 목표 요건 [HIGH]

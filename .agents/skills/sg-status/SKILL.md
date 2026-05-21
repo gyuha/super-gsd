@@ -79,34 +79,34 @@ Self-contained — reads .planning/HANDOFF.md, .planning/STATE.md, .planning/ROA
    fi
    ```
 
-5. **Map stage to next command ($sg-* 달러 문법).**
+5. **Map stage to next command (`/super-gsd:sg-*` 슬래시 명령).**
    ```bash
    case "$STAGE_RAW" in
      init)
        if [ -n "$PHASE_NUM" ]; then
-         NEXT_CMD="\$sg-plan $PHASE_NUM"
+         NEXT_CMD="/super-gsd:sg-plan $PHASE_NUM"
        else
-         NEXT_CMD="\$sg-plan"
+         NEXT_CMD="/super-gsd:sg-plan"
        fi
        ;;
-     gsd-plan)    NEXT_CMD="\$sg-execute" ;;
-     superpowers) NEXT_CMD="\$sg-review" ;;
-     execute)     NEXT_CMD="\$sg-review" ;;
-     review)      NEXT_CMD="\$sg-retro" ;;
-     hookify)     NEXT_CMD="\$sg-ship" ;;
+     gsd-plan)    NEXT_CMD="/super-gsd:sg-execute" ;;
+     superpowers) NEXT_CMD="/super-gsd:sg-review" ;;
+     execute)     NEXT_CMD="/super-gsd:sg-review" ;;
+     review)      NEXT_CMD="/super-gsd:sg-learn" ;;
+     hookify)     NEXT_CMD="/super-gsd:sg-ship" ;;
      ship)
        if [ "${NEXT_PHASE_EXISTS:-0}" = "1" ]; then
-         NEXT_CMD="\$sg-plan $NEXT_PHASE"
+         NEXT_CMD="/super-gsd:sg-plan $NEXT_PHASE"
        else
-         NEXT_CMD="\$sg-complete"
+         NEXT_CMD="/super-gsd:sg-complete"
        fi
        ;;
-     complete) NEXT_CMD="\$sg-start" ;;
+     complete) NEXT_CMD="/super-gsd:sg-plan" ;;
      *) NEXT_CMD="(unknown stage: $STAGE_RAW)" ;;
    esac
    ```
 
-   주의: `execute` stage (Codex 직접 실행 모드)는 `$sg-review`로 라우팅한다.
+   주의: `execute` stage (Codex 직접 실행 모드)는 `/super-gsd:sg-review`로 라우팅한다.
 
 6. **Print output.**
 
@@ -123,8 +123,8 @@ Self-contained — reads .planning/HANDOFF.md, .planning/STATE.md, .planning/ROA
 <success_criteria>
 1. 출력은 정확히 5개 라인: 3개 헤더 라인 + 1개 빈 줄 + 1개 Next 라인.
 2. HANDOFF.md에 데이터 행이 없으면 Stage=init, Last handoff=(none).
-3. `$sg-*` 달러 문법이 NEXT_CMD 매핑에 사용된다.
-4. `execute` stage가 `$sg-review`로 라우팅된다.
+3. `/super-gsd:sg-*` 슬래시 명령이 NEXT_CMD 매핑에 사용된다.
+4. `execute` stage가 `/super-gsd:sg-review`로 라우팅된다.
 5. STATE.md Phase parsing block이 보존되어 있다 (grep-sed-awk 파이프라인).
 6. GSD 설치 여부에 관계없이 완전 독립 실행 가능하다.
 </success_criteria>

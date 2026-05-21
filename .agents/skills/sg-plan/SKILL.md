@@ -53,7 +53,7 @@ Self-contained. Reads .planning/STATE.md for phase resolution when no argument p
                  | grep -oE '^[0-9]+')
    fi
    if [ -z "$PHASE_NUM" ]; then
-     echo "Could not resolve current phase. Pass phase number explicitly: \$sg-plan <phase>"
+     echo "Could not resolve current phase. Pass phase number explicitly: /super-gsd:sg-plan <phase>"
      exit 1
    fi
    ```
@@ -118,7 +118,7 @@ Self-contained. Reads .planning/STATE.md for phase resolution when no argument p
       - <objective> block (goal + output artifacts)
       - <tasks> block (each task: <name>, <files>, <action>, <verify>, <done>)
       - <success_criteria> (maps to ROADMAP.md success criteria)
-   5. Confirm the plan with the user before proceeding to $sg-execute
+   5. Confirm the plan with the user before proceeding to /super-gsd:sg-execute
    ```
 
    Proceed to execute the above steps manually for phase `<PHASE_NUM>`.

@@ -11,7 +11,7 @@ Perform a code review directly by reading changed files, checking against plan r
 <constraints>
 ## Platform Constraints (Codex / Gemini CLI / Antigravity CLI)
 - Superpowers 연동 불가: superpowers:requesting-code-review 스킬을 사용할 수 없습니다. Prose 리뷰 모드로 실행됩니다.
-- SubagentStop 미지원: 완료 후 $sg-retro를 수동 실행하세요.
+- SubagentStop 미지원: 완료 후 /super-gsd:sg-learn을 수동 실행하세요.
 - AskUserQuestion 미지원
 </constraints>
 
@@ -30,7 +30,7 @@ Self-contained. Reads git history to derive BASE_SHA and HEAD_SHA, reads changed
    if [ "$BASE_SHA" = "$HEAD_SHA" ]; then
      echo "Error: BASE_SHA == HEAD_SHA — no commits to review."
      echo "Options:"
-     echo "  1. Pass an explicit base: \$sg-review <base-sha>"
+     echo "  1. Pass an explicit base: /super-gsd:sg-review <base-sha>"
      echo "  2. Run from a feature branch after committing your changes."
      exit 1
    fi
@@ -131,7 +131,7 @@ Self-contained. Reads git history to derive BASE_SHA and HEAD_SHA, reads changed
    e. 완료 후 출력:
       ```
       리뷰 완료. 결과: <VERDICT>
-      다음 단계: $sg-retro
+      다음 단계: /super-gsd:sg-learn
       ```
 </process>
 
@@ -140,6 +140,6 @@ Self-contained. Reads git history to derive BASE_SHA and HEAD_SHA, reads changed
 2. HANDOFF.md에 `review` 행이 기록된다.
 3. 변경 파일을 Read 도구로 직접 읽어 리뷰를 수행한다.
 4. 리뷰 결과가 SUMMARY.md에 기록된다.
-5. 완료 후 $sg-retro 수동 실행을 안내한다.
+5. 완료 후 /super-gsd:sg-learn 수동 실행을 안내한다.
 6. Platform Constraints 블록에 Superpowers 연동 불가가 명시된다.
 </success_criteria>

@@ -11,7 +11,7 @@ Package the current phase's PLAN.md, extract goal and success criteria, then dir
 <constraints>
 ## Platform Constraints (Codex / Gemini CLI / Antigravity CLI)
 - Superpowers 연동 불가: superpowers:executing-plans 스킬을 사용할 수 없습니다. 직접 구현 모드로 실행됩니다.
-- SubagentStop 미지원: 단계 종료 시 자동 트리거 없음. 완료 후 $sg-review를 수동 실행하세요.
+- SubagentStop 미지원: 단계 종료 시 자동 트리거 없음. 완료 후 /super-gsd:sg-review를 수동 실행하세요.
 - AskUserQuestion 미지원
 </constraints>
 
@@ -50,7 +50,7 @@ Reads .planning/STATE.md, .planning/ROADMAP.md, .planning/REQUIREMENTS.md, .plan
                  | grep -oE '^[0-9]+')
    fi
    if [ -z "$PHASE_NUM" ]; then
-     echo "Could not resolve current phase. Pass phase number explicitly: \$sg-execute <phase>"
+     echo "Could not resolve current phase. Pass phase number explicitly: /super-gsd:sg-execute <phase>"
      exit 1
    fi
    ```
@@ -63,7 +63,7 @@ Reads .planning/STATE.md, .planning/ROADMAP.md, .planning/REQUIREMENTS.md, .plan
      PHASE_DIR=$(ls -d .planning/phases/${PHASE_NUM}-* 2>/dev/null | head -1)
    fi
    if [ -z "$PHASE_DIR" ]; then
-     echo "No phase directory matches '${PHASE_NUM}' under .planning/phases/. Run \$sg-plan first."
+     echo "No phase directory matches '${PHASE_NUM}' under .planning/phases/. Run /super-gsd:sg-plan first."
      exit 1
    fi
    ```
@@ -150,7 +150,7 @@ Reads .planning/STATE.md, .planning/ROADMAP.md, .planning/REQUIREMENTS.md, .plan
 
    모든 task 완료 후:
    ```
-   Phase <PHASE_NUM> 실행 완료. 다음 단계: $sg-review
+   Phase <PHASE_NUM> 실행 완료. 다음 단계: /super-gsd:sg-review
    ```
 </process>
 
@@ -159,5 +159,5 @@ Reads .planning/STATE.md, .planning/ROADMAP.md, .planning/REQUIREMENTS.md, .plan
 2. HANDOFF.md에 `execute` 행이 기록된다.
 3. 동일 plan hash로 재실행 시 idempotency 메시지를 출력하고 종료한다.
 4. Platform Constraints 블록에 Superpowers 연동 불가가 명시된다.
-5. 모든 task 완료 후 $sg-review 수동 실행을 안내한다.
+5. 모든 task 완료 후 /super-gsd:sg-review 수동 실행을 안내한다.
 </success_criteria>

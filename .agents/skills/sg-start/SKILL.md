@@ -119,24 +119,24 @@ Reads .planning/STATE.md, .planning/HANDOFF.md, .planning/ROADMAP.md. Writes not
    case "$STAGE_RAW" in
      init)
        if [ -n "$PHASE_NUM" ]; then
-         NEXT_CMD="\$sg-plan $PHASE_NUM"
+         NEXT_CMD="/super-gsd:sg-plan $PHASE_NUM"
        else
-         NEXT_CMD="\$sg-plan"
+         NEXT_CMD="/super-gsd:sg-plan"
        fi
        ;;
-     gsd-plan)    NEXT_CMD="\$sg-execute" ;;
-     superpowers) NEXT_CMD="\$sg-review" ;;
-     execute)     NEXT_CMD="\$sg-review" ;;
-     review)      NEXT_CMD="\$sg-retro" ;;
-     hookify)     NEXT_CMD="\$sg-ship" ;;
+     gsd-plan)    NEXT_CMD="/super-gsd:sg-execute" ;;
+     superpowers) NEXT_CMD="/super-gsd:sg-review" ;;
+     execute)     NEXT_CMD="/super-gsd:sg-review" ;;
+     review)      NEXT_CMD="/super-gsd:sg-learn" ;;
+     hookify)     NEXT_CMD="/super-gsd:sg-ship" ;;
      ship)
        if [ "${NEXT_PHASE_EXISTS:-0}" = "1" ]; then
-         NEXT_CMD="\$sg-plan $NEXT_PHASE"
+         NEXT_CMD="/super-gsd:sg-plan $NEXT_PHASE"
        else
-         NEXT_CMD="\$sg-complete"
+         NEXT_CMD="/super-gsd:sg-complete"
        fi
        ;;
-     complete) NEXT_CMD="\$sg-start" ;;
+     complete) NEXT_CMD="/super-gsd:sg-plan" ;;
      *) NEXT_CMD="(unknown stage: $STAGE_RAW)" ;;
    esac
    ```
@@ -199,7 +199,7 @@ Reads .planning/STATE.md, .planning/HANDOFF.md, .planning/ROADMAP.md. Writes not
    2. .planning/STATE.md 생성 (Phase: 1, milestone: v1.0)
    3. .planning/ROADMAP.md 생성 (Phase 1 섹션 추가)
    4. .planning/REQUIREMENTS.md 생성 (요구사항 목록)
-   5. $sg-plan 1을 실행하여 첫 phase 계획을 시작하세요
+   5. /super-gsd:sg-plan 1을 실행하여 첫 phase 계획을 시작하세요
    ```
 </process>
 
@@ -209,5 +209,5 @@ Reads .planning/STATE.md, .planning/HANDOFF.md, .planning/ROADMAP.md. Writes not
 3. Resume → emit-only 종료, Start new milestone → gsd-new-milestone Skill, Cancel → `Cancelled.` emit.
 4. HANDOFF.md는 read-only 접근만.
 5. STATE.md 미감지 시 GSD 위임 또는 prose 폴백.
-6. NEXT_CMD 매핑에 `$sg-*` 달러 문법 사용.
+6. NEXT_CMD 매핑에 `/super-gsd:sg-*` 슬래시 명령 사용.
 </success_criteria>

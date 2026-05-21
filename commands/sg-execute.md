@@ -5,7 +5,7 @@ argument-hint: "[phase] - optional. Defaults to STATE.md current phase"
 ---
 
 <objective>
-Package the current phase's PLAN.md bodies, REQUIREMENTS.md REQ-ID mapping, and ROADMAP.md success criteria into a single Superpowers-ready prompt and auto-invoke the `superpowers:executing-plans` Skill with it. Append a timestamped row to `.planning/HANDOFF.md` describing the handoff. The append is skipped when `(phase, to=superpowers)` was already handed off and the plan hash is unchanged, so re-running on an unchanged plan is idempotent.
+Package the current phase's PLAN.md bodies, REQUIREMENTS.md REQ-ID mapping, and ROADMAP.md success criteria into a single Superpowers-ready prompt and auto-invoke the `superpowers:executing-plans` Skill with it. When PLAN.md files contain `wave:` fields forming 2+ independent groups, routes to `sg-parallel-execute` instead and records `To: parallel` in HANDOFF.md. Append a timestamped row to `.planning/HANDOFF.md` describing the handoff. The append is skipped when `(phase, to=superpowers or parallel)` was already handed off and the plan hash is unchanged, so re-running on an unchanged plan is idempotent.
 </objective>
 
 <execution_context>
@@ -95,11 +95,11 @@ This command is self-contained — no external workflow files imported. Reads .p
    fi
    ```
 
-7. **Idempotency check.** Inspect `.planning/HANDOFF.md` for the latest row whose `Phase` cell matches `$PHASE_NUM` and whose `To` cell equals `superpowers`. Extract the recorded Plan Hash and compare it to `$PLAN_HASH`:
+7. **Idempotency check.** Inspect `.planning/HANDOFF.md` for the latest row whose `Phase` cell matches `$PHASE_NUM` and whose `To` cell equals `superpowers` or `parallel`. Extract the recorded Plan Hash and compare it to `$PLAN_HASH`:
    ```bash
-   EXISTING_HASH=$(grep -E "^\| [^|]+ \| (${PHASE_PAD}|${PHASE_NUM})-[^|]* \| [^|]+ \|[[:space:]]*superpowers[[:space:]]*\|" .planning/HANDOFF.md | tail -1 | awk -F'|' '{gsub(/ /,"",$6); print $6}')
+   EXISTING_HASH=$(grep -E "^\| [^|]+ \| (${PHASE_PAD}|${PHASE_NUM})-[^|]* \| [^|]+ \|[[:space:]]*(superpowers|parallel)[[:space:]]*\|" .planning/HANDOFF.md | tail -1 | awk -F'|' '{gsub(/ /,"",$6); print $6}')
    if [ -n "$EXISTING_HASH" ] && [ "$EXISTING_HASH" = "$PLAN_HASH" ]; then
-     echo "Already handed off Phase $PHASE_NUM to superpowers (plan hash matches: $PLAN_HASH). Skipping append. Use /super-gsd:sg-status to inspect, or modify a PLAN.md to re-handoff."
+     echo "Already handed off Phase $PHASE_NUM to superpowers or parallel (plan hash matches: $PLAN_HASH). Skipping append. Use /super-gsd:sg-status to inspect, or modify a PLAN.md to re-handoff."
      exit 0
    fi
    ```

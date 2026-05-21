@@ -24,10 +24,10 @@ See: .planning/PROJECT.md (updated 2026-05-21)
 
 ## Current Position
 
-Phase: 17 (Not started)
-Plan: —
-Status: Roadmap created, ready for Phase 17 planning
-Last activity: 2026-05-21 — v1.4 roadmap created (3 phases: 17-19)
+Phase: 17 (Planning complete)
+Plan: 17-01-PLAN.md
+Status: Plan created, ready for execution
+Last activity: 2026-05-21 — Phase 17 plan created (2 tasks: Step 8.5 + Step 9 routing)
 
 ## Performance Metrics
 

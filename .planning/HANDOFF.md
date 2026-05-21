@@ -73,3 +73,4 @@
 | 2026-05-21T11:51:14Z | 16-readme-multi-platform | superpowers | review | - |
 | 2026-05-21T11:53:44Z | 16-readme-multi-platform | review | hookify | - |
 | 2026-05-21T11:57:04Z | 16-readme-multi-platform | init | ship | - |
+| 2026-05-21T13:45:37Z | 17-plan-md-dependency-analysis | init | gsd-plan | - |

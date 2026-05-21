@@ -76,7 +76,9 @@
   2. files_modified 교집합이 있는 plan들은 같은 그룹으로 병합되어 파일 충돌 경로가 원천 차단된다
   3. 독립 그룹이 2개 미만이면 기존 `superpowers:executing-plans` 경로가 그대로 실행된다
   4. wave 필드가 없는 PLAN.md는 분석을 건너뛰고 기존 동작을 완전히 보존한다
-**Plans**: TBD
+**Plans**: 1 plan
+Plans:
+- [ ] 17-01-PLAN.md — sg-execute.md Step 8.5 (의존성 분석) + Step 9 라우팅 분기 추가
 
 ### Phase 18: sg-parallel-execute 스킬 + 라우팅
 **Goal**: sg-execute가 PARALLEL_GROUPS를 감지하면 sg-parallel-execute 스킬로 라우팅되어 Task()로 병렬 실행된다
@@ -112,6 +114,6 @@
 | 14. Codex 진입점 + .agents/skills/ | v1.3 | 0/TBD | Not started | - |
 | 15. 플랫폼별 훅 설정 + Python 픽스 | v1.3 | 0/TBD | Not started | - |
 | 16. README Multi-Platform 섹션 | v1.3 | 0/TBD | Not started | - |
-| 17. PLAN.md 의존성 분석 | v1.4 | 0/TBD | Not started | - |
+| 17. PLAN.md 의존성 분석 | v1.4 | 0/1 | Not started | - |
 | 18. sg-parallel-execute 스킬 + 라우팅 | v1.4 | 0/TBD | Not started | - |
 | 19. 결과 통합 + 호환성 회귀 테스트 | v1.4 | 0/TBD | Not started | - |

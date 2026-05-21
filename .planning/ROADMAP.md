@@ -36,70 +36,97 @@
 ## Phase Details
 
 ### Phase 14: Codex 진입점 + .agents/skills/
+
 **Goal**: Codex, Gemini CLI, Antigravity CLI 사용자가 워크플로우를 이해하고 핵심 스킬을 실행할 수 있다
 **Depends on**: Phase 13 (v1.3 신규 시작)
 **Requirements**: CODEX-01, CODEX-02, CODEX-03
 **Success Criteria** (what must be TRUE):
+
   1. Codex 세션 시작 시 AGENTS.md가 자동 주입되고, `/sg-*` 슬래시 명령 대신 `$sg-*` 문법으로 워크플로우 단계가 안내된다
   2. AGENTS.md에 SubagentStop 미지원 사실이 명시되어 있고, sg-retro를 수동으로 호출해야 함을 명확히 안내한다
   3. `.agents/skills/sg-retro/SKILL.md`가 AskUserQuestion 없이 실행되고 회고 결과를 .planning/lessons/에 저장한다
   4. `.agents/skills/sg-{start,plan,execute,review,status}/SKILL.md` 5개가 각각 platform-agnostic 지침을 제공하고 Superpowers 연동 불가를 명시한다
+
 **Plans**: TBD
 
 ### Phase 15: 플랫폼별 훅 설정 + Python 픽스
+
 **Goal**: Codex와 Gemini/Antigravity CLI 환경에서 Stop 훅과 PreToolUse/BeforeTool 훅이 동작하고 Python 훅이 CLAUDE_PLUGIN_ROOT 없이도 실행된다
 **Depends on**: Phase 14
 **Requirements**: CODEX-04, MULTI-01
 **Success Criteria** (what must be TRUE):
+
   1. `.codex/hooks.json`이 존재하고 Stop + PreToolUse 훅을 포함하며 SubagentStop은 포함하지 않는다
   2. `.gemini/settings.json`이 존재하고 SessionEnd + BeforeTool 훅을 포함한다
   3. `hooks/stop_hook.py`와 `hooks/rule_runner.py`가 `CLAUDE_PLUGIN_ROOT` 환경변수 없이 Codex/Gemini 환경에서 실행된다
   4. `hooks/rule_runner.py`가 BeforeTool 이벤트 이름을 인식하고 PreToolUse와 동일하게 처리한다
+
 **Plans**: TBD
 
 ### Phase 16: README Multi-Platform 섹션
+
 **Goal**: README를 보는 사용자가 각 플랫폼에서 super-gsd를 설치하고 기능 제한을 정확히 파악할 수 있다
 **Depends on**: Phase 15
 **Requirements**: MULTI-02
 **Success Criteria** (what must be TRUE):
+
   1. README에 Codex, Gemini CLI, Antigravity CLI별 설치 절차가 각각 명시되어 있다
   2. 기능 델타 테이블(동작 가능 / 제한 있음 / 불가 3분류)이 플랫폼별로 정직하게 기술되어 있다
   3. SubagentStop 미지원, Superpowers 연동 불가 등 핵심 제약이 표에 명시되어 있다
+
 **Plans**: TBD
 
 ### Phase 17: PLAN.md 의존성 분석
+
 **Goal**: sg-execute가 PLAN.md의 wave/depends_on/files_modified 구조를 파싱하여 병렬 실행 가능 여부와 그룹을 자동 결정한다
 **Depends on**: Phase 16 (v1.4 신규 시작)
 **Requirements**: TE-01a, TE-01b, TE-01c
 **Success Criteria** (what must be TRUE):
+
   1. wave/depends_on/files_modified 필드가 있는 PLAN.md에서 독립 그룹(PARALLEL_GROUPS)이 올바르게 계산된다
   2. files_modified 교집합이 있는 plan들은 같은 그룹으로 병합되어 파일 충돌 경로가 원천 차단된다
   3. 독립 그룹이 2개 미만이면 기존 `superpowers:executing-plans` 경로가 그대로 실행된다
   4. wave 필드가 없는 PLAN.md는 분석을 건너뛰고 기존 동작을 완전히 보존한다
+
 **Plans**: 1 plan
 Plans:
+
 - [ ] 17-01-PLAN.md — sg-execute.md Step 8.5 (의존성 분석) + Step 9 라우팅 분기 추가
 
 ### Phase 18: sg-parallel-execute 스킬 + 라우팅
+
 **Goal**: sg-execute가 PARALLEL_GROUPS를 감지하면 sg-parallel-execute 스킬로 라우팅되어 Task()로 병렬 실행된다
 **Depends on**: Phase 17
 **Requirements**: TE-02a, TE-02b, TE-03a
 **Success Criteria** (what must be TRUE):
+
   1. `skills/sg-parallel-execute/SKILL.md`가 존재하고 PARALLEL_GROUPS를 입력받아 각 그룹을 Task()로 동시 실행한다
   2. 병렬 에이전트 내부에서 `superpowers:executing-plans`를 호출하지 않는다 (bare Task() 직접 구현)
   3. 에이전트 수가 wave별 독립 plan 수 기반으로 자동 결정되고 상한 3개가 적용된다
   4. sg-execute.md Step 9에 병렬/순차 분기 라우팅이 추가되어 PARALLEL_GROUPS 유무에 따라 경로가 선택된다
-**Plans**: TBD
+
+**Plans**: 2 plans
+Plans:
+**Wave 1**
+
+- [ ] 18-01-PLAN.md — sg-parallel-execute SKILL.md 신규 생성 (TE-02a, TE-02b, TE-03a)
+
+**Wave 2** *(blocked on Wave 1 completion)*
+
+- [ ] 18-02-PLAN.md — sg-execute.md Step 9 TODO 활성화 (Skill() 라우팅 삽입)
 
 ### Phase 19: 결과 통합 + 호환성 회귀 테스트
+
 **Goal**: 오케스트레이터가 모든 에이전트 완료 후 단독으로 HANDOFF.md를 기록하고, wave 없는 기존 경로가 완전히 보존된다
 **Depends on**: Phase 18
 **Requirements**: TE-04a, TE-04b, TE-05a, TE-05b
 **Success Criteria** (what must be TRUE):
+
   1. 병렬 실행 완료 후 HANDOFF.md 기록은 오케스트레이터만 수행하고 에이전트는 직접 기록하지 않는다
   2. wave가 1개(또는 없음)인 PLAN.md는 기존 `superpowers:executing-plans` 경로를 변경 없이 실행한다
   3. wave 정보가 없는 PLAN.md로 sg-execute를 실행했을 때 v1.3 이전과 동일한 동작이 보장된다
   4. sg-execute의 idempotency 검사, HANDOFF.md 기록, lessons 주입 로직이 변경되지 않았다
+
 **Plans**: TBD
 
 ## Progress

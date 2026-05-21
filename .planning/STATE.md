@@ -24,9 +24,9 @@ See: .planning/PROJECT.md (updated 2026-05-21)
 
 ## Current Position
 
-Phase: 17 (Planning complete)
+Phase: 17 (Shipped)
 Plan: 17-01-PLAN.md
-Status: Plan created, ready for execution
+Status: Phase 17 shipped — pushed to main
 Last activity: 2026-05-21 — Phase 17 plan created (2 tasks: Step 8.5 + Step 9 routing)
 
 ## Performance Metrics

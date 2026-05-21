@@ -144,7 +144,10 @@ Plans:
   3. brainstorming 완료 후 기존 gsd-discuss-phase → gsd-plan-phase 흐름이 정상 실행된다
   4. 사용자가 "UI 없음"을 선택하면 AskUserQuestion 없이 기존 흐름을 그대로 진행한다
 
-**Plans**: TBD
+**Plans**: 1 plan
+Plans:
+
+- [ ] 20-01-PLAN.md — commands/sg-plan.md Step 1.5 삽입 (Visual Companion 분기 + success_criteria 업데이트)
 
 ### Phase 21: sg-ui-plan 명령 + 등록 + 문서화
 
@@ -176,5 +179,5 @@ Plans:
 | 17. PLAN.md 의존성 분석 | v1.4 | 0/1 | Not started | - |
 | 18. sg-parallel-execute 스킬 + 라우팅 | v1.4 | 0/TBD | Not started | - |
 | 19. 결과 통합 + 호환성 회귀 테스트 | v1.4 | 0/TBD | Not started | - |
-| 20. sg-plan Visual Companion 통합 | v1.5 | 0/TBD | Not started | - |
+| 20. sg-plan Visual Companion 통합 | v1.5 | 0/1 | Not started | - |
 | 21. sg-ui-plan 명령 + 등록 + 문서화 | v1.5 | 0/TBD | Not started | - |

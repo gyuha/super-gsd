@@ -84,3 +84,4 @@
 | 2026-05-21T14:29:34Z | 17-plan-md-dependency-analysis | review | hookify | - |
 | 2026-05-21T14:32:09Z | 18-sg-parallel-execute | init | ship | - |
 | 2026-05-21T14:38:21Z | 19-result-integration-regression | init | gsd-plan | - |
+| 2026-05-21T14:43:57Z | 19-result-integration-regression | gsd-plan | superpowers | 992a8d7 |

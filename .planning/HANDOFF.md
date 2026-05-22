@@ -99,3 +99,5 @@
 | 2026-05-22T10:25:39Z | 22-skills | review | sg-retro | - |
 | 2026-05-22T11:10:42Z | 23 | review | gsd-plan | - |
 | 2026-05-22T11:37:06Z | 23-plugin-commands | review | superpowers | 04f8c4c |
+| 2026-05-22T12:09:58Z | 23-plugin-commands | superpowers | review | - |
+| 2026-05-22T13:47:13Z | 21 | review | gsd-plan | - |

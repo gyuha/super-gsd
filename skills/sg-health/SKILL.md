@@ -12,7 +12,7 @@ Self-contained — reads ~/.claude/*, ${CLAUDE_PLUGIN_ROOT}/hooks/hooks.json, .p
 </execution_context>
 
 <process>
-아래 7개 항목을 순서대로 점검한다. FAIL과 WARN 카운터를 누적하고 마지막에 요약 줄을 출력한다. 파일 쓰기 연산자(>, >>, tee, sed -i)는 일절 사용하지 않는다.
+아래 8개 항목을 순서대로 점검한다. FAIL과 WARN 카운터를 누적하고 마지막에 요약 줄을 출력한다. 파일 쓰기 연산자(>, >>, tee, sed -i)는 일절 사용하지 않는다.
 
 1. **GSD 설치**
 
@@ -101,7 +101,7 @@ Self-contained — reads ~/.claude/*, ${CLAUDE_PLUGIN_ROOT}/hooks/hooks.json, .p
      - 결과 >= 2 → `STATE.md ......... [OK]`
      - 결과 < 2 → `STATE.md ......... [FAIL] frontmatter 파싱 불가 (--- 구분자 없음)`, FAIL++
 
-8. **요약 출력**
+9. **요약 출력**
 
    빈 줄을 출력한 뒤:
    - FAIL == 0 && WARN == 0 → `모든 항목 정상입니다.`
@@ -109,7 +109,7 @@ Self-contained — reads ~/.claude/*, ${CLAUDE_PLUGIN_ROOT}/hooks/hooks.json, .p
 </process>
 
 <success_criteria>
-1. 7개 진단 항목(GSD, Superpowers, Hookify, Stop hook, SubagentStop hook, HANDOFF.md, STATE.md)이 모두 출력된다.
+1. 8개 진단 항목(GSD, Superpowers, Hookify, Hook scripts, Stop hook, SubagentStop hook, HANDOFF.md, STATE.md)이 모두 출력된다.
 2. 각 항목은 D-05 형식(`GSD .............. [OK]` 등 점 패딩 + `[OK]`/`[WARN]`/`[FAIL]`/`[OPTIONAL]`)으로 출력된다.
 3. 마지막에 빈 줄 + 요약 줄이 출력된다.
 4. 파일을 생성하거나 수정하지 않는다 (HEALTH-05).

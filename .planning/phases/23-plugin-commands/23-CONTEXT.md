@@ -1,8 +1,8 @@
 # Phase 23: Plugin 연결 + commands/ 제거 + 문서 - Context
 
-**Gathered:** 2026-05-22
+**Gathered:** 2026-05-23
 **Status:** Ready for planning
-**Source:** discuss-phase + inline decisions
+**Source:** discuss-phase auto-mode update (2026-05-23) — all decisions verified against codebase
 
 <domain>
 ## Phase Boundary
@@ -86,15 +86,34 @@ plugin.json의 "commands" 배열을 제거하고 skills/ 경로 참조만 유지
 
 </specifics>
 
+<code_context>
+## Existing Code Insights
+
+### 현재 구현 상태 (2026-05-23 검증)
+- `.claude-plugin/plugin.json`: `"commands"` 키 없음, `"skills": "./skills/"` 만 존재 — D-01 이미 구현됨
+- `commands/` 디렉토리: 존재하지 않음 — D-02 이미 구현됨
+- `CLAUDE.md` Architecture 섹션: "두 개의 레이어", "1. Skills 레이어 (`skills/sg-*/SKILL.md`)" — D-03 이미 구현됨
+- `README.md` Phase 3 설명: "sg-retro cycle" 표현 사용 — D-04 이미 구현됨
+- `README.ko.md` Phase 3 설명: "sg-retro 사이클" 표현 사용 — D-05 이미 구현됨
+
+### 발견된 스태일 참조 (Deferred)
+- `skills/sg-start/SKILL.md` 18, 61, 108행: `commands/sg-status.md` 참조가 3곳 남아 있음
+  - 기능 영향 없음 (주석성 drift 가이드 텍스트)
+  - 올바른 참조: `skills/sg-status/SKILL.md`
+  - Phase 23 범위 외 — 별도 quick task 또는 다음 phase에서 처리
+
+</code_context>
+
 <deferred>
 ## Deferred Ideas
 
 - v1.3 ~ v1.5 마일스톤 (Multi-Platform, Team Agent, Visual Companion) — 이 phase 범위 외
 - sg-parallel-execute, sg-retro를 plugin.json에 명시적으로 등록하는 방안 — Phase 23 이후 검토
+- `skills/sg-start/SKILL.md`의 `commands/sg-status.md` 스태일 참조 3건 수정 → `skills/sg-status/SKILL.md`로 교체 — 기능 무관, 향후 quick task 처리
 
 </deferred>
 
 ---
 
 *Phase: 23-plugin-commands*
-*Context gathered: 2026-05-22 (inline decisions)*
+*Context gathered: 2026-05-23 (auto-mode update — decisions verified against codebase)*

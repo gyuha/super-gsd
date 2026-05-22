@@ -51,7 +51,8 @@ Self-contained. Reads .planning/STATE.md for phase resolution when no argument p
 
 1.5. **Visual Companion 판단 (D-01~D-06).** Phase goal에 UI 관련 키워드가 있을 때만 실행한다:
    ```bash
-   PHASE_SECTION=$(gsd-sdk query roadmap.get-phase "$PHASE_NUM" --pick section 2>/dev/null)
+   PHASE_SECTION_RAW=$(gsd-sdk query roadmap.get-phase "$PHASE_NUM" --pick section 2>/dev/null)
+   PHASE_SECTION=$(echo "$PHASE_SECTION_RAW" | python3 -c 'import json,sys; v=sys.stdin.read().strip(); print(json.loads(v))' 2>/dev/null || echo "$PHASE_SECTION_RAW")
    UI_DETECTED=""
    if [ -n "$PHASE_SECTION" ] && echo "$PHASE_SECTION" | grep -iE "UI|화면|design|Visual|frontend|interface|component" > /dev/null 2>&1; then
      UI_DETECTED="1"

@@ -57,6 +57,41 @@ Self-contained. Reads .planning/STATE.md for phase resolution when no argument p
    fi
    ```
 
+1.5. **Visual Companion 판단.** Phase goal에 UI 관련 키워드가 있을 때만 실행한다:
+   ```bash
+   PHASE_SECTION_RAW=$(gsd-sdk query roadmap.get-phase "$PHASE_NUM" --pick section 2>/dev/null)
+   PHASE_SECTION=$(echo "$PHASE_SECTION_RAW" | python3 -c 'import json,sys; v=sys.stdin.read().strip(); print(json.loads(v))' 2>/dev/null || echo "$PHASE_SECTION_RAW")
+   UI_DETECTED=""
+   if [ -n "$PHASE_SECTION" ] && echo "$PHASE_SECTION" | grep -iE "UI|화면|design|Visual|frontend|interface|component" > /dev/null 2>&1; then
+     UI_DETECTED="1"
+   fi
+   ```
+   **UI 키워드가 없거나 PHASE_SECTION이 비어 있으면** 이 단계를 조용히 건너뛰고 Step 2로 이동한다.
+
+   **UI 키워드가 감지되면** 아래 질문을 출력하고 사용자 응답을 기다린다 (AskUserQuestion 미지원 플랫폼 폴백):
+   ```
+   [sg-plan] UI 관련 phase가 감지됩니다. Visual Companion 설계를 진행하겠습니까?
+
+   1. Visual Companion 포함 — superpowers:brainstorming을 먼저 실행합니다.
+   2. UI 없음 — 기존 흐름을 진행합니다.
+
+   답변을 입력하세요 (1 또는 2):
+   ```
+
+   사용자가 **"1" 또는 "Visual Companion 포함"** 을 선택하면 brainstorming Agent를 실행하고 완료를 기다린다.
+   **Before calling Agent, replace `<PHASE_NUM>` and `<PHASE_SECTION>` with actual resolved values:**
+   ```
+   Agent(
+     description="superpowers:brainstorming for Phase <PHASE_NUM> UI design",
+     prompt="Do NOT invoke writing-plans Skill after brainstorming completes. Your task is to run the superpowers brainstorming skill for Phase <PHASE_NUM> UI design. The project root is the current working directory. Phase context:\n\n<PHASE_SECTION>\n\nInvoke Skill(skill='superpowers:brainstorming', args='Phase <PHASE_NUM> UI 설계를 진행합니다. 위 컨텍스트를 참고하십시오. 중요: brainstorming 완료 후 writing-plans Skill을 호출하지 마십시오. brainstorming 대화만 진행하고 종료하십시오.') and follow its instructions to completion.
+Do NOT invoke writing-plans after brainstorming finishes.",
+     subagent_type="general-purpose"
+   )
+   ```
+   Agent가 에러로 종료되면: `[sg-plan] brainstorming 실패, 기존 흐름으로 계속...` 출력 후 Step 2로 이동한다 (중단 없음).
+
+   사용자가 **"2" 또는 "UI 없음"** 을 선택하면: `[sg-plan] UI 설계 없이 진행합니다.` 출력 후 Step 2로 이동한다.
+
 2. **GSD 설치 여부 확인 및 경로 분기.**
 
    ```bash

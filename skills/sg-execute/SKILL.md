@@ -41,6 +41,13 @@ This command is self-contained — no external workflow files imported. Reads .p
    fi
    ```
    If extraction fails, print exactly: `Could not resolve current phase. Pass phase number explicitly: /super-gsd:sg-execute <phase>` and exit.
+   Validate that PHASE_NUM is a positive integer before proceeding:
+   ```bash
+   if ! echo "$PHASE_NUM" | grep -qE '^[0-9]+$'; then
+     echo "Invalid phase number: '$PHASE_NUM'. Must be a positive integer."
+     exit 1
+   fi
+   ```
 
 2. **Locate phase directory.** Glob `.planning/phases/<phase>-*` (with zero-padded two-digit prefix support). Example:
    ```bash
@@ -301,4 +308,5 @@ This command is self-contained — no external workflow files imported. Reads .p
 2. The `superpowers:executing-plans` Skill is invoked exactly once per run when PARALLEL_GROUPS is empty, zero times when the idempotency check short-circuits, or `sg-parallel-execute` is invoked instead when PARALLEL_GROUPS is non-empty (parallel path).
 3. `.planning/HANDOFF.md` gains at most one new row per run, and that row matches the 5-column schema `| Timestamp | Phase | From | To | Plan Hash |`.
 4. Re-running the command with an unchanged plan hash produces the `Already handed off ...` message and appends no row.
+5. If sg-execute is re-run after a `complete` or `ship` stage has been recorded, the idempotency check (which only matches `superpowers` or `parallel` in the To column) will not short-circuit — a new handoff row will be appended. This is intentional: re-executing after milestone completion starts a new handoff cycle for that phase.
 </success_criteria>

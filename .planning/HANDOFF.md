@@ -90,3 +90,5 @@
 | 2026-05-21T14:52:05Z | 19-result-integration-regression | hookify | ship | - |
 | 2026-05-21T14:53:03Z | 19-result-integration-regression | ship | complete | - |
 | 2026-05-21T15:15:33Z | 19-result-integration-regression | superpowers | review | - |
+| 2026-05-21T21:48:37Z | 20 | init | gsd-plan | - |
+| 2026-05-22T01:26:34Z | 20-sg-plan-visual-companion | gsd-plan | execute-done | 8786955 |

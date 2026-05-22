@@ -17,6 +17,10 @@ Self-contained. Reads .planning/lessons/ directory. Writes nothing.
    ```bash
    MILESTONE_ARG=$(echo "$ARGUMENTS" | grep -oE 'milestone=[^ ]+' | head -1 | sed 's/milestone=//')
    if [ -n "$MILESTONE_ARG" ]; then
+     if ! echo "$MILESTONE_ARG" | grep -qE '^[a-zA-Z0-9._-]+$'; then
+       echo "Invalid milestone argument."
+       exit 1
+     fi
      MILESTONE_FILE=".planning/milestones/${MILESTONE_ARG}-LESSONS.md"
      if [ ! -f "$MILESTONE_FILE" ]; then
        echo "No milestone archive found: $MILESTONE_FILE"

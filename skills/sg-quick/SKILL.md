@@ -59,8 +59,8 @@ Self-contained. Combines gsd-sdk initialization, gsd-planner Agent, and superpow
 2. **Initialize quick task.** Obtain quick_id, slug, and task_dir from gsd-sdk:
    ```bash
    INIT_JSON=$(gsd-sdk query init.quick "$DESCRIPTION")
-   QUICK_ID=$(echo "$INIT_JSON" | node -e "const d=JSON.parse(require('fs').readFileSync(0,'utf8')); process.stdout.write(d.quick_id||d.id||'')")
-   TASK_DIR=$(echo "$INIT_JSON" | node -e "const d=JSON.parse(require('fs').readFileSync(0,'utf8')); process.stdout.write(d.task_dir||d.dir||'')")
+   QUICK_ID=$(echo "$INIT_JSON" | python3 -c "import sys,json; d=json.load(sys.stdin); print(d.get('quick_id') or d.get('id',''))")
+   TASK_DIR=$(echo "$INIT_JSON" | python3 -c "import sys,json; d=json.load(sys.stdin); print(d.get('task_dir') or d.get('dir',''))")
    ```
    If QUICK_ID or TASK_DIR is empty, print exactly:
    `gsd-sdk init.quick failed — check gsd-sdk installation`
@@ -133,7 +133,8 @@ Self-contained. Combines gsd-sdk initialization, gsd-planner Agent, and superpow
          if(i==insert_after) print row
        }
      }
-   ' .planning/STATE.md > .planning/STATE.md.tmp && mv .planning/STATE.md.tmp .planning/STATE.md
+   ' .planning/STATE.md > .planning/STATE.md.tmp && mv .planning/STATE.md.tmp .planning/STATE.md \
+     || { echo "ERROR: Failed to update STATE.md — ### Quick Tasks Completed section may be missing"; exit 1; }
    ```
 
 8. **Commit PLAN.md and STATE.md together.**

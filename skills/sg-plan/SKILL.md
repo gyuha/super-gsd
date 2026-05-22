@@ -49,46 +49,6 @@ Self-contained. Reads .planning/STATE.md for phase resolution when no argument p
    ```
    If `PHASE_NUM` is empty after running this block, print exactly: `Could not resolve current phase. Pass phase number explicitly: /super-gsd:sg-plan <phase>` and stop execution. Do not proceed to Step 2.
 
-1.5. **Visual Companion 판단 (D-01~D-06).** Phase goal에 UI 관련 키워드가 있을 때만 실행한다:
-   ```bash
-   PHASE_SECTION_RAW=$(gsd-sdk query roadmap.get-phase "$PHASE_NUM" --pick section 2>/dev/null)
-   PHASE_SECTION=$(echo "$PHASE_SECTION_RAW" | python3 -c 'import json,sys; v=sys.stdin.read().strip(); print(json.loads(v))' 2>/dev/null || echo "$PHASE_SECTION_RAW")
-   UI_DETECTED=""
-   if [ -n "$PHASE_SECTION" ] && echo "$PHASE_SECTION" | grep -iE "UI|화면|design|Visual|frontend|interface|component" > /dev/null 2>&1; then
-     UI_DETECTED="1"
-   fi
-   ```
-   **UI 키워드가 없거나 PHASE_SECTION이 비어 있으면** 이 단계를 조용히 건너뛰고 Step 2로 이동한다.
-
-   **UI 키워드가 감지되면** AskUserQuestion을 표시한다:
-   ```
-   AskUserQuestion(
-     questions: [{
-       question: "이 phase에 UI 설계가 포함되어 있나요?",
-       header: "Visual Companion",
-       multiSelect: false,
-       options: [
-         { label: "Visual Companion 포함", description: "superpowers:brainstorming을 실행하여 UI를 먼저 설계합니다." },
-         { label: "UI 없음", description: "UI 설계 없이 기존 흐름을 진행합니다." }
-       ]
-     }]
-   )
-   ```
-
-   **"UI 없음" 선택 시:** `[sg-plan] UI 설계 없이 진행합니다.` 출력 후 Step 2로 이동한다.
-
-   **"Visual Companion 포함" 선택 시:** brainstorming Agent를 실행하고 완료를 기다린다.
-   **Before calling Agent, replace every occurrence of `$PHASE_NUM` and `$PHASE_SECTION` with actual resolved values. `$PHASE_SECTION` contains multi-line text — insert it as literal text in the prompt string:**
-   ```
-   Agent(
-     description="superpowers:brainstorming for Phase $PHASE_NUM UI design",
-     prompt="Do NOT invoke writing-plans Skill after brainstorming completes. Your task is to run the superpowers brainstorming skill for Phase $PHASE_NUM UI design. The project root is the current working directory. Phase context:\n\n$PHASE_SECTION\n\nInvoke Skill(skill='superpowers:brainstorming', args='Phase $PHASE_NUM UI 설계를 진행합니다. 위 컨텍스트를 참고하십시오. 중요: brainstorming 완료 후 writing-plans Skill을 호출하지 마십시오. brainstorming 대화만 진행하고 종료하십시오.') and follow its instructions to completion.
-Do NOT invoke writing-plans after brainstorming finishes.",
-     subagent_type="general-purpose"
-   )
-   ```
-   Agent가 에러로 종료되면: `[sg-plan] brainstorming 실패, 기존 흐름으로 계속...` 출력 후 Step 2로 이동한다 (중단 없음).
-
 2. Print: `[sg-plan] Step 1/2: Gathering context via gsd-discuss-phase...`
    Spawn a subagent to run gsd-discuss-phase and wait for it to complete.
    **Before calling Agent, replace every occurrence of `$PHASE_NUM` in the block below with the actual resolved value** (e.g. `6`):
@@ -130,7 +90,6 @@ Do NOT invoke writing-plans after brainstorming finishes.",
 <success_criteria>
 0. .planning/lessons/ 에 파일이 있으면 Step 0이 weighted top-N을 먼저 표시하고 전체 lessons를 "=== Weighted Top-N Patterns ===" → ranked list → "=== All Lessons (below) ===" → cat 내용 → "=== End of Lessons ===" 순서로 출력한다. 파일이 없으면 Step 0이 조용히 건너뛰어진다.
 1. PHASE_NUM이 비어 있으면 명시적 오류 메시지를 출력하고 종료한다.
-1.5. Phase goal에 UI 키워드(UI|화면|design|Visual|frontend|interface|component)가 없거나 PHASE_SECTION이 비어 있으면 Step 1.5를 조용히 건너뛰고 Step 2로 진행한다. UI 키워드가 감지되면 AskUserQuestion("Visual Companion 포함" / "UI 없음")이 표시된다. "Visual Companion 포함" 선택 시 superpowers:brainstorming Agent가 실행되고 완료 후 Step 2로 이동한다. "UI 없음" 선택 시 `[sg-plan] UI 설계 없이 진행합니다.` 출력 후 Step 2로 이동한다. brainstorming Agent 에러 시 `[sg-plan] brainstorming 실패, 기존 흐름으로 계속...` 출력 후 Step 2로 이동한다 (abort 없음). brainstorming Agent 프롬프트에는 writing-plans 미호출 억제 지시가 포함된다.
 2. gsd-discuss-phase는 Agent()로 서브에이전트에서 실행되고, 완료 후 제어가 반환된다.
 3. gsd-discuss-phase Agent가 에러로 종료되면 오류 메시지를 출력하고 Step 3(gsd-plan-phase)을 실행하지 않는다.
 4. gsd-plan-phase Skill 호출 직전에 HANDOFF.md에 To=gsd-plan 행이 기록된다 (이미 동일 phase+gsd-plan 조합이 있으면 skip).

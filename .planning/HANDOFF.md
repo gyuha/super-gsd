@@ -95,3 +95,4 @@
 | 2026-05-22T05:25:58Z | 20-sg-plan-visual-companion | execute-done | complete | - |
 | 2026-05-22T07:07:58Z | 22-skills | complete | gsd-plan | - |
 | 2026-05-22T07:11:16Z | 22-skills | gsd-plan | superpowers | 2932276 |
+| 2026-05-22T10:13:43Z | 22-skills | superpowers | review | - |

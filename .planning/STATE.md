@@ -2,16 +2,16 @@
 gsd_state_version: 1.0
 milestone: v2.0
 milestone_name: Commands → Skills 마이그레이션
-status: Phase 21 shipped — committed to main
+status: executing
 stopped_at: Phase 22 context gathered
-last_updated: "2026-05-22T14:32:07.948Z"
-last_activity: 2026-05-22 -- Phase 21 shipped
+last_updated: "2026-05-22T14:51:50.613Z"
+last_activity: 2026-05-22 -- Phase 22 planning complete
 progress:
-  total_phases: 6
-  completed_phases: 1
-  total_plans: 5
-  completed_plans: 2
-  percent: 17
+  total_phases: 10
+  completed_phases: 3
+  total_plans: 14
+  completed_plans: 5
+  percent: 30
 ---
 
 # Project State
@@ -27,8 +27,8 @@ See: .planning/PROJECT.md (updated 2026-05-21)
 
 Phase: Phase 22 (Not started — roadmap defined)
 Plan: —
-Status: Phase 21 shipped — committed to main
-Last activity: 2026-05-22 -- Phase 21 shipped
+Status: Ready to execute
+Last activity: 2026-05-22 -- Phase 22 planning complete
 
 ## Performance Metrics
 

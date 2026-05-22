@@ -162,13 +162,17 @@ Plans:
 **Requirements**: VC-03, VC-04, VC-05, VC-06, VC-07
 **Success Criteria** (what must be TRUE):
 
-  1. `commands/sg-ui-plan.md`가 존재하며 phase 컨텍스트를 ROADMAP.md에서 읽어 `superpowers:brainstorming`을 호출한다
+  1. `skills/sg-ui-plan/SKILL.md`가 존재하며 phase 컨텍스트를 ROADMAP.md에서 읽어 `superpowers:brainstorming`을 호출한다
   2. sg-ui-plan 실행 후 HANDOFF.md에 `To: ui-plan` 행이 append된다
-  3. `plugin.json` commands 배열에 `./commands/sg-ui-plan.md`가 포함된다
+  3. `plugin.json`의 `"skills": "./skills/"` 경로 아래에 `skills/sg-ui-plan/` 서브디렉토리가 존재한다 (별도 commands 등록 불필요)
   4. `README.md` 명령표에 sg-ui-plan이 설명과 함께 등재된다
   5. `docs/COMMANDS.md`에 sg-ui-plan 전체 설명이 추가된다
 
-**Plans**: TBD
+**Plans**: 2 plans
+Plans:
+
+- [ ] 21-01-PLAN.md — skills/sg-ui-plan/SKILL.md 생성 + HANDOFF append (VC-03, VC-04, VC-05)
+- [ ] 21-02-PLAN.md — README.md + docs/COMMANDS.md 문서화 (VC-06, VC-07)
 
 ---
 
@@ -226,6 +230,6 @@ Plans:
 | 18. sg-parallel-execute 스킬 + 라우팅 | v1.4 | 0/TBD | Not started | - |
 | 19. 결과 통합 + 호환성 회귀 테스트 | v1.4 | 0/TBD | Not started | - |
 | 20. sg-plan Visual Companion 통합 | v1.5 | 0/1 | Not started | - |
-| 21. sg-ui-plan 명령 + 등록 + 문서화 | v1.5 | 0/TBD | Not started | - |
+| 21. sg-ui-plan 명령 + 등록 + 문서화 | v1.5 | 0/2 | Not started | - |
 | 22. Skills 파일 생성 | v2.0 | 0/TBD | Not started | - |
 | 23. Plugin 연결 + commands/ 제거 + 문서 | v2.0 | 0/2 | Not started | - |

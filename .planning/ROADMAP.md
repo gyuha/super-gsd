@@ -5,6 +5,7 @@
 - [x] **v1.0 MVP** (2026-05-16) — Plugin scaffold + 9 sg- commands + Stop/SubagentStop hooks + lessons feedback loop → [Archive](.planning/milestones/v1.0-ROADMAP.md)
 - [x] **v1.1 Reliability** (2026-05-20) — sg-health 자기진단 + sg-status 정확도 + sg-start 세션 복원 → [Archive](.planning/milestones/v1.1-ROADMAP.md)
 - [x] **v1.2 Self-Contained Retrospection** (2026-05-21) — 내장 sg-retro Skill(6 lens) + 자체 rule runner + weighted lessons 랭킹 + hookify 의존성 제거 → [Archive](.planning/milestones/v1.2-ROADMAP.md)
+- [x] **v1.5 Visual Companion UI Integration** (2026-05-22) — sg-plan Visual Companion 분기 + sg-ui-plan 독립 명령 → [Archive](.planning/milestones/v1.5-ROADMAP.md)
 - [ ] **v1.3 Multi-Platform Support** — AGENTS.md 재작성 + .agents/skills/ 6개 + 플랫폼별 hooks + README Multi-Platform 섹션
 - [ ] **v1.4 Team Agent Parallel Execution** — PLAN.md 의존성 분석 + 병렬 Agent 실행 + 결과 통합
 - [ ] **v2.0 Commands → Skills 마이그레이션** — commands/*.md 14개를 skills/sg-*/SKILL.md 형식으로 전환 + commands/ 제거 + 문서 업데이트
@@ -137,9 +138,15 @@ Plans:
 
 ---
 
-## v1.5 Visual Companion UI Integration
+<details>
+<summary>✅ v1.5 Visual Companion UI Integration (Phases 20-21) — SHIPPED 2026-05-22</summary>
 
-### Phase 20: sg-plan Visual Companion 통합
+- [x] Phase 20: sg-plan Visual Companion 통합 (1/1 plan) — completed 2026-05-22
+- [x] Phase 21: sg-ui-plan 명령 + 등록 + 문서화 (2/2 plans) — completed 2026-05-22
+
+</details>
+
+### Phase 20: sg-plan Visual Companion 통합 (archived)
 
 **Goal**: sg-plan 실행 시 UI 설계 여부를 사용자에게 질문하고, 수락하면 `superpowers:brainstorming`을 gsd-discuss-phase 이전에 호출한다
 **Requirements**: VC-01, VC-02

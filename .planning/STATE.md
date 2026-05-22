@@ -138,6 +138,22 @@ Items acknowledged and deferred at milestone close on 2026-05-16:
 | quick_task | 260516-2sw-readme-md-gsd-superpowers-hookify | missing | 2026-05-16 |
 | quick_task | 260516-dsz-sg-update-gsd-superpowers-hookify | missing | 2026-05-16 |
 
+Items acknowledged and deferred at milestone close on 2026-05-22 (v1.5):
+
+| Category | Item | Status | Deferred At |
+|----------|------|--------|-------------|
+| quick_task | 260516-2qm-readme-md | missing | 2026-05-22 |
+| quick_task | 260516-2sw-readme-md-gsd-superpowers-hookify | missing | 2026-05-22 |
+| quick_task | 260516-dsz-sg-update-gsd-superpowers-hookify | missing | 2026-05-22 |
+| quick_task | 260516-kqe-sg-complete-and-sg-new-command-mapping | missing | 2026-05-22 |
+| quick_task | 260516-kwk-sg-quick-superpowers-execution-mode | missing | 2026-05-22 |
+| quick_task | 260517-0ao-sg-execute-md | missing | 2026-05-22 |
+| quick_task | 260517-0lh-sg-quick-md | missing | 2026-05-22 |
+| quick_task | 260518-wvx-code-review-fixes | missing | 2026-05-22 |
+| quick_task | 260518-x6n-state-transition-timing-fixes | missing | 2026-05-22 |
+
+note: 260516/260517/260518 items are stale quick_tasks from v1.0 (source files already deleted). Re-deferred at v1.5. These will not reappear in future milestone audits once STATE.md quick tasks table is cleaned up.
+
 Items acknowledged and deferred at milestone close on 2026-05-20 (v1.1):
 
 | Category | Item | Status | Deferred At |

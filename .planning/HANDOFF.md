@@ -105,3 +105,4 @@
 | 2026-05-22T14:08:10Z | 21-sg-ui-plan | superpowers | review | - |
 | 2026-05-22T14:11:27Z | 21-sg-ui-plan | review | sg-retro | - |
 | 2026-05-22T14:30:29Z | 21-sg-ui-plan | sg-retro | ship | - |
+| 2026-05-22T14:34:28Z | 22-skills | ship | complete | - |

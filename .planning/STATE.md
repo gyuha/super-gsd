@@ -1,15 +1,14 @@
 ---
 gsd_state_version: 1.0
-milestone: v1.5
-milestone_name: Visual Companion UI Integration
-status: executing
-stopped_at: Phase 19 context gathered
-last_updated: "2026-05-21T22:10:28.313Z"
-last_activity: 2026-05-21 -- Phase 20 planning complete
+milestone: v2.0
+milestone_name: Commands → Skills 마이그레이션
+status: planning
+last_updated: "2026-05-22T05:32:26.332Z"
+last_activity: 2026-05-22
 progress:
-  total_phases: 2
+  total_phases: 0
   completed_phases: 0
-  total_plans: 1
+  total_plans: 0
   completed_plans: 0
   percent: 0
 ---
@@ -27,8 +26,8 @@ See: .planning/PROJECT.md (updated 2026-05-21)
 
 Phase: Not started (defining requirements)
 Plan: —
-Status: Ready to execute
-Last activity: 2026-05-21 -- Phase 20 planning complete
+Status: Defining requirements
+Last activity: 2026-05-22 — Milestone v2.0 started
 
 ## Performance Metrics
 

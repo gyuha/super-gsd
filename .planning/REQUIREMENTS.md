@@ -1,46 +1,53 @@
-# Requirements: super-gsd v1.5 Visual Companion UI Integration
+# Requirements: super-gsd v2.0 Commands → Skills 마이그레이션
 
-**Milestone:** v1.5 Visual Companion UI Integration
+**Milestone:** v2.0 Commands → Skills 마이그레이션
 **Defined:** 2026-05-22
-**Core Value:** sg-plan 실행 중 UI 설계가 필요한 단계에서 superpowers visual companion 사용을 제안하고, 독립형 sg-ui-plan 명령으로 언제든 UI를 시각적으로 설계할 수 있게 한다
+**Core Value:** commands/*.md 14개를 skills/sg-*/SKILL.md 형식으로 전환하고 commands/ 디렉토리를 제거한다. Claude Code가 commands와 skills를 통합하는 장기 로드맵에 선제적으로 대응한다.
 
-## v1.5 Requirements
+## v2.0 Requirements
 
-### sg-plan Visual Companion 통합
+### Skills 파일 생성 (SC)
 
-- [ ] **VC-01**: sg-plan은 phase를 resolve한 뒤 gsd-discuss-phase 이전에 "이 단계에 UI 설계가 포함되어 있나요?" 를 AskUserQuestion으로 사용자에게 질문한다
-- [ ] **VC-02**: 사용자가 UI 단계임을 확인하면 `superpowers:brainstorming` 스킬을 gsd-discuss-phase 이전에 호출한다. brainstorming 완료 후 기존 gsd-discuss-phase → gsd-plan-phase 흐름을 그대로 진행한다
+- [ ] **SC-01**: `skills/sg-plan/SKILL.md` + `skills/sg-execute/SKILL.md` 생성 — commands/sg-plan.md, commands/sg-execute.md 로직 이전 (HANDOFF 로직, lessons 주입 등 복잡한 구성 포함)
+- [ ] **SC-02**: `skills/sg-start/SKILL.md` + `skills/sg-status/SKILL.md` + `skills/sg-health/SKILL.md` 생성 — 세션/상태/진단 계열 전환
+- [ ] **SC-03**: `skills/sg-explore/SKILL.md` + `skills/sg-review/SKILL.md` + `skills/sg-learn/SKILL.md` + `skills/sg-ship/SKILL.md` 생성 — 워크플로우 계열 전환
+- [ ] **SC-04**: `skills/sg-quick/SKILL.md` + `skills/sg-update/SKILL.md` + `skills/sg-complete/SKILL.md` + `skills/sg-new/SKILL.md` + `skills/sg-lessons/SKILL.md` 생성 — 유틸리티 계열 전환
+- [ ] **SC-05**: 각 SKILL.md는 YAML frontmatter `name`, `description`, `argument-hint` 포함
+- [ ] **SC-06**: 각 SKILL.md는 `<objective>`, `<process>`, `<success_criteria>` 블록 포함
 
-### sg-ui-plan 신규 명령
+### Plugin 연결 및 정리 (PC)
 
-- [ ] **VC-03**: `commands/sg-ui-plan.md` 파일을 생성한다. 현재 phase를 `$ARGUMENTS` 또는 STATE.md에서 파악하고, ROADMAP.md에서 해당 phase의 목표와 요구사항을 읽어 컨텍스트를 구성한 뒤 `superpowers:brainstorming`을 호출한다
-- [ ] **VC-04**: sg-ui-plan은 HANDOFF.md에 `To: ui-plan` 행을 기록한다 (append-only 스키마 준수)
+- [ ] **PC-01**: `plugin.json` "commands" 배열을 `./skills/sg-*/SKILL.md` 경로 14개로 교체
+- [ ] **PC-02**: `commands/` 디렉토리 삭제 (14개 파일 전체 제거)
 
-### 등록 및 문서화
+### 문서 업데이트 (DOC)
 
-- [ ] **VC-05**: `plugin.json` commands 배열에 `./commands/sg-ui-plan.md` 추가
-- [ ] **VC-06**: `README.md` 명령표에 sg-ui-plan 항목 추가 (설명: "phase 컨텍스트를 로드해 visual companion 기반 UI 설계 실행")
-- [ ] **VC-07**: `docs/COMMANDS.md`에 sg-ui-plan 상세 설명 추가
+- [ ] **DOC-01**: `CLAUDE.md` Technology Stack + Architecture 섹션에서 commands/ → skills/ 반영
+- [ ] **DOC-02**: `README.md` 명령어 설명에서 commands/ 경로 → skills/ 경로 업데이트
 
 ## Future Requirements (Deferred)
 
-- sg-ui-plan 결과를 `.planning/phases/{N}/UI-SPEC.md`에 자동 저장 — brainstorming 결과 아티팩트 보존
-- visual companion 서버 자동 시작/종료 — hooks와 연동하여 세션 관리
+- docs/COMMANDS.md 상세 업데이트 — 각 skill의 process 블록 요약 추가
+- `.agents/skills/` 와 `skills/` 중복 제거 — sg-plan은 현재 두 위치에 존재
+- v1.5 Phase 21 (sg-ui-plan) — Visual Companion 완성 (commands→skills 이후 재검토)
 
 ## Out of Scope
 
-- visual companion 자체 수정 — superpowers 플러그인 비침투적 사용만
-- UI 설계 결과를 PLAN.md에 자동 반영 — 사용자가 수동으로 참조
-- sg-explore나 sg-execute에도 visual companion 통합 — sg-plan과 sg-ui-plan 범위로 한정
+- GSD/Superpowers 내부 파일 수정 — non-invasive 원칙 유지
+- .agents/skills/ 파일 제거 — Codex/Gemini 접근성 유지 목적으로 보존
+- 플러그인 동작 변경 — 동일한 로직, 위치만 변경
 
 ## Traceability
 
-| REQ-ID | Phase |
-|--------|-------|
-| VC-01  | 20    |
-| VC-02  | 20    |
-| VC-03  | 21    |
-| VC-04  | 21    |
-| VC-05  | 21    |
-| VC-06  | 21    |
-| VC-07  | 21    |
+| REQ-ID | Phase | Status |
+|--------|-------|--------|
+| SC-01 | 22 | Not started |
+| SC-02 | 22 | Not started |
+| SC-03 | 22 | Not started |
+| SC-04 | 22 | Not started |
+| SC-05 | 22 | Not started |
+| SC-06 | 22 | Not started |
+| PC-01 | 23 | Not started |
+| PC-02 | 23 | Not started |
+| DOC-01 | 23 | Not started |
+| DOC-02 | 23 | Not started |

@@ -37,7 +37,7 @@
 
 ### v2.0 Commands → Skills 마이그레이션 (Planned)
 
-- [ ] **Phase 22: Skills 파일 생성** — 14개 sg-* commands → skills/sg-*/SKILL.md 전환 (SC-01~06)
+- [x] **Phase 22: Skills 파일 생성** — 14개 sg-* commands → skills/sg-*/SKILL.md 전환 (SC-01~06)
 - [ ] **Phase 23: Plugin 연결 + commands/ 제거 + 문서** — plugin.json 업데이트 + commands/ 삭제 + CLAUDE.md/README 반영 (PC-01~02, DOC-01~02)
 
 ## Phase Details

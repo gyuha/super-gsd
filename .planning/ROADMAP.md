@@ -7,6 +7,7 @@
 - [x] **v1.2 Self-Contained Retrospection** (2026-05-21) — 내장 sg-retro Skill(6 lens) + 자체 rule runner + weighted lessons 랭킹 + hookify 의존성 제거 → [Archive](.planning/milestones/v1.2-ROADMAP.md)
 - [ ] **v1.3 Multi-Platform Support** — AGENTS.md 재작성 + .agents/skills/ 6개 + 플랫폼별 hooks + README Multi-Platform 섹션
 - [ ] **v1.4 Team Agent Parallel Execution** — PLAN.md 의존성 분석 + 병렬 Agent 실행 + 결과 통합
+- [ ] **v2.0 Commands → Skills 마이그레이션** — commands/*.md 14개를 skills/sg-*/SKILL.md 형식으로 전환 + commands/ 제거 + 문서 업데이트
 
 ## Phases
 
@@ -32,6 +33,11 @@
 - [ ] **Phase 17: PLAN.md 의존성 분석** — wave/depends_on/files_modified 파싱 + 독립 그룹(PARALLEL_GROUPS) 계산 + 폴백 분기
 - [ ] **Phase 18: sg-parallel-execute 스킬 + 라우팅** — 신규 SKILL.md 생성 + sg-execute.md Step 9 병렬 라우팅 추가
 - [ ] **Phase 19: 결과 통합 + 호환성 회귀 테스트** — 오케스트레이터 HANDOFF 기록 + wave 없는 경로 완전 보존 검증
+
+### v2.0 Commands → Skills 마이그레이션 (Planned)
+
+- [ ] **Phase 22: Skills 파일 생성** — 14개 sg-* commands → skills/sg-*/SKILL.md 전환 (SC-01~06)
+- [ ] **Phase 23: Plugin 연결 + commands/ 제거 + 문서** — plugin.json 업데이트 + commands/ 삭제 + CLAUDE.md/README 반영 (PC-01~02, DOC-01~02)
 
 ## Phase Details
 
@@ -164,6 +170,41 @@ Plans:
 
 **Plans**: TBD
 
+---
+
+## v2.0 Commands → Skills 마이그레이션
+
+### Phase 22: Skills 파일 생성
+
+**Goal**: 14개 sg-* commands가 skills/sg-*/SKILL.md 형식으로 완전히 전환되어 동일한 워크플로우 동작을 제공한다
+**Depends on**: Phase 21 (v2.0 신규 시작)
+**Requirements**: SC-01, SC-02, SC-03, SC-04, SC-05, SC-06
+**Success Criteria** (what must be TRUE):
+
+  1. `skills/sg-*/SKILL.md` 14개 파일이 모두 존재하고 각 파일에 `name`, `description`, `argument-hint` YAML frontmatter가 있다
+  2. 각 SKILL.md가 `<objective>`, `<process>`, `<success_criteria>` 블록을 포함한다
+  3. sg-plan과 sg-execute의 SKILL.md에 HANDOFF 로직, lessons 주입, PARALLEL_GROUPS 라우팅 등 복잡한 구성이 보존된다
+  4. sg-start/sg-status/sg-health 세션·상태·진단 계열 3개와 워크플로우 계열 4개(sg-explore/sg-review/sg-learn/sg-ship), 유틸리티 계열 5개(sg-quick/sg-update/sg-complete/sg-new/sg-lessons)가 각각 기존 commands/ 대비 동작 차이 없이 실행된다
+
+**Plans**: TBD
+**UI hint**: no
+
+### Phase 23: Plugin 연결 + commands/ 제거 + 문서
+
+**Goal**: plugin.json이 skills/ 경로를 참조하고, commands/ 디렉토리가 삭제되며, CLAUDE.md와 README가 변경 사항을 정확히 반영한다
+**Depends on**: Phase 22
+**Requirements**: PC-01, PC-02, DOC-01, DOC-02
+**Success Criteria** (what must be TRUE):
+
+  1. `plugin.json` commands 배열의 모든 경로가 `./skills/sg-*/SKILL.md` 형식 14개로 교체된다
+  2. `commands/` 디렉토리와 그 안의 파일 14개가 완전히 삭제되고 저장소에 더 이상 존재하지 않는다
+  3. `CLAUDE.md` Technology Stack 섹션과 Architecture 섹션이 commands/ 대신 skills/ 경로를 기준으로 기술된다
+  4. `README.md` 명령어 설명에서 commands/ 참조가 모두 skills/ 참조로 교체된다
+
+**Plans**: TBD
+
+---
+
 ## Progress
 
 | Phase | Milestone | Plans Complete | Status | Completed |
@@ -181,3 +222,5 @@ Plans:
 | 19. 결과 통합 + 호환성 회귀 테스트 | v1.4 | 0/TBD | Not started | - |
 | 20. sg-plan Visual Companion 통합 | v1.5 | 0/1 | Not started | - |
 | 21. sg-ui-plan 명령 + 등록 + 문서화 | v1.5 | 0/TBD | Not started | - |
+| 22. Skills 파일 생성 | v2.0 | 0/TBD | Not started | - |
+| 23. Plugin 연결 + commands/ 제거 + 문서 | v2.0 | 0/TBD | Not started | - |

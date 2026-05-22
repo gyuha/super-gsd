@@ -3,10 +3,10 @@ gsd_state_version: 1.0
 milestone: v2.0
 milestone_name: Commands → Skills 마이그레이션
 status: planning
-last_updated: "2026-05-22T05:32:26.332Z"
+last_updated: "2026-05-22T00:00:00.000Z"
 last_activity: 2026-05-22
 progress:
-  total_phases: 0
+  total_phases: 2
   completed_phases: 0
   total_plans: 0
   completed_plans: 0
@@ -20,14 +20,14 @@ progress:
 See: .planning/PROJECT.md (updated 2026-05-21)
 
 **Core value:** GSD → Superpowers → sg-retro 단계 전환을 자동화하여 학습 루프가 끊기지 않도록 한다
-**Current focus:** v1.5 Visual Companion UI Integration — sg-plan UI 감지 + visual companion 통합 + sg-ui-plan 명령
+**Current focus:** v2.0 Commands → Skills 마이그레이션 — commands/*.md 14개를 skills/sg-*/SKILL.md 형식으로 전환
 
 ## Current Position
 
-Phase: Not started (defining requirements)
+Phase: Phase 22 (Not started — roadmap defined)
 Plan: —
-Status: Defining requirements
-Last activity: 2026-05-22 — Milestone v2.0 started
+Status: Roadmap created, ready for Phase 22 planning
+Last activity: 2026-05-22 — Milestone v2.0 roadmap created (Phase 22-23)
 
 ## Performance Metrics
 
@@ -95,6 +95,9 @@ Recent decisions affecting current work:
 - v1.4 roadmap: superpowers:executing-plans는 순차 폴백에서만 사용 — 병렬 에이전트에서 호출 금지 (non-invasive 원칙)
 - v1.4 roadmap: HANDOFF.md는 오케스트레이터만 기록 — 동시 쓰기 race condition 방지
 - v1.4 roadmap: wave 없는 PLAN.md는 v1.3 이전 동작 완전 보존 — Phase 19 회귀 테스트로 검증
+- v2.0 roadmap: coarse 그래뉼래리티 → 2 페이즈 (22-23). SC 6개(파일 생성) / PC+DOC 4개(연결·제거·문서)로 자연 분리
+- v2.0 roadmap: Phase 22에서 14개 SKILL.md 생성 완료 후 Phase 23에서 plugin.json 교체 + commands/ 삭제 — 원자적 전환 보장
+- v2.0 roadmap: .agents/skills/ 파일은 scope 외 — Codex/Gemini 접근성 유지를 위해 보존
 
 ### Pending Todos
 
@@ -153,6 +156,6 @@ note: 260516/260517 items overlap with v1.0 deferred list above — re-deferred 
 
 ## Session Continuity
 
-Last session: 2026-05-21T14:38:00.132Z
-Stopped at: Phase 19 context gathered
-Resume file: .planning/phases/19-result-integration-regression/19-CONTEXT.md
+Last session: 2026-05-22T00:00:00.000Z
+Stopped at: v2.0 roadmap created (Phase 22-23)
+Resume file: .planning/ROADMAP.md

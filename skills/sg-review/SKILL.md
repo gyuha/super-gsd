@@ -21,10 +21,10 @@ Self-contained. Reads git history to derive BASE_SHA and HEAD_SHA, then delegate
      || git rev-parse HEAD~1 2>/dev/null \
      || git rev-parse HEAD)
    if [ "$BASE_SHA" = "$HEAD_SHA" ]; then
-     echo "Error: BASE_SHA == HEAD_SHA — there are no commits to review. This happens when you are on main with no divergence."
+     echo "Error: BASE_SHA == HEAD_SHA — no commits to review."
      echo "Options:"
-     echo "  1. Pass an explicit base: /super-gsd:sg-review <base-sha>"
-     echo "  2. Run from a feature branch after committing your changes."
+     echo "  1. Commit your changes first, then run /super-gsd:sg-review."
+     echo "  2. Run from a feature branch that has diverged from main."
      exit 1
    fi
    echo "Reviewing: $BASE_SHA..$HEAD_SHA"

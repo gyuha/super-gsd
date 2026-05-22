@@ -241,7 +241,7 @@ cp -r ~/super-gsd/hooks .
 
 - **Phase 1 — 플러그인 스캐폴드 (완료):** 설치 가능한 플러그인 셸(매니페스트, 마켓플레이스 메타데이터, README, 검증 체크리스트). 아직 명령이나 훅 없음.
 - **Phase 2 — 수동 인계 및 상태 (완료):** `/super-gsd:sg-execute`(완성된 GSD 단계를 Superpowers 준비 프롬프트로 패키징)와 `/super-gsd:sg-status`(현재 단계, 마지막 인계, 다음 권장 명령 확인) 도입.
-- **Phase 3 — sg- 명령 세트 및 README (완료):** 전체 GSD → Superpowers → Hookify 사이클을 커버하는 9개 명령 인터페이스와 업데이트된 문서 제공.
+- **Phase 3 — sg- 명령 세트 및 README (완료):** 전체 GSD → Superpowers → sg-retro 사이클을 커버하는 9개 명령 인터페이스와 업데이트된 문서 제공.
 - **Phase 4 — 자동 진행 훅 (완료):** `Stop` 훅을 등록하여 단계 전환을 자동 감지 — `plan-phase` 완료 시 인계 프롬프트 표시, 코드 리뷰어 완료 시 Hookify 제안.
 - **Phase 5 — 학습 루프 (완료):** Hookify 교훈을 `.planning/lessons/`에 저장하고 다음 GSD 단계 시작 시 자동 표시하여 학습 루프 완성.
 - **Phase 6 — sg-health (완료):** `sg-health` 자기진단 명령 도입 — GSD/Superpowers 설치 여부, 훅 등록, HANDOFF.md 스키마 무결성을 `[OK]`/`[WARN]`/`[FAIL]`로 출력.

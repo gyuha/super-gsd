@@ -6,22 +6,6 @@
     "name": "gyuha",
     "url": "https://github.com/gyuha"
   },
-  "commands": [
-    "./commands/sg-start.md",
-    "./commands/sg-explore.md",
-    "./commands/sg-plan.md",
-    "./commands/sg-execute.md",
-    "./commands/sg-review.md",
-    "./commands/sg-learn.md",
-    "./commands/sg-ship.md",
-    "./commands/sg-status.md",
-    "./commands/sg-lessons.md",
-    "./commands/sg-update.md",
-    "./commands/sg-quick.md",
-    "./commands/sg-complete.md",
-    "./commands/sg-new.md",
-    "./commands/sg-health.md"
-  ],
   "skills": "./skills/",
   "homepage": "https://github.com/gyuha/super-gsd",
   "repository": "https://github.com/gyuha/super-gsd",

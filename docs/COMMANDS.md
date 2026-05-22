@@ -9,11 +9,15 @@ See [README.md](../README.md) for installation and quick-start.
 ```
 sg-start → sg-explore → sg-plan → sg-execute → sg-review → sg-learn → sg-ship
   (GSD)       (GSD)      (GSD)    (Superpowers) (Superpowers) (sg-retro) (GSD)
-                                                                    |
+                              ↓                                       |
+                         sg-ui-plan (optional: UI brainstorming)      |
+                                                                       |
                          lessons feed back into next sg-plan cycle ←
 ```
 
 `sg-status` can be run at any point to check current position.
+
+`sg-ui-plan` is an optional step between `sg-plan` and `sg-execute` — run it when UI design brainstorming is needed after planning.
 
 ## Quick Reference
 

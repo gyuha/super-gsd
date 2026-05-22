@@ -71,6 +71,7 @@ Self-contained. Reads .planning/STATE.md for phase resolution when no argument p
      echo "| $TS | $PHASE_SLUG | $FROM_STAGE | ui-plan | - |" >> "$HANDOFF_FILE"
      echo "[sg-ui-plan] HANDOFF.md에 ui-plan 기록 완료."
    fi
+   echo "[sg-ui-plan] UI 설계 brainstorming 완료. 다음 단계: /super-gsd:sg-execute"
    ```
 </process>
 

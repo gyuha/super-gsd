@@ -201,7 +201,12 @@ Plans:
   3. `CLAUDE.md` Technology Stack 섹션과 Architecture 섹션이 commands/ 대신 skills/ 경로를 기준으로 기술된다
   4. `README.md` 명령어 설명에서 commands/ 참조가 모두 skills/ 참조로 교체된다
 
-**Plans**: TBD
+**Plans**: 2 plans
+Plans:
+**Wave 1** (병렬 실행 가능)
+
+- [ ] 23-01-PLAN.md — plugin.json commands 키 제거 + commands/ 디렉토리 git rm (PC-01, PC-02)
+- [ ] 23-02-PLAN.md — CLAUDE.md Technology Stack/Architecture 재서술 + README.md/README.ko.md 동기화 (DOC-01, DOC-02)
 
 ---
 
@@ -223,4 +228,4 @@ Plans:
 | 20. sg-plan Visual Companion 통합 | v1.5 | 0/1 | Not started | - |
 | 21. sg-ui-plan 명령 + 등록 + 문서화 | v1.5 | 0/TBD | Not started | - |
 | 22. Skills 파일 생성 | v2.0 | 0/TBD | Not started | - |
-| 23. Plugin 연결 + commands/ 제거 + 문서 | v2.0 | 0/TBD | Not started | - |
+| 23. Plugin 연결 + commands/ 제거 + 문서 | v2.0 | 0/2 | Not started | - |

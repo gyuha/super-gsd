@@ -69,7 +69,8 @@ Reads .planning/STATE.md, .planning/HANDOFF.md, .planning/ROADMAP.md (next-phase
      TS=$(echo "$LAST_ROW" | awk -F'|' '{gsub(/ /,"",$2); print $2}')
      case "$STAGE_RAW" in
        gsd-plan|superpowers|parallel|execute|review|sg-retro|hookify|ship|complete) ;;
-       *) echo "Unknown stage '${STAGE_RAW}' in .planning/HANDOFF.md last row. Schema may be corrupted." >&2; exit 1 ;;
+       *) echo "[warn] Unknown stage '${STAGE_RAW}' in HANDOFF.md — treating as init" >&2
+          STAGE_RAW="init" ;;
      esac
    fi
 
@@ -129,6 +130,7 @@ Reads .planning/STATE.md, .planning/HANDOFF.md, .planning/ROADMAP.md (next-phase
        ;;
      gsd-plan)    NEXT_CMD="/super-gsd:sg-execute" ;;
      superpowers) NEXT_CMD="/super-gsd:sg-review" ;;
+     parallel)    NEXT_CMD="/super-gsd:sg-review" ;;
      execute)     NEXT_CMD="/super-gsd:sg-review" ;;
      review)      NEXT_CMD="/super-gsd:sg-learn" ;;
      sg-retro)    NEXT_CMD="/super-gsd:sg-ship" ;;

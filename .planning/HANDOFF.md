@@ -92,3 +92,6 @@
 | 2026-05-21T15:15:33Z | 19-result-integration-regression | superpowers | review | - |
 | 2026-05-21T21:48:37Z | 20 | init | gsd-plan | - |
 | 2026-05-22T01:26:34Z | 20-sg-plan-visual-companion | gsd-plan | execute-done | 8786955 |
+| 2026-05-22T05:25:58Z | 20-sg-plan-visual-companion | execute-done | complete | - |
+| 2026-05-22T07:07:58Z | 22-skills | complete | gsd-plan | - |
+| 2026-05-22T07:11:16Z | 22-skills | gsd-plan | superpowers | 2932276 |

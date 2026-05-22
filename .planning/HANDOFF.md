@@ -101,3 +101,6 @@
 | 2026-05-22T11:37:06Z | 23-plugin-commands | review | superpowers | 04f8c4c |
 | 2026-05-22T12:09:58Z | 23-plugin-commands | superpowers | review | - |
 | 2026-05-22T13:47:13Z | 21 | review | gsd-plan | - |
+| 2026-05-22T13:59:49Z | 21-sg-ui-plan | review | superpowers | 7244bd2 |
+| 2026-05-22T14:08:10Z | 21-sg-ui-plan | superpowers | review | - |
+| 2026-05-22T14:11:27Z | 21-sg-ui-plan | review | sg-retro | - |

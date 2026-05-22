@@ -2,6 +2,22 @@
 
 All notable changes to `super-gsd` are documented in this file. Format follows [Keep a Changelog](https://keepachangelog.com/).
 
+## [0.0.29] - 2026-05-22
+
+### Added
+
+- sg-ui-plan: UI 설계 전용 brainstorming 명령 추가 — `superpowers:brainstorming`을 직접 실행하고 HANDOFF.md에 `To: ui-plan` 행을 기록한다
+- docs/COMMANDS.md: sg-ui-plan Quick Reference 행 + 전체 설명 섹션 추가 (Workflow 다이어그램 optional 브랜치 표시 포함)
+- README.md: Commands 테이블에 sg-ui-plan 행 추가
+
+### Fixed
+
+- sg-ui-plan SKILL.md: brainstorming 완료 후 next-step 안내 echo 추가 (`/super-gsd:sg-execute`)
+
+### Other
+
+- sg-rules (로컬): warn-plugin-json-skills-field, warn-state-phase-awk-token 규칙 생성
+
 ## [0.0.28] - 2026-05-22
 
 ### Fixed

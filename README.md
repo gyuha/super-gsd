@@ -30,6 +30,7 @@ Quick reference for all `/super-gsd:sg-*` slash commands.
 | `/super-gsd:sg-start` | Scaffold a new project or milestone via `gsd-new-project` | At the very beginning of a new project or milestone |
 | `/super-gsd:sg-explore` | Map and analyse the codebase via `gsd-map-codebase` | After `sg-start`, before planning |
 | `/super-gsd:sg-plan` | Gather phase context then create an execution plan (2-step chain: `gsd-discuss-phase` → `gsd-plan-phase`) | After `sg-explore`, when ready to plan |
+| `/super-gsd:sg-ui-plan` | UI 설계 전용 brainstorming — `superpowers:brainstorming`을 직접 실행한다 | sg-plan에서 Visual Companion 없이 진행했지만 UI 설계가 필요할 때 |
 | `/super-gsd:sg-execute` | Package the current phase plan and hand off to Superpowers (`superpowers:executing-plans`) | After `sg-plan` is complete |
 | `/super-gsd:sg-review` | Request a code review via `superpowers:requesting-code-review` | After implementation is complete |
 | `/super-gsd:sg-learn` | Run a retrospective via `sg-retro` to extract patterns and generate hooks | After the review is done |

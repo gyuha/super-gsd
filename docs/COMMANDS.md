@@ -22,6 +22,7 @@ sg-start → sg-explore → sg-plan → sg-execute → sg-review → sg-learn �
 | `/super-gsd:sg-start` | `gsd-new-project` | `[project-name]` | Scaffold a new project or milestone |
 | `/super-gsd:sg-explore` | `gsd-map-codebase` | (none) | Map and analyse the codebase |
 | `/super-gsd:sg-plan` | `gsd-discuss-phase` → `gsd-plan-phase` | `[phase]` | Gather context and create a phase plan (2-step chain) |
+| `/super-gsd:sg-ui-plan` | `superpowers:brainstorming` Skill | `[phase]` | UI 설계 전용 brainstorming 실행 |
 | `/super-gsd:sg-execute` | `superpowers:executing-plans` Skill | `[phase]` | Package phase plan and hand off to Superpowers |
 | `/super-gsd:sg-review` | `superpowers:requesting-code-review` | (none) | Request a code review via Superpowers |
 | `/super-gsd:sg-learn` | `super-gsd:sg-retro` | (none) | Run retrospective via sg-retro to capture patterns |
@@ -95,6 +96,24 @@ Progress output:
 ```
 
 After completion, the command prints a message guiding you to run `sg-execute` next.
+
+---
+
+## sg-ui-plan
+
+**Slash command:** `/super-gsd:sg-ui-plan`
+
+**Maps to:** `superpowers:brainstorming` Skill
+
+**Arguments:** `[phase]` — optional. Defaults to the current phase from `.planning/STATE.md`.
+
+**What it does:** ROADMAP.md에서 대상 phase 섹션을 읽고, `superpowers:brainstorming` Agent를 실행하여 UI 설계 세션을 진행한다. 완료 후 `.planning/HANDOFF.md`에 `To: ui-plan` 행을 기록한다. `sg-plan`의 Visual Companion 분기를 독립 명령으로 분리한 것이며, brainstorming 완료 후 별도 plan-phase 호출 없이 종료된다.
+
+**Example:**
+```
+/super-gsd:sg-ui-plan
+/super-gsd:sg-ui-plan 21
+```
 
 ---
 

@@ -115,3 +115,6 @@
 | 2026-05-23T02:27:38Z | 24-skills | ship | gsd-plan | - |
 | 2026-05-23T11:23:41Z | 25-fix-and-verify | init | gsd-plan | - |
 | 2026-05-23T11:50:12Z | 25-fix-and-verify | init | superpowers | c08aef3 |
+| 2026-05-23T11:53:25Z | 25-fix-and-verify | init | sg-retro | - |
+| 2026-05-23T13:31:39Z | 26-sg-next | sg-retro | gsd-plan | - |
+| 2026-05-23T13:42:59Z | 26-sg-next | gsd-plan | superpowers | fa08575 |

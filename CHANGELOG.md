@@ -2,6 +2,23 @@
 
 All notable changes to `super-gsd` are documented in this file. Format follows [Keep a Changelog](https://keepachangelog.com/).
 
+## [0.0.32] - 2026-05-23
+
+### Added
+
+- `sg-next` 신규 스킬: HANDOFF.md + STATE.md를 읽어 현재 워크플로우 단계를 자동 감지하고 다음 sg-* 명령을 확인 없이 즉시 invoke. 모호한 상태(complete/init)에서만 AskUserQuestion 표시
+- sg-status 라우팅 테이블과 동일한 11개 분기 복제(D-07 inline-replication), macOS 이식성 보장
+
+### Fixed
+
+- `sg-next` enum 화이트리스트 누락 수정: sg-next가 To 컬럼에 기록된 후 재실행 시 crash 발생하던 버그 수정 — 화이트리스트에 추가 후 FROM 컬럼으로 투명 통과
+- `sg-next` HANDOFF append 순서 수정: complete/init 분기에서 cancel 전에 무조건 append되어 감사 로그가 오염되던 버그 수정 — 사용자 확인 후에만 append
+
+### Changed
+
+- README.md / README.ko.md: sg-next 명령 추가(Commands 테이블, 로드맵 Phase 26), 명령 수 14개 → 16개
+- CLAUDE.md: SKILL.md 수 17 → 18 반영, sg-next 데이터 흐름 추가, Developer Profile 플레이스홀더 제거, stop_hook.py 테스트 명령 추가
+
 ## [0.0.31] - 2026-05-23
 
 ### Fixed

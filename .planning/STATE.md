@@ -3,15 +3,15 @@ gsd_state_version: 1.0
 milestone: v2.0
 milestone_name: Commands → Skills 마이그레이션
 status: completed
-stopped_at: Phase 23 context gathered
-last_updated: "2026-05-22T23:53:19.339Z"
-last_activity: 2026-05-23 -- Phase 22 complete (VERIFICATION PASSED)
+stopped_at: Phase 23 complete — v2.0 ready for milestone close
+last_updated: "2026-05-23T00:00:00.000Z"
+last_activity: 2026-05-23 -- Phase 23 complete (PC-01, PC-02, DOC-01, DOC-02 PASSED)
 progress:
   total_phases: 10
-  completed_phases: 4
+  completed_phases: 6
   total_plans: 14
-  completed_plans: 9
-  percent: 40
+  completed_plans: 11
+  percent: 60
 ---
 
 # Project State
@@ -21,14 +21,14 @@ progress:
 See: .planning/PROJECT.md (updated 2026-05-21)
 
 **Core value:** GSD → Superpowers → sg-retro 단계 전환을 자동화하여 학습 루프가 끊기지 않도록 한다
-**Current focus:** Phase 22 — Skills 파일 생성
+**Current focus:** v2.0 milestone close
 
 ## Current Position
 
-Phase: 23 (Plugin 연결 + commands/ 제거 + 문서) — READY
-Plan: 0 of 2
-Status: Phase 22 complete — awaiting Phase 23 start
-Last activity: 2026-05-23 -- Phase 22 complete (VERIFICATION PASSED)
+Phase: 23 (Plugin 연결 + commands/ 제거 + 문서) — COMPLETE
+Plan: 2 of 2
+Status: All phases complete — awaiting v2.0 milestone close
+Last activity: 2026-05-23 -- Phase 23 complete (PC-01, PC-02, DOC-01, DOC-02 PASSED)
 
 ## Performance Metrics
 

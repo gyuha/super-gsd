@@ -8,7 +8,7 @@
 - [x] **v1.5 Visual Companion UI Integration** (2026-05-22) — sg-plan Visual Companion 분기 + sg-ui-plan 독립 명령 → [Archive](.planning/milestones/v1.5-ROADMAP.md)
 - [ ] **v1.3 Multi-Platform Support** — AGENTS.md 재작성 + .agents/skills/ 6개 + 플랫폼별 hooks + README Multi-Platform 섹션
 - [ ] **v1.4 Team Agent Parallel Execution** — PLAN.md 의존성 분석 + 병렬 Agent 실행 + 결과 통합
-- [ ] **v2.0 Commands → Skills 마이그레이션** — commands/*.md 14개를 skills/sg-*/SKILL.md 형식으로 전환 + commands/ 제거 + 문서 업데이트
+- [x] **v2.0 Commands → Skills 마이그레이션** (2026-05-23) — commands/*.md 14개를 skills/sg-*/SKILL.md 형식으로 전환 + commands/ 제거 + 문서 업데이트 → [Archive](.planning/milestones/v2.0-ROADMAP.md)
 
 ## Phases
 
@@ -35,10 +35,13 @@
 - [ ] **Phase 18: sg-parallel-execute 스킬 + 라우팅** — 신규 SKILL.md 생성 + sg-execute.md Step 9 병렬 라우팅 추가
 - [ ] **Phase 19: 결과 통합 + 호환성 회귀 테스트** — 오케스트레이터 HANDOFF 기록 + wave 없는 경로 완전 보존 검증
 
-### v2.0 Commands → Skills 마이그레이션 (Planned)
+<details>
+<summary>✅ v2.0 Commands → Skills 마이그레이션 (Phases 22-23) — SHIPPED 2026-05-23</summary>
 
-- [x] **Phase 22: Skills 파일 생성** — 14개 sg-* commands → skills/sg-*/SKILL.md 전환 (SC-01~06)
-- [x] **Phase 23: Plugin 연결 + commands/ 제거 + 문서** — plugin.json 업데이트 + commands/ 삭제 + CLAUDE.md/README 반영 (PC-01~02, DOC-01~02)
+- [x] Phase 22: Skills 파일 생성 (4/4 plans) — completed 2026-05-22
+- [x] Phase 23: Plugin 연결 + commands/ 제거 + 문서 (2/2 plans) — completed 2026-05-23
+
+</details>
 
 ## Phase Details
 

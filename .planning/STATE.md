@@ -21,7 +21,7 @@ progress:
 See: .planning/PROJECT.md (updated 2026-05-21)
 
 **Core value:** GSD → Superpowers → sg-retro 단계 전환을 자동화하여 학습 루프가 끊기지 않도록 한다
-**Current focus:** v2.0 milestone close
+**Current focus:** v1.3 Multi-Platform Support (next milestone)
 
 ## Current Position
 

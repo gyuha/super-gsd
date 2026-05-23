@@ -111,3 +111,7 @@
 | 2026-05-23T00:02:51Z | 23-plugin-commands | ship | complete | - |
 | 2026-05-23T00:08:30Z | 23-plugin-commands | ship | review | - |
 | 2026-05-23T00:16:19Z | 23-plugin-commands | ship | sg-retro | - |
+| 2026-05-23T00:53:06Z | 24 | ship | gsd-plan | - |
+| 2026-05-23T02:27:38Z | 24-skills | ship | gsd-plan | - |
+| 2026-05-23T11:23:41Z | 25-fix-and-verify | init | gsd-plan | - |
+| 2026-05-23T11:50:12Z | 25-fix-and-verify | init | superpowers | c08aef3 |

@@ -51,6 +51,49 @@
 
 ---
 
+## Milestone: v2.0 — Commands → Skills 마이그레이션
+
+**Shipped:** 2026-05-23
+**Phases:** 2 (22-23) | **Plans:** 6 | **Timeline:** 2일 (2026-05-22 → 2026-05-23)
+
+### What Was Built
+
+- 14개 sg-* SKILL.md — commands/*.md를 skills/sg-*/SKILL.md 형식으로 완전 이전
+- plugin.json commands 키 제거 + commands/ 디렉토리 git rm 삭제 — skills/가 단일 소스
+- CLAUDE.md + README.md/ko.md skills/ 기준 재서술
+- Phase 22 코드 리뷰 → auto-fix: Critical 3개, Warning 7개 버그 사전 차단
+
+### What Worked
+
+- **완전 복사(exact copy) 전략**: content 변경 없이 frontmatter + 블록 전체 복사 — 14개 파일 모두 로직 손실 없이 검증 통과
+- **gsd-code-review --fix 자동화**: Phase 22 완료 후 코드 리뷰 + auto-fix 사이클이 7개 버그를 자동 수정 — 수동 검토 없이 실용적 품질 보증
+- **구조적 분리 (Phase 22/23)**: "파일 생성"과 "플러그인 전환"을 분리해 Phase 22가 완전 reversible — 23이 실패해도 22는 온전
+
+### What Was Inefficient
+
+- **"이미 완료된 작업" 패턴 반복**: Phase 22, 23 모두 실제 코드 작업이 플랜보다 먼저 완료되어 SUMMARY.md 수동 작성 필요 — plan-first 원칙이 아직 체화 안 됨
+- **플랜 체커 3개 BLOCKER**: 이미 완료된 작업에 맞게 플랜이 업데이트되지 않아 plan checker가 BLOCKER를 발견 — 작업 완료 후 플랜 갱신 필요
+- **RESEARCH.md RESOLVED 마커 누락**: plan checker가 감지했으나 실제 기능에는 영향 없었음 — 관리 오버헤드
+
+### Patterns Established
+
+- **SKILL.md 구조**: YAML frontmatter(name, description, argument-hint) + `<objective>` / `<process>` / `<success_criteria>` 블록 — 표준 슬래시 명령 구조로 확정
+- **코드 리뷰 → auto-fix 사이클**: Phase 실행 후 gsd-code-review 22 --fix 패턴 — 다음 마일스톤부터 표준 절차로 통합
+
+### Key Lessons
+
+1. **플랜 완료 후 즉시 SUMMARY.md 작성**: 세션이 끊기기 전에 작성해야 다음 세션에서 "이미 완료" 재확인이 불필요
+2. **gsd-code-review --fix는 Phase 실행 직후 실행**: 버그가 신선할 때 수정이 빠름, 다음 Phase 진입 전에 완료
+3. **plan-first 원칙**: 코드 작업이 먼저 되더라도 PLAN.md는 그 작업을 반영한 "검증" 플랜으로 즉시 업데이트해야 함
+
+### Cost Observations
+
+- 6 plans, 17 commits, 26 files modified, +1098 lines
+- Sessions: 2일 (v1.5 직후 연속 작업)
+- Notable: Phase 22 코드 리뷰가 가장 높은 ROI — 7개 버그를 7개 원자적 커밋으로 자동 수정
+
+---
+
 ## Cross-Milestone Trends
 
 ### Process Evolution
@@ -58,8 +101,14 @@
 | Milestone | Phases | Plans | Key Change |
 |-----------|--------|-------|------------|
 | v1.0 MVP | 5 | 11 | 최초 릴리스 — 기준선 확립 |
+| v1.1 Reliability | 3 | 3 | sg-health 진단 + 상태 정확도 개선 |
+| v1.2 Self-Contained | 5 | 5 | sg-retro 내장 + rule runner + hookify 의존성 제거 |
+| v1.5 Visual Companion | 2 | 3 | sg-ui-plan + sg-plan Visual Companion 분기 |
+| v2.0 Commands→Skills | 2 | 6 | commands/ → skills/ 마이그레이션 완료 |
 
 ### Top Lessons (Verified Across Milestones)
 
 1. `hooks API 제약 선행 확인` — Claude Code hooks는 systemMessage만 지원, skill invoke 불가
 2. `sg- prefix 명명 일관성` — 모든 명령에 sg- prefix 유지로 타 플러그인과 충돌 없음
+3. `plan-first 원칙` — 코드 작업 먼저 하더라도 PLAN.md는 즉시 현재 상태 반영하여 갱신
+4. `Phase 완료 후 코드 리뷰 표준화` — gsd-code-review --fix 사이클을 Phase 표준 절차로 통합

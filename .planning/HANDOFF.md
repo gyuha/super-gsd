@@ -108,3 +108,6 @@
 | 2026-05-22T14:34:28Z | 22-skills | ship | complete | - |
 | 2026-05-22T23:46:17Z | 23-plugin-commands | ship | complete | - |
 | 2026-05-22T23:53:44Z | 23-plugin-commands | ship | gsd-plan | - |
+| 2026-05-23T00:02:51Z | 23-plugin-commands | ship | complete | - |
+| 2026-05-23T00:08:30Z | 23-plugin-commands | ship | review | - |
+| 2026-05-23T00:16:19Z | 23-plugin-commands | ship | sg-retro | - |

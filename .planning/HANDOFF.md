@@ -106,3 +106,5 @@
 | 2026-05-22T14:11:27Z | 21-sg-ui-plan | review | sg-retro | - |
 | 2026-05-22T14:30:29Z | 21-sg-ui-plan | sg-retro | ship | - |
 | 2026-05-22T14:34:28Z | 22-skills | ship | complete | - |
+| 2026-05-22T23:46:17Z | 23-plugin-commands | ship | complete | - |
+| 2026-05-22T23:53:44Z | 23-plugin-commands | ship | gsd-plan | - |

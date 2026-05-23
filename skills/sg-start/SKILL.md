@@ -68,7 +68,7 @@ Reads .planning/STATE.md, .planning/HANDOFF.md, .planning/ROADMAP.md (next-phase
      STAGE_RAW=$(echo "$LAST_ROW" | awk -F'|' '{gsub(/ /,"",$5); print $5}')
      TS=$(echo "$LAST_ROW" | awk -F'|' '{gsub(/ /,"",$2); print $2}')
      case "$STAGE_RAW" in
-       gsd-plan|superpowers|parallel|execute|review|sg-retro|hookify|ship|complete) ;;
+       gsd-plan|ui-plan|superpowers|parallel|execute|review|sg-retro|hookify|ship|complete) ;;
        *) echo "[warn] Unknown stage '${STAGE_RAW}' in HANDOFF.md — treating as init" >&2
           STAGE_RAW="init" ;;
      esac
@@ -78,6 +78,7 @@ Reads .planning/STATE.md, .planning/HANDOFF.md, .planning/ROADMAP.md (next-phase
    case "$STAGE_RAW" in
      init)         STAGE_DISPLAY="init" ;;
      gsd-plan)     STAGE_DISPLAY="gsd" ;;
+     ui-plan)      STAGE_DISPLAY="gsd" ;;
      superpowers)  STAGE_DISPLAY="superpowers" ;;
      parallel)     STAGE_DISPLAY="superpowers" ;;
      execute)      STAGE_DISPLAY="superpowers" ;;
@@ -129,6 +130,7 @@ Reads .planning/STATE.md, .planning/HANDOFF.md, .planning/ROADMAP.md (next-phase
        fi
        ;;
      gsd-plan)    NEXT_CMD="/super-gsd:sg-execute" ;;
+     ui-plan)     NEXT_CMD="/super-gsd:sg-execute" ;;
      superpowers) NEXT_CMD="/super-gsd:sg-review" ;;
      parallel)    NEXT_CMD="/super-gsd:sg-review" ;;
      execute)     NEXT_CMD="/super-gsd:sg-review" ;;

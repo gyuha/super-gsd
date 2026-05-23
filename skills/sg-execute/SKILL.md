@@ -47,15 +47,19 @@ This command is self-contained — no external workflow files imported. Reads .p
      echo "Could not resolve current phase. Pass phase number explicitly: /super-gsd:sg-execute <phase>"
      exit 1
    fi
-   if ! echo "$PHASE_NUM" | grep -qE '^[0-9]+$'; then
-     echo "Invalid phase number: '$PHASE_NUM'. Must be a positive integer."
+   if ! echo "$PHASE_NUM" | grep -qE '^[0-9]+(\.[0-9]+)?$'; then
+     echo "Invalid phase number: '$PHASE_NUM'. Must be a positive integer or decimal (e.g. 7 or 7.1)."
      exit 1
    fi
    ```
 
 2. **Locate phase directory.** Glob `.planning/phases/<phase>-*` (with zero-padded two-digit prefix support). Example:
    ```bash
-   PHASE_PAD=$(printf "%02d" "$PHASE_NUM" 2>/dev/null || echo "$PHASE_NUM")
+   if echo "$PHASE_NUM" | grep -qE '^[0-9]+$'; then
+     PHASE_PAD=$(printf "%02d" "$PHASE_NUM")
+   else
+     PHASE_PAD="$PHASE_NUM"
+   fi
    PHASE_DIR=$(ls -d .planning/phases/${PHASE_PAD}-* 2>/dev/null | head -1)
    if [ -z "$PHASE_DIR" ]; then
      # Try unpadded match for decimal phases
@@ -78,7 +82,7 @@ This command is self-contained — no external workflow files imported. Reads .p
      echo "No '### Phase ${PHASE_NUM}:' header found in .planning/ROADMAP.md. Aborting."
      exit 1
    fi
-   PHASE_NAME=$(echo "$PHASE_HEADER" | sed 's/.*Phase [0-9]*: //')
+   PHASE_NAME=$(echo "$PHASE_HEADER" | sed 's/.*Phase [0-9.]*: //')
    HEADER_LINE=$(echo "$PHASE_HEADER" | cut -d: -f1)
 
    GOAL=$(awk "NR>${HEADER_LINE} && /^\*\*Goal\*\*:/{sub(/^\*\*Goal\*\*:[[:space:]]*/,\"\"); print; exit}" .planning/ROADMAP.md)

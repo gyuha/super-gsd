@@ -31,7 +31,7 @@ Self-contained — reads .planning/HANDOFF.md, .planning/STATE.md, .planning/ROA
      STAGE_RAW=$(echo "$LAST_ROW" | awk -F'|' '{gsub(/ /,"",$5); print $5}')
      TS=$(echo "$LAST_ROW" | awk -F'|' '{gsub(/ /,"",$2); print $2}')
      case "$STAGE_RAW" in
-       gsd-plan|superpowers|parallel|execute|review|sg-retro|hookify|ship|complete) ;;
+       gsd-plan|ui-plan|superpowers|parallel|execute|review|sg-retro|hookify|ship|complete) ;;
        *) echo "Unknown stage '${STAGE_RAW}' in .planning/HANDOFF.md last row. Schema may be corrupted." >&2; exit 1 ;;
      esac
    fi
@@ -40,6 +40,7 @@ Self-contained — reads .planning/HANDOFF.md, .planning/STATE.md, .planning/ROA
    case "$STAGE_RAW" in
      init)         STAGE_DISPLAY="init" ;;
      gsd-plan)     STAGE_DISPLAY="gsd" ;;
+     ui-plan)      STAGE_DISPLAY="gsd" ;;
      superpowers)  STAGE_DISPLAY="superpowers" ;;
      parallel)     STAGE_DISPLAY="superpowers" ;;
      execute)      STAGE_DISPLAY="superpowers" ;;
@@ -87,6 +88,7 @@ Self-contained — reads .planning/HANDOFF.md, .planning/STATE.md, .planning/ROA
        fi
        ;;
      gsd-plan)    NEXT_CMD="/super-gsd:sg-execute" ;;
+     ui-plan)     NEXT_CMD="/super-gsd:sg-execute" ;;
      superpowers) NEXT_CMD="/super-gsd:sg-review" ;;
      parallel)    NEXT_CMD="/super-gsd:sg-review" ;;
      execute)     NEXT_CMD="/super-gsd:sg-review" ;;

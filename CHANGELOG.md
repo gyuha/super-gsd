@@ -2,6 +2,16 @@
 
 All notable changes to `super-gsd` are documented in this file. Format follows [Keep a Changelog](https://keepachangelog.com/).
 
+## [0.0.31] - 2026-05-23
+
+### Fixed
+
+- `sg-status`, `sg-start`: `ui-plan` stage를 인식 못해 "Schema may be corrupted" 오류가 발생하던 버그 수정 — display enum에 `ui-plan` 추가, 다음 명령 `sg-execute`로 라우팅
+- `sg-execute`: 소수점 phase (`7.1` 등) 검증 실패 버그 수정 — 정규식을 `^[0-9]+(\.[0-9]+)?$`로 변경, zero-pad 정수에만 적용
+- `sg-retro`: 소수점 phase 거부 버그 수정 — `sg-execute`와 동일한 정규식 적용, 정수 전용 zero-pad 조건부 처리
+- `sg-retro`, `sg-learn`: HANDOFF.md 기록 시점을 success-based로 변경 — retro 실패/취소 시 `sg-status`가 `sg-ship`으로 잘못 안내하던 문제 해결
+- v2.1 Skills 품질 검토 완료: 17개 SKILL.md description GOOD 등급 전환 + `sg-retro` 중복 블록 390줄로 축소
+
 ## [0.0.30] - 2026-05-23
 
 ### Changed

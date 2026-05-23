@@ -35,9 +35,14 @@ else
   STAGE_RAW=$(echo "$LAST_ROW" | awk -F'|' '{gsub(/ /,"",$5); print $5}')
   TS=$(echo "$LAST_ROW" | awk -F'|' '{gsub(/ /,"",$2); print $2}')
   case "$STAGE_RAW" in
-    gsd-plan|ui-plan|superpowers|parallel|execute|review|sg-retro|hookify|ship|complete) ;;
+    gsd-plan|ui-plan|superpowers|parallel|execute|review|sg-retro|hookify|ship|complete|sg-next) ;;
     *) echo "Unknown stage '${STAGE_RAW}' in .planning/HANDOFF.md last row. Schema may be corrupted." >&2; exit 1 ;;
   esac
+  # sg-next는 메타-전환 행이므로 직전 FROM 컬럼(column $4)을 실제 현재 stage로 사용한다
+  if [ "$STAGE_RAW" = "sg-next" ]; then
+    STAGE_RAW=$(echo "$LAST_ROW" | awk -F'|' '{gsub(/ /,"",$4); print $4}')
+    [ -z "$STAGE_RAW" ] && STAGE_RAW="init"
+  fi
 fi
 case "$STAGE_RAW" in
   init)         STAGE_DISPLAY="init" ;;
@@ -100,21 +105,25 @@ esac
 # --- END next-command routing block ---
 ```
 
-**Step 4 — HANDOFF.md append (D-04: invoke 전 기록):**
+**Step 4 — HANDOFF.md 초기화 + 비-모호 stage append (D-04):**
+
+complete/init에서는 append를 Step 5 확인 후로 미룬다. cancel 시 감사 로그가 오염되지 않도록 한다.
 
 ```bash
 HANDOFF_FILE=".planning/HANDOFF.md"
-if [ ! -f "$HANDOFF_FILE" ] || ! grep -q "Timestamp.*Phase.*From.*To.*Plan Hash" "$HANDOFF_FILE" 2>/dev/null; then
+if [ ! -f "$HANDOFF_FILE" ]; then
   mkdir -p "$(dirname "$HANDOFF_FILE")"
   printf '| Timestamp | Phase | From | To | Plan Hash |\n| --- | --- | --- | --- | --- |\n' > "$HANDOFF_FILE"
 fi
-TS=$(date -u +%Y-%m-%dT%H:%M:%SZ)
 PHASE_PAD=$(printf "%02d" "${PHASE_NUM:-0}" 2>/dev/null || echo "${PHASE_NUM:-0}")
 PHASE_SLUG=$(ls -d .planning/phases/${PHASE_PAD}-* 2>/dev/null | head -1 | xargs basename 2>/dev/null)
 [ -z "$PHASE_SLUG" ] && PHASE_SLUG="${PHASE_NUM:-unknown}"
-FROM_STAGE=$(grep -E '^\| [0-9]{4}-' "$HANDOFF_FILE" | tail -1 | awk -F'|' '{gsub(/ /,"",$5); print $5}')
-[ -z "$FROM_STAGE" ] && FROM_STAGE="init"
-echo "| $TS | $PHASE_SLUG | $FROM_STAGE | sg-next | - |" >> "$HANDOFF_FILE"
+if [ "$STAGE_RAW" != "complete" ] && [ "$STAGE_RAW" != "init" ]; then
+  TS=$(date -u +%Y-%m-%dT%H:%M:%SZ)
+  FROM_STAGE=$(grep -E '^\| [0-9]{4}-' "$HANDOFF_FILE" | tail -1 | awk -F'|' '{gsub(/ /,"",$5); print $5}')
+  [ -z "$FROM_STAGE" ] && FROM_STAGE="init"
+  echo "| $TS | $PHASE_SLUG | $FROM_STAGE | sg-next | - |" >> "$HANDOFF_FILE"
+fi
 ```
 
 **Step 5 — complete/init 분기 (D-02, D-03):**
@@ -135,8 +144,8 @@ AskUserQuestion(
 )
 ```
 
-- "sg-new 실행" 선택 시: `Skill(skill="super-gsd:sg-new", args="")`
-- "취소" 선택 시: `Cancelled. No changes made.` emit 후 종료
+- "sg-new 실행" 선택 시: HANDOFF.md에 `| TS | PHASE_SLUG | complete | sg-next | - |` 행을 append한 뒤 `Skill(skill="super-gsd:sg-new", args="")`
+- "취소" 선택 시: `Cancelled. No changes made.` emit 후 종료 (append 없음)
 
 `STAGE_RAW`가 `init`이면 — PHASE_NUM이 있을 때:
 
@@ -156,8 +165,8 @@ AskUserQuestion(
 
 PHASE_NUM이 없을 때는 label=`"sg-plan 실행"`, description=`"/super-gsd:sg-plan 을 호출합니다."` 로 대체한다.
 
-- "sg-plan" 선택 시: PHASE_NUM이 있으면 `Skill(skill="super-gsd:sg-plan", args="PHASE_NUM")`, 없으면 `Skill(skill="super-gsd:sg-plan", args="")`
-- "취소" 선택 시: `Cancelled. No changes made.` emit 후 종료
+- "sg-plan" 선택 시: HANDOFF.md에 `| TS | PHASE_SLUG | init | sg-next | - |` 행을 append한 뒤, PHASE_NUM이 있으면 `Skill(skill="super-gsd:sg-plan", args="PHASE_NUM")`, 없으면 `Skill(skill="super-gsd:sg-plan", args="")`
+- "취소" 선택 시: `Cancelled. No changes made.` emit 후 종료 (append 없음)
 
 **Step 6 — 1줄 출력 후 즉시 invoke (complete/init 이외 모든 stage):**
 
@@ -174,6 +183,7 @@ echo "→ $NEXT_CMD"
 - `/super-gsd:sg-learn` → `Skill(skill="super-gsd:sg-learn", args="")`
 - `/super-gsd:sg-ship` → `Skill(skill="super-gsd:sg-ship", args="")`
 - `/super-gsd:sg-complete` → `Skill(skill="super-gsd:sg-complete", args="")`
+- `/super-gsd:sg-new` → `Skill(skill="super-gsd:sg-new", args="")`
 - `/super-gsd:sg-plan N` → `Skill(skill="super-gsd:sg-plan", args="N")`
 - `/super-gsd:sg-plan` (인자 없음) → `Skill(skill="super-gsd:sg-plan", args="")`
 

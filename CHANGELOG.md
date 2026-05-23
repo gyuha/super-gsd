@@ -2,6 +2,21 @@
 
 All notable changes to `super-gsd` are documented in this file. Format follows [Keep a Changelog](https://keepachangelog.com/).
 
+## [0.0.30] - 2026-05-23
+
+### Changed
+
+- v2.0 Commands → Skills 마이그레이션 완료: 14개 SKILL.md 생성 + plugin.json commands 키 제거 + commands/ 디렉토리 삭제
+- Phase 23: CLAUDE.md + README.md/ko.md skills/ 기준 재서술
+- fix(sg-start): unknown stage → init fallback 추가, parallel case NEXT_CMD 누락 수정
+- fix(sg-execute): PHASE_NUM 빈 값 empty-check 추가, complete/ship 재실행 동작 문서화
+- fix(sg-review): BASE_SHA == HEAD_SHA 오류 메시지 개선
+- fix(sg-plan): gsd-sdk roadmap.get-phase dead code 41줄 제거
+- fix(sg-quick): node JSON 파싱 → python3 교체
+- fix(sg-health): step 8 중복 번호 수정
+- fix(sg-lessons): milestone 인수 검증 추가
+- retro(23): Phase 23 회고 6-렌즈 (SSC/4Ls/DSPM/Sail/5why/Analyze) lessons 저장
+
 ## [0.0.29] - 2026-05-22
 
 ### Added

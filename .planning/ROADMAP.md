@@ -261,7 +261,7 @@ Plans:
 **Plans**: 1 plan
 Plans:
 
-- [ ] 25-01-PLAN.md — 17개 description rewrite + sg-retro 리팩토링 + 25-VERIFICATION.md 생성 (QUAL-06)
+- [x] 25-01-PLAN.md — 17개 description rewrite + sg-retro 리팩토링 + 25-VERIFICATION.md 생성 (QUAL-06)
 
 ---
 
@@ -285,4 +285,4 @@ Plans:
 | 22. Skills 파일 생성 | v2.0 | 4/4 | Complete   | 2026-05-22 |
 | 23. Plugin 연결 + commands/ 제거 + 문서 | v2.0 | 2/2 | Complete | 2026-05-23 |
 | 24. Skills 품질 검토 | v2.1 | 2/1 | Complete    | 2026-05-23 |
-| 25. 문제점 수정 및 검증 | v2.1 | 0/1 | Not started | - |
+| 25. 문제점 수정 및 검증 | v2.1 | 1/1 | Complete   | 2026-05-23 |

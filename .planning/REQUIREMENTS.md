@@ -14,7 +14,7 @@
 - [x] **QUAL-03**: 모든 스킬에 `<objective>`, `<process>`, `<success_criteria>` 블록이 존재하고 내용이 완전하다
 - [x] **QUAL-04**: `<process>` 단계가 실행 가능하고 명확하며, Bash 스니펫이 macOS/Linux 호환성을 준수한다
 - [x] **QUAL-05**: 스킬 간 cross-reference(`Skill()` 호출, `Agent()` 호출)가 유효한 skill 이름을 가리킨다
-- [ ] **QUAL-06**: 발견된 모든 문제점이 수정되고 재검증된다
+- [x] **QUAL-06**: 발견된 모든 문제점이 수정되고 재검증된다
 
 ---
 

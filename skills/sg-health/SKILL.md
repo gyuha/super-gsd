@@ -1,6 +1,6 @@
 ---
 name: sg-health
-description: Diagnose super-gsd installation status — GSD, Superpowers, Hookify (optional), hooks, HANDOFF.md, STATE.md
+description: Use this when something feels broken or before onboarding — diagnoses GSD, Superpowers, hooks, HANDOFF.md, and STATE.md installation line by line.
 ---
 
 <objective>

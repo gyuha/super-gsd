@@ -1,6 +1,6 @@
 ---
 name: sg-update
-description: Check, install, or update GSD, superpowers, and super-gsd to their latest versions.
+description: Use this when GSD, Superpowers, or super-gsd may be outdated — checks each tool's installation status and installs or updates to the latest version.
 argument-hint: "No arguments needed."
 ---
 

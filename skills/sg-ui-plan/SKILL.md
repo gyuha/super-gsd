@@ -1,6 +1,6 @@
 ---
 name: sg-ui-plan
-description: Run UI design brainstorming for a phase — resolves phase context from ROADMAP.md and invokes superpowers:brainstorming.
+description: Use this when UI design brainstorming is needed before planning a phase — reads phase context from ROADMAP.md and runs superpowers:brainstorming.
 argument-hint: "[phase] - optional. Defaults to STATE.md current phase."
 ---
 

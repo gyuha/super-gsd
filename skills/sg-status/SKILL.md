@@ -1,6 +1,6 @@
 ---
 name: sg-status
-description: Show the current super-gsd workflow stage, last handoff timestamp, and the next recommended command.
+description: Use this when you want to know where you are in the workflow — reads HANDOFF.md and STATE.md to show the current stage and the next recommended command.
 ---
 
 <objective>

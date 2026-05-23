@@ -1,6 +1,6 @@
 ---
 name: sg-start
-description: Start or resume a project — detects existing session, prompts Resume / Start new milestone / Cancel; falls back to gsd-new-project when no session is detected.
+description: Use this when starting or resuming work on a project — detects an existing session via STATE.md and prompts Resume, Start new milestone, or Cancel; falls back to gsd-new-project if no session exists.
 argument-hint: "[project-name] - optional. Used only when no existing .planning/STATE.md is detected; passed through to gsd-new-project."
 ---
 

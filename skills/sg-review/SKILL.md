@@ -1,6 +1,6 @@
 ---
 name: sg-review
-description: Request a code review via Superpowers — derives git range, collects description, then invokes superpowers:requesting-code-review Skill.
+description: Use this when implementation is complete and a code review is needed — derives the git range automatically and invokes superpowers:requesting-code-review.
 argument-hint: "[description of what was implemented]"
 ---
 

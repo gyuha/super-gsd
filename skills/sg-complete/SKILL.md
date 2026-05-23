@@ -1,6 +1,6 @@
 ---
 name: sg-complete
-description: Complete the current milestone — invokes gsd-complete-milestone Skill.
+description: Use this when the current milestone is done and needs to be closed — invokes gsd-complete-milestone to finalize and archive the milestone.
 argument-hint: "[phase] - optional. Defaults to STATE.md current phase."
 ---
 

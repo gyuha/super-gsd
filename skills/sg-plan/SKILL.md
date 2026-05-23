@@ -1,6 +1,6 @@
 ---
 name: sg-plan
-description: Gather context (injects .planning/lessons/) and create a phase plan — chains gsd-discuss-phase → gsd-plan-phase automatically.
+description: Use this when a new phase needs to be planned — injects prior lessons, then chains gsd-discuss-phase and gsd-plan-phase automatically.
 argument-hint: "[phase] - optional. Defaults to STATE.md current phase."
 ---
 

@@ -1,6 +1,6 @@
 ---
 name: sg-new
-description: Start a new milestone — invokes gsd-new-milestone Skill.
+description: Use this when a milestone is complete and a new one should begin — invokes gsd-new-milestone to set up the next milestone.
 argument-hint: "[milestone-name] - optional. Passed through to gsd-new-milestone."
 ---
 

@@ -1,6 +1,6 @@
 ---
 name: sg-parallel-execute
-description: Reads parallel_groups.json and dispatches up to 3 parallel Task() agents — one per independent group — to execute PLAN.md tasks directly without calling superpowers:executing-plans.
+description: Use this when parallel_groups.json exists and independent plan groups should run concurrently — dispatches up to 3 Task() agents, one per group, without calling superpowers:executing-plans.
 ---
 
 <objective>

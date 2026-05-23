@@ -1,6 +1,6 @@
 ---
 name: sg-lessons
-description: List prior lessons from .planning/lessons/ (written by sg-retro) and inject them as context for the next GSD phase.
+description: Use this when starting a new phase and you want to review prior lessons before planning — lists weighted lessons from .planning/lessons/ as context.
 argument-hint: "[phase] - optional. If provided, show only lessons for that phase number."
 ---
 

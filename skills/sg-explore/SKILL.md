@@ -1,6 +1,6 @@
 ---
 name: sg-explore
-description: Explore and map the codebase — invokes gsd-map-codebase Skill.
+description: Use this when you need a map of the current codebase structure — invokes gsd-map-codebase to analyse and document the project layout.
 ---
 
 <objective>

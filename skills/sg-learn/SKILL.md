@@ -1,6 +1,6 @@
 ---
 name: sg-learn
-description: Run a retrospective via sg-retro to extract patterns and generate hooks from this session.
+description: Use this when a phase is complete and you want to extract patterns and lessons from the session — delegates to sg-retro for structured retrospective.
 ---
 
 <objective>

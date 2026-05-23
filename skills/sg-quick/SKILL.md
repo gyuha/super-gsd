@@ -1,6 +1,6 @@
 ---
 name: sg-quick
-description: Execute a small, ad-hoc task with GSD guarantees (atomic commits, STATE.md tracking). Quick mode for one-off tasks that don't need a full phase plan.
+description: Use this when a small ad-hoc task needs to be done without a full phase plan — runs gsd-planner then superpowers:executing-plans with atomic commits and STATE.md tracking.
 argument-hint: "<task description> [--discuss] [--research] [--validate] [--full]"
 ---
 

@@ -1,6 +1,6 @@
 ---
 name: sg-ship
-description: Complete and ship the current milestone — invokes gsd-ship Skill.
+description: Use this when the milestone is ready to be shipped — resolves the current phase and invokes gsd-ship to complete delivery.
 argument-hint: "[phase] - optional. Defaults to STATE.md current phase."
 ---
 

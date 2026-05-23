@@ -1,6 +1,6 @@
 ---
 name: sg-execute
-description: Hand off the current GSD phase to Superpowers — package PLAN/REQ/SC into a single prompt and auto-invoke superpowers:executing-plans.
+description: Use this when the phase plan is ready and implementation should begin — packages PLAN/REQ/SC and hands off to Superpowers via superpowers:executing-plans.
 argument-hint: "[phase] - optional. Defaults to STATE.md current phase"
 ---
 

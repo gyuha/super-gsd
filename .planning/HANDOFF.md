@@ -118,3 +118,7 @@
 | 2026-05-23T11:53:25Z | 25-fix-and-verify | init | sg-retro | - |
 | 2026-05-23T13:31:39Z | 26-sg-next | sg-retro | gsd-plan | - |
 | 2026-05-23T13:42:59Z | 26-sg-next | gsd-plan | superpowers | fa08575 |
+| 2026-05-23T14:19:21Z | 26-sg-next | superpowers | review | - |
+| 2026-05-23T14:32:46Z | 26-sg-next | superpowers | review | - |
+| 2026-05-23T15:00:48Z | 26-sg-next | superpowers | sg-retro | - |
+| 2026-05-23T15:22:06Z | 26-sg-next | superpowers | ship | - |

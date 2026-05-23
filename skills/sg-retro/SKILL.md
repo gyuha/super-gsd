@@ -8,7 +8,7 @@ Run a structured retrospective on a GSD phase. Auto-collect phase artifacts and 
 </objective>
 
 <execution_context>
-Self-contained. Reads `.planning/STATE.md`, `.planning/phases/{NN}-*/{NN}-CONTEXT.md`, all `{NN}-*-PLAN.md`, all `{NN}-*-SUMMARY.md`, and `git log`/`git diff`. Writes only `.planning/lessons/{NN}-{YYYY-MM-DD}.md` (and creates `.planning/lessons/` if missing). The Skill bypasses `hooks/stop_hook.py` entirely — no helper invocation, no Python lessons writer — and never touches the append-only audit log used by other sg-* commands.
+Self-contained. Reads `.planning/STATE.md`, `.planning/phases/{NN}-*/{NN}-CONTEXT.md`, all `{NN}-*-PLAN.md`, all `{NN}-*-SUMMARY.md`, and `git log`/`git diff`. Writes `.planning/lessons/{NN}-{YYYY-MM-DD}.md` (creates `.planning/lessons/` if missing) and appends one row to `.planning/HANDOFF.md` after all lenses complete successfully. The Skill bypasses `hooks/stop_hook.py` entirely — no helper invocation, no Python lessons writer.
 </execution_context>
 
 <process>
@@ -31,9 +31,9 @@ if [ -z "$PHASE_RAW" ]; then
   # --- END STATE.md Phase parsing block ---
 fi
 
-# D-02: 숫자만 허용
-if ! printf '%s' "$PHASE_RAW" | grep -qE '^[0-9]+$'; then
-  echo "Phase token must be a number. Got: '${PHASE_RAW}'." >&2
+# D-02: 정수 또는 소수점 phase 허용 (예: 7, 7.1)
+if ! printf '%s' "$PHASE_RAW" | grep -qE '^[0-9]+(\.[0-9]+)?$'; then
+  echo "Phase token must be a number or decimal (e.g. 7 or 7.1). Got: '${PHASE_RAW}'." >&2
   if [ -d .planning/phases ]; then
     echo "Available phases:" >&2
     ls .planning/phases/ 2>/dev/null >&2 || echo "  (no phases yet)" >&2
@@ -41,7 +41,11 @@ if ! printf '%s' "$PHASE_RAW" | grep -qE '^[0-9]+$'; then
   exit 1
 fi
 
-PHASE_PAD=$(printf "%02d" "$PHASE_RAW")
+if printf '%s' "$PHASE_RAW" | grep -qE '^[0-9]+$'; then
+  PHASE_PAD=$(printf "%02d" "$PHASE_RAW")
+else
+  PHASE_PAD="$PHASE_RAW"
+fi
 PHASE_DIR=$(ls -d .planning/phases/${PHASE_PAD}-*/ 2>/dev/null | head -1)
 
 # D-04: 디렉터리 미존재 에러
@@ -373,10 +377,27 @@ else
 fi
 ```
 
+After the auto-suggest block completes, record the successful retrospective in HANDOFF.md (success-based — only runs when at least one lens has been written):
+
+```bash
+# HANDOFF.md 기록 — 모든 lens 완료 + lessons 저장 확인 후 (success-based, D-04)
+HANDOFF_FILE=".planning/HANDOFF.md"
+if [ ! -f "$HANDOFF_FILE" ] || ! grep -q "Timestamp.*Phase.*From.*To.*Plan Hash" "$HANDOFF_FILE" 2>/dev/null; then
+  mkdir -p "$(dirname "$HANDOFF_FILE")"
+  printf '| Timestamp | Phase | From | To | Plan Hash |\n| --- | --- | --- | --- | --- |\n' > "$HANDOFF_FILE"
+fi
+TS_H=$(date -u +%Y-%m-%dT%H:%M:%SZ)
+PHASE_SLUG_H=$(ls -d .planning/phases/${PHASE_PAD}-* 2>/dev/null | head -1 | xargs basename 2>/dev/null)
+[ -z "$PHASE_SLUG_H" ] && PHASE_SLUG_H="${PHASE_RAW:-unknown}"
+FROM_STAGE_H=$(grep -E '^\| [0-9]{4}-' "$HANDOFF_FILE" | tail -1 | awk -F'|' '{gsub(/ /,"",$5); print $5}')
+[ -z "$FROM_STAGE_H" ] && FROM_STAGE_H="init"
+echo "| $TS_H | $PHASE_SLUG_H | $FROM_STAGE_H | sg-retro | - |" >> "$HANDOFF_FILE"
+```
+
 </process>
 
 <success_criteria>
-1. Calling `Skill(skill="sg-retro", args="...")` resolves the phase argument via zero-pad to exactly one `.planning/phases/{NN}-*/` directory. If no directory matches, the Skill emits an error to stderr and exits 1 (D-04).
+1. Calling `Skill(skill="sg-retro", args="...")` resolves the phase argument (integer or decimal, e.g. `7` or `7.1`) to exactly one `.planning/phases/{NN}-*/` directory; integers are zero-padded, decimals are used as-is. If no directory matches, the Skill emits an error to stderr and exits 1 (D-04).
 2. When the second argument is `ssc`/`4ls`/`dspm`/`sail`/`5why`/`analyze` (case-insensitive), AskUserQuestion is skipped. Otherwise the Skill invokes AskUserQuestion with header `Lens`, multiSelect:true, and six options carrying the `(ssc)`/`(4ls)`/`(dspm)`/`(sail)`/`(5why)`/`(analyze)` codes.
 3. Each lens output follows exactly: `## Lens: {name}` header + `_Captured: {ISO}_` italic line + lens-specific fixed subheadings + a `### Action Items` 3-column table (`priority | item | next step`) (D-09, D-12). No owner column.
 4. The lessons file is written to `.planning/lessons/{NN}-{YYYY-MM-DD}.md`. If the file does not exist, the top-level header and the first lens section are written; if it exists, only the new lens section is appended at the end (D-17, D-18, D-19, D-21). A same-day same-lens repeat uses a `(run 2)`/`(run 3)`/... disambiguating suffix (D-20).

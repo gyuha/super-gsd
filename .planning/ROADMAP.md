@@ -9,7 +9,7 @@
 - [ ] **v1.3 Multi-Platform Support** — AGENTS.md 재작성 + .agents/skills/ 6개 + 플랫폼별 hooks + README Multi-Platform 섹션
 - [ ] **v1.4 Team Agent Parallel Execution** — PLAN.md 의존성 분석 + 병렬 Agent 실행 + 결과 통합
 - [x] **v2.0 Commands → Skills 마이그레이션** (2026-05-23) — commands/*.md 14개를 skills/sg-*/SKILL.md 형식으로 전환 + commands/ 제거 + 문서 업데이트 → [Archive](.planning/milestones/v2.0-ROADMAP.md)
-- [ ] **v2.1 Skills 품질 검토 및 개선** — skill-creator 기준으로 17개 SKILL.md 파일 검토 + 문제점 수정
+- [x] **v2.1 Skills 품질 검토 및 개선** (2026-05-23) — skill-creator 기준으로 17개 SKILL.md 파일 검토 + 문제점 수정 → [Archive](.planning/milestones/v2.1-LESSONS.md)
 
 ## Phases
 

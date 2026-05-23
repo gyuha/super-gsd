@@ -56,9 +56,9 @@ Codex/다중 런타임 의존성 섹션 업데이트.
 
 | REQ-ID | Phase | Status | Notes |
 |--------|-------|--------|-------|
-| REF-01 | 27 | ⬜ Planned | README.md 1줄 |
-| REF-02 | 27 | ⬜ Planned | README.ko.md 1줄 |
-| REF-03 | 27 | ⬜ Planned | CLAUDE.md 1줄 |
-| REF-04 | 27 | ⬜ Planned | AGENTS.md 1줄 |
-| REF-05 | 27 | ⬜ Planned | sg-update/SKILL.md 7줄 |
-| REF-06 | 27 | ⬜ Planned | PROJECT.md 1줄 |
+| REF-01 | 27 | ✅ Validated | README.md 1줄 |
+| REF-02 | 27 | ✅ Validated | README.ko.md 1줄 |
+| REF-03 | 27 | ✅ Validated | CLAUDE.md 1줄 |
+| REF-04 | 27 | ✅ Validated | AGENTS.md 1줄 |
+| REF-05 | 27 | ✅ Validated | sg-update/SKILL.md 8줄 |
+| REF-06 | 27 | ✅ Validated | PROJECT.md 1줄 |

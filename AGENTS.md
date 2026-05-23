@@ -9,7 +9,7 @@ GSD → sg-retro 2단계 AI 개발 워크플로우를 Codex, Gemini CLI, Antigra
 ### Constraints
 
 - **Tech stack**: Bash/Python/Markdown 위주. `.agents/skills/` 스킬 파일로 동작.
-- **Dependencies**: `get-shit-done-cc` (GSD) 설치 권장. GSD 없이도 prose 폴백으로 실행 가능.
+- **Dependencies**: `@opengsd/get-shit-done-redux` (GSD) 설치 권장. GSD 없이도 prose 폴백으로 실행 가능.
 - **Non-invasive**: 기존 GSD 파일을 수정하지 않고 외부에서 orchestrate한다.
 
 ## Quick Start

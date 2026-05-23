@@ -6,7 +6,7 @@ argument-hint: "No arguments needed."
 
 <objective>
 Check whether each tool in the super-gsd workflow is installed, install it if missing, or update it if present:
-- GSD (get-shit-done-cc) — npm package
+- GSD (@opengsd/get-shit-done-redux) — npm package
 - superpowers — Claude Code plugin
 - super-gsd — Claude Code plugin
 </objective>
@@ -29,22 +29,22 @@ else
   CLAUDE_AVAILABLE=true
 fi
 
-# GSD (get-shit-done-cc)
-if command -v gsd-sdk >/dev/null 2>&1 || npm list -g --depth=0 get-shit-done-cc >/dev/null 2>&1; then
+# GSD (@opengsd/get-shit-done-redux)
+if command -v gsd-sdk >/dev/null 2>&1 || npm list -g --depth=0 @opengsd/get-shit-done-redux >/dev/null 2>&1; then
   echo "Updating GSD..."
-  GSD_BEFORE=$(gsd-sdk --version 2>/dev/null || npm list -g --depth=0 get-shit-done-cc 2>/dev/null | grep -Eo '[0-9]+\.[0-9]+\.[0-9]+' | head -1 || echo 'unknown')
-  NPM_OUT=$(npm install -g get-shit-done-cc@latest 2>&1)
+  GSD_BEFORE=$(gsd-sdk --version 2>/dev/null || npm list -g --depth=0 @opengsd/get-shit-done-redux 2>/dev/null | grep -Eo '[0-9]+\.[0-9]+\.[0-9]+' | head -1 || echo 'unknown')
+  NPM_OUT=$(npm install -g @opengsd/get-shit-done-redux@latest 2>&1)
   NPM_EC=$?
   echo "$NPM_OUT" | tail -3
   if [ "$NPM_EC" -ne 0 ]; then
     GSD_STATUS="failed (exit ${NPM_EC})"
   else
-    GSD_AFTER=$(gsd-sdk --version 2>/dev/null || npm list -g --depth=0 get-shit-done-cc 2>/dev/null | grep -Eo '[0-9]+\.[0-9]+\.[0-9]+' | head -1 || echo 'unknown')
+    GSD_AFTER=$(gsd-sdk --version 2>/dev/null || npm list -g --depth=0 @opengsd/get-shit-done-redux 2>/dev/null | grep -Eo '[0-9]+\.[0-9]+\.[0-9]+' | head -1 || echo 'unknown')
     GSD_STATUS="updated (${GSD_BEFORE} → ${GSD_AFTER})"
   fi
 else
   echo "Installing GSD..."
-  NPM_OUT=$(npm install -g get-shit-done-cc@latest 2>&1)
+  NPM_OUT=$(npm install -g @opengsd/get-shit-done-redux@latest 2>&1)
   NPM_EC=$?
   echo "$NPM_OUT" | tail -3
   if [ "$NPM_EC" -eq 0 ]; then
@@ -128,7 +128,7 @@ echo ""
 echo "Done."
 echo ""
 echo "Tools:"
-echo "- GSD (get-shit-done-cc): ${GSD_STATUS}"
+echo "- GSD (@opengsd/get-shit-done-redux): ${GSD_STATUS}"
 echo "- superpowers: ${SUPERPOWERS_STATUS}"
 echo "- super-gsd: ${SUPERGSD_STATUS}"
 echo ""

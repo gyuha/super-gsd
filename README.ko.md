@@ -217,7 +217,7 @@ cp -r ~/super-gsd/hooks .
 
 `super-gsd`는 세 가지 도구를 오케스트레이션한다. `sg-update`(위)가 자동으로 설치하며, 이 섹션은 각 도구가 무엇을 하는지에 대한 참고 자료다.
 
-- **GSD** (`get-shit-done-cc`) — 이 플러그인이 읽는 `/gsd-*` 계획 명령과 `.planning/` 디렉터리 컨벤션을 제공한다.
+- **GSD** (`@opengsd/get-shit-done-redux`) — 이 플러그인이 읽는 `/gsd-*` 계획 명령과 `.planning/` 디렉터리 컨벤션을 제공한다.
 - **Superpowers** (`claude-plugins-official/superpowers`) — 빌드/리뷰 단계에서 사용하는 `superpowers:*` 스킬 트리를 제공한다.
 
 ### 선택적 도구

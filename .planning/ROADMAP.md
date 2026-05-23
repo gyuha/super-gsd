@@ -11,6 +11,7 @@
 - [x] **v2.0 Commands → Skills 마이그레이션** (2026-05-23) — commands/*.md 14개를 skills/sg-*/SKILL.md 형식으로 전환 + commands/ 제거 + 문서 업데이트 → [Archive](.planning/milestones/v2.0-ROADMAP.md)
 - [x] **v2.1 Skills 품질 검토 및 개선** (2026-05-23) — skill-creator 기준으로 17개 SKILL.md 파일 검토 + 문제점 수정 → [Archive](.planning/milestones/v2.1-LESSONS.md)
 - [x] **v2.2 sg-next Auto-Advance** (2026-05-24) — sg-next 명령으로 현재 단계 자동 감지 + 다음 sg-* 명령 즉시 invoke → [Archive](.planning/milestones/v2.2-ROADMAP.md)
+- [ ] **v2.3 GSD Repository Migration Update** — GSD 저장소 이전(`get-shit-done-cc` → `@opengsd/get-shit-done-redux`)에 따른 참조 업데이트
 
 ## Phases
 
@@ -275,6 +276,26 @@ Plans:
 
 ---
 
+## v2.3 GSD Repository Migration Update
+
+### Phase 27: GSD 참조 업데이트
+
+**Goal**: super-gsd 내 모든 `get-shit-done-cc` 참조를 `@opengsd/get-shit-done-redux`로 교체하여 새 GSD 저장소(`open-gsd/get-shit-done-redux`)에 맞게 동기화한다
+**Depends on**: Phase 26 (v2.3 신규 시작)
+**Requirements**: REF-01, REF-02, REF-03, REF-04, REF-05, REF-06
+**Success Criteria** (what must be TRUE):
+
+  1. `grep -r "get-shit-done-cc" README.md README.ko.md CLAUDE.md AGENTS.md skills/ .planning/PROJECT.md` 결과가 0건
+  2. 교체된 모든 파일에서 `@opengsd/get-shit-done-redux` 참조가 정상적으로 등장
+  3. `skills/sg-update/SKILL.md`의 감지·설치 로직이 새 패키지명을 사용
+
+**Plans**: 1 plan
+Plans:
+
+- [ ] 27-01-PLAN.md — README.md/README.ko.md/CLAUDE.md/AGENTS.md/sg-update/SKILL.md/PROJECT.md 참조 교체 (REF-01~06)
+
+---
+
 ## Progress
 
 | Phase | Milestone | Plans Complete | Status | Completed |
@@ -297,3 +318,4 @@ Plans:
 | 24. Skills 품질 검토 | v2.1 | 2/1 | Complete    | 2026-05-23 |
 | 25. 문제점 수정 및 검증 | v2.1 | 1/1 | Complete   | 2026-05-23 |
 | 26. sg-next 스킬 구현 | v2.2 | 1/1 | Complete | 2026-05-24 |
+| 27. GSD 참조 업데이트 | v2.3 | 0/1 | Not started | - |

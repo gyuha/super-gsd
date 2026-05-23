@@ -1,17 +1,17 @@
 ---
 gsd_state_version: 1.0
-milestone: v2.2
-milestone_name: sg-next Auto-Advance
-status: complete
-stopped_at: Phase 26 shipped — v0.0.33
+milestone: v2.3
+milestone_name: GSD Repository Migration Update
+status: planning
+stopped_at: Phase 27 — Not started
 last_updated: "2026-05-24T00:00:00.000Z"
-last_activity: 2026-05-24 -- v2.2 milestone complete
+last_activity: 2026-05-24 -- v2.3 milestone started
 progress:
   total_phases: 1
-  completed_phases: 1
+  completed_phases: 0
   total_plans: 1
-  completed_plans: 1
-  percent: 100
+  completed_plans: 0
+  percent: 0
 ---
 
 # Project State
@@ -21,14 +21,14 @@ progress:
 See: .planning/PROJECT.md (updated 2026-05-24)
 
 **Core value:** GSD → Superpowers → sg-retro 단계 전환을 자동화하여 학습 루프가 끊기지 않도록 한다
-**Current focus:** v2.2 complete — Planning next milestone (v2.3)
+**Current focus:** v2.3 — GSD 저장소 이전에 따른 참조 업데이트
 
 ## Current Position
 
-Phase: 26
+Phase: 27
 Plan: Not started
-Status: Ready to execute
-Last activity: 2026-05-23 -- Phase 26 planning complete
+Status: Ready to plan
+Last activity: 2026-05-24 -- v2.3 milestone started, REQUIREMENTS.md + ROADMAP.md 생성 완료
 
 ## Performance Metrics
 
@@ -45,13 +45,13 @@ Last activity: 2026-05-23 -- Phase 26 planning complete
 Decisions are logged in PROJECT.md Key Decisions table.
 Recent decisions affecting current work:
 
-- v2.2 scope: sg-next는 sg-status의 라우팅 로직을 재사용하되 invoke까지 수행한다
-- v2.2 scope: 확인 없이 자동 실행 (gsd-progress --next 패턴)
-- v2.2 scope: 모호한 상황(complete/init)에서만 AskUserQuestion 사용
+- v2.3 scope: 6개 파일(README.md, README.ko.md, CLAUDE.md, AGENTS.md, sg-update/SKILL.md, PROJECT.md)의 `get-shit-done-cc` → `@opengsd/get-shit-done-redux` 교체
+- v2.3 scope: `.agents/skills/`·`sg-health` 코드는 변경 불필요 (경로·바이너리명 불변)
+- v2.3 scope: 단일 Phase(27), 단일 Plan(27-01)으로 처리
 
 ### Pending Todos
 
-None yet.
+None.
 
 ### Blockers/Concerns
 
@@ -59,7 +59,7 @@ None.
 
 ## Deferred Items
 
-Items acknowledged and deferred at milestone close on 2026-05-24:
+Items acknowledged and deferred at v2.2 milestone close on 2026-05-24:
 
 | Category | Item | Status |
 |----------|------|--------|
@@ -79,6 +79,6 @@ Items acknowledged and deferred at milestone close on 2026-05-24:
 
 ## Session Continuity
 
-Last session: 2026-05-23T13:31:16.340Z
-Stopped at: Phase 26 context gathered
-Resume file: .planning/phases/26-sg-next/26-CONTEXT.md
+Last session: 2026-05-24T00:00:00.000Z
+Stopped at: v2.3 milestone planning complete
+Resume file: .planning/REQUIREMENTS.md

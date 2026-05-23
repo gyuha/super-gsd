@@ -328,14 +328,14 @@ skill-creator는 "undertrigger" 문제를 명시적으로 경고한다. descript
 
 ---
 
-## 열린 질문
+## 열린 질문 (RESOLVED)
 
-1. **QUAL-02 수정 범위**
+1. **QUAL-02 수정 범위** [RESOLVED: D-05 결정 — Phase 24는 이슈 목록만, 수정은 Phase 25 범위]
    - 알려진 것: 16개 스킬의 description에 트리거 컨텍스트 없음
    - 불명확한 것: description 개선이 Phase 24(검토)의 범위인지 Phase 25(수정)의 범위인지
    - 권고: REQUIREMENTS.md가 QUAL-06(수정)을 Phase 25에 할당하므로, Phase 24 산출물은 "문제 목록 작성"에 한정. 각 스킬에 대한 개선 제안 초안도 함께 작성하면 Phase 25가 독립 실행 가능해진다.
 
-2. **sg-retro 548줄 처리**
+2. **sg-retro 548줄 처리** [RESOLVED: D-09/D-10 결정 — Phase 25 리팩토링 대상, 라운드 트립 중복 삭제 전략]
    - 알려진 것: skill-creator 권장 500줄 초과
    - 불명확한 것: 실제 런타임 성능 영향 여부
    - 권고: Phase 24는 이상 관찰로 기록만. 개선은 Phase 25 재량 사항으로 전달.

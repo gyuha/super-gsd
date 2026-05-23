@@ -15,7 +15,7 @@ Reads .planning/STATE.md, .planning/HANDOFF.md, .planning/ROADMAP.md (next-phase
 <process>
 1. **STATE.md Phase 파싱 (D-01, D-03; Phase 7 D-07 inline-replication lock).**
 
-   `commands/sg-status.md` lines 17-21 블록을 글자 그대로 복제한다 (drift 시 양쪽 동시 수정):
+   `skills/sg-status/SKILL.md` lines 17-21 블록을 글자 그대로 복제한다 (drift 시 양쪽 동시 수정):
    ```bash
    # --- BEGIN STATE.md Phase parsing block (D-07: Phase 8 sg-start이 동일 블록을 복제) ---
    PHASE_LINE=$(grep -E '^Phase:' .planning/STATE.md 2>/dev/null | head -1 | sed -E 's/^Phase:[[:space:]]*//' | sed -E 's/[[:space:]]+$//')
@@ -58,7 +58,7 @@ Reads .planning/STATE.md, .planning/HANDOFF.md, .planning/ROADMAP.md (next-phase
    fi
    ```
 
-   HANDOFF.md 마지막 데이터 행 + Stage 매핑 — `commands/sg-status.md` lines 26-48 블록을 글자 그대로 복제 (drift 시 양쪽 동시 수정):
+   HANDOFF.md 마지막 데이터 행 + Stage 매핑 — `skills/sg-status/SKILL.md` lines 26-48 블록을 글자 그대로 복제 (drift 시 양쪽 동시 수정):
    ```bash
    LAST_ROW=$(grep -E '^\| [0-9]{4}-' .planning/HANDOFF.md 2>/dev/null | tail -1)
    if [ -z "$LAST_ROW" ]; then
@@ -105,7 +105,7 @@ Reads .planning/STATE.md, .planning/HANDOFF.md, .planning/ROADMAP.md (next-phase
 
 4. **NEXT_PHASE 계산 + Next 명령 매핑 (D-04 Next 라인; Phase 2 D-28 lock).**
 
-   `commands/sg-status.md` lines 62-74 + lines 78-99 두 블록을 글자 그대로 복제 (drift 시 양쪽 동시 수정):
+   `skills/sg-status/SKILL.md` lines 62-74 + lines 78-99 두 블록을 글자 그대로 복제 (drift 시 양쪽 동시 수정):
    ```bash
    if [ "$STAGE_RAW" = "hookify" ] || [ "$STAGE_RAW" = "ship" ]; then
      if echo "$PHASE_NUM" | grep -qE '^[0-9]+$'; then

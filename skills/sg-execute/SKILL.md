@@ -40,9 +40,13 @@ This command is self-contained — no external workflow files imported. Reads .p
      PHASE_NUM=$(grep -E '^Phase:' .planning/STATE.md | head -1 | sed -E 's/^Phase:[[:space:]]*//' | awk '{print $1}')
    fi
    ```
-   If extraction fails, print exactly: `Could not resolve current phase. Pass phase number explicitly: /super-gsd:sg-execute <phase>` and exit.
-   Validate that PHASE_NUM is a positive integer before proceeding:
+   If extraction fails (empty PHASE_NUM), print exactly: `Could not resolve current phase. Pass phase number explicitly: /super-gsd:sg-execute <phase>` and exit.
+   Validate that PHASE_NUM is non-empty and a positive integer before proceeding:
    ```bash
+   if [ -z "$PHASE_NUM" ]; then
+     echo "Could not resolve current phase. Pass phase number explicitly: /super-gsd:sg-execute <phase>"
+     exit 1
+   fi
    if ! echo "$PHASE_NUM" | grep -qE '^[0-9]+$'; then
      echo "Invalid phase number: '$PHASE_NUM'. Must be a positive integer."
      exit 1

@@ -281,5 +281,5 @@ Plans:
 | 21. sg-ui-plan 명령 + 등록 + 문서화 | v1.5 | 0/2 | Not started | - |
 | 22. Skills 파일 생성 | v2.0 | 4/4 | Complete   | 2026-05-22 |
 | 23. Plugin 연결 + commands/ 제거 + 문서 | v2.0 | 2/2 | Complete | 2026-05-23 |
-| 24. Skills 품질 검토 | v2.1 | 2/1 | Complete   | 2026-05-23 |
+| 24. Skills 품질 검토 | v2.1 | 2/1 | Complete    | 2026-05-23 |
 | 25. 문제점 수정 및 검증 | v2.1 | 0/TBD | Not started | - |

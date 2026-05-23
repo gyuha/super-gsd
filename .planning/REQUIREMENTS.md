@@ -9,11 +9,11 @@
 
 ### Skills 품질 검토
 
-- [ ] **QUAL-01**: 17개 SKILL.md 파일 각각의 YAML frontmatter에 필수 필드(`name`, `description`)가 존재한다
-- [ ] **QUAL-02**: 각 `description` 필드가 "언제 사용해야 하는지"와 "무엇을 하는지"를 명확히 기술한다 (skill-creator 트리거링 기준)
-- [ ] **QUAL-03**: 모든 스킬에 `<objective>`, `<process>`, `<success_criteria>` 블록이 존재하고 내용이 완전하다
-- [ ] **QUAL-04**: `<process>` 단계가 실행 가능하고 명확하며, Bash 스니펫이 macOS/Linux 호환성을 준수한다
-- [ ] **QUAL-05**: 스킬 간 cross-reference(`Skill()` 호출, `Agent()` 호출)가 유효한 skill 이름을 가리킨다
+- [x] **QUAL-01**: 17개 SKILL.md 파일 각각의 YAML frontmatter에 필수 필드(`name`, `description`)가 존재한다
+- [x] **QUAL-02**: 각 `description` 필드가 "언제 사용해야 하는지"와 "무엇을 하는지"를 명확히 기술한다 (skill-creator 트리거링 기준)
+- [x] **QUAL-03**: 모든 스킬에 `<objective>`, `<process>`, `<success_criteria>` 블록이 존재하고 내용이 완전하다
+- [x] **QUAL-04**: `<process>` 단계가 실행 가능하고 명확하며, Bash 스니펫이 macOS/Linux 호환성을 준수한다
+- [x] **QUAL-05**: 스킬 간 cross-reference(`Skill()` 호출, `Agent()` 호출)가 유효한 skill 이름을 가리킨다
 - [ ] **QUAL-06**: 발견된 모든 문제점이 수정되고 재검증된다
 
 ---

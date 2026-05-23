@@ -2,15 +2,15 @@
 gsd_state_version: 1.0
 milestone: v2.1
 milestone_name: Skills 품질 검토 및 개선
-status: executing
-stopped_at: Phase 23 context gathered
-last_updated: "2026-05-23T11:04:35.484Z"
+status: ready_to_plan
+stopped_at: Phase 24 complete (2/1) — ready to discuss Phase 25
+last_updated: 2026-05-23T11:12:05.703Z
 last_activity: 2026-05-23 -- Phase 24 execution started
 progress:
   total_phases: 2
   completed_phases: 0
   total_plans: 1
-  completed_plans: 0
+  completed_plans: 13
   percent: 0
 ---
 
@@ -21,20 +21,20 @@ progress:
 See: .planning/PROJECT.md (updated 2026-05-21)
 
 **Core value:** GSD → Superpowers → sg-retro 단계 전환을 자동화하여 학습 루프가 끊기지 않도록 한다
-**Current focus:** Phase 24 — skills
+**Current focus:** Phase 25 — 문제점 수정 및 검증
 
 ## Current Position
 
-Phase: 24 (skills) — EXECUTING
-Plan: 1 of 1
-Status: Executing Phase 24
-Last activity: 2026-05-23 -- Phase 24 execution started
+Phase: 25
+Plan: Not started
+Status: Ready to plan
+Last activity: 2026-05-23
 
 ## Performance Metrics
 
 **Velocity:**
 
-- Total plans completed: 3
+- Total plans completed: 5
 - Average duration: ~6min
 - Total execution time: ~18min
 
@@ -44,6 +44,7 @@ Last activity: 2026-05-23 -- Phase 24 execution started
 |-------|-------|-------|----------|
 | 1 | 2 | ~15min | ~7.5min |
 | 2 | 1 | ~3min | ~3min |
+| 24 | 2 | - | - |
 
 **Recent Trend:**
 

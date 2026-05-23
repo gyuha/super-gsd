@@ -123,3 +123,4 @@
 | 2026-05-23T15:00:48Z | 26-sg-next | superpowers | sg-retro | - |
 | 2026-05-23T15:22:06Z | 26-sg-next | superpowers | ship | - |
 | 2026-05-23T15:24:29Z | 26-sg-next | superpowers | complete | - |
+| 2026-05-23T23:25:43Z | 27-gsd-repo-migration | complete | ship | - |

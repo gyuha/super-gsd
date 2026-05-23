@@ -2,6 +2,17 @@
 
 All notable changes to `super-gsd` are documented in this file. Format follows [Keep a Changelog](https://keepachangelog.com/).
 
+## [0.0.33] - 2026-05-24
+
+### Fixed
+
+- `sg-next` HANDOFF init 체크 두 번째 조건 누락 수정: 파일이 존재하지만 헤더가 없는 경우(빈 파일) 데이터 행이 헤더 없이 append되던 버그 수정 — 2조건 형식으로 변경
+- `sg-next` complete/init 분기 FROM_STAGE 하드코딩 수정: 고정값 대신 HANDOFF.md 마지막 행에서 동적으로 읽도록 변경 — transparent-pass 시 감사 로그 정확성 개선
+
+### Added
+
+- Phase 26 DSPM 회고 기록 `.planning/lessons/26-2026-05-23.md`
+
 ## [0.0.32] - 2026-05-23
 
 ### Added

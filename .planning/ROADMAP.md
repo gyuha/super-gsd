@@ -254,11 +254,14 @@ Plans:
 **Requirements**: QUAL-06
 **Success Criteria** (what must be TRUE):
 
-  1. Phase 24 FINDINGS.md의 모든 문제점이 수정된다
-  2. 수정된 스킬이 frontmatter + 블록 구조 기준을 충족한다
-  3. 변경된 파일이 커밋된다
+  1. 17개 SKILL.md의 description이 모두 "Use this when [상황] — [동작]." 패턴으로 교체된다
+  2. sg-retro SKILL.md의 <lens_templates> 블록(157줄)이 삭제되어 391줄 이하가 된다
+  3. 25-VERIFICATION.md에 수정 전/후 비교 테이블(17행)이 생성된다
 
-**Plans**: TBD (Phase 24 결과에 따라 결정)
+**Plans**: 1 plan
+Plans:
+
+- [ ] 25-01-PLAN.md — 17개 description rewrite + sg-retro 리팩토링 + 25-VERIFICATION.md 생성 (QUAL-06)
 
 ---
 
@@ -282,4 +285,4 @@ Plans:
 | 22. Skills 파일 생성 | v2.0 | 4/4 | Complete   | 2026-05-22 |
 | 23. Plugin 연결 + commands/ 제거 + 문서 | v2.0 | 2/2 | Complete | 2026-05-23 |
 | 24. Skills 품질 검토 | v2.1 | 2/1 | Complete    | 2026-05-23 |
-| 25. 문제점 수정 및 검증 | v2.1 | 0/TBD | Not started | - |
+| 25. 문제점 수정 및 검증 | v2.1 | 0/1 | Not started | - |

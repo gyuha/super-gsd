@@ -243,6 +243,9 @@ Plans:
   5. cross-reference(Skill(), Agent()) 유효성이 확인되고 문제 발견 시 목록이 작성된다
 
 **Plans**: 1 plan
+Plans:
+
+- [ ] 24-01-PLAN.md — QUAL 감사 결과를 24-SUMMARY.md로 문서화 (QUAL-01, QUAL-02, QUAL-03, QUAL-04, QUAL-05)
 
 ### Phase 25: 문제점 수정 및 검증
 

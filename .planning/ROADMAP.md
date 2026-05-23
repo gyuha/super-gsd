@@ -9,6 +9,7 @@
 - [ ] **v1.3 Multi-Platform Support** — AGENTS.md 재작성 + .agents/skills/ 6개 + 플랫폼별 hooks + README Multi-Platform 섹션
 - [ ] **v1.4 Team Agent Parallel Execution** — PLAN.md 의존성 분석 + 병렬 Agent 실행 + 결과 통합
 - [x] **v2.0 Commands → Skills 마이그레이션** (2026-05-23) — commands/*.md 14개를 skills/sg-*/SKILL.md 형식으로 전환 + commands/ 제거 + 문서 업데이트 → [Archive](.planning/milestones/v2.0-ROADMAP.md)
+- [ ] **v2.1 Skills 품질 검토 및 개선** — skill-creator 기준으로 17개 SKILL.md 파일 검토 + 문제점 수정
 
 ## Phases
 
@@ -224,6 +225,40 @@ Plans:
 
 ---
 
+---
+
+## v2.1 Skills 품질 검토 및 개선
+
+### Phase 24: Skills 품질 검토
+
+**Goal**: skill-creator 기준으로 17개 SKILL.md 파일 전체를 검토하고 문제점 목록을 작성한다
+**Depends on**: Phase 23 (v2.1 신규 시작)
+**Requirements**: QUAL-01, QUAL-02, QUAL-03, QUAL-04, QUAL-05
+**Success Criteria** (what must be TRUE):
+
+  1. 17개 SKILL.md 파일 모두에서 frontmatter 필수 필드(name, description) 존재 여부가 확인된다
+  2. 각 description 필드의 트리거링 품질(언제/무엇)이 평가된다
+  3. objective/process/success_criteria 블록 완전성이 확인된다
+  4. process 내 Bash 스니펫이 macOS/Linux 호환성 기준을 충족하는지 확인된다
+  5. cross-reference(Skill(), Agent()) 유효성이 확인되고 문제 발견 시 목록이 작성된다
+
+**Plans**: 1 plan
+
+### Phase 25: 문제점 수정 및 검증
+
+**Goal**: Phase 24에서 발견된 모든 문제점을 수정하고 재검증한다
+**Depends on**: Phase 24
+**Requirements**: QUAL-06
+**Success Criteria** (what must be TRUE):
+
+  1. Phase 24 FINDINGS.md의 모든 문제점이 수정된다
+  2. 수정된 스킬이 frontmatter + 블록 구조 기준을 충족한다
+  3. 변경된 파일이 커밋된다
+
+**Plans**: TBD (Phase 24 결과에 따라 결정)
+
+---
+
 ## Progress
 
 | Phase | Milestone | Plans Complete | Status | Completed |
@@ -242,4 +277,6 @@ Plans:
 | 20. sg-plan Visual Companion 통합 | v1.5 | 0/1 | Not started | - |
 | 21. sg-ui-plan 명령 + 등록 + 문서화 | v1.5 | 0/2 | Not started | - |
 | 22. Skills 파일 생성 | v2.0 | 4/4 | Complete   | 2026-05-22 |
-| 23. Plugin 연결 + commands/ 제거 + 문서 | v2.0 | 0/2 | Not started | - |
+| 23. Plugin 연결 + commands/ 제거 + 문서 | v2.0 | 2/2 | Complete | 2026-05-23 |
+| 24. Skills 품질 검토 | v2.1 | 0/1 | Not started | - |
+| 25. 문제점 수정 및 검증 | v2.1 | 0/TBD | Not started | - |

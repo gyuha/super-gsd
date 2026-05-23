@@ -1,17 +1,17 @@
 ---
 gsd_state_version: 1.0
-milestone: v2.0
-milestone_name: Commands → Skills 마이그레이션
-status: completed
-stopped_at: Phase 23 complete — v2.0 ready for milestone close
+milestone: v2.1
+milestone_name: Skills 품질 검토 및 개선
+status: planning
+stopped_at: ""
 last_updated: "2026-05-23T00:00:00.000Z"
-last_activity: 2026-05-23 -- Phase 23 complete (PC-01, PC-02, DOC-01, DOC-02 PASSED)
+last_activity: 2026-05-23 -- Milestone v2.1 started
 progress:
-  total_phases: 10
-  completed_phases: 6
-  total_plans: 14
-  completed_plans: 11
-  percent: 60
+  total_phases: 2
+  completed_phases: 0
+  total_plans: 0
+  completed_plans: 0
+  percent: 0
 ---
 
 # Project State
@@ -25,10 +25,10 @@ See: .planning/PROJECT.md (updated 2026-05-21)
 
 ## Current Position
 
-Phase: 23 (Plugin 연결 + commands/ 제거 + 문서) — COMPLETE
-Plan: 2 of 2
-Status: All phases complete — awaiting v2.0 milestone close
-Last activity: 2026-05-23 -- Phase 23 complete (PC-01, PC-02, DOC-01, DOC-02 PASSED)
+Phase: Not started (defining requirements)
+Plan: —
+Status: Defining requirements
+Last activity: 2026-05-23 — Milestone v2.1 started
 
 ## Performance Metrics
 

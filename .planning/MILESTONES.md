@@ -1,5 +1,39 @@
 # Milestones: super-gsd
 
+## v2.2 sg-next Auto-Advance
+
+**Shipped:** 2026-05-24
+**Phases:** 1 (Phase 26)
+**Plans:** 1
+**Commits:** 10 (a453dad..8dabfbf)
+**Files:** 16 changed, +1,774 / -21 lines
+**Timeline:** 2026-05-23 → 2026-05-24 (1 day)
+**Known deferred items at close:** 13 quick-task 잔여물 (see STATE.md `## Deferred Items`)
+
+### Delivered
+
+sg-next 명령 하나로 HANDOFF.md + STATE.md를 읽어 현재 워크플로우 단계를 자동 감지하고, sg-status와 동일한 11개 분기 라우팅 테이블로 다음 sg-* 명령을 확인 없이 즉시 invoke한다. complete/init 모호 상태에서만 AskUserQuestion으로 선택지를 제시하며, invoke 전 HANDOFF.md 감사 로그를 기록한다.
+
+### Key Accomplishments
+
+1. **sg-next 스킬 신규 생성** — D-07 inline-replication 3개 블록(STATE.md 파싱, HANDOFF 파싱+enum, routing case) 포함, 188줄
+2. **sg-next → sg-next 재진입 루프 방지** — whitelist에 `sg-next` 추가 + FROM 컬럼 transparent-pass로 자기참조 루프 차단
+3. **conditional HANDOFF append** — complete/init 분기에서 취소 시 감사 로그 오염 방지
+4. **sg-review 버그 수정 2건** — HANDOFF init 체크 2조건화, FROM_STAGE 동적 읽기 (코드 리뷰 → 즉각 수정 루프 입증)
+5. **Phase 26 DSPM 회고** — 3개 Mistakes 식별, 2개 sg-rule 생성 (warn-handoff-single-condition, warn-sg-next-self-reference)
+
+### Archive
+
+- `.planning/milestones/v2.2-ROADMAP.md`
+- `.planning/milestones/v2.2-REQUIREMENTS.md`
+- `.planning/milestones/v2.2-LESSONS.md`
+
+---
+
+*See [v2.2-ROADMAP.md](milestones/v2.2-ROADMAP.md) for full phase details.*
+
+---
+
 ## v1.1 Reliability
 
 **Shipped:** 2026-05-20

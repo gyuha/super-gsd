@@ -2,26 +2,26 @@
 gsd_state_version: 1.0
 milestone: v2.2
 milestone_name: sg-next Auto-Advance
-status: executing
-stopped_at: Phase 26 context gathered
-last_updated: "2026-05-23T13:41:35.115Z"
-last_activity: 2026-05-23 -- Phase 26 planning complete
+status: complete
+stopped_at: Phase 26 shipped — v0.0.33
+last_updated: "2026-05-24T00:00:00.000Z"
+last_activity: 2026-05-24 -- v2.2 milestone complete
 progress:
   total_phases: 1
-  completed_phases: 0
+  completed_phases: 1
   total_plans: 1
-  completed_plans: 0
-  percent: 0
+  completed_plans: 1
+  percent: 100
 ---
 
 # Project State
 
 ## Project Reference
 
-See: .planning/PROJECT.md (updated 2026-05-23)
+See: .planning/PROJECT.md (updated 2026-05-24)
 
 **Core value:** GSD → Superpowers → sg-retro 단계 전환을 자동화하여 학습 루프가 끊기지 않도록 한다
-**Current focus:** Phase 26 — sg-next Auto-Advance 스킬 구현
+**Current focus:** v2.2 complete — Planning next milestone (v2.3)
 
 ## Current Position
 
@@ -59,7 +59,23 @@ None.
 
 ## Deferred Items
 
-None.
+Items acknowledged and deferred at milestone close on 2026-05-24:
+
+| Category | Item | Status |
+|----------|------|--------|
+| quick_task | 260516-2qm-readme-md | deferred |
+| quick_task | 260516-2sw-readme-md-gsd-superpowers-hookify | deferred |
+| quick_task | 260516-dsz-sg-update-gsd-superpowers-hookify | deferred |
+| quick_task | 260516-edd-readme-md-readme-md-readme-ko-md | deferred |
+| quick_task | 260516-kqe-sg-complete-and-sg-new-command-mapping | deferred |
+| quick_task | 260516-kwk-sg-quick-superpowers-execution-mode | deferred |
+| quick_task | 260517-0ao-sg-execute-md | deferred |
+| quick_task | 260517-0lh-sg-quick-md | deferred |
+| quick_task | 260518-wvx-code-review-fixes | deferred |
+| quick_task | 260518-x6n-state-transition-timing-fixes | deferred |
+| quick_task | 260521-0kt-hookify-update | deferred |
+| quick_task | 260521-9bw-sg-update-md | deferred |
+| quick_task | 260521-cdw-readme-md-readme-ko-md | deferred |
 
 ## Session Continuity
 

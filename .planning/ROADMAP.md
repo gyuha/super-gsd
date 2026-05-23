@@ -10,7 +10,7 @@
 - [ ] **v1.4 Team Agent Parallel Execution** — PLAN.md 의존성 분석 + 병렬 Agent 실행 + 결과 통합
 - [x] **v2.0 Commands → Skills 마이그레이션** (2026-05-23) — commands/*.md 14개를 skills/sg-*/SKILL.md 형식으로 전환 + commands/ 제거 + 문서 업데이트 → [Archive](.planning/milestones/v2.0-ROADMAP.md)
 - [x] **v2.1 Skills 품질 검토 및 개선** (2026-05-23) — skill-creator 기준으로 17개 SKILL.md 파일 검토 + 문제점 수정 → [Archive](.planning/milestones/v2.1-LESSONS.md)
-- [ ] **v2.2 sg-next Auto-Advance** — sg-next 명령으로 현재 단계 자동 감지 + 다음 sg-* 명령 즉시 invoke
+- [x] **v2.2 sg-next Auto-Advance** (2026-05-24) — sg-next 명령으로 현재 단계 자동 감지 + 다음 sg-* 명령 즉시 invoke → [Archive](.planning/milestones/v2.2-ROADMAP.md)
 
 ## Phases
 
@@ -266,25 +266,12 @@ Plans:
 
 ---
 
-## v2.2 sg-next Auto-Advance
+<details>
+<summary>✅ v2.2 sg-next Auto-Advance (Phase 26) — SHIPPED 2026-05-24</summary>
 
-### Phase 26: sg-next 스킬 구현
+- [x] Phase 26: sg-next 스킬 구현 (1/1 plan) — completed 2026-05-24
 
-**Goal**: sg-next 명령 하나로 현재 워크플로우 단계를 감지하고 다음 sg-* 명령을 확인 없이 자동 invoke한다
-**Depends on**: Phase 25 (v2.2 신규 시작)
-**Requirements**: NEXT-01, NEXT-02, NEXT-03, NEXT-04, NEXT-05
-**Success Criteria** (what must be TRUE):
-
-  1. `skills/sg-next/SKILL.md`가 존재하며 HANDOFF.md + STATE.md를 읽어 현재 단계를 감지한다
-  2. sg-status 라우팅 테이블과 동일한 stage → next-command 매핑으로 다음 명령을 결정한다
-  3. `→ /super-gsd:sg-[cmd]` 1줄 출력 후 사용자 확인 없이 즉시 Skill()로 invoke한다
-  4. 단계가 `complete` 또는 `init`인 경우 AskUserQuestion으로 선택지를 제시한다
-  5. HANDOFF.md에 `To: sg-next` 행이 append된다
-
-**Plans**: 1 plan
-Plans:
-
-- [ ] 26-01-PLAN.md — skills/sg-next/SKILL.md 신규 생성 + HANDOFF append (NEXT-01~05)
+</details>
 
 ---
 
@@ -309,4 +296,4 @@ Plans:
 | 23. Plugin 연결 + commands/ 제거 + 문서 | v2.0 | 2/2 | Complete | 2026-05-23 |
 | 24. Skills 품질 검토 | v2.1 | 2/1 | Complete    | 2026-05-23 |
 | 25. 문제점 수정 및 검증 | v2.1 | 1/1 | Complete   | 2026-05-23 |
-| 26. sg-next 스킬 구현 | v2.2 | 0/1 | Not started | - |
+| 26. sg-next 스킬 구현 | v2.2 | 1/1 | Complete | 2026-05-24 |

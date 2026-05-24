@@ -23,15 +23,31 @@ Self-contained. Reads git history to derive BASE_SHA and HEAD_SHA, reads changed
 1. **Derive git range.**
    ```bash
    HEAD_SHA=$(git rev-parse HEAD)
-   BASE_SHA=$(git merge-base HEAD main 2>/dev/null \
-     || git merge-base HEAD master 2>/dev/null \
-     || git rev-parse HEAD~1 2>/dev/null \
-     || git rev-parse HEAD)
+   BASE_OVERRIDE=""
+   # ARGUMENTS가 SHA 또는 sha..sha 범위인 경우 base override로 사용
+   if printf '%s' "${ARGUMENTS:-}" | grep -qE '^[0-9a-f]{7,40}\.\.[0-9a-f]{7,40}$'; then
+     BASE_SHA=$(printf '%s' "$ARGUMENTS" | cut -d. -f1)
+     HEAD_SHA=$(printf '%s' "$ARGUMENTS" | sed 's/.*\.\.//')
+     BASE_OVERRIDE="$ARGUMENTS"
+   elif printf '%s' "${ARGUMENTS:-}" | grep -qE '^[0-9a-f]{7,40}$'; then
+     BASE_SHA=$(git rev-parse "$ARGUMENTS" 2>/dev/null)
+     if [ -z "$BASE_SHA" ]; then
+       echo "Error: '$ARGUMENTS' is not a valid SHA."
+       exit 1
+     fi
+     BASE_OVERRIDE="$ARGUMENTS"
+   else
+     BASE_SHA=$(git merge-base HEAD main 2>/dev/null \
+       || git merge-base HEAD master 2>/dev/null \
+       || git rev-parse HEAD~1 2>/dev/null \
+       || git rev-parse HEAD)
+   fi
    if [ "$BASE_SHA" = "$HEAD_SHA" ]; then
      echo "Error: BASE_SHA == HEAD_SHA — no commits to review."
      echo "Options:"
-     echo "  1. Pass an explicit base: /super-gsd:sg-review <base-sha>"
-     echo "  2. Run from a feature branch after committing your changes."
+     echo "  1. Pass an explicit base SHA: sg-review <base-sha>"
+     echo "  2. Pass a range: sg-review <base-sha>..<head-sha>"
+     echo "  3. Run from a feature branch after committing your changes."
      exit 1
    fi
    echo "Reviewing: $BASE_SHA..$HEAD_SHA"
@@ -39,7 +55,8 @@ Self-contained. Reads git history to derive BASE_SHA and HEAD_SHA, reads changed
 
 2. **Determine description.**
    ```bash
-   if [ -n "$ARGUMENTS" ]; then
+   # BASE_OVERRIDE가 설정된 경우 ARGUMENTS는 SHA이므로 설명으로 사용하지 않음
+   if [ -n "$ARGUMENTS" ] && [ -z "$BASE_OVERRIDE" ]; then
      DESCRIPTION="$ARGUMENTS"
    else
      DESCRIPTION=$(git log --format=%s -1)

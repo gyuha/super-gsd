@@ -92,15 +92,22 @@ Phase ${PHASE_NUM} 배포 방법을 선택하세요:
 **Option 1 — 로컬 병합:**
 
 ```bash
-git checkout "$BASE_BRANCH" && git pull origin "$BASE_BRANCH"
-git merge "$CURRENT_BRANCH"
-# 테스트 실행 (있는 경우)
+git checkout "$BASE_BRANCH" && git pull origin "$BASE_BRANCH" && git merge "$CURRENT_BRANCH" || {
+  echo "[sg-ship] merge 실패 — push 취소."
+  exit 1
+}
+# 테스트 실행 (있는 경우) — 실패 시 push 차단
+TEST_FAILED=0
 if [ -f "package.json" ] && grep -q '"test"' package.json 2>/dev/null; then
-  npm test
+  npm test || TEST_FAILED=1
 elif [ -f "Makefile" ] && grep -q '^test' Makefile 2>/dev/null; then
-  make test
+  make test || TEST_FAILED=1
 elif [ -f "pyproject.toml" ] || [ -f "setup.py" ]; then
-  python3 -m pytest 2>/dev/null || true
+  python3 -m pytest 2>&1 || TEST_FAILED=1
+fi
+if [ "$TEST_FAILED" -eq 1 ]; then
+  echo "[sg-ship] 테스트 실패 — push 취소. 실패를 수정한 뒤 다시 실행하세요."
+  exit 1
 fi
 git push origin "$BASE_BRANCH"
 echo "[sg-ship] Phase ${PHASE_NUM} 병합 완료. 브랜치 정리: git branch -d ${CURRENT_BRANCH}"

@@ -112,15 +112,6 @@ Reads .planning/STATE.md, .planning/ROADMAP.md, .planning/REQUIREMENTS.md, .plan
    fi
    ```
 
-8. **HANDOFF.md 행 append.**
-   ```bash
-   TS=$(date -u +%Y-%m-%dT%H:%M:%SZ)
-   FROM_STAGE=$(grep -E '^\| [0-9]{4}-' .planning/HANDOFF.md | tail -1 | awk -F'|' '{gsub(/ /,"",$5); print $5}')
-   [ -z "$FROM_STAGE" ] && FROM_STAGE="init"
-   PHASE_SLUG=$(basename "$PHASE_DIR")
-   echo "| $TS | $PHASE_SLUG | $FROM_STAGE | execute | $PLAN_HASH |" >> .planning/HANDOFF.md
-   ```
-
 9. **직접 구현 모드 실행.**
 
    수집한 PLAN.md 내용을 표시한 뒤, 아래 지침에 따라 각 task를 순차적으로 직접 실행한다:
@@ -150,6 +141,15 @@ Reads .planning/STATE.md, .planning/ROADMAP.md, .planning/REQUIREMENTS.md, .plan
    모든 task 완료 후:
    ```
    Phase <PHASE_NUM> 실행 완료. 다음 단계: /super-gsd:sg-review
+   ```
+
+9.5. **HANDOFF.md 행 append — 모든 task 완료 후에만 기록.**
+   ```bash
+   TS=$(date -u +%Y-%m-%dT%H:%M:%SZ)
+   FROM_STAGE=$(grep -E '^\| [0-9]{4}-' .planning/HANDOFF.md | tail -1 | awk -F'|' '{gsub(/ /,"",$5); print $5}')
+   [ -z "$FROM_STAGE" ] && FROM_STAGE="init"
+   PHASE_SLUG=$(basename "$PHASE_DIR")
+   echo "| $TS | $PHASE_SLUG | $FROM_STAGE | execute | $PLAN_HASH |" >> .planning/HANDOFF.md
    ```
 </process>
 

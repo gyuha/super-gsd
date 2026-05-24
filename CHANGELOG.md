@@ -2,6 +2,14 @@
 
 All notable changes to `super-gsd` are documented in this file. Format follows [Keep a Changelog](https://keepachangelog.com/).
 
+## [0.0.35] - 2026-05-24
+
+### Fixed
+
+- `.agents/skills/sg-execute`: HANDOFF `execute` 행을 실행 완료 후에만 기록 — 실행 중단 시 재실행이 partial skip 없이 처음부터 다시 실행됨
+- `.agents/skills/sg-ship`: 테스트 실패(`|| true` 제거)·merge 실패 시 `exit 1`로 push 차단 — 깨진 코드가 remote에 올라가는 경로 차단
+- `.agents/skills/sg-review`: `$ARGUMENTS`를 SHA 또는 `sha..sha` 범위로 실제 파싱 — `BASE_SHA == HEAD_SHA` 오류 시 문서에 명시된 탈출구가 동작하지 않던 버그 수정
+
 ## [0.0.34] - 2026-05-24
 
 ### Changed

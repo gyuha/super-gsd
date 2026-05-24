@@ -2,6 +2,14 @@
 
 All notable changes to `super-gsd` are documented in this file. Format follows [Keep a Changelog](https://keepachangelog.com/).
 
+## [0.0.34] - 2026-05-24
+
+### Changed
+
+- GSD 저장소 이전에 따른 패키지 참조 전면 업데이트: `get-shit-done-cc` → `@opengsd/get-shit-done-redux` (GitHub: `open-gsd/get-shit-done-redux`)
+- `skills/sg-update/SKILL.md`: GSD 감지·설치·버전 확인 로직을 새 패키지명으로 업데이트 (`npm install -g @opengsd/get-shit-done-redux@latest`)
+- `README.md`, `README.ko.md`, `CLAUDE.md`, `AGENTS.md`, `.planning/PROJECT.md`: Dependencies 섹션 패키지명 교체
+
 ## [0.0.33] - 2026-05-24
 
 ### Fixed

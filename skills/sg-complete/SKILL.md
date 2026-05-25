@@ -33,7 +33,7 @@ Self-contained. Reads .planning/STATE.md for phase resolution when no argument p
      echo "[warn] sg-complete: milestone version not found in STATE.md — skipping lessons archive"
    else
      echo "[sg-complete] Archiving lessons to .planning/milestones/${MILESTONE_VER}-LESSONS.md ..."
-     python3 hooks/lessons_ranker.py --archive --milestone "$MILESTONE_VER" .planning/lessons/*.md 2>&1 || \
+     node hooks/lessons_ranker.cjs --archive --milestone "$MILESTONE_VER" .planning/lessons/*.md 2>&1 || \
        echo "[warn] lessons archive failed — continuing"
    fi
    ```

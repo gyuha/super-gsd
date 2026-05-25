@@ -103,7 +103,7 @@ if [ -f "package.json" ] && grep -q '"test"' package.json 2>/dev/null; then
 elif [ -f "Makefile" ] && grep -q '^test' Makefile 2>/dev/null; then
   make test || TEST_FAILED=1
 elif [ -f "pyproject.toml" ] || [ -f "setup.py" ]; then
-  python3 -m pytest 2>&1 || TEST_FAILED=1
+  pytest 2>&1 || TEST_FAILED=1
 fi
 if [ "$TEST_FAILED" -eq 1 ]; then
   echo "[sg-ship] 테스트 실패 — push 취소. 실패를 수정한 뒤 다시 실행하세요."

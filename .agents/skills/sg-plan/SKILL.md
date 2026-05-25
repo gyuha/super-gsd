@@ -24,16 +24,14 @@ Self-contained. Reads .planning/STATE.md for phase resolution when no argument p
    ```bash
    if ls .planning/lessons/*.md 2>/dev/null | grep -q .; then
      echo "=== Prior Lessons (auto-injected) ==="
-     python3 hooks/lessons_ranker.py --top 5 .planning/lessons/*.md 2>/dev/null \
-       | python3 -c "
-   import sys, json
-   for i, line in enumerate((l for l in sys.stdin if l.strip()), 1):
-       try:
-           d = json.loads(line)
-           print(f'{i}. [score {d[\"score\"]:.2f}] {d[\"pattern\"]}')
-       except Exception:
-           pass
-   " || true
+     node hooks/lessons_ranker.cjs --top 5 .planning/lessons/*.md 2>/dev/null \
+       | node -e '
+   let buf="";process.stdin.on("data",d=>buf+=d).on("end",()=>{
+     const lines=buf.split("\n").filter(l=>l.trim());
+     lines.forEach((line,i)=>{
+       try{const d=JSON.parse(line);console.log(`${i+1}. [score ${d.score.toFixed(2)}] ${d.pattern}`)}catch(e){}
+     });
+   })' || true
      echo "=== All Lessons ==="
      cat .planning/lessons/*.md
      echo "=== End of Lessons ==="
@@ -60,7 +58,7 @@ Self-contained. Reads .planning/STATE.md for phase resolution when no argument p
 1.5. **Visual Companion 판단.** Phase goal에 UI 관련 키워드가 있을 때만 실행한다:
    ```bash
    PHASE_SECTION_RAW=$(gsd-sdk query roadmap.get-phase "$PHASE_NUM" --pick section 2>/dev/null)
-   PHASE_SECTION=$(echo "$PHASE_SECTION_RAW" | python3 -c 'import json,sys; v=sys.stdin.read().strip(); print(json.loads(v))' 2>/dev/null || echo "$PHASE_SECTION_RAW")
+   PHASE_SECTION=$(echo "$PHASE_SECTION_RAW" | node -e 'let s="";process.stdin.on("data",d=>s+=d).on("end",()=>{try{process.stdout.write(JSON.parse(s.trim()))}catch(e){}})' 2>/dev/null || echo "$PHASE_SECTION_RAW")
    UI_DETECTED=""
    if [ -n "$PHASE_SECTION" ] && echo "$PHASE_SECTION" | grep -iE "UI|화면|design|Visual|frontend|interface|component" > /dev/null 2>&1; then
      UI_DETECTED="1"

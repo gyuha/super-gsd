@@ -12,6 +12,7 @@
 - [x] **v2.1 Skills 품질 검토 및 개선** (2026-05-23) — skill-creator 기준으로 17개 SKILL.md 파일 검토 + 문제점 수정 → [Archive](.planning/milestones/v2.1-LESSONS.md)
 - [x] **v2.2 sg-next Auto-Advance** (2026-05-24) — sg-next 명령으로 현재 단계 자동 감지 + 다음 sg-* 명령 즉시 invoke → [Archive](.planning/milestones/v2.2-ROADMAP.md)
 - [ ] **v2.3 GSD Repository Migration Update** — GSD 저장소 이전(`get-shit-done-cc` → `@opengsd/get-shit-done-redux`)에 따른 참조 업데이트
+- [ ] **v2.4 Hooks Node Migration** — Python 의존성 제거, `hooks/*.py` 4개를 순수 JS(`.cjs`)로 재작성 + 설정/스킬/문서 일괄 교체
 
 ## Phases
 
@@ -45,6 +46,13 @@
 - [x] Phase 23: Plugin 연결 + commands/ 제거 + 문서 (2/2 plans) — completed 2026-05-23
 
 </details>
+
+### v2.4 Hooks Node Migration
+
+- [ ] **Phase 28: Core hook scripts Node 포팅** — `hooks/{stop_hook,transcript_matcher,rule_runner,lessons_ranker}.cjs` 4개 신규 작성 (Python 동등성 1:1)
+- [ ] **Phase 29: Hook 설정 명령 교체** — `hooks/hooks.json`, `.codex/hooks.json`, `.gemini/settings.json`의 `python3` → `node` 교체
+- [ ] **Phase 30: Skill/Agent 내부 호출 교체** — `skills/sg-{plan,execute,complete,quick,ui-plan}/SKILL.md`와 `.agents/skills/sg-{ship,plan,execute}/SKILL.md`의 python3 호출 일괄 교체
+- [ ] **Phase 31: 정리 + 문서** — `hooks/*.py` 4개 일괄 삭제 + CLAUDE.md/README/CHANGELOG 갱신
 
 ## Phase Details
 
@@ -296,6 +304,68 @@ Plans:
 
 ---
 
+## v2.4 Hooks Node Migration
+
+### Phase 28: Core hook scripts Node 포팅
+
+**Goal**: `hooks/*.py` 4개 파일이 외부 의존성 0인 순수 JS CommonJS(`.cjs`)로 재작성되어, 각 스크립트가 Python 버전과 동일한 stdin/stdout/exit code를 생성한다
+**Depends on**: Phase 27 (v2.4 신규 시작, v2.3와 독립이지만 phase 순번 연속)
+**Requirements**: NODE-01, NODE-02, NODE-03, NODE-04
+**Success Criteria** (what must be TRUE):
+
+  1. `hooks/{stop_hook,transcript_matcher,rule_runner,lessons_ranker}.cjs` 4개 파일이 존재하고 모두 `require('fs')` 등 Node 내장 모듈만 사용한다 (`grep -l "require('[^./]" hooks/*.cjs | grep -v "require('fs\|path\|process\|child_process')"` 결과 0건)
+  2. `node hooks/stop_hook.cjs < test_input.json`가 동일한 Stop/SubagentStop stdin JSON에 대해 Python 버전과 동일한 `systemMessage` JSON과 exit code 0을 반환한다 (transcript 신호 매칭 동등성 포함)
+  3. `node hooks/rule_runner.cjs < test_input.json`가 PreToolUse stdin JSON에 대해 동일한 warn/block decision과 hookify-skip 동작을 재현한다
+  4. `node hooks/lessons_ranker.cjs --top 5 .planning/lessons/*.md`와 `node hooks/lessons_ranker.cjs --archive --milestone vX.Y ...`가 Python CLI와 동일한 JSON-lines 출력 및 가중치 점수(0.4×freq + 0.4×recency + 0.2×severity)를 생성한다
+  5. `.planning/config.json`의 `super_gsd.auto_advance: false`로 `stop_hook.cjs`가 비활성화되는 동작이 보존된다
+
+**Plans**: TBD
+
+### Phase 29: Hook 설정 명령 교체
+
+**Goal**: Claude Code/Codex/Gemini 3개 플랫폼의 hook 설정 파일이 `python3 ... .py` 호출을 `node ... .cjs` 호출로 교체되어, 각 플랫폼의 hook 이벤트가 새 `.cjs` 스크립트를 실행한다
+**Depends on**: Phase 28
+**Requirements**: CFG-01, CFG-02, CFG-03
+**Success Criteria** (what must be TRUE):
+
+  1. `hooks/hooks.json`의 모든 hook command가 `node "${CLAUDE_PLUGIN_ROOT}/hooks/*.cjs"` 형식이고 `python3` 문자열이 포함되지 않는다
+  2. `.codex/hooks.json`의 모든 hook command가 `node hooks/*.cjs` 형식이고 Codex CLI에서 Stop + PreToolUse 이벤트가 정상 트리거된다 (manual)
+  3. `.gemini/settings.json`의 모든 hook command가 `node $GEMINI_PROJECT_DIR/hooks/*.cjs` 형식이고 SessionEnd + BeforeTool 이벤트가 정상 트리거된다 (manual)
+  4. `grep -rn 'python3' hooks/hooks.json .codex/hooks.json .gemini/settings.json` 결과 0건
+
+**Plans**: TBD
+
+### Phase 30: Skill/Agent 내부 호출 교체
+
+**Goal**: `skills/sg-*/SKILL.md`와 `.agents/skills/sg-*/SKILL.md` 내부의 모든 `python3` 호출(인라인 `python3 -c` JSON 파싱 + `python3 hooks/lessons_ranker.py` CLI 호출)이 `node`/`node -e`/`jq` 기반으로 교체되어, 각 `sg-*` 명령이 Python 없이 정상 동작한다
+**Depends on**: Phase 29
+**Requirements**: SKILL-01, SKILL-02, AGENT-01
+**Success Criteria** (what must be TRUE):
+
+  1. `skills/sg-{plan,execute,complete}/SKILL.md`에서 `python3 hooks/lessons_ranker.py` 호출이 모두 `node hooks/lessons_ranker.cjs`로 교체되고, 각 Skill 실행 시 weighted top-N lessons 주입 결과가 v2.3과 동일하다 (manual)
+  2. `skills/sg-{quick,ui-plan}/SKILL.md`의 3개 인라인 `python3 -c "import json,sys; ..."` 스니펫이 `node -e "..."` 또는 `jq` 기반으로 교체되고 macOS/Linux 양쪽에서 동일한 JSON 파싱 결과를 반환한다
+  3. `.agents/skills/sg-{ship,plan,execute}/SKILL.md`의 모든 `python3` 호출이 동일한 규칙으로 교체되어 Codex CLI에서 각 명령이 Python 없이 실행된다 (manual)
+  4. `grep -rn 'python3' skills/ .agents/skills/` 결과 0건
+
+**Plans**: TBD
+
+### Phase 31: 정리 + 문서
+
+**Goal**: 모든 `.cjs` 교체와 검증이 끝난 시점에 `hooks/*.py` 4개가 일괄 삭제되고, CLAUDE.md/README/CHANGELOG가 Node 기반 실행 환경을 정확히 반영한다
+**Depends on**: Phase 30 (마지막 phase — CLEAN-01은 모든 REQ validated 후에만 수행)
+**Requirements**: CLEAN-01, DOC-01, DOC-02, DOC-03
+**Success Criteria** (what must be TRUE):
+
+  1. `ls hooks/*.py 2>/dev/null | wc -l` 결과 0이고 git history에 `git rm hooks/{stop_hook,rule_runner,lessons_ranker,transcript_matcher}.py` 단일 커밋이 존재한다
+  2. `grep -rn 'python3' hooks/ skills/ .agents/skills/ .codex/ .gemini/ CLAUDE.md README.md README.ko.md` 결과 0건 (마일스톤 종합 success criterion #1 만족)
+  3. `CLAUDE.md`의 Technology Stack/Architecture/Development Commands 섹션이 `hooks/*.cjs`와 Node 18+ 요구사항을 기준으로 재서술되고, "Python 파일명 하이픈 대신 밑줄 사용" 결정 키가 갱신되거나 제거된다
+  4. `README.md`와 `README.ko.md`의 시스템 요구사항 섹션이 Python 요구사항을 제거하고 Node 18+ 요구사항을 명시한다
+  5. `CHANGELOG.md`에 v2.4 마일스톤 항목이 추가되어 4개 `.cjs` 신규 작성, 3개 hook config 교체, Skill/Agent 일괄 교체, Python 파일 삭제를 요약한다
+
+**Plans**: TBD
+
+---
+
 ## Progress
 
 | Phase | Milestone | Plans Complete | Status | Completed |
@@ -319,3 +389,7 @@ Plans:
 | 25. 문제점 수정 및 검증 | v2.1 | 1/1 | Complete   | 2026-05-23 |
 | 26. sg-next 스킬 구현 | v2.2 | 1/1 | Complete | 2026-05-24 |
 | 27. GSD 참조 업데이트 | v2.3 | 0/1 | Not started | - |
+| 28. Core hook scripts Node 포팅 | v2.4 | 0/TBD | Not started | - |
+| 29. Hook 설정 명령 교체 | v2.4 | 0/TBD | Not started | - |
+| 30. Skill/Agent 내부 호출 교체 | v2.4 | 0/TBD | Not started | - |
+| 31. 정리 + 문서 | v2.4 | 0/TBD | Not started | - |

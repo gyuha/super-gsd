@@ -3,10 +3,10 @@ gsd_state_version: 1.0
 milestone: v2.4
 milestone_name: Hooks Node Migration
 status: planning
-last_updated: "2026-05-25T01:12:15.252Z"
+last_updated: "2026-05-25T01:30:00.000Z"
 last_activity: 2026-05-25
 progress:
-  total_phases: 0
+  total_phases: 4
   completed_phases: 0
   total_plans: 0
   completed_plans: 0
@@ -24,10 +24,10 @@ See: .planning/PROJECT.md (updated 2026-05-25)
 
 ## Current Position
 
-Phase: Not started (defining requirements)
+Phase: Not started (roadmap created, awaiting Phase 28 planning)
 Plan: —
-Status: Defining requirements
-Last activity: 2026-05-25 — Milestone v2.4 started
+Status: Roadmap drafted (4 phases: 28-31)
+Last activity: 2026-05-25 — v2.4 ROADMAP.md created, 14 REQs mapped 100%
 
 ## Performance Metrics
 
@@ -44,9 +44,10 @@ Last activity: 2026-05-25 — Milestone v2.4 started
 Decisions are logged in PROJECT.md Key Decisions table.
 Recent decisions affecting current work:
 
+- v2.4 phase shape: 4 phases (coarse granularity) — Phase 28 (NODE-01~04 묶음 포팅), Phase 29 (config 3개), Phase 30 (skill/agent 호출), Phase 31 (CLEAN-01 + DOC)
+- v2.4 CLEAN-01은 반드시 마지막 phase (Phase 31)에서 수행 — 모든 `.cjs` 검증 후
+- v2.4는 v2.3과 독립 마일스톤이지만 phase 번호는 연속 (28부터 시작)
 - v2.3 scope: 6개 파일(README.md, README.ko.md, CLAUDE.md, AGENTS.md, sg-update/SKILL.md, PROJECT.md)의 `get-shit-done-cc` → `@opengsd/get-shit-done-redux` 교체
-- v2.3 scope: `.agents/skills/`·`sg-health` 코드는 변경 불필요 (경로·바이너리명 불변)
-- v2.3 scope: 단일 Phase(27), 단일 Plan(27-01)으로 처리
 
 ### Pending Todos
 
@@ -78,6 +79,6 @@ Items acknowledged and deferred at v2.2 milestone close on 2026-05-24:
 
 ## Session Continuity
 
-Last session: 2026-05-24T00:00:00.000Z
-Stopped at: v2.3 milestone planning complete
-Resume file: .planning/REQUIREMENTS.md
+Last session: 2026-05-25T01:30:00.000Z
+Stopped at: v2.4 roadmap created, awaiting Phase 28 planning
+Resume file: .planning/ROADMAP.md

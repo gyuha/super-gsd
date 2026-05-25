@@ -319,7 +319,21 @@ Plans:
   4. `node hooks/lessons_ranker.cjs --top 5 .planning/lessons/*.md`와 `node hooks/lessons_ranker.cjs --archive --milestone vX.Y ...`가 Python CLI와 동일한 JSON-lines 출력 및 가중치 점수(0.4×freq + 0.4×recency + 0.2×severity)를 생성한다
   5. `.planning/config.json`의 `super_gsd.auto_advance: false`로 `stop_hook.cjs`가 비활성화되는 동작이 보존된다
 
-**Plans**: TBD
+**Plans**: 5 plans
+Plans:
+**Wave 1**
+
+- [ ] 28-00-PLAN.md -- Fixtures + 28-VERIFY.md recipe (no REQ; sets up parity baseline for all 4 ports)
+
+**Wave 2** *(blocked on Wave 1)*
+
+- [ ] 28-01-PLAN.md -- transcript_matcher.cjs port (NODE-02)
+- [ ] 28-02-PLAN.md -- rule_runner.cjs port (NODE-03)
+- [ ] 28-03-PLAN.md -- lessons_ranker.cjs port (NODE-04)
+
+**Wave 3** *(blocked on Wave 2 plan 28-01)*
+
+- [ ] 28-04-PLAN.md -- stop_hook.cjs port (NODE-01; requires transcript_matcher.cjs)
 
 ### Phase 29: Hook 설정 명령 교체
 
@@ -389,7 +403,7 @@ Plans:
 | 25. 문제점 수정 및 검증 | v2.1 | 1/1 | Complete   | 2026-05-23 |
 | 26. sg-next 스킬 구현 | v2.2 | 1/1 | Complete | 2026-05-24 |
 | 27. GSD 참조 업데이트 | v2.3 | 0/1 | Not started | - |
-| 28. Core hook scripts Node 포팅 | v2.4 | 0/TBD | Not started | - |
+| 28. Core hook scripts Node 포팅 | v2.4 | 0/5 | Not started | - |
 | 29. Hook 설정 명령 교체 | v2.4 | 0/TBD | Not started | - |
 | 30. Skill/Agent 내부 호출 교체 | v2.4 | 0/TBD | Not started | - |
 | 31. 정리 + 문서 | v2.4 | 0/TBD | Not started | - |

@@ -124,3 +124,4 @@
 | 2026-05-23T15:22:06Z | 26-sg-next | superpowers | ship | - |
 | 2026-05-23T15:24:29Z | 26-sg-next | superpowers | complete | - |
 | 2026-05-23T23:25:43Z | 27-gsd-repo-migration | complete | ship | - |
+| 2026-05-25T01:43:40Z | 28-core-hook-scripts-node | ship | gsd-plan | - |

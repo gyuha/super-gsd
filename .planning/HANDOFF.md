@@ -135,3 +135,6 @@
 | 2026-05-25T11:44:31Z | 29-hook | gsd-plan | superpowers | b75ed21 |
 | 2026-05-25T11:56:08Z | 29-hook | superpowers | review | - |
 | 2026-05-25T12:21:18Z | 29-hook | review | sg-retro | - |
+| 2026-05-25T13:35:14Z | 30-skill-agent | sg-retro | gsd-plan | - |
+| 2026-05-25T14:26:00Z | 30-skill-agent | sg-retro | superpowers | 4c1e3fe |
+| 2026-05-25T15:02:08Z | 31-cleanup-docs | sg-retro | gsd-plan | - |

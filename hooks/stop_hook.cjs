@@ -107,15 +107,17 @@ function main() {
     const signal = detectSignal(transcriptPath);
 
     const platform = _detectPlatform();
-    let cmdExecute, cmdReview, cmdLearn;
+    let cmdExecute, cmdReview, cmdLearn, cmdShip;
     if (platform === 'claude-code') {
       cmdExecute = '/super-gsd:sg-execute';
       cmdReview  = '/super-gsd:sg-review';
       cmdLearn   = '/super-gsd:sg-learn';
+      cmdShip    = '/super-gsd:sg-ship';
     } else {
       cmdExecute = '$sg-execute';
       cmdReview  = '$sg-review';
       cmdLearn   = '$sg-retro';
+      cmdShip    = '$sg-ship';
     }
 
     let response;
@@ -125,6 +127,8 @@ function main() {
       response = { systemMessage: `Implementation complete. Run ${cmdReview} to request a code review.` };
     } else if (signal === 'superpowers-review-complete') {
       response = { systemMessage: `Review complete. Run ${cmdLearn} to capture lessons via sg-retro.` };
+    } else if (signal === 'sg-retro-complete') {
+      response = { systemMessage: `Retrospective complete. Run ${cmdShip} to ship the phase.` };
     } else {
       response = {};
     }

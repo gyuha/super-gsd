@@ -66,11 +66,7 @@ Self-contained. Reads git history to derive BASE_SHA and HEAD_SHA, reads changed
 
 3. **Read plan/requirements (best-effort).**
    ```bash
-   PHASE_NUM=$(grep -E '^Phase:' .planning/STATE.md 2>/dev/null | head -1 \
-               | sed -E 's/^Phase:[[:space:]]*//' \
-               | sed -E 's/[[:space:]]+$//' \
-               | awk '{print $1}' \
-               | grep -oE '^[0-9]+')
+   # Read .planning/STATE.md, then extract the Phase: value from the YAML frontmatter. Set PHASE_NUM to the extracted value.
    if [ -n "$PHASE_NUM" ]; then
      PHASE_PAD=$(printf "%02d" "$PHASE_NUM")
      PLAN_FILE=$(ls .planning/phases/${PHASE_PAD}-*/*-PLAN.md 2>/dev/null | tail -1)
@@ -78,7 +74,7 @@ Self-contained. Reads git history to derive BASE_SHA and HEAD_SHA, reads changed
      PLAN_FILE=""
    fi
    if [ -n "$PLAN_FILE" ]; then
-     PLAN_REQUIREMENTS=$(sed -n '/<objective>/,/<\/objective>/p' "$PLAN_FILE" 2>/dev/null | grep -v 'objective>')
+     # Read the PLAN_FILE path, then extract the text content between <objective> and </objective> tags. Set PLAN_REQUIREMENTS.
    else
      PLAN_REQUIREMENTS="(no plan file found — review current HEAD changes)"
    fi
@@ -95,7 +91,7 @@ Self-contained. Reads git history to derive BASE_SHA and HEAD_SHA, reads changed
    PHASE_PAD_R=$(printf "%02d" "${PHASE_NUM:-0}" 2>/dev/null || echo "${PHASE_NUM:-0}")
    PHASE_SLUG_R=$(ls -d .planning/phases/${PHASE_PAD_R}-* 2>/dev/null | head -1 | xargs basename 2>/dev/null)
    [ -z "$PHASE_SLUG_R" ] && PHASE_SLUG_R="${PHASE_NUM:-unknown}"
-   FROM_STAGE_R=$(grep -E '^\| [0-9]{4}-' "$HANDOFF_FILE" | tail -1 | awk -F'|' '{gsub(/ /,"",$5); print $5}')
+   # Read .planning/HANDOFF.md, then extract the To column (5th pipe-delimited field) from the last row starting with "| " followed by a 4-digit year. Set FROM_STAGE_R (default "init" if empty).
    [ -z "$FROM_STAGE_R" ] && FROM_STAGE_R="init"
    echo "| $TS | $PHASE_SLUG_R | $FROM_STAGE_R | review | - |" >> "$HANDOFF_FILE"
    ```

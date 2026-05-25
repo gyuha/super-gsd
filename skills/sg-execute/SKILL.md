@@ -35,7 +35,7 @@ This command is self-contained — no external workflow files imported. Reads .p
    if [ -n "$ARGUMENTS" ]; then
      PHASE_NUM="$ARGUMENTS"
    else
-     PHASE_NUM=$(grep -E '^Phase:' .planning/STATE.md | head -1 | sed -E 's/^Phase:[[:space:]]*//' | awk '{print $1}')
+     Read .planning/STATE.md, then extract the Phase: value from the YAML frontmatter. Set PHASE_NUM to the extracted value.
    fi
    ```
    If extraction fails (empty PHASE_NUM), print exactly: `Could not resolve current phase. Pass phase number explicitly: /super-gsd:sg-execute <phase>` and exit.
@@ -71,24 +71,13 @@ This command is self-contained — no external workflow files imported. Reads .p
    - The `**Goal**:` line immediately following the header to get `GOAL`.
    - The numbered list under `**Success Criteria**` to get the SC items.
    - The `**Requirements**:` line to get the REQ-ID list.
-   ```bash
-   PHASE_HEADER=$(grep -n "^### Phase ${PHASE_NUM}:" .planning/ROADMAP.md | head -1)
-   if [ -z "$PHASE_HEADER" ]; then
-     PHASE_HEADER=$(grep -n "^### Phase ${PHASE_PAD}:" .planning/ROADMAP.md | head -1)
-   fi
-   if [ -z "$PHASE_HEADER" ]; then
-     echo "No '### Phase ${PHASE_NUM}:' header found in .planning/ROADMAP.md. Aborting."
-     exit 1
-   fi
-   PHASE_NAME=$(echo "$PHASE_HEADER" | sed 's/.*Phase [0-9.]*: //')
-   HEADER_LINE=$(echo "$PHASE_HEADER" | cut -d: -f1)
-
-   GOAL=$(awk "NR>${HEADER_LINE} && /^\*\*Goal\*\*:/{sub(/^\*\*Goal\*\*:[[:space:]]*/,\"\"); print; exit}" .planning/ROADMAP.md)
-   REQ_IDS=$(awk "NR>${HEADER_LINE} && /^\*\*Requirements\*\*:/{match(\$0,/: (.*)/,a); print a[1]; exit}" .planning/ROADMAP.md)
-   REQ_IDS_CLEAN=$(echo "$REQ_IDS" | sed 's/([^)]*)//g' | tr -d ' ' | tr ',' ' ')
-
-   # Success Criteria: collect numbered items after **Success Criteria** until next ** section
-   SC_TEXT=$(awk "NR>${HEADER_LINE}" .planning/ROADMAP.md | awk '/^\*\*Success Criteria\*\*/{found=1; next} found && /^\*\*/{exit} found && /^[[:space:]]*[0-9]+\./{print}')
+   ```
+   Read .planning/ROADMAP.md, then:
+   - Find the `### Phase <PHASE_NUM>:` section header; extract PHASE_NAME (text after "Phase <PHASE_NUM>: " on that line).
+   - Extract the **Goal**: line value immediately following the header. Set GOAL.
+   - Extract the requirement IDs from the **Requirements**: line (comma-separated, strip parenthetical labels). Set REQ_IDS_CLEAN as a space-separated list.
+   - Extract numbered items under **Success Criteria** until the next `**` section. Set SC_TEXT.
+   If no `### Phase <PHASE_NUM>:` header is found, print: `No '### Phase <PHASE_NUM>:' header found in .planning/ROADMAP.md. Aborting.` and exit.
    ```
 
 4. **Map REQ-IDs to one-line definitions.** For each REQ-ID, grep `.planning/REQUIREMENTS.md` for the bullet starting with `**<REQ-ID>**:` and extract the one-line description:
@@ -130,10 +119,7 @@ This command is self-contained — no external workflow files imported. Reads .p
 8. **Append HANDOFF.md row (변수 계산).** HANDOFF_TO는 Step 8.5 완료 후 결정되므로, 이 단계에서는 메타 변수만 계산한다:
    ```bash
    TS=$(date -u +%Y-%m-%dT%H:%M:%SZ)
-   FROM_STAGE=$(grep -E '^\| [0-9]{4}-' .planning/HANDOFF.md | tail -1 | awk -F'|' '{gsub(/ /,"",$5); print $5}')
-   if [ -z "$FROM_STAGE" ]; then
-     FROM_STAGE="init"
-   fi
+   Read .planning/HANDOFF.md, then extract the To column (5th pipe-delimited field) from the last row starting with "| " followed by a 4-digit year. Set FROM_STAGE (default "init" if empty).
    PHASE_SLUG=$(basename "$PHASE_DIR")
    ```
 

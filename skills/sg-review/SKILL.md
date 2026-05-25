@@ -42,7 +42,7 @@ Self-contained. Reads git history to derive BASE_SHA and HEAD_SHA, then delegate
 
 3. **Read plan/requirements (best-effort).** If a PLAN.md for the current phase exists, read its `<objective>` section as requirements context. Otherwise use a default string:
    ```bash
-   PHASE_NUM=$(grep -E '^Phase:' .planning/STATE.md 2>/dev/null | head -1 | sed -E 's/^Phase:[[:space:]]*//' | awk '{print $1}')
+   Read .planning/STATE.md, then extract the Phase: value from the YAML frontmatter. Set PHASE_NUM.
    if [ -n "$PHASE_NUM" ]; then
      PHASE_PAD=$(printf "%02d" "$PHASE_NUM")
    else
@@ -55,7 +55,7 @@ Self-contained. Reads git history to derive BASE_SHA and HEAD_SHA, then delegate
      PLAN_FILE=""
    fi
    if [ -n "$PLAN_FILE" ]; then
-     PLAN_REQUIREMENTS=$(sed -n '/<objective>/,/<\/objective>/p' "$PLAN_FILE" 2>/dev/null | grep -v 'objective>')
+     Read the PLAN_FILE path, then extract the text content between <objective> and </objective> tags. Set PLAN_REQUIREMENTS.
    else
      PLAN_REQUIREMENTS="(no plan file found — review current HEAD changes)"
    fi
@@ -69,12 +69,11 @@ Self-contained. Reads git history to derive BASE_SHA and HEAD_SHA, then delegate
      printf '| Timestamp | Phase | From | To | Plan Hash |\n| --- | --- | --- | --- | --- |\n' > "$HANDOFF_FILE"
    fi
    TS=$(date -u +%Y-%m-%dT%H:%M:%SZ)
-   PHASE_NUM_R=$(grep -E '^Phase:' .planning/STATE.md 2>/dev/null | head -1 | sed -E 's/^Phase:[[:space:]]*//' | awk '{print $1}')
+   Read .planning/STATE.md (already read above — reuse the extracted Phase value). Set PHASE_NUM_R.
    PHASE_PAD_R=$(printf "%02d" "${PHASE_NUM_R:-0}" 2>/dev/null || echo "${PHASE_NUM_R:-0}")
    PHASE_SLUG_R=$(ls -d .planning/phases/${PHASE_PAD_R}-* 2>/dev/null | head -1 | xargs basename 2>/dev/null)
    [ -z "$PHASE_SLUG_R" ] && PHASE_SLUG_R="${PHASE_NUM_R:-unknown}"
-   FROM_STAGE_R=$(grep -E '^\| [0-9]{4}-' "$HANDOFF_FILE" | tail -1 | awk -F'|' '{gsub(/ /,"",$5); print $5}')
-   [ -z "$FROM_STAGE_R" ] && FROM_STAGE_R="init"
+   Read .planning/HANDOFF.md, then extract the To column (5th pipe-delimited field) from the last row starting with "| " followed by a 4-digit year. Set FROM_STAGE_R (default "init" if empty).
    echo "| $TS | $PHASE_SLUG_R | $FROM_STAGE_R | review | - |" >> "$HANDOFF_FILE"
    ```
 

@@ -20,16 +20,24 @@ Self-contained. Forwards $ARGUMENTS unchanged to gsd-new-milestone Skill, then a
 
 2. After gsd-new-milestone completes, detect the first not-started phase under the new milestone section in ROADMAP.md and recommend sg-plan:
    ```bash
-   MILESTONE=$(awk -F': ' '/^milestone:/ {gsub(/[[:space:]"]/,"",$2); print $2; exit}' .planning/STATE.md 2>/dev/null)
-   NEXT_PHASE=$(awk -v ms="$MILESTONE" '
-     index($0,"### " ms " ")==1 { in_section=1; next }
-     in_section && /^### / { exit }
-     in_section && /^- \[ \] \*\*Phase / {
-       if (match($0,/Phase [0-9]+/)) {
-         print substr($0,RSTART+6,RLENGTH-6); exit
+   NEXT_PHASE=$(node -e "
+   try{
+     const fs=require('fs');
+     const state=fs.readFileSync('.planning/STATE.md','utf8');
+     const ms=(state.match(/^milestone:\s*[\"']?([^\"'\s\n]+)[\"']?/m)||[])[1]||'';
+     if(!ms)process.exit(0);
+     const lines=fs.readFileSync('.planning/ROADMAP.md','utf8').split('\n');
+     let found=false;
+     for(const l of lines){
+       if(l.startsWith('### '+ms+' ')){found=true;continue;}
+       if(found&&l.startsWith('### '))break;
+       if(found&&/^- \[ \] \*\*Phase /.test(l)){
+         const m=l.match(/Phase (\d+)/);
+         if(m){process.stdout.write(m[1]);break;}
        }
      }
-   ' .planning/ROADMAP.md 2>/dev/null)
+   }catch(e){}
+   " 2>/dev/null)
    ```
 
    If `NEXT_PHASE` is empty (no STATE.md, no ROADMAP.md, or no not-started phase under the current milestone section), skip the recommendation block silently — no error output.

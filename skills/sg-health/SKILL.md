@@ -35,11 +35,11 @@ Self-contained — reads ~/.claude/*, ${CLAUDE_PLUGIN_ROOT}/hooks/hooks.json, .p
 3. **Hook 스크립트 존재 여부** *(Codex/Gemini 설치 시 필수)*
 
    ```bash
-   test -f "hooks/stop_hook.py" && test -f "hooks/rule_runner.py" && echo OK || echo WARN
+   test -f "hooks/stop_hook.cjs" && test -f "hooks/rule_runner.cjs" && echo OK || echo WARN
    ```
 
    - OK → `Hook scripts .... [OK]`
-   - WARN → `Hook scripts .... [WARN] hooks/stop_hook.py 또는 hooks/rule_runner.py 없음. Codex/Gemini 사용 시: cp -r ~/super-gsd/hooks .`, WARN++
+   - WARN → `Hook scripts .... [WARN] hooks/stop_hook.cjs 또는 hooks/rule_runner.cjs 없음. Codex/Gemini 사용 시: cp -r ~/super-gsd/hooks .`, WARN++
 
 4. **Stop hook 등록**
 

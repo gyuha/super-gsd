@@ -26,7 +26,7 @@ Self-contained. Reads .planning/STATE.md for phase resolution when no argument p
    fi
    ```
 
-1.3. **Lessons archive (milestone close).** STATE.md에서 milestone 버전을 읽고 lessons_ranker.py --archive를 실행한다. 실패해도 sg-complete를 차단하지 않는다:
+1.3. **Lessons archive (milestone close).** STATE.md에서 milestone 버전을 읽고 lessons_ranker.cjs --archive를 실행한다. 실패해도 sg-complete를 차단하지 않는다:
    ```bash
    MILESTONE_VER=$(grep -E '^milestone:' .planning/STATE.md | head -1 | awk '{print $2}' | tr -d ' ')
    if [ -z "$MILESTONE_VER" ]; then

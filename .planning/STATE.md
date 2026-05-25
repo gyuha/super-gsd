@@ -57,6 +57,12 @@ None.
 
 None.
 
+### Quick Tasks Completed
+
+| ID | Description | Date | Commit | Dir |
+|----|-------------|------|--------|-----|
+| 260525-tr1 | hookify 통합·문서 완전 제거 (Category A 런타임 로직 + Category B 문서 모두). .py 파일은 Phase 31에서 일괄 삭제 예정이므로 .cjs 파일과 문서만 수정한다. | 2026-05-25 | (pending) | [260525-tr1-hookify-category-a-category-b-py-phase-3](./quick/260525-tr1-hookify-category-a-category-b-py-phase-3/) |
+
 ## Deferred Items
 
 Items acknowledged and deferred at v2.2 milestone close on 2026-05-24:

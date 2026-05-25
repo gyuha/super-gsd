@@ -347,7 +347,8 @@ Plans:
   3. `.gemini/settings.json`의 모든 hook command가 `node $GEMINI_PROJECT_DIR/hooks/*.cjs` 형식이고 SessionEnd + BeforeTool 이벤트가 정상 트리거된다 (manual)
   4. `grep -rn 'python3' hooks/hooks.json .codex/hooks.json .gemini/settings.json` 결과 0건
 
-**Plans**: TBD
+**Plans**: 1 plan
+- [ ] 29-01-PLAN.md — 3개 hook config 파일(hooks/hooks.json, .codex/hooks.json, .gemini/settings.json)의 python3 → node 토큰 교체 + 4-tier 검증 + 단일 atomic commit
 
 ### Phase 30: Skill/Agent 내부 호출 교체
 

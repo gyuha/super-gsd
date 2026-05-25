@@ -138,3 +138,6 @@
 | 2026-05-25T13:35:14Z | 30-skill-agent | sg-retro | gsd-plan | - |
 | 2026-05-25T14:26:00Z | 30-skill-agent | sg-retro | superpowers | 4c1e3fe |
 | 2026-05-25T15:02:08Z | 31-cleanup-docs | sg-retro | gsd-plan | - |
+| 2026-05-25T15:10:05Z | 31-cleanup-docs | sg-retro | superpowers | 190e416 |
+| 2026-05-25T15:16:10Z | 31-cleanup-docs | superpowers | execute | 190e416 |
+| 2026-05-25T15:17:08Z | 31-cleanup-docs | execute | review | - |

@@ -1,34 +1,33 @@
 ---
 gsd_state_version: 1.0
-milestone: v2.3
-milestone_name: GSD Repository Migration Update
-status: executing
-stopped_at: Phase 27 — executed
-last_updated: "2026-05-24T00:00:00.000Z"
-last_activity: 2026-05-24 -- Phase 27 complete (REF-01~06 validated)
+milestone: v2.4
+milestone_name: Hooks Node Migration
+status: planning
+last_updated: "2026-05-25T01:12:15.252Z"
+last_activity: 2026-05-25
 progress:
-  total_phases: 1
-  completed_phases: 1
-  total_plans: 1
-  completed_plans: 1
-  percent: 100
+  total_phases: 0
+  completed_phases: 0
+  total_plans: 0
+  completed_plans: 0
+  percent: 0
 ---
 
 # Project State
 
 ## Project Reference
 
-See: .planning/PROJECT.md (updated 2026-05-24)
+See: .planning/PROJECT.md (updated 2026-05-25)
 
 **Core value:** GSD → Superpowers → sg-retro 단계 전환을 자동화하여 학습 루프가 끊기지 않도록 한다
-**Current focus:** v2.3 — GSD 저장소 이전에 따른 참조 업데이트
+**Current focus:** v2.4 — Python 의존성 제거, hooks를 Node.js로 재작성
 
 ## Current Position
 
-Phase: 27
-Plan: 27-01 complete
-Status: Ship ready
-Last activity: 2026-05-24 -- Phase 27 실행 완료 (6개 파일 교체)
+Phase: Not started (defining requirements)
+Plan: —
+Status: Defining requirements
+Last activity: 2026-05-25 — Milestone v2.4 started
 
 ## Performance Metrics
 

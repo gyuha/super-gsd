@@ -2,6 +2,12 @@
 
 All notable changes to `super-gsd` are documented in this file. Format follows [Keep a Changelog](https://keepachangelog.com/).
 
+## [0.0.36] - 2026-05-25
+
+### Removed
+
+- hookify 플러그인 통합 및 모든 활성 코드/문서 참조 제거 — `hooks/*.cjs`에서 `_hookifyInstalled()` 가드, hookify 규칙 globbing, `hookify-complete` 신호 분기, 고아 헬퍼(`HOOKIFY_SIGNALS`, `_extractHookifyOutput`, `_joinLastNLinesWithTerminators`, `saveHookifyLessons`, `_readCurrentPhase`, `_todayYmd`, `cmdPlan`) 모두 삭제. `CLAUDE.md`/`README*.md`/`skills/sg-{next,status,start,health}/SKILL.md`에서 hookify 언급 정리하고 stage 라우팅을 `sg-retro` 단일 명칭으로 통일. `.py` 파일은 Phase 31 CLEAN-01에서 일괄 삭제 예정. CHANGELOG 과거 항목은 보존.
+
 ## [0.0.35] - 2026-05-24
 
 ### Fixed

@@ -1,17 +1,11 @@
 #!/usr/bin/env node
-// rule_runner.cjs -- port of hooks/rule_runner.py for super-gsd v2.4 (NODE-03).
-// PreToolUse hook: evaluates .claude/*.local.md rules without hookify.
-//
-// hookify 미설치 환경에서 .claude/hookify.*.local.md 및
-// .claude/sg-rule.*.local.md 규칙을 직접 평가한다.
-// hookify가 설치된 환경에서는 즉시 exit 0 (skip).
+// rule_runner.cjs -- evaluates .claude/sg-rule.*.local.md rules on PreToolUse.
 //
 // 지원 이벤트: bash (Bash 도구), file (Edit/Write/MultiEdit 도구).
 // prompt 이벤트 규칙은 PreToolUse에서 평가 불가.
 
 const fs = require('fs');
 const path = require('path');
-const os = require('os');
 
 // Platform-agnostic plugin root detection (mirrors rule_runner.py:22-25 / D-20)
 const PLUGIN_ROOT = process.env.CLAUDE_PLUGIN_ROOT
@@ -81,17 +75,6 @@ function _pyEncodeString(s) {
   }
   out += '"';
   return out;
-}
-
-
-function _hookifyInstalled() {
-  // Mirrors rule_runner.py:28-32
-  const cache = path.join(os.homedir(), '.claude', 'plugins', 'cache', 'claude-plugins-official', 'hookify');
-  try {
-    return fs.statSync(cache).isDirectory();
-  } catch (e) {
-    return false;
-  }
 }
 
 
@@ -270,7 +253,6 @@ function _loadRules(eventFilter) {
     }
   }
 
-  loadGlob(_globLocalMd(path.join(PLUGIN_ROOT, '.claude'), 'hookify'), 1);
   loadGlob(_globLocalMd(path.join(PLUGIN_ROOT, '.claude'), 'sg-rule'), 2);
   return Array.from(seenNames.values());
 }
@@ -367,11 +349,6 @@ function _evaluate(rules, inputData, eventName) {
 function main() {
   // Mirror rule_runner.py:235-274.
   try {
-    if (_hookifyInstalled()) {
-      console.log(_pyJsonDumps({}));
-      process.exit(0);
-    }
-
     // Load super_gsd config — respect auto_advance: false
     try {
       const cfgRaw = fs.readFileSync(path.join(PLUGIN_ROOT, '.planning', 'config.json'), 'utf-8');

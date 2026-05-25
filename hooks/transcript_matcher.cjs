@@ -18,11 +18,6 @@ const REVIEW_SIGNALS = [
   'Code Review Complete',
   'Review Summary',
 ];
-const HOOKIFY_SIGNALS = [
-  'Retrospective complete',
-  'hooks generated',
-  'patterns extracted',
-];
 
 function _splitlines(s) {
   const lines = s.split(/\r?\n/);
@@ -46,7 +41,6 @@ function detectSignal(transcriptPath) {
   if (GSD_PLAN_SIGNALS.some(sig => recent.includes(sig))) return 'gsd-plan-complete';
   if (IMPLEMENTATION_SIGNALS.some(sig => recent.includes(sig))) return 'superpowers-implementation-complete';
   if (REVIEW_SIGNALS.some(sig => recent.includes(sig))) return 'superpowers-review-complete';
-  if (HOOKIFY_SIGNALS.some(sig => recent.includes(sig))) return 'hookify-complete';
   return '';
 }
 

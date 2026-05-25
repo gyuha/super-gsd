@@ -222,10 +222,6 @@ cp -r ~/super-gsd/hooks .
 - **GSD** (`@opengsd/get-shit-done-redux`) — provides the `/gsd-*` planning commands and the `.planning/` directory convention this plugin reads from.
 - **Superpowers** (`claude-plugins-official/superpowers`) — provides the `superpowers:*` skill tree used during the build / review stage.
 
-### Optional
-
-- **Hookify** (`claude-plugins-official/hookify`) — historical retrospection tool. `sg-learn` now routes to the built-in `sg-retro` skill; Hookify is no longer required.
-
 `super-gsd` is non-invasive: it does not modify, fork, or replace any of these tools.
 
 ## Verify install

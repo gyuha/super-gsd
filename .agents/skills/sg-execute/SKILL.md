@@ -41,10 +41,7 @@ Reads .planning/STATE.md, .planning/ROADMAP.md, .planning/REQUIREMENTS.md, .plan
    if [ -n "$ARGUMENTS" ]; then
      PHASE_NUM="$ARGUMENTS"
    else
-     PHASE_NUM=$(grep -E '^Phase:' .planning/STATE.md 2>/dev/null | head -1 \
-                 | sed -E 's/^Phase:[[:space:]]*//' \
-                 | sed -E 's/[[:space:]]+$//' \
-                 | awk '{print $1}')
+     # Read .planning/STATE.md, then extract the Phase: value from the YAML frontmatter. Set PHASE_NUM to the extracted value.
    fi
    if [ -z "$PHASE_NUM" ]; then
      echo "Could not resolve current phase. Pass phase number explicitly: /super-gsd:sg-execute <phase>"
@@ -66,18 +63,10 @@ Reads .planning/STATE.md, .planning/ROADMAP.md, .planning/REQUIREMENTS.md, .plan
    ```
 
 3. **Extract phase meta from ROADMAP.md.**
-   ```bash
-   PHASE_HEADER=$(grep -n "^### Phase ${PHASE_NUM}:" .planning/ROADMAP.md | head -1)
-   PHASE_NAME=$(echo "$PHASE_HEADER" | sed 's/.*Phase [0-9]*: //')
-   HEADER_LINE=$(echo "$PHASE_HEADER" | cut -d: -f1)
-
-   GOAL=$(awk "NR>${HEADER_LINE} && /\*\*Goal\*\*:/{sub(/.*Goal\*\*:[[:space:]]*/,\"\"); print; exit}" .planning/ROADMAP.md)
-   SC_TEXT=$(awk "NR>${HEADER_LINE}" .planning/ROADMAP.md | awk '/\*\*Success Criteria\*\*/{found=1; next} found && /\*\*/{exit} found && /^[[:space:]]*[0-9]+\./{print}')
-   ```
+   Read .planning/ROADMAP.md, then find the ### Phase {PHASE_NUM}: section. Extract: PHASE_NAME (text after "Phase N: " on the header line), GOAL (value of the **Goal**: line), REQ_IDS (value of the **Requirements**: line as space-separated list after stripping commas and spaces), SC_TEXT (numbered items under the **Success Criteria** section until the next ** section).
 
 4. **Map REQ-IDs to definitions.**
    ```bash
-   REQ_IDS=$(awk "NR>${HEADER_LINE} && /\*\*Requirements\*\*:/{sub(/.*Requirements\*\*:[[:space:]]*/,\"\"); print; exit}" .planning/ROADMAP.md | tr -d ' ' | tr ',' ' ')
    for REQ in $REQ_IDS; do
      grep -E "\*\*${REQ}\*\*:" .planning/REQUIREMENTS.md | head -1
    done
@@ -144,7 +133,7 @@ Reads .planning/STATE.md, .planning/ROADMAP.md, .planning/REQUIREMENTS.md, .plan
 9.5. **HANDOFF.md 행 append — 모든 task 완료 후에만 기록.**
    ```bash
    TS=$(date -u +%Y-%m-%dT%H:%M:%SZ)
-   FROM_STAGE=$(grep -E '^\| [0-9]{4}-' .planning/HANDOFF.md | tail -1 | awk -F'|' '{gsub(/ /,"",$5); print $5}')
+   # Read .planning/HANDOFF.md, then extract the To column (5th pipe-delimited field) from the last row starting with "| " followed by a 4-digit year. Set FROM_STAGE (default "init" if empty).
    [ -z "$FROM_STAGE" ] && FROM_STAGE="init"
    PHASE_SLUG=$(basename "$PHASE_DIR")
    echo "| $TS | $PHASE_SLUG | $FROM_STAGE | execute | $PLAN_HASH |" >> .planning/HANDOFF.md

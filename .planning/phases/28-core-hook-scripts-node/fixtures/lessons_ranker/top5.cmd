@@ -1,0 +1,1 @@
+python3 hooks/lessons_ranker.py --top 5 .planning/lessons/*.md

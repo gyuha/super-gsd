@@ -1,0 +1,14 @@
+noise preamble line 01
+noise preamble line 02
+noise preamble line 03
+noise preamble line 04
+noise preamble line 05
+noise preamble line 06
+noise preamble line 07
+noise preamble line 08
+noise preamble line 09
+noise preamble line 10
+noise preamble line 11
+noise preamble line 12
+PLANNING COMPLETE
+trailing noise line

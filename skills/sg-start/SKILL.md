@@ -68,7 +68,7 @@ Reads .planning/STATE.md, .planning/HANDOFF.md, .planning/ROADMAP.md (next-phase
      STAGE_RAW=$(echo "$LAST_ROW" | awk -F'|' '{gsub(/ /,"",$5); print $5}')
      TS=$(echo "$LAST_ROW" | awk -F'|' '{gsub(/ /,"",$2); print $2}')
      case "$STAGE_RAW" in
-       gsd-plan|ui-plan|superpowers|parallel|execute|review|sg-retro|hookify|ship|complete) ;;
+       gsd-plan|ui-plan|superpowers|parallel|execute|review|sg-retro|ship|complete) ;;
        *) echo "[warn] Unknown stage '${STAGE_RAW}' in HANDOFF.md — treating as init" >&2
           STAGE_RAW="init" ;;
      esac
@@ -83,8 +83,7 @@ Reads .planning/STATE.md, .planning/HANDOFF.md, .planning/ROADMAP.md (next-phase
      parallel)     STAGE_DISPLAY="superpowers" ;;
      execute)      STAGE_DISPLAY="superpowers" ;;
      review)       STAGE_DISPLAY="superpowers" ;;
-     sg-retro)     STAGE_DISPLAY="hookify" ;;
-     hookify)      STAGE_DISPLAY="hookify" ;;
+     sg-retro)     STAGE_DISPLAY="sg-retro" ;;
      ship)         STAGE_DISPLAY="ship" ;;
      complete)     STAGE_DISPLAY="complete" ;;
    esac
@@ -108,7 +107,7 @@ Reads .planning/STATE.md, .planning/HANDOFF.md, .planning/ROADMAP.md (next-phase
 
    `skills/sg-status/SKILL.md` lines 62-74 + lines 78-99 두 블록을 글자 그대로 복제 (drift 시 양쪽 동시 수정):
    ```bash
-   if [ "$STAGE_RAW" = "hookify" ] || [ "$STAGE_RAW" = "ship" ]; then
+   if [ "$STAGE_RAW" = "sg-retro" ] || [ "$STAGE_RAW" = "ship" ]; then
      if echo "$PHASE_NUM" | grep -qE '^[0-9]+$'; then
        NEXT_PHASE=$((PHASE_NUM + 1))
        if grep -qE "^### Phase ${NEXT_PHASE}:" .planning/ROADMAP.md 2>/dev/null; then
@@ -136,7 +135,6 @@ Reads .planning/STATE.md, .planning/HANDOFF.md, .planning/ROADMAP.md (next-phase
      execute)     NEXT_CMD="/super-gsd:sg-review" ;;
      review)      NEXT_CMD="/super-gsd:sg-learn" ;;
      sg-retro)    NEXT_CMD="/super-gsd:sg-ship" ;;
-     hookify)     NEXT_CMD="/super-gsd:sg-ship" ;;
      ship)
        if [ "$NEXT_PHASE_EXISTS" = "1" ]; then
          NEXT_CMD="/super-gsd:sg-plan $NEXT_PHASE"

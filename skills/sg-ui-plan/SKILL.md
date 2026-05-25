@@ -29,7 +29,7 @@ Self-contained. Reads .planning/STATE.md for phase resolution when no argument p
 2. **PHASE_SECTION 추출.** gsd-sdk로 phase 섹션을 추출한다:
    ```bash
    PHASE_SECTION_RAW=$(gsd-sdk query roadmap.get-phase "$PHASE_NUM" --pick section 2>/dev/null)
-   PHASE_SECTION=$(echo "$PHASE_SECTION_RAW" | python3 -c 'import json,sys; v=sys.stdin.read().strip(); print(json.loads(v))' 2>/dev/null || echo "$PHASE_SECTION_RAW")
+   PHASE_SECTION=$(echo "$PHASE_SECTION_RAW" | node -e 'let s="";process.stdin.on("data",d=>s+=d).on("end",()=>{try{process.stdout.write(JSON.parse(s.trim()))}catch(e){}})' 2>/dev/null || echo "$PHASE_SECTION_RAW")
    if [ -z "$PHASE_SECTION" ]; then
      echo "[sg-ui-plan] WARN: ROADMAP에서 Phase $PHASE_NUM 섹션을 찾을 수 없습니다. 빈 컨텍스트로 brainstorming을 실행합니다."
    fi

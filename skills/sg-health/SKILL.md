@@ -12,7 +12,7 @@ Self-contained — reads ~/.claude/*, ${CLAUDE_PLUGIN_ROOT}/hooks/hooks.json, .p
 </execution_context>
 
 <process>
-아래 8개 항목을 순서대로 점검한다. FAIL과 WARN 카운터를 누적하고 마지막에 요약 줄을 출력한다. 파일 쓰기 연산자(>, >>, tee, sed -i)는 일절 사용하지 않는다.
+아래 7개 항목을 순서대로 점검한다. FAIL과 WARN 카운터를 누적하고 마지막에 요약 줄을 출력한다. 파일 쓰기 연산자(>, >>, tee, sed -i)는 일절 사용하지 않는다.
 
 1. **GSD 설치**
 
@@ -32,25 +32,16 @@ Self-contained — reads ~/.claude/*, ${CLAUDE_PLUGIN_ROOT}/hooks/hooks.json, .p
    - OK → `Superpowers ...... [OK]`
    - FAIL → `Superpowers ...... [FAIL] 디렉토리 없음`, FAIL++
 
-3. **Hookify 설치** *(선택)*
+3. **Hook 스크립트 존재 여부** *(Codex/Gemini 설치 시 필수)*
 
    ```bash
-   test -d "$HOME/.claude/plugins/data/hookify-claude-plugins-official" && echo OK || echo OPTIONAL
-   ```
-
-   - OK → `Hookify .......... [OK]`
-   - OPTIONAL → `Hookify .......... [OPTIONAL] 미설치 (선택적 의존성)` — FAIL 카운트에 포함하지 않는다
-
-4. **Hook 스크립트 존재 여부** *(Codex/Gemini 설치 시 필수)*
-
-   ```bash
-   test -f "hooks/stop_hook.py" && test -f "hooks/rule_runner.py" && echo OK || echo WARN
+   test -f "hooks/stop_hook.cjs" && test -f "hooks/rule_runner.cjs" && echo OK || echo WARN
    ```
 
    - OK → `Hook scripts .... [OK]`
-   - WARN → `Hook scripts .... [WARN] hooks/stop_hook.py 또는 hooks/rule_runner.py 없음. Codex/Gemini 사용 시: cp -r ~/super-gsd/hooks .`, WARN++
+   - WARN → `Hook scripts .... [WARN] hooks/stop_hook.cjs 또는 hooks/rule_runner.cjs 없음. Codex/Gemini 사용 시: cp -r ~/super-gsd/hooks .`, WARN++
 
-5. **Stop hook 등록**
+4. **Stop hook 등록**
 
    ```bash
    grep -q '"Stop"[[:space:]]*:' "${CLAUDE_PLUGIN_ROOT}/hooks/hooks.json" && echo OK || echo FAIL
@@ -59,7 +50,7 @@ Self-contained — reads ~/.claude/*, ${CLAUDE_PLUGIN_ROOT}/hooks/hooks.json, .p
    - OK → `Stop hook ........ [OK]`
    - FAIL → `Stop hook ........ [FAIL] hooks.json에 Stop 훅 없음`, FAIL++
 
-6. **SubagentStop hook 등록**
+5. **SubagentStop hook 등록**
 
    ```bash
    grep -q '"SubagentStop"' "${CLAUDE_PLUGIN_ROOT}/hooks/hooks.json" && echo OK || echo FAIL
@@ -68,7 +59,7 @@ Self-contained — reads ~/.claude/*, ${CLAUDE_PLUGIN_ROOT}/hooks/hooks.json, .p
    - OK → `SubagentStop hook  [OK]`
    - FAIL → `SubagentStop hook  [FAIL] hooks.json에 SubagentStop 훅 없음`, FAIL++
 
-7. **HANDOFF.md 스키마**
+6. **HANDOFF.md 스키마**
 
    ```bash
    test -f .planning/HANDOFF.md && echo EXISTS || echo MISSING
@@ -87,7 +78,7 @@ Self-contained — reads ~/.claude/*, ${CLAUDE_PLUGIN_ROOT}/hooks/hooks.json, .p
        - NF == 7 → `HANDOFF.md ....... [OK]`
        - NF != 7 → `HANDOFF.md ....... [FAIL] 스키마 손상 (5컬럼 TSV 아님)`, FAIL++
 
-8. **STATE.md frontmatter**
+7. **STATE.md frontmatter**
 
    ```bash
    test -f .planning/STATE.md && echo EXISTS || echo MISSING
@@ -101,7 +92,7 @@ Self-contained — reads ~/.claude/*, ${CLAUDE_PLUGIN_ROOT}/hooks/hooks.json, .p
      - 결과 >= 2 → `STATE.md ......... [OK]`
      - 결과 < 2 → `STATE.md ......... [FAIL] frontmatter 파싱 불가 (--- 구분자 없음)`, FAIL++
 
-9. **요약 출력**
+8. **요약 출력**
 
    빈 줄을 출력한 뒤:
    - FAIL == 0 && WARN == 0 → `모든 항목 정상입니다.`

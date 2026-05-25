@@ -31,7 +31,7 @@ Self-contained — reads .planning/HANDOFF.md, .planning/STATE.md, .planning/ROA
      STAGE_RAW=$(echo "$LAST_ROW" | awk -F'|' '{gsub(/ /,"",$5); print $5}')
      TS=$(echo "$LAST_ROW" | awk -F'|' '{gsub(/ /,"",$2); print $2}')
      case "$STAGE_RAW" in
-       gsd-plan|ui-plan|superpowers|parallel|execute|review|sg-retro|hookify|ship|complete) ;;
+       gsd-plan|ui-plan|superpowers|parallel|execute|review|sg-retro|ship|complete) ;;
        *) echo "Unknown stage '${STAGE_RAW}' in .planning/HANDOFF.md last row. Schema may be corrupted." >&2; exit 1 ;;
      esac
    fi
@@ -45,8 +45,7 @@ Self-contained — reads .planning/HANDOFF.md, .planning/STATE.md, .planning/ROA
      parallel)     STAGE_DISPLAY="superpowers" ;;
      execute)      STAGE_DISPLAY="superpowers" ;;
      review)       STAGE_DISPLAY="superpowers" ;;
-     sg-retro)     STAGE_DISPLAY="hookify" ;;
-     hookify)      STAGE_DISPLAY="hookify" ;;
+     sg-retro)     STAGE_DISPLAY="sg-retro" ;;
      ship)         STAGE_DISPLAY="ship" ;;
      complete)     STAGE_DISPLAY="complete" ;;
    esac
@@ -61,9 +60,9 @@ Self-contained — reads .planning/HANDOFF.md, .planning/STATE.md, .planning/ROA
    fi
    ```
 
-4. **Compute next-phase number for the hookify branch (D-28).** Only required when `STAGE_RAW == hookify`. Increment the integer phase by 1 and check whether `.planning/ROADMAP.md` contains a heading for that phase:
+4. **Compute next-phase number for the sg-retro branch (D-28).** Only required when `STAGE_RAW == sg-retro`. Increment the integer phase by 1 and check whether `.planning/ROADMAP.md` contains a heading for that phase:
    ```bash
-   if [ "$STAGE_RAW" = "hookify" ] || [ "$STAGE_RAW" = "ship" ]; then
+   if [ "$STAGE_RAW" = "sg-retro" ] || [ "$STAGE_RAW" = "ship" ]; then
      if echo "$PHASE_NUM" | grep -qE '^[0-9]+$'; then
        NEXT_PHASE=$((PHASE_NUM + 1))
        if grep -qE "^### Phase ${NEXT_PHASE}:" .planning/ROADMAP.md 2>/dev/null; then
@@ -94,7 +93,6 @@ Self-contained — reads .planning/HANDOFF.md, .planning/STATE.md, .planning/ROA
      execute)     NEXT_CMD="/super-gsd:sg-review" ;;
      review)      NEXT_CMD="/super-gsd:sg-learn" ;;
      sg-retro)    NEXT_CMD="/super-gsd:sg-ship" ;;
-     hookify)     NEXT_CMD="/super-gsd:sg-ship" ;;
      ship)
        if [ "$NEXT_PHASE_EXISTS" = "1" ]; then
          NEXT_CMD="/super-gsd:sg-plan $NEXT_PHASE"
@@ -120,5 +118,5 @@ Self-contained — reads .planning/HANDOFF.md, .planning/STATE.md, .planning/ROA
 <success_criteria>
 1. The output is exactly five lines (D-29 lock): three non-empty header lines, one blank line, and one non-empty `Next:` line — no extra lines or trailing output.
 2. When `.planning/HANDOFF.md` contains only the header and separator rows (no data rows), `Stage` is `init` and `Last handoff:` is `(none)` (STATUS-02).
-3. The `Stage:` value uses the display enum (`init|gsd|superpowers|hookify|ship|complete`) per D-01/D-02, and the `Next:` command branches on the storage 7-state enum per D-03 — so `superpowers` routes to `/super-gsd:sg-review`, `review` displays as `superpowers` but routes to `/super-gsd:sg-learn`, `hookify` routes to `/super-gsd:sg-ship`, `ship` routes to the next phase or `/super-gsd:sg-complete`, and `complete` routes to `/super-gsd:sg-new`.
+3. The `Stage:` value uses the display enum (`init|gsd|superpowers|sg-retro|ship|complete`) per D-01/D-02, and the `Next:` command branches on the storage 7-state enum per D-03 — so `superpowers` routes to `/super-gsd:sg-review`, `review` displays as `superpowers` but routes to `/super-gsd:sg-learn`, `sg-retro` routes to `/super-gsd:sg-ship`, `ship` routes to the next phase or `/super-gsd:sg-complete`, and `complete` routes to `/super-gsd:sg-new`.
 </success_criteria>

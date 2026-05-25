@@ -1,0 +1,37 @@
+[
+  {
+    "wave": 1,
+    "plans": [
+      "28-00-PLAN.md"
+    ],
+    "merged": false
+  },
+  {
+    "wave": 2,
+    "plans": [
+      "28-01-PLAN.md"
+    ],
+    "merged": false
+  },
+  {
+    "wave": 2,
+    "plans": [
+      "28-02-PLAN.md"
+    ],
+    "merged": false
+  },
+  {
+    "wave": 2,
+    "plans": [
+      "28-03-PLAN.md"
+    ],
+    "merged": false
+  },
+  {
+    "wave": 3,
+    "plans": [
+      "28-04-PLAN.md"
+    ],
+    "merged": false
+  }
+]

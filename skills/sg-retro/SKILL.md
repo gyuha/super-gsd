@@ -8,7 +8,7 @@ Run a structured retrospective on a GSD phase. Auto-collect phase artifacts and 
 </objective>
 
 <execution_context>
-Self-contained. Reads `.planning/STATE.md`, `.planning/phases/{NN}-*/{NN}-CONTEXT.md`, all `{NN}-*-PLAN.md`, all `{NN}-*-SUMMARY.md`, and `git log`/`git diff`. Writes `.planning/lessons/{NN}-{YYYY-MM-DD}.md` (creates `.planning/lessons/` if missing) and appends one row to `.planning/HANDOFF.md` after all lenses complete successfully. The Skill bypasses `hooks/stop_hook.py` entirely — no helper invocation, no Python lessons writer.
+Self-contained. Reads `.planning/STATE.md`, `.planning/phases/{NN}-*/{NN}-CONTEXT.md`, all `{NN}-*-PLAN.md`, all `{NN}-*-SUMMARY.md`, and `git log`/`git diff`. Writes `.planning/lessons/{NN}-{YYYY-MM-DD}.md` (creates `.planning/lessons/` if missing) and appends one row to `.planning/HANDOFF.md` after all lenses complete successfully. The Skill bypasses `hooks/stop_hook.cjs` entirely — no helper invocation, no Node.js lessons writer.
 </execution_context>
 
 <process>

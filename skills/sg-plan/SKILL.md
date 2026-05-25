@@ -17,17 +17,14 @@ Self-contained. Reads .planning/STATE.md for phase resolution when no argument p
    ```bash
    if ls .planning/lessons/*.md 2>/dev/null | grep -q .; then
      echo "=== Weighted Top-N Patterns ==="
-     python3 hooks/lessons_ranker.py --top 5 .planning/lessons/*.md 2>/dev/null \
-       | python3 -c "
-   import sys, json
-   lines = [l for l in sys.stdin if l.strip()]
-   for i, line in enumerate(lines, 1):
-       try:
-           d = json.loads(line)
-           print(f\"{i}. [score {d['score']:.2f}] {d['pattern']} ({d['source']})\")
-       except Exception:
-           pass
-   " || echo "(weighted ranking unavailable)"
+     node hooks/lessons_ranker.cjs --top 5 .planning/lessons/*.md 2>/dev/null \
+       | node -e '
+   let buf="";process.stdin.on("data",d=>buf+=d).on("end",()=>{
+     const lines=buf.split("\n").filter(l=>l.trim());
+     lines.forEach((line,i)=>{
+       try{const d=JSON.parse(line);console.log(`${i+1}. [score ${d.score.toFixed(2)}] ${d.pattern} (${d.source})`)}catch(e){}
+     });
+   })' || echo "(weighted ranking unavailable)"
      echo "=== All Lessons (below) ==="
      cat .planning/lessons/*.md
      echo "=== End of Lessons ==="

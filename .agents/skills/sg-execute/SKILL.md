@@ -24,16 +24,14 @@ Reads .planning/STATE.md, .planning/ROADMAP.md, .planning/REQUIREMENTS.md, .plan
    ```bash
    if ls .planning/lessons/*.md 2>/dev/null | grep -q .; then
      echo "=== Top Recurring Patterns (reminder) ==="
-     python3 hooks/lessons_ranker.py --top 5 .planning/lessons/*.md 2>/dev/null \
-       | python3 -c "
-   import sys, json
-   for i, line in enumerate((l for l in sys.stdin if l.strip()), 1):
-       try:
-           d = json.loads(line)
-           print(f'{i}. [score {d[\"score\"]:.2f}] {d[\"pattern\"]}')
-       except Exception:
-           pass
-   " || true
+     node hooks/lessons_ranker.cjs --top 5 .planning/lessons/*.md 2>/dev/null \
+       | node -e '
+   let buf="";process.stdin.on("data",d=>buf+=d).on("end",()=>{
+     const lines=buf.split("\n").filter(l=>l.trim());
+     lines.forEach((line,i)=>{
+       try{const d=JSON.parse(line);console.log(`${i+1}. [score ${d.score.toFixed(2)}] ${d.pattern}`)}catch(e){}
+     });
+   })' || true
      echo "========================================"
    fi
    ```

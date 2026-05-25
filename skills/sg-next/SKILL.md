@@ -35,7 +35,7 @@ else
   STAGE_RAW=$(echo "$LAST_ROW" | awk -F'|' '{gsub(/ /,"",$5); print $5}')
   TS=$(echo "$LAST_ROW" | awk -F'|' '{gsub(/ /,"",$2); print $2}')
   case "$STAGE_RAW" in
-    gsd-plan|ui-plan|superpowers|parallel|execute|review|sg-retro|hookify|ship|complete|sg-next) ;;
+    gsd-plan|ui-plan|superpowers|parallel|execute|review|sg-retro|ship|complete|sg-next) ;;
     *) echo "Unknown stage '${STAGE_RAW}' in .planning/HANDOFF.md last row. Schema may be corrupted." >&2; exit 1 ;;
   esac
   # sg-next는 메타-전환 행이므로 직전 FROM 컬럼(column $4)을 실제 현재 stage로 사용한다
@@ -52,8 +52,7 @@ case "$STAGE_RAW" in
   parallel)     STAGE_DISPLAY="superpowers" ;;
   execute)      STAGE_DISPLAY="superpowers" ;;
   review)       STAGE_DISPLAY="superpowers" ;;
-  sg-retro)     STAGE_DISPLAY="hookify" ;;
-  hookify)      STAGE_DISPLAY="hookify" ;;
+  sg-retro)     STAGE_DISPLAY="sg-retro" ;;
   ship)         STAGE_DISPLAY="ship" ;;
   complete)     STAGE_DISPLAY="complete" ;;
 esac
@@ -65,7 +64,7 @@ esac
 
 ```bash
 # --- BEGIN next-command routing block (D-07: skills/sg-status/SKILL.md 복제 — drift 시 양쪽 동시 수정) ---
-if [ "$STAGE_RAW" = "hookify" ] || [ "$STAGE_RAW" = "ship" ]; then
+if [ "$STAGE_RAW" = "sg-retro" ] || [ "$STAGE_RAW" = "ship" ]; then
   if echo "$PHASE_NUM" | grep -qE '^[0-9]+$'; then
     NEXT_PHASE=$((PHASE_NUM + 1))
     if grep -qE "^### Phase ${NEXT_PHASE}:" .planning/ROADMAP.md 2>/dev/null; then
@@ -92,7 +91,6 @@ case "$STAGE_RAW" in
   execute)     NEXT_CMD="/super-gsd:sg-review" ;;
   review)      NEXT_CMD="/super-gsd:sg-learn" ;;
   sg-retro)    NEXT_CMD="/super-gsd:sg-ship" ;;
-  hookify)     NEXT_CMD="/super-gsd:sg-ship" ;;
   ship)
     if [ "$NEXT_PHASE_EXISTS" = "1" ]; then
       NEXT_CMD="/super-gsd:sg-plan $NEXT_PHASE"

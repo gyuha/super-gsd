@@ -2,15 +2,15 @@
 gsd_state_version: 1.0
 milestone: v2.4
 milestone_name: Hooks Node Migration
-status: "Roadmap drafted (4 phases: 28-31)"
-last_updated: "2026-05-25T01:43:02.479Z"
-last_activity: 2026-05-25 — v2.4 ROADMAP.md created, 14 REQs mapped 100%
+status: executing
+last_updated: "2026-05-25T14:16:38.237Z"
+last_activity: 2026-05-25 -- Phase 30 planning complete
 progress:
   total_phases: 12
-  completed_phases: 3
-  total_plans: 8
-  completed_plans: 5
-  percent: 25
+  completed_phases: 5
+  total_plans: 15
+  completed_plans: 11
+  percent: 42
 ---
 
 # Project State
@@ -24,10 +24,10 @@ See: .planning/PROJECT.md (updated 2026-05-25)
 
 ## Current Position
 
-Phase: Not started (roadmap created, awaiting Phase 28 planning)
-Plan: —
-Status: Roadmap drafted (4 phases: 28-31)
-Last activity: 2026-05-25 — v2.4 ROADMAP.md created, 14 REQs mapped 100%
+Phase: 29 — implementation complete, code review passed (`3ffffde`)
+Plan: 29-01 — complete (3ffffde feat + 3b4c019 SUMMARY)
+Status: Ready to execute
+Last activity: 2026-05-25 -- Phase 30 planning complete
 
 ## Performance Metrics
 
@@ -57,6 +57,13 @@ None.
 
 None.
 
+### Quick Tasks Completed
+
+| ID | Description | Date | Commit | Dir |
+|----|-------------|------|--------|-----|
+| 260525-tr1 | hookify 통합·문서 완전 제거 (Category A 런타임 로직 + Category B 문서 모두). .py 파일은 Phase 31에서 일괄 삭제 예정이므로 .cjs 파일과 문서만 수정한다. | 2026-05-25 | e3ae6ea | [260525-tr1-hookify-category-a-category-b-py-phase-3](./quick/260525-tr1-hookify-category-a-category-b-py-phase-3/) |
+| 260525-vp6 | hooks/*.py 4개 파일 일괄 삭제 (Phase 31 CLEAN-01을 앞당김) + transcript_matcher.cjs/stop_hook.cjs에 sg-retro-complete 신호 감지 추가 (지난번 cleanup에서 제거한 hookify-complete 분기를 sg-retro 명명으로 대체) | 2026-05-25 | 877a666 | [260525-vp6-hooks-py-4-phase-31-clean-01-transcript-](./quick/260525-vp6-hooks-py-4-phase-31-clean-01-transcript-/) |
+
 ## Deferred Items
 
 Items acknowledged and deferred at v2.2 milestone close on 2026-05-24:
@@ -79,6 +86,6 @@ Items acknowledged and deferred at v2.2 milestone close on 2026-05-24:
 
 ## Session Continuity
 
-Last session: 2026-05-25T01:43:02.472Z
-Stopped at: Phase 28 context gathered
-Resume file: .planning/phases/28-core-hook-scripts-node/28-CONTEXT.md
+Last session: 2026-05-25T13:34:36.808Z
+Stopped at: Phase 30 context gathered
+Resume file: .planning/phases/30-skill-agent/30-CONTEXT.md

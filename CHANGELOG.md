@@ -2,6 +2,36 @@
 
 All notable changes to `super-gsd` are documented in this file. Format follows [Keep a Changelog](https://keepachangelog.com/).
 
+## [0.0.38] - 2026-05-26
+
+### Changed (v2.4 Hooks Node Migration — milestone complete)
+
+- CLAUDE.md: Hooks 레이어 서술을 `hooks/*.cjs` / Node.js 18+ 기준으로 전면 갱신, Development Commands 예시 4개를 `node hooks/*.cjs` 기반으로 교체
+- README.md / README.ko.md: Codex·Gemini 설치 섹션의 "Python scripts" → "Node.js scripts (CommonJS .cjs)" 교체
+
+### Summary: v2.4 Hooks Node Migration (Phases 28–31)
+
+- Phase 28: `hooks/{stop_hook,transcript_matcher,rule_runner,lessons_ranker}.cjs` 4개 신규 작성
+- Phase 29: `hooks/hooks.json`, `.codex/hooks.json`, `.gemini/settings.json` — python3 → node 전환
+- Phase 30: 8개 SKILL.md python3 → node 일괄 교체
+- Phase 31 / 260525-vp6: `.py` 삭제 + CLAUDE.md / README 문서 Node 기반 갱신
+
+## [0.0.37] - 2026-05-25
+
+### Removed
+
+- `hooks/*.py` 4개 파일 일괄 삭제 — `stop_hook.py`, `rule_runner.py`, `transcript_matcher.py`, `lessons_ranker.py`. Phase 29에서 hooks.json/codex.json/gemini 설정이 모두 .cjs로 라우팅 완료되어 invocation-orphan 상태. Phase 31 CLEAN-01에서 처리 예정이었으나 본 quick task(260525-vp6)로 앞당김.
+
+### Added
+
+- `.cjs` 훅에 sg-retro 회고 완료 신호 감지 재도입 — `transcript_matcher.cjs`에 `SG_RETRO_SIGNALS` 상수와 'sg-retro-complete' 분기, `stop_hook.cjs`에 `cmdShip` 변수와 systemMessage 분기 추가. 회고 완료 시 "Retrospective complete. Run /super-gsd:sg-ship to ship the phase." 안내가 다시 emit된다 (commit e3ae6ea에서 hookify 명명으로 삭제되었던 동작을 sg-retro 시맨틱으로 복구).
+
+## [0.0.36] - 2026-05-25
+
+### Removed
+
+- hookify 플러그인 통합 및 모든 활성 코드/문서 참조 제거 — `hooks/*.cjs`에서 `_hookifyInstalled()` 가드, hookify 규칙 globbing, `hookify-complete` 신호 분기, 고아 헬퍼(`HOOKIFY_SIGNALS`, `_extractHookifyOutput`, `_joinLastNLinesWithTerminators`, `saveHookifyLessons`, `_readCurrentPhase`, `_todayYmd`, `cmdPlan`) 모두 삭제. `CLAUDE.md`/`README*.md`/`skills/sg-{next,status,start,health}/SKILL.md`에서 hookify 언급 정리하고 stage 라우팅을 `sg-retro` 단일 명칭으로 통일. `.py` 파일은 Phase 31 CLEAN-01에서 일괄 삭제 예정. CHANGELOG 과거 항목은 보존.
+
 ## [0.0.35] - 2026-05-24
 
 ### Fixed

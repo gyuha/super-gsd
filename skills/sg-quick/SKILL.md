@@ -59,8 +59,8 @@ Self-contained. Combines gsd-sdk initialization, gsd-planner Agent, and superpow
 2. **Initialize quick task.** Obtain quick_id, slug, and task_dir from gsd-sdk:
    ```bash
    INIT_JSON=$(gsd-sdk query init.quick "$DESCRIPTION")
-   QUICK_ID=$(echo "$INIT_JSON" | python3 -c "import sys,json; d=json.load(sys.stdin); print(d.get('quick_id') or d.get('id',''))")
-   TASK_DIR=$(echo "$INIT_JSON" | python3 -c "import sys,json; d=json.load(sys.stdin); print(d.get('task_dir') or d.get('dir',''))")
+   QUICK_ID=$(echo "$INIT_JSON" | node -e 'let s="";process.stdin.on("data",d=>s+=d).on("end",()=>{try{const j=JSON.parse(s);process.stdout.write(j.quick_id||j.id||"")}catch(e){}})')
+   TASK_DIR=$(echo "$INIT_JSON" | node -e 'let s="";process.stdin.on("data",d=>s+=d).on("end",()=>{try{const j=JSON.parse(s);process.stdout.write(j.task_dir||j.dir||"")}catch(e){}})')
    ```
    If QUICK_ID or TASK_DIR is empty, print exactly:
    `gsd-sdk init.quick failed — check gsd-sdk installation`

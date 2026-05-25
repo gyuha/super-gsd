@@ -347,7 +347,9 @@ Plans:
   3. `.gemini/settings.json`의 모든 hook command가 `node $GEMINI_PROJECT_DIR/hooks/*.cjs` 형식이고 SessionEnd + BeforeTool 이벤트가 정상 트리거된다 (manual)
   4. `grep -rn 'python3' hooks/hooks.json .codex/hooks.json .gemini/settings.json` 결과 0건
 
-**Plans**: TBD
+**Plans**: 1 plan
+
+- [ ] 29-01-PLAN.md — 3개 hook config 파일(hooks/hooks.json, .codex/hooks.json, .gemini/settings.json)의 python3 → node 토큰 교체 + 4-tier 검증 + 단일 atomic commit
 
 ### Phase 30: Skill/Agent 내부 호출 교체
 
@@ -361,7 +363,9 @@ Plans:
   3. `.agents/skills/sg-{ship,plan,execute}/SKILL.md`의 모든 `python3` 호출이 동일한 규칙으로 교체되어 Codex CLI에서 각 명령이 Python 없이 실행된다 (manual)
   4. `grep -rn 'python3' skills/ .agents/skills/` 결과 0건
 
-**Plans**: TBD
+**Plans**: 1 planPlans:
+
+- [ ] 30-01-PLAN.md — 8개 SKILL.md 파일의 python3 → node 일괄 교체 (SKILL-01, SKILL-02, AGENT-01)
 
 ### Phase 31: 정리 + 문서
 
@@ -405,5 +409,5 @@ Plans:
 | 27. GSD 참조 업데이트 | v2.3 | 0/1 | Not started | - |
 | 28. Core hook scripts Node 포팅 | v2.4 | 0/5 | Not started | - |
 | 29. Hook 설정 명령 교체 | v2.4 | 0/TBD | Not started | - |
-| 30. Skill/Agent 내부 호출 교체 | v2.4 | 0/TBD | Not started | - |
+| 30. Skill/Agent 내부 호출 교체 | v2.4 | 0/1 | Not started | - |
 | 31. 정리 + 문서 | v2.4 | 0/TBD | Not started | - |

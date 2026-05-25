@@ -1,7 +1,7 @@
 {
   "_note": "Paths are relative to the project root. Codex must be run from the project root directory for these hooks to resolve correctly.",
   "hooks": {
-    "PreToolUse": [{"hooks": [{"type": "command", "command": "python3 hooks/rule_runner.py", "timeout": 5}]}],
-    "Stop": [{"hooks": [{"type": "command", "command": "python3 hooks/stop_hook.py", "timeout": 10}]}]
+    "PreToolUse": [{"hooks": [{"type": "command", "command": "node hooks/rule_runner.cjs", "timeout": 5}]}],
+    "Stop": [{"hooks": [{"type": "command", "command": "node hooks/stop_hook.cjs", "timeout": 10}]}]
   }
 }

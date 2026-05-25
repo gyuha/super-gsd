@@ -6,7 +6,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "python3 \"${CLAUDE_PLUGIN_ROOT}/hooks/rule_runner.py\"",
+            "command": "node \"${CLAUDE_PLUGIN_ROOT}/hooks/rule_runner.cjs\"",
             "timeout": 5
           }
         ]
@@ -17,7 +17,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "python3 \"${CLAUDE_PLUGIN_ROOT}/hooks/stop_hook.py\"",
+            "command": "node \"${CLAUDE_PLUGIN_ROOT}/hooks/stop_hook.cjs\"",
             "timeout": 10
           }
         ]
@@ -28,7 +28,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "python3 \"${CLAUDE_PLUGIN_ROOT}/hooks/stop_hook.py\"",
+            "command": "node \"${CLAUDE_PLUGIN_ROOT}/hooks/stop_hook.cjs\"",
             "timeout": 10
           }
         ]

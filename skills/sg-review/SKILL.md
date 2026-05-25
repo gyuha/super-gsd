@@ -69,7 +69,7 @@ Self-contained. Reads git history to derive BASE_SHA and HEAD_SHA, then delegate
      printf '| Timestamp | Phase | From | To | Plan Hash |\n| --- | --- | --- | --- | --- |\n' > "$HANDOFF_FILE"
    fi
    TS=$(date -u +%Y-%m-%dT%H:%M:%SZ)
-   Read .planning/STATE.md (already read above — reuse the extracted Phase value). Set PHASE_NUM_R.
+   Read .planning/STATE.md, then extract the Phase: value from the YAML frontmatter. Set PHASE_NUM_R.
    PHASE_PAD_R=$(printf "%02d" "${PHASE_NUM_R:-0}" 2>/dev/null || echo "${PHASE_NUM_R:-0}")
    PHASE_SLUG_R=$(ls -d .planning/phases/${PHASE_PAD_R}-* 2>/dev/null | head -1 | xargs basename 2>/dev/null)
    [ -z "$PHASE_SLUG_R" ] && PHASE_SLUG_R="${PHASE_NUM_R:-unknown}"

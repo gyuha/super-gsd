@@ -44,9 +44,9 @@ Self-contained. Combines gsd-sdk initialization, gsd-planner Agent, and superpow
    done
    # Strip flags — remaining text is the task description
    DESCRIPTION=$(node -e "
-     const a = process.env.ARGUMENTS || '';
+     const a = process.argv[2] || '';
      process.stdout.write(a.replace(/--discuss|--research|--validate|--full/g,'').trim());
-   " 2>/dev/null)
+   " -- "$ARGUMENTS" 2>/dev/null)
    ```
    If DESCRIPTION is empty, print exactly:
    `Usage: /super-gsd:sg-quick <task description> [--discuss] [--research] [--validate] [--full]`
@@ -122,7 +122,7 @@ Self-contained. Combines gsd-sdk initialization, gsd-planner Agent, and superpow
    NEW_ROW="| $QUICK_ID | $SAFE_DESCRIPTION | $(date +%Y-%m-%d) | (pending) | [$DIR_NAME](./quick/$DIR_NAME/) |"
    Read .planning/STATE.md.
    Find the ### Quick Tasks Completed table section.
-   Append NEW_ROW after the last existing table row in that section (insert after the last line starting with "|" within the section).
+   Append NEW_ROW after the last data row in that section (the last line starting with "|" that is NOT the header or `| --- |` separator row). If no data rows exist yet, insert after the `| --- |` separator row.
    Write the updated content back using the Edit tool.
    If the section is not found, print exactly: `ERROR: ### Quick Tasks Completed section not found in STATE.md` and exit.
    ```

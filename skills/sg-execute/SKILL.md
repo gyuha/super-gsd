@@ -73,11 +73,11 @@ This command is self-contained — no external workflow files imported. Reads .p
    - The `**Requirements**:` line to get the REQ-ID list.
    ```
    Read .planning/ROADMAP.md, then:
-   - Find the `### Phase <PHASE_NUM>:` section header; extract PHASE_NAME (text after "Phase <PHASE_NUM>: " on that line).
+   - Find the `### Phase <PHASE_NUM>:` section header (try both unpadded `<PHASE_NUM>` and zero-padded two-digit `<PHASE_PAD>` forms); extract PHASE_NAME (text after "Phase N: " on that line).
    - Extract the **Goal**: line value immediately following the header. Set GOAL.
    - Extract the requirement IDs from the **Requirements**: line (comma-separated, strip parenthetical labels). Set REQ_IDS_CLEAN as a space-separated list.
    - Extract numbered items under **Success Criteria** until the next `**` section. Set SC_TEXT.
-   If no `### Phase <PHASE_NUM>:` header is found, print: `No '### Phase <PHASE_NUM>:' header found in .planning/ROADMAP.md. Aborting.` and exit.
+   If no matching header is found, print: `No '### Phase <PHASE_NUM>:' header found in .planning/ROADMAP.md. Aborting.` and exit.
    ```
 
 4. **Map REQ-IDs to one-line definitions.** For each REQ-ID, grep `.planning/REQUIREMENTS.md` for the bullet starting with `**<REQ-ID>**:` and extract the one-line description:
@@ -116,10 +116,10 @@ This command is self-contained — no external workflow files imported. Reads .p
    fi
    ```
 
-8. **Append HANDOFF.md row (변수 계산).** HANDOFF_TO는 Step 8.5 완료 후 결정되므로, 이 단계에서는 메타 변수만 계산한다:
+8. **Append HANDOFF.md row (변수 계산).** HANDOFF_TO는 Step 8.5 완료 후 결정되므로, 이 단계에서는 메타 변수만 계산한다.
+   Read .planning/HANDOFF.md, then extract the To column (5th pipe-delimited field) from the last row starting with "| " followed by a 4-digit year. Set FROM_STAGE (default "init" if empty).
    ```bash
    TS=$(date -u +%Y-%m-%dT%H:%M:%SZ)
-   Read .planning/HANDOFF.md, then extract the To column (5th pipe-delimited field) from the last row starting with "| " followed by a 4-digit year. Set FROM_STAGE (default "init" if empty).
    PHASE_SLUG=$(basename "$PHASE_DIR")
    ```
 

@@ -41,7 +41,7 @@ Reads .planning/STATE.md, .planning/ROADMAP.md, .planning/REQUIREMENTS.md, .plan
    if [ -n "$ARGUMENTS" ]; then
      PHASE_NUM="$ARGUMENTS"
    else
-     # Read .planning/STATE.md, then extract the Phase: value from the YAML frontmatter. Set PHASE_NUM to the extracted value.
+     Read .planning/STATE.md, then extract the Phase: value from the YAML frontmatter. Set PHASE_NUM to the extracted value.
    fi
    if [ -z "$PHASE_NUM" ]; then
      echo "Could not resolve current phase. Pass phase number explicitly: /super-gsd:sg-execute <phase>"
@@ -63,7 +63,7 @@ Reads .planning/STATE.md, .planning/ROADMAP.md, .planning/REQUIREMENTS.md, .plan
    ```
 
 3. **Extract phase meta from ROADMAP.md.**
-   Read .planning/ROADMAP.md, then find the ### Phase {PHASE_NUM}: section. Extract: PHASE_NAME (text after "Phase N: " on the header line), GOAL (value of the **Goal**: line), REQ_IDS (value of the **Requirements**: line as space-separated list after stripping commas and spaces), SC_TEXT (numbered items under the **Success Criteria** section until the next ** section).
+   Read .planning/ROADMAP.md, then find the ### Phase {PHASE_NUM}: section (try both unpadded and zero-padded two-digit PHASE_PAD forms). Extract: PHASE_NAME (text after "Phase N: " on the header line), GOAL (value of the **Goal**: line), REQ_IDS (value of the **Requirements**: line as space-separated list after stripping commas and spaces), SC_TEXT (numbered items under the **Success Criteria** section until the next ** section).
 
 4. **Map REQ-IDs to definitions.**
    ```bash
@@ -133,7 +133,7 @@ Reads .planning/STATE.md, .planning/ROADMAP.md, .planning/REQUIREMENTS.md, .plan
 9.5. **HANDOFF.md 행 append — 모든 task 완료 후에만 기록.**
    ```bash
    TS=$(date -u +%Y-%m-%dT%H:%M:%SZ)
-   # Read .planning/HANDOFF.md, then extract the To column (5th pipe-delimited field) from the last row starting with "| " followed by a 4-digit year. Set FROM_STAGE (default "init" if empty).
+   Read .planning/HANDOFF.md, then extract the To column (5th pipe-delimited field) from the last row starting with "| " followed by a 4-digit year. Set FROM_STAGE (default "init" if empty).
    [ -z "$FROM_STAGE" ] && FROM_STAGE="init"
    PHASE_SLUG=$(basename "$PHASE_DIR")
    echo "| $TS | $PHASE_SLUG | $FROM_STAGE | execute | $PLAN_HASH |" >> .planning/HANDOFF.md

@@ -16,10 +16,10 @@ Self-contained. Reads .planning/lessons/ directory. Writes nothing.
 0. **milestone 필터 확인.** $ARGUMENTS가 `--milestone=vX.Y` 또는 `milestone=vX.Y` 형식이면 milestone 아카이브 파일을 직접 읽는다:
    ```bash
    MILESTONE_ARG=$(node -e "
-     const args = process.env.ARGUMENTS || '';
+     const args = process.argv[2] || '';
      const m = args.match(/milestone=([^ ]+)/);
      process.stdout.write(m ? m[1] : '');
-   " 2>/dev/null)
+   " -- "$ARGUMENTS" 2>/dev/null)
    if [ -n "$MILESTONE_ARG" ]; then
      if ! echo "$MILESTONE_ARG" | grep -qE '^[a-zA-Z0-9._-]+$'; then
        echo "Invalid milestone argument."
@@ -53,10 +53,10 @@ Self-contained. Reads .planning/lessons/ directory. Writes nothing.
    ```bash
    if [ -n "$ARGUMENTS" ]; then
      ARG_NUM=$(node -e "
-       const args = process.env.ARGUMENTS || '';
+       const args = process.argv[2] || '';
        const m = args.match(/([0-9]+)/);
        process.stdout.write(m ? m[1] : '');
-     " 2>/dev/null)
+     " -- "$ARGUMENTS" 2>/dev/null)
      if [ -z "$ARG_NUM" ]; then
        echo "Invalid phase argument: '$ARGUMENTS'. Use a number (e.g. 3 or 03 or phase-03)."
        exit 1

@@ -27,7 +27,7 @@ Self-contained. Reads .planning/STATE.md for phase resolution when no argument p
 if [ -n "$ARGUMENTS" ]; then
   PHASE_NUM="$ARGUMENTS"
 else
-  # Read .planning/STATE.md, then extract the Phase: value from the YAML frontmatter. Set PHASE_NUM to the extracted value.
+  Read .planning/STATE.md, then extract the Phase: value from the YAML frontmatter. Set PHASE_NUM to the extracted value.
 fi
 if [ -z "$PHASE_NUM" ]; then
   echo "Could not resolve current phase. Pass phase number explicitly: $sg-ship <phase>"
@@ -146,7 +146,7 @@ else
 fi
 PHASE_SLUG=$(ls -d .planning/phases/${PHASE_PAD}-* 2>/dev/null | head -1 | xargs basename 2>/dev/null)
 [ -z "$PHASE_SLUG" ] && PHASE_SLUG="${PHASE_NUM}"
-# Read .planning/HANDOFF.md, then extract the To column (5th pipe-delimited field) from the last row starting with "| " followed by a 4-digit year. Set FROM_STAGE (default "review" if empty).
+Read .planning/HANDOFF.md, then extract the To column (5th pipe-delimited field) from the last row starting with "| " followed by a 4-digit year. Set FROM_STAGE (default "review" if empty).
 [ -z "$FROM_STAGE" ] && FROM_STAGE="review"
 echo "| $TS | $PHASE_SLUG | $FROM_STAGE | ship | - |" >> "$HANDOFF_FILE"
 ```

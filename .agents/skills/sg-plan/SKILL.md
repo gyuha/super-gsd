@@ -44,7 +44,7 @@ Self-contained. Reads .planning/STATE.md for phase resolution when no argument p
    if [ -n "$ARGUMENTS" ]; then
      PHASE_NUM="$ARGUMENTS"
    else
-     # Read .planning/STATE.md, then extract the Phase: value from the YAML frontmatter. Set PHASE_NUM to the extracted value.
+     Read .planning/STATE.md, then extract the Phase: value from the YAML frontmatter. Set PHASE_NUM to the extracted value.
    fi
    if [ -z "$PHASE_NUM" ]; then
      echo "Could not resolve current phase. Pass phase number explicitly: /super-gsd:sg-plan <phase>"
@@ -121,7 +121,7 @@ Do NOT invoke writing-plans after brainstorming finishes.",
        [ -z "$PHASE_SLUG_P" ] && PHASE_SLUG_P="${PHASE_NUM:-unknown}"
        if ! grep -q "| ${PHASE_SLUG_P} |.*| gsd-plan |" "$HANDOFF_FILE" 2>/dev/null; then
          TS=$(date -u +%Y-%m-%dT%H:%M:%SZ)
-         # Read .planning/HANDOFF.md, then extract the To column (5th pipe-delimited field) from the last row starting with "| " followed by a 4-digit year. Set PREV_STAGE to the extracted value (empty string if no data rows exist).
+         Read .planning/HANDOFF.md, then extract the To column (5th pipe-delimited field) from the last row starting with "| " followed by a 4-digit year. Set PREV_STAGE to the extracted value (empty string if no data rows exist).
          [ -z "$PREV_STAGE" ] && PREV_STAGE="init"
          echo "| $TS | $PHASE_SLUG_P | $PREV_STAGE | gsd-plan | - |" >> "$HANDOFF_FILE"
        fi

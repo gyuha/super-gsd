@@ -2,13 +2,13 @@
 gsd_state_version: 1.0
 milestone: v2.4
 milestone_name: Hooks Node Migration
-status: "Phase 28 shipped to feature branch; remaining v2.4 phases: 29 (CFG-01), 30 (SKILL-01), 31 (CLEAN-01 + DOC)"
-last_updated: "2026-05-25T11:24:00.440Z"
-last_activity: 2026-05-25 — Phase 28 NODE-01~04 4개 `.cjs` 포팅, byte-identical parity, sg-review With fixes → fixed
+status: executing
+last_updated: "2026-05-25T11:42:54.891Z"
+last_activity: 2026-05-25 -- Phase 29 planning complete
 progress:
   total_phases: 12
   completed_phases: 4
-  total_plans: 13
+  total_plans: 14
   completed_plans: 10
   percent: 33
 ---
@@ -26,8 +26,8 @@ See: .planning/PROJECT.md (updated 2026-05-25)
 
 Phase: 28 — implementation complete, review fix landed (`955a578`), retrospective done
 Plan: —
-Status: Phase 28 shipped to feature branch; remaining v2.4 phases: 29 (CFG-01), 30 (SKILL-01), 31 (CLEAN-01 + DOC)
-Last activity: 2026-05-25 — Phase 28 NODE-01~04 4개 `.cjs` 포팅, byte-identical parity, sg-review With fixes → fixed
+Status: Ready to execute
+Last activity: 2026-05-25 -- Phase 29 planning complete
 
 ## Performance Metrics
 

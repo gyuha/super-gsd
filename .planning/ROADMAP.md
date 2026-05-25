@@ -348,6 +348,7 @@ Plans:
   4. `grep -rn 'python3' hooks/hooks.json .codex/hooks.json .gemini/settings.json` 결과 0건
 
 **Plans**: 1 plan
+
 - [ ] 29-01-PLAN.md — 3개 hook config 파일(hooks/hooks.json, .codex/hooks.json, .gemini/settings.json)의 python3 → node 토큰 교체 + 4-tier 검증 + 단일 atomic commit
 
 ### Phase 30: Skill/Agent 내부 호출 교체

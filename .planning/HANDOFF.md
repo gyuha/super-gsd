@@ -133,3 +133,5 @@
 | 2026-05-25T10:07:17Z | 28-core-hook-scripts-node | sg-next | ship | - |
 | 2026-05-25T11:24:40Z | 29-hook | ship | gsd-plan | - |
 | 2026-05-25T11:44:31Z | 29-hook | gsd-plan | superpowers | b75ed21 |
+| 2026-05-25T11:56:08Z | 29-hook | superpowers | review | - |
+| 2026-05-25T12:21:18Z | 29-hook | review | sg-retro | - |

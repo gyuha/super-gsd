@@ -142,3 +142,4 @@
 | 2026-05-25T15:16:10Z | 31-cleanup-docs | superpowers | execute | 190e416 |
 | 2026-05-25T15:17:08Z | 31-cleanup-docs | execute | review | - |
 | 2026-05-25T21:16:43Z | 31-cleanup-docs | review | ship | - |
+| 2026-05-25T21:35:24Z | 31-cleanup-docs | ship | complete | - |

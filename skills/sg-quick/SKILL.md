@@ -43,7 +43,10 @@ Self-contained. Combines gsd-sdk initialization, gsd-planner Agent, and superpow
      esac
    done
    # Strip flags — remaining text is the task description
-   DESCRIPTION=$(echo "$ARGS" | sed 's/--discuss//g; s/--research//g; s/--validate//g; s/--full//g' | sed 's/^[[:space:]]*//; s/[[:space:]]*$//')
+   DESCRIPTION=$(node -e "
+     const a = process.env.ARGUMENTS || '';
+     process.stdout.write(a.replace(/--discuss|--research|--validate|--full/g,'').trim());
+   " 2>/dev/null)
    ```
    If DESCRIPTION is empty, print exactly:
    `Usage: /super-gsd:sg-quick <task description> [--discuss] [--research] [--validate] [--full]`
@@ -117,24 +120,11 @@ Self-contained. Combines gsd-sdk initialization, gsd-planner Agent, and superpow
    DIR_NAME=$(basename "$TASK_DIR")
    SAFE_DESCRIPTION=$(echo "$DESCRIPTION" | tr -d '\n' | tr '|\&' '---')
    NEW_ROW="| $QUICK_ID | $SAFE_DESCRIPTION | $(date +%Y-%m-%d) | (pending) | [$DIR_NAME](./quick/$DIR_NAME/) |"
-   awk -v row="$NEW_ROW" '
-     /### Quick Tasks Completed/ { in_section=1; section_hdr=NR }
-     in_section && /^##/ && !/### Quick Tasks Completed/ { in_section=0 }
-     in_section && /^\|/ { last_row=NR }
-     { lines[NR]=$0 }
-     END {
-       insert_after = (last_row > 0) ? last_row : section_hdr
-       if (insert_after == 0) {
-         print "ERROR: ### Quick Tasks Completed section not found in STATE.md" > "/dev/stderr"
-         exit 1
-       }
-       for(i=1;i<=NR;i++) {
-         print lines[i]
-         if(i==insert_after) print row
-       }
-     }
-   ' .planning/STATE.md > .planning/STATE.md.tmp && mv .planning/STATE.md.tmp .planning/STATE.md \
-     || { echo "ERROR: Failed to update STATE.md — ### Quick Tasks Completed section may be missing"; exit 1; }
+   Read .planning/STATE.md.
+   Find the ### Quick Tasks Completed table section.
+   Append NEW_ROW after the last existing table row in that section (insert after the last line starting with "|" within the section).
+   Write the updated content back using the Edit tool.
+   If the section is not found, print exactly: `ERROR: ### Quick Tasks Completed section not found in STATE.md` and exit.
    ```
 
 8. **Commit PLAN.md and STATE.md together.**

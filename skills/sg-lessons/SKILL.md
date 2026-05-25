@@ -15,7 +15,11 @@ Self-contained. Reads .planning/lessons/ directory. Writes nothing.
 <process>
 0. **milestone 필터 확인.** $ARGUMENTS가 `--milestone=vX.Y` 또는 `milestone=vX.Y` 형식이면 milestone 아카이브 파일을 직접 읽는다:
    ```bash
-   MILESTONE_ARG=$(echo "$ARGUMENTS" | grep -oE 'milestone=[^ ]+' | head -1 | sed 's/milestone=//')
+   MILESTONE_ARG=$(node -e "
+     const args = process.env.ARGUMENTS || '';
+     const m = args.match(/milestone=([^ ]+)/);
+     process.stdout.write(m ? m[1] : '');
+   " 2>/dev/null)
    if [ -n "$MILESTONE_ARG" ]; then
      if ! echo "$MILESTONE_ARG" | grep -qE '^[a-zA-Z0-9._-]+$'; then
        echo "Invalid milestone argument."
@@ -48,7 +52,11 @@ Self-contained. Reads .planning/lessons/ directory. Writes nothing.
 2. **ARGUMENTS로 phase 필터 적용.** $ARGUMENTS가 비어 있지 않으면 해당 phase 번호로 시작하는 파일만 남긴다. `phase-03`, `03`, `3` 등 다양한 형식을 숫자로 정규화한다:
    ```bash
    if [ -n "$ARGUMENTS" ]; then
-     ARG_NUM=$(echo "$ARGUMENTS" | grep -oE '[0-9]+' | head -1)
+     ARG_NUM=$(node -e "
+       const args = process.env.ARGUMENTS || '';
+       const m = args.match(/([0-9]+)/);
+       process.stdout.write(m ? m[1] : '');
+     " 2>/dev/null)
      if [ -z "$ARG_NUM" ]; then
        echo "Invalid phase argument: '$ARGUMENTS'. Use a number (e.g. 3 or 03 or phase-03)."
        exit 1

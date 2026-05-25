@@ -15,7 +15,7 @@ Self-contained. Reads `.planning/STATE.md`, `.planning/phases/{NN}-*/{NN}-CONTEX
 
 **Step 1 — Argument parsing + phase resolve.**
 
-Parse `$ARGUMENTS` into `PHASE_RAW` and `LENS_RAW`. If `PHASE_RAW` is empty, fall back to `.planning/STATE.md` `^Phase:` line using the multi-line `sed` pattern below (Phase 7 D-04~D-06 lock). **Do not introduce a single-token regex shortcut** — preserve the full grep + sed + awk pipeline as-is.
+Parse `$ARGUMENTS` into `PHASE_RAW` and `LENS_RAW`. If `PHASE_RAW` is empty, fall back to `.planning/STATE.md` `^Phase:` line using the multi-line `grep + sed + awk` pattern below (macOS 호환 파이프라인). **Do not replace with a single-token regex** — preserve the full pipeline for macOS/BSD compatibility.
 
 ```bash
 set -- $ARGUMENTS
@@ -23,7 +23,7 @@ PHASE_RAW="${1:-}"
 LENS_RAW="${2:-}"
 
 if [ -z "$PHASE_RAW" ]; then
-  # --- BEGIN STATE.md Phase parsing block (D-08: Phase 7 D-04~D-06 multi-line 패턴 인라인 복제) ---
+  # --- BEGIN STATE.md Phase parsing block (macOS 호환 grep + sed + awk 파이프라인) ---
   PHASE_RAW=$(grep -E '^Phase:' .planning/STATE.md 2>/dev/null | head -1 \
               | sed -E 's/^Phase:[[:space:]]*//' \
               | sed -E 's/[[:space:]]+$//' \

@@ -1,4 +1,5 @@
 # super-gsd
+![ICON](./images/super-gsd-icon.png)
 
 GSD → Superpowers → sg-retro를 자동으로 연결하여 계획, 구현, 회고가 하나의 학습 루프로 이어지는 Claude Code 플러그인.
 

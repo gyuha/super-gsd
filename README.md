@@ -1,4 +1,5 @@
 # super-gsd
+![ICON](./images/super-gsd-icon.png)
 
 Orchestrator plugin that auto-chains GSD → Superpowers → sg-retro so planning, implementation, and retrospection stay connected as a single learning loop.
 

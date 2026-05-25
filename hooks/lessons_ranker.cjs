@@ -48,14 +48,58 @@ function _jsonNumber(x) {
 }
 
 function _roundHalfEven(x, digits) {
-  const factor = Math.pow(10, digits);
-  const scaled = x * factor;
-  const floor = Math.floor(scaled);
-  const diff = scaled - floor;
-  if (diff > 0.5) return (floor + 1) / factor;
-  if (diff < 0.5) return floor / factor;
-  // Exactly 0.5 -- round to even
-  return (floor % 2 === 0 ? floor : floor + 1) / factor;
+  // Python round(x, n) compatible. Inspects the actual IEEE-754 decimal
+  // value via toPrecision(21); never multiplies by 10^n. Multiplication
+  // can introduce false exact halves at boundaries (e.g. 0.55675 * 10000
+  // === 5567.5 exact in IEEE-754, but the underlying double of 0.55675
+  // is 0.5567499..., so Python rounds DOWN to 0.5567, not at-half-even
+  // UP to 0.5568).
+  if (!isFinite(x)) return x;
+  const sign = x < 0 ? '-' : '';
+  const prec = Math.abs(x).toPrecision(21);
+  // toPrecision can yield scientific notation for very small magnitudes
+  // (e.g. 5e-5). Convert to plain fixed-point for digit-by-digit parsing.
+  let fixedStr;
+  const eIdx = prec.indexOf('e');
+  if (eIdx === -1) {
+    fixedStr = prec;
+  } else {
+    const mant = prec.slice(0, eIdx);
+    const exp = parseInt(prec.slice(eIdx + 1), 10);
+    const dot = mant.indexOf('.');
+    const intM = dot === -1 ? mant : mant.slice(0, dot);
+    const fracM = dot === -1 ? '' : mant.slice(dot + 1);
+    const all = intM + fracM;
+    if (exp < 0) {
+      const shift = -exp;
+      fixedStr = '0.' + '0'.repeat(Math.max(0, shift - intM.length)) + all;
+    } else if (exp >= fracM.length) {
+      fixedStr = all + '0'.repeat(exp - fracM.length);
+    } else {
+      fixedStr = all.slice(0, intM.length + exp) + '.' + all.slice(intM.length + exp);
+    }
+  }
+  const dot2 = fixedStr.indexOf('.');
+  const intStr = dot2 === -1 ? fixedStr : fixedStr.slice(0, dot2);
+  const fracStr = dot2 === -1 ? '' : fixedStr.slice(dot2 + 1);
+  const fracPadded = fracStr.padEnd(digits + 1, '0');
+  const keep = fracPadded.slice(0, digits);
+  const rest = fracPadded.slice(digits);
+  let increment;
+  const firstRest = rest.charAt(0);
+  if (firstRest < '5') increment = false;
+  else if (firstRest > '5') increment = true;
+  else if (/[1-9]/.test(rest.slice(1))) increment = true;
+  else {
+    // Exact half -- banker's rule (round to even).
+    const lastDigit = keep.length > 0
+      ? parseInt(keep.charAt(keep.length - 1), 10)
+      : parseInt(intStr.charAt(intStr.length - 1) || '0', 10);
+    increment = (lastDigit % 2 === 1);
+  }
+  let result = parseFloat(sign + intStr + '.' + keep);
+  if (increment) result += (x < 0 ? -1 : 1) * Math.pow(10, -digits);
+  return parseFloat(result.toFixed(digits));
 }
 
 function _splitOnHeaders(content) {

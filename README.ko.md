@@ -197,7 +197,7 @@ cp ~/super-gsd/.codex/hooks.json .codex/hooks.json
 cp -r ~/super-gsd/hooks .
 ```
 
-`.codex/hooks.json`이 Stop 및 PreToolUse 훅을 자동 등록한다. `hooks/` 디렉터리에는 훅이 실행하는 Python 스크립트가 포함되어 있으며, 이를 생략하면 모든 훅이 자동으로 실패한다. `$sg-retro`, `$sg-plan`, `$sg-execute`, `$sg-review`, `$sg-start`, `$sg-status` 스킬 문법을 사용한다. 전체 워크플로우는 `AGENTS.md`를 참조한다.
+`.codex/hooks.json`이 Stop 및 PreToolUse 훅을 자동 등록한다. `hooks/` 디렉터리에는 훅이 실행하는 Node.js 스크립트(CommonJS .cjs)가 포함되어 있으며, 이를 생략하면 모든 훅이 자동으로 실패한다. `$sg-retro`, `$sg-plan`, `$sg-execute`, `$sg-review`, `$sg-start`, `$sg-status` 스킬 문법을 사용한다. 전체 워크플로우는 `AGENTS.md`를 참조한다.
 
 ### Gemini / Antigravity CLI
 
@@ -212,7 +212,7 @@ cp ~/super-gsd/.gemini/settings.json .gemini/settings.json
 cp -r ~/super-gsd/hooks .
 ```
 
-`.gemini/settings.json`이 SessionEnd 및 BeforeTool 훅을 등록한다. `hooks/` 디렉터리에는 훅이 실행하는 Python 스크립트가 포함되어 있으며, 이를 생략하면 모든 훅이 자동으로 실패한다. `.agents/skills/` 스킬을 사용한다. 전체 워크플로우는 `AGENTS.md`를 참조한다.
+`.gemini/settings.json`이 SessionEnd 및 BeforeTool 훅을 등록한다. `hooks/` 디렉터리에는 훅이 실행하는 Node.js 스크립트(CommonJS .cjs)가 포함되어 있으며, 이를 생략하면 모든 훅이 자동으로 실패한다. `.agents/skills/` 스킬을 사용한다. 전체 워크플로우는 `AGENTS.md`를 참조한다.
 
 ## 필수 도구
 

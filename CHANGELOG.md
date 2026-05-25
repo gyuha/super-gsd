@@ -2,6 +2,20 @@
 
 All notable changes to `super-gsd` are documented in this file. Format follows [Keep a Changelog](https://keepachangelog.com/).
 
+## [0.0.38] - 2026-05-26
+
+### Changed (v2.4 Hooks Node Migration — milestone complete)
+
+- CLAUDE.md: Hooks 레이어 서술을 `hooks/*.cjs` / Node.js 18+ 기준으로 전면 갱신, Development Commands 예시 4개를 `node hooks/*.cjs` 기반으로 교체
+- README.md / README.ko.md: Codex·Gemini 설치 섹션의 "Python scripts" → "Node.js scripts (CommonJS .cjs)" 교체
+
+### Summary: v2.4 Hooks Node Migration (Phases 28–31)
+
+- Phase 28: `hooks/{stop_hook,transcript_matcher,rule_runner,lessons_ranker}.cjs` 4개 신규 작성
+- Phase 29: `hooks/hooks.json`, `.codex/hooks.json`, `.gemini/settings.json` — python3 → node 전환
+- Phase 30: 8개 SKILL.md python3 → node 일괄 교체
+- Phase 31 / 260525-vp6: `.py` 삭제 + CLAUDE.md / README 문서 Node 기반 갱신
+
 ## [0.0.37] - 2026-05-25
 
 ### Removed

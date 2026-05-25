@@ -198,7 +198,7 @@ cp ~/super-gsd/.codex/hooks.json .codex/hooks.json
 cp -r ~/super-gsd/hooks .
 ```
 
-`.codex/hooks.json` registers Stop and PreToolUse hooks automatically. The `hooks/` directory contains the Python scripts that the hooks invoke — omitting it causes all hooks to fail silently. Use `$sg-retro`, `$sg-plan`, `$sg-execute`, `$sg-review`, `$sg-start`, `$sg-status` skill syntax. See `AGENTS.md` for the full workflow.
+`.codex/hooks.json` registers Stop and PreToolUse hooks automatically. The `hooks/` directory contains the Node.js scripts (CommonJS .cjs) that the hooks invoke — omitting it causes all hooks to fail silently. Use `$sg-retro`, `$sg-plan`, `$sg-execute`, `$sg-review`, `$sg-start`, `$sg-status` skill syntax. See `AGENTS.md` for the full workflow.
 
 ### Gemini / Antigravity CLI
 
@@ -213,7 +213,7 @@ cp ~/super-gsd/.gemini/settings.json .gemini/settings.json
 cp -r ~/super-gsd/hooks .
 ```
 
-`.gemini/settings.json` registers SessionEnd and BeforeTool hooks. The `hooks/` directory contains the Python scripts that the hooks invoke — omitting it causes all hooks to fail silently. Use `.agents/skills/` skills. See `AGENTS.md` for the full workflow.
+`.gemini/settings.json` registers SessionEnd and BeforeTool hooks. The `hooks/` directory contains the Node.js scripts (CommonJS .cjs) that the hooks invoke — omitting it causes all hooks to fail silently. Use `.agents/skills/` skills. See `AGENTS.md` for the full workflow.
 
 ## Prerequisites
 

@@ -115,7 +115,6 @@ function _parseFrontmatter(content) {
   if (second === -1) {
     return { fm: {}, body: content };
   }
-  const third = content.indexOf('---', second + 3);
   // Python split produces 3 parts: [before_first, between_first_and_second, rest].
   // first === 0, so before_first === ''. between = content.slice(first+3, second). rest = content.slice(second+3).
   const parts = [

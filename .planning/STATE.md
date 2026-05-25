@@ -24,10 +24,10 @@ See: .planning/PROJECT.md (updated 2026-05-25)
 
 ## Current Position
 
-Phase: 28 — implementation complete, review fix landed (`955a578`), retrospective done
-Plan: —
-Status: Ready to execute
-Last activity: 2026-05-25 -- Phase 29 planning complete
+Phase: 29 — implementation complete, code review passed (`3ffffde`)
+Plan: 29-01 — complete (3ffffde feat + 3b4c019 SUMMARY)
+Status: Ready for retrospective
+Last activity: 2026-05-25 — Phase 29 sg-review complete; ready for sg-retro
 
 ## Performance Metrics
 

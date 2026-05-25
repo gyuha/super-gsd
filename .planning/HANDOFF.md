@@ -125,3 +125,9 @@
 | 2026-05-23T15:24:29Z | 26-sg-next | superpowers | complete | - |
 | 2026-05-23T23:25:43Z | 27-gsd-repo-migration | complete | ship | - |
 | 2026-05-25T01:43:40Z | 28-core-hook-scripts-node | ship | gsd-plan | - |
+| 2026-05-25T02:40:11Z | 28-core-hook-scripts-node | gsd-plan | parallel | 8ff383d |
+| 2026-05-25T04:15:06Z | 28-core-hook-scripts-node | parallel | review | - |
+| 2026-05-25T09:33:39Z | 28-core-hook-scripts-node | review | sg-next | - |
+| 2026-05-25T09:40:06Z | 28-core-hook-scripts-node | sg-next | sg-retro | - |
+| 2026-05-25T10:07:00Z | 28-core-hook-scripts-node | sg-retro | sg-next | - |
+| 2026-05-25T10:07:17Z | 28-core-hook-scripts-node | sg-next | ship | - |

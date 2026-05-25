@@ -18,7 +18,7 @@ Self-contained. Reads .planning/STATE.md for phase resolution when no argument p
    if [ -n "$ARGUMENTS" ]; then
      PHASE_NUM="$ARGUMENTS"
    else
-     PHASE_NUM=$(grep -E '^Phase:' .planning/STATE.md 2>/dev/null | head -1 | sed -E 's/^Phase:[[:space:]]*//' | awk '{print $1}')
+     Read .planning/STATE.md, then extract the Phase: value from the YAML frontmatter. Set PHASE_NUM to the extracted value.
    fi
    if [ -z "$PHASE_NUM" ]; then
      echo "[sg-ui-plan] Error: PHASE_NUM을 결정할 수 없습니다. 명시적으로 전달하세요: /super-gsd:sg-ui-plan <phase>"
@@ -66,7 +66,7 @@ Self-contained. Reads .planning/STATE.md for phase resolution when no argument p
    [ -z "$PHASE_SLUG" ] && PHASE_SLUG="${PHASE_NUM:-unknown}"
    if ! grep -q "| ${PHASE_SLUG} |.*| ui-plan |" "$HANDOFF_FILE" 2>/dev/null; then
      TS=$(date -u +%Y-%m-%dT%H:%M:%SZ)
-     FROM_STAGE=$(grep -E '^\| [0-9]{4}-' "$HANDOFF_FILE" | tail -1 | awk -F'|' '{gsub(/ /,"",$5); print $5}')
+     Read .planning/HANDOFF.md, then extract the To column (5th pipe-delimited field) from the last row that starts with "| " followed by a 4-digit year. Set FROM_STAGE to the extracted value.
      [ -z "$FROM_STAGE" ] && FROM_STAGE="init"
      echo "| $TS | $PHASE_SLUG | $FROM_STAGE | ui-plan | - |" >> "$HANDOFF_FILE"
      echo "[sg-ui-plan] HANDOFF.md에 ui-plan 기록 완료."

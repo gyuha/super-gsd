@@ -37,7 +37,7 @@ Self-contained. Reads .planning/STATE.md for phase resolution when no argument p
    if [ -n "$ARGUMENTS" ]; then
      PHASE_NUM="$ARGUMENTS"
    else
-     PHASE_NUM=$(grep -E '^Phase:' .planning/STATE.md | head -1 | sed -E 's/^Phase:[[:space:]]*//' | awk '{print $1}')
+     Read .planning/STATE.md, then extract the Phase: value from the YAML frontmatter. Set PHASE_NUM to the extracted value.
    fi
    if [ -z "$PHASE_NUM" ]; then
      echo "Could not resolve current phase. Pass phase number explicitly: /super-gsd:sg-plan <phase>"
@@ -70,7 +70,7 @@ Self-contained. Reads .planning/STATE.md for phase resolution when no argument p
    [ -z "$PHASE_SLUG_P" ] && PHASE_SLUG_P="${PHASE_NUM:-unknown}"
    if [ -n "$PHASE_SLUG_P" ] && ! grep -q "| ${PHASE_SLUG_P} |.*| gsd-plan |" "$HANDOFF_FILE" 2>/dev/null; then
      TS=$(date -u +%Y-%m-%dT%H:%M:%SZ)
-     PREV_STAGE=$(grep -E '^\| [0-9]{4}-' "$HANDOFF_FILE" | tail -1 | awk -F'|' '{gsub(/ /,"",$5); print $5}')
+     Read .planning/HANDOFF.md, then extract the To column (5th pipe-delimited field) from the last row that starts with "| " followed by a 4-digit year. Set PREV_STAGE to the extracted value (empty string if no data rows exist).
      [ -z "$PREV_STAGE" ] && PREV_STAGE="init"
      echo "| $TS | $PHASE_SLUG_P | $PREV_STAGE | gsd-plan | - |" >> "$HANDOFF_FILE"
    fi

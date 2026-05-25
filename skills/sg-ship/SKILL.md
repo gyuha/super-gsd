@@ -18,7 +18,7 @@ Self-contained. Reads .planning/STATE.md for phase resolution when no argument p
    if [ -n "$ARGUMENTS" ]; then
      PHASE_NUM="$ARGUMENTS"
    else
-     PHASE_NUM=$(grep -E '^Phase:' .planning/STATE.md | head -1 | sed -E 's/^Phase:[[:space:]]*//' | awk '{print $1}')
+     Read .planning/STATE.md, then extract the Phase: value from the YAML frontmatter. Set PHASE_NUM to the extracted value.
    fi
    if [ -z "$PHASE_NUM" ]; then
      echo "Could not resolve current phase. Pass phase number explicitly: /super-gsd:sg-ship <phase>"
@@ -34,8 +34,7 @@ Self-contained. Reads .planning/STATE.md for phase resolution when no argument p
      printf '| Timestamp | Phase | From | To | Plan Hash |\n| --- | --- | --- | --- | --- |\n' > "$HANDOFF_FILE"
    fi
    TS=$(date -u +%Y-%m-%dT%H:%M:%SZ)
-   FROM_STAGE=$(grep -E '^\| [0-9]{4}-' "$HANDOFF_FILE" | tail -1 | awk -F'|' '{gsub(/ /,"",$5); print $5}')
-   [ -z "$FROM_STAGE" ] && FROM_STAGE="init"
+   Read .planning/HANDOFF.md, then extract the To column (5th pipe-delimited field) from the last row that starts with "| " followed by a 4-digit year. Set FROM_STAGE to the extracted value (default "review" if empty).
    PHASE_PAD=$(printf "%02d" "$PHASE_NUM" 2>/dev/null || echo "$PHASE_NUM")
    PHASE_SLUG=$(ls -d .planning/phases/${PHASE_PAD}-* 2>/dev/null | head -1 | xargs basename 2>/dev/null || echo "${PHASE_PAD}")
    echo "| $TS | $PHASE_SLUG | $FROM_STAGE | ship | - |" >> "$HANDOFF_FILE"

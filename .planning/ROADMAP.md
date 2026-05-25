@@ -363,8 +363,7 @@ Plans:
   3. `.agents/skills/sg-{ship,plan,execute}/SKILL.md`의 모든 `python3` 호출이 동일한 규칙으로 교체되어 Codex CLI에서 각 명령이 Python 없이 실행된다 (manual)
   4. `grep -rn 'python3' skills/ .agents/skills/` 결과 0건
 
-**Plans**: 1 plan
-Plans:
+**Plans**: 1 planPlans:
 
 - [ ] 30-01-PLAN.md — 8개 SKILL.md 파일의 python3 → node 일괄 교체 (SKILL-01, SKILL-02, AGENT-01)
 

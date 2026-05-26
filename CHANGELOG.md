@@ -2,6 +2,14 @@
 
 All notable changes to `super-gsd` are documented in this file. Format follows [Keep a Changelog](https://keepachangelog.com/).
 
+## [0.0.40] - 2026-05-26
+
+### Changed (v2.6 Codex/Gemini 설치 UX 개선 — milestone complete)
+
+- Phase 33: `npx @gyuha/super-gsd install` 단일 명령으로 Codex/Gemini 파일 설치 (`bin/setup.js` + `--gemini`, `--force` 플래그)
+- Phase 34: `$sg-setup` 인세션 스킬 추가 — `.agents/skills/sg-setup/SKILL.md` (Codex/Gemini AI Read/Write 방식) + `skills/sg-setup/SKILL.md` (Claude Code Bash cp 방식)
+- Phase 35: README.md / AGENTS.md / README.ko.md 설치 섹션을 `git clone + 4 cp` → npx 단일 명령으로 교체, Verify install에 Codex/Gemini 서브섹션 추가, AGENTS.md Quick Start Step 0 추가
+
 ## [0.0.39] - 2026-05-26
 
 ### Changed (v2.5 Superpowers-Native File Parsing — milestone complete)

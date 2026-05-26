@@ -2,6 +2,15 @@
 
 All notable changes to `super-gsd` are documented in this file. Format follows [Keep a Changelog](https://keepachangelog.com/).
 
+## [0.0.39] - 2026-05-26
+
+### Changed (v2.5 Superpowers-Native File Parsing — milestone complete)
+
+- Phase 32: `skills/sg-*/SKILL.md` 8개 + `.agents/skills/sg-*/SKILL.md` 4개에서 bash `grep/sed/awk` 파일 파싱 → Read 도구 + Claude 해석 방식으로 전환
+- `sg-plan`: discuss-phase 디렉토리 오작동 방지 — `${PHASE_PAD}-new-phase` pre-create + CONTEXT.md 위치 자동 검증·이동 로직 추가 (retro Medium severity 수정)
+- `CLAUDE.md`: macOS 셸 이식성 섹션 Phase lock 제거, Superpowers Read 방식 권장 명시, `.agents/` 쌍 커버 규칙 추가
+- sg-rule 3개 신규 생성: `warn-agents-read-comment-in-bash`, `warn-node-process-env-arguments`, `warn-read-inside-bash-fence` (Phase 32 retro High severity 기반)
+
 ## [0.0.38] - 2026-05-26
 
 ### Changed (v2.4 Hooks Node Migration — milestone complete)

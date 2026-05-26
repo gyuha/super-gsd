@@ -58,7 +58,7 @@
 
 ### v2.6 Codex/Gemini 설치 UX 개선
 
-- [ ] **Phase 33: npx Installer** — `package.json` + `bin/setup.js` 신규 작성, `npx @gyuha/super-gsd install` 단일 명령으로 Codex/Gemini 설치 파일 복사
+- [x] **Phase 33: npx Installer** — `package.json` + `bin/setup.js` 신규 작성, `npx @gyuha/super-gsd install` 단일 명령으로 Codex/Gemini 설치 파일 복사 (completed 2026-05-26)
 - [ ] **Phase 34: $sg-setup 인세션 스킬** — `.agents/skills/sg-setup/SKILL.md` 신규 생성, 세션 내부에서 파일 복사 자동화
 - [ ] **Phase 35: 문서 개선** — README.md Codex/Gemini 설치 섹션 재작성 + Verify install 섹션 추가 + AGENTS.md 업데이트 + README.ko.md 동기화
 
@@ -397,6 +397,6 @@ Plans:
 | 30. Skill/Agent 내부 호출 교체 | v2.4 | 1/1 | Complete | 2026-05-25 |
 | 31. 정리 + 문서 | v2.4 | 1/1 | Complete | 2026-05-26 |
 | 32. 파일 파싱 방식 전환 | v2.5 | 2/2 | Complete | 2026-05-26 |
-| 33. npx Installer | v2.6 | 1/1 | Complete   | 2026-05-26 |
+| 33. npx Installer | v2.6 | 1/1 | Complete    | 2026-05-26 |
 | 34. $sg-setup 인세션 스킬 | v2.6 | 0/TBD | Not started | - |
 | 35. 문서 개선 | v2.6 | 0/TBD | Not started | - |

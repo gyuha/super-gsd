@@ -2,15 +2,16 @@
 gsd_state_version: 1.0
 milestone: v2.6
 milestone_name: Codex/Gemini 설치 UX 개선
-status: executing
-last_updated: "2026-05-26T11:04:47.334Z"
+status: milestone_complete
+last_updated: 2026-05-26T11:15:52.829Z
 last_activity: 2026-05-26 -- Phase 33 execution started
 progress:
   total_phases: 11
   completed_phases: 0
   total_plans: 1
-  completed_plans: 0
+  completed_plans: 1
   percent: 0
+stopped_at: Milestone complete (Phase 33 was final phase)
 ---
 
 # Project State
@@ -20,20 +21,20 @@ progress:
 See: .planning/PROJECT.md (updated 2026-05-26)
 
 **Core value:** GSD → Superpowers → sg-retro 단계 전환을 자동화하여 학습 루프가 끊기지 않도록 한다
-**Current focus:** Phase 33 — npx-installer
+**Current focus:** Milestone complete
 
 ## Current Position
 
-Phase: 33 (npx-installer) — EXECUTING
-Plan: 1 of 1
-Status: Executing Phase 33
-Last activity: 2026-05-26 -- Phase 33 execution started
+Phase: 33
+Plan: Not started
+Status: Milestone complete
+Last activity: 2026-05-26
 
 ## Performance Metrics
 
 **Velocity:**
 
-- Total plans completed: 0
+- Total plans completed: 1
 - Average duration: N/A
 - Total execution time: N/A
 

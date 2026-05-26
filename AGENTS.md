@@ -14,6 +14,16 @@ GSD → sg-retro 2단계 AI 개발 워크플로우를 Codex, Gemini CLI, Antigra
 
 ## Quick Start
 
+**Step 0: 설치**
+
+```bash
+# 터미널에서 (세션 외부):
+npx @gyuha/super-gsd install          # Codex 기본
+npx @gyuha/super-gsd install --gemini # Gemini 추가
+```
+
+> **또는 세션 내부에서:** `$sg-setup` (Codex) / `$sg-setup --gemini` (Gemini)
+
 **Step 1: 사전 조건 확인**
 
 ```bash

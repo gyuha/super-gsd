@@ -189,36 +189,28 @@ super-gsd 훅은 Claude Code 플러그인 마켓플레이스 없이 Codex, Gemin
 ### Codex
 
 ```bash
-git clone https://github.com/gyuha/super-gsd.git ~/super-gsd
-cd your-project
-# 훅 설정 파일, 훅 스크립트, 에이전트 스킬을 모두 복사 (셋 다 필수):
-mkdir -p .codex
-cp ~/super-gsd/.codex/hooks.json .codex/hooks.json
-cp -r ~/super-gsd/hooks .
-cp -r ~/super-gsd/.agents .
+npx @gyuha/super-gsd install
 ```
 
-`.codex/hooks.json`이 Stop 및 PreToolUse 훅을 자동 등록한다. `hooks/` 디렉터리에는 훅이 실행하는 Node.js 스크립트(CommonJS .cjs)가 포함되어 있다. `.agents/` 디렉터리에는 `$sg-*` 스킬이 포함되어 있으며, 이를 생략하면 사용 가능한 스킬이 없다. `$sg-retro`, `$sg-plan`, `$sg-execute`, `$sg-review`, `$sg-start`, `$sg-status` 스킬 문법을 사용한다. 전체 워크플로우는 `AGENTS.md`를 참조한다.
+`.codex/hooks.json` (Stop 및 PreToolUse 훅), `hooks/` (Node.js .cjs 스크립트), `.agents/skills/` (`$sg-*` 스킬)을 설치한다. `$sg-retro`, `$sg-plan`, `$sg-execute`, `$sg-review`, `$sg-start`, `$sg-status` 스킬 문법을 사용한다. 전체 워크플로우는 `AGENTS.md`를 참조한다.
 
 > **참고:** Stop 훅은 `Run $sg-*` 안내 메시지를 출력할 뿐이며, 다음 스킬을 자동으로 invoke하지 않는다. 각 단계 후 `$sg-*` 명령을 직접 실행해야 한다.
+
+> **팁:** Codex 세션 내부에서 `$sg-setup`을 실행하면 세션을 종료하지 않고 설치할 수 있다.
 
 ### Gemini / Antigravity CLI
 
 Gemini CLI는 지원된다. Antigravity CLI 호환성은 독립적으로 검증되지 않았다 — `.planning/phases/15-platform-hooks-python-fix/15-01-VERIFICATION.md` 참조.
 
 ```bash
-git clone https://github.com/gyuha/super-gsd.git ~/super-gsd
-cd your-project
-# 훅 설정 파일, 훅 스크립트, 에이전트 스킬을 모두 복사 (셋 다 필수):
-mkdir -p .gemini
-cp ~/super-gsd/.gemini/settings.json .gemini/settings.json
-cp -r ~/super-gsd/hooks .
-cp -r ~/super-gsd/.agents .
+npx @gyuha/super-gsd install --gemini
 ```
 
-`.gemini/settings.json`이 SessionEnd 및 BeforeTool 훅을 등록한다. `hooks/` 디렉터리에는 훅이 실행하는 Node.js 스크립트(CommonJS .cjs)가 포함되어 있다. `.agents/` 디렉터리에는 `$sg-*` 스킬이 포함되어 있으며, 이를 생략하면 사용 가능한 스킬이 없다. `.agents/skills/` 스킬을 사용한다. 전체 워크플로우는 `AGENTS.md`를 참조한다.
+`.gemini/settings.json` (SessionEnd 및 BeforeTool 훅), `hooks/` (Node.js .cjs 스크립트), `.agents/skills/` (`$sg-*` 스킬)을 설치한다. `.agents/skills/` 스킬을 사용한다. 전체 워크플로우는 `AGENTS.md`를 참조한다.
 
 > **참고:** SessionEnd 훅은 `Run $sg-*` 안내 메시지를 출력할 뿐이며, 다음 스킬을 자동으로 invoke하지 않는다. 각 단계 후 `$sg-*` 명령을 직접 실행해야 한다.
+
+> **팁:** Gemini 세션 내부에서 `$sg-setup --gemini`를 실행하면 세션을 종료하지 않고 설치할 수 있다.
 
 ## 필수 도구
 
@@ -233,11 +225,27 @@ cp -r ~/super-gsd/.agents .
 
 설치 후 `super-gsd`가 올바르게 로드됐는지, 기존 도구들이 정상 작동하는지 확인한다.
 
+### Claude Code
+
 1. `/plugin list`를 실행하여 `super-gsd`가 `.claude-plugin/plugin.json`의 이름, 버전, 설명과 일치하는지 확인한다.
 2. `/gsd-progress`(또는 다른 GSD 명령)를 실행하여 GSD가 정상 응답하는지 확인한다 — GSD가 수정되지 않았음을 증명한다.
 3. Skill 트리를 열어 `superpowers:*` 스킬이 발견 가능하고 호출 가능한지 확인한다 — Superpowers가 수정되지 않았음을 증명한다.
 
-세 가지 확인이 모두 통과하면 `super-gsd`가 올바르게, 비침투적으로 설치된 것이다.
+### Codex
+
+1. `cat .codex/hooks.json` — hooks.json 존재 확인
+2. `ls hooks/*.cjs` — 훅 스크립트 존재 확인
+3. `ls .agents/skills/` — 스킬 디렉터리 존재 확인
+4. `$sg-status` 실행 — 스킬 응답 확인
+
+### Gemini
+
+1. `cat .gemini/settings.json` — settings.json 존재 확인
+2. `ls hooks/*.cjs` — 훅 스크립트 존재 확인
+3. `ls .agents/skills/` — 스킬 디렉터리 존재 확인
+4. `$sg-status` 실행 — 스킬 응답 확인
+
+플랫폼별 확인이 모두 통과하면 `super-gsd`가 올바르게 설치된 것이다.
 
 ## 로드맵
 

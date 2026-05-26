@@ -190,36 +190,28 @@ super-gsd hooks work on Codex and Gemini/Antigravity CLI without the Claude Code
 ### Codex
 
 ```bash
-git clone https://github.com/gyuha/super-gsd.git ~/super-gsd
-cd your-project
-# Copy hook config, hook scripts, and agent skills (all three are required):
-mkdir -p .codex
-cp ~/super-gsd/.codex/hooks.json .codex/hooks.json
-cp -r ~/super-gsd/hooks .
-cp -r ~/super-gsd/.agents .
+npx @gyuha/super-gsd install
 ```
 
-`.codex/hooks.json` registers Stop and PreToolUse hooks automatically. The `hooks/` directory contains the Node.js scripts (CommonJS .cjs) that the hooks invoke. The `.agents/` directory contains the `$sg-*` skills — omitting it means no skills are available. Use `$sg-retro`, `$sg-plan`, `$sg-execute`, `$sg-review`, `$sg-start`, `$sg-status` skill syntax. See `AGENTS.md` for the full workflow.
+This installs `.codex/hooks.json` (Stop and PreToolUse hooks), `hooks/` (Node.js .cjs scripts), and `.agents/skills/` (`$sg-*` skills). Use `$sg-retro`, `$sg-plan`, `$sg-execute`, `$sg-review`, `$sg-start`, `$sg-status` skill syntax. See `AGENTS.md` for the full workflow.
 
 > **Note:** The Stop hook prints a `Run $sg-*` reminder message — it does not auto-invoke the next skill. You must run each `$sg-*` command manually after each stage.
+
+> **Tip:** Inside a Codex session, you can also run `$sg-setup` to install directly without leaving the session.
 
 ### Gemini / Antigravity CLI
 
 Gemini CLI is supported. Antigravity CLI compatibility has not been independently verified — see `.planning/phases/15-platform-hooks-python-fix/15-01-VERIFICATION.md`.
 
 ```bash
-git clone https://github.com/gyuha/super-gsd.git ~/super-gsd
-cd your-project
-# Copy hook config, hook scripts, and agent skills (all three are required):
-mkdir -p .gemini
-cp ~/super-gsd/.gemini/settings.json .gemini/settings.json
-cp -r ~/super-gsd/hooks .
-cp -r ~/super-gsd/.agents .
+npx @gyuha/super-gsd install --gemini
 ```
 
-`.gemini/settings.json` registers SessionEnd and BeforeTool hooks. The `hooks/` directory contains the Node.js scripts (CommonJS .cjs) that the hooks invoke. The `.agents/` directory contains the `$sg-*` skills — omitting it means no skills are available. Use `.agents/skills/` skills. See `AGENTS.md` for the full workflow.
+This installs `.gemini/settings.json` (SessionEnd and BeforeTool hooks), `hooks/` (Node.js .cjs scripts), and `.agents/skills/` (`$sg-*` skills). Use `.agents/skills/` skills. See `AGENTS.md` for the full workflow.
 
 > **Note:** The SessionEnd hook prints a `Run $sg-*` reminder message — it does not auto-invoke the next skill. You must run each `$sg-*` command manually after each stage.
+
+> **Tip:** Inside a Gemini session, you can also run `$sg-setup --gemini` to install directly without leaving the session.
 
 ## Prerequisites
 
@@ -234,11 +226,27 @@ cp -r ~/super-gsd/.agents .
 
 After installation, confirm `super-gsd` loaded cleanly and your existing tools still work.
 
+### Claude Code
+
 1. Run `/plugin list` and confirm that `super-gsd` appears in the listing with name, version, and description matching `.claude-plugin/plugin.json`.
 2. Run `/gsd-progress` (or any other GSD command) and confirm GSD responds normally — this proves GSD remains intact and unmodified.
 3. Open the `Skill` tree and confirm that `superpowers:*` skills are still discoverable and invokable — this proves Superpowers remains intact and unmodified.
 
-If all three checks pass, `super-gsd` is installed correctly and non-invasively.
+### Codex
+
+1. `cat .codex/hooks.json` — confirm hooks.json exists
+2. `ls hooks/*.cjs` — confirm hook scripts exist
+3. `ls .agents/skills/` — confirm skills directory exists
+4. Run `$sg-status` — confirm skill responds
+
+### Gemini
+
+1. `cat .gemini/settings.json` — confirm settings.json exists
+2. `ls hooks/*.cjs` — confirm hook scripts exist
+3. `ls .agents/skills/` — confirm skills directory exists
+4. Run `$sg-status` — confirm skill responds
+
+If checks pass for your platform, `super-gsd` is installed correctly.
 
 ## Roadmap
 

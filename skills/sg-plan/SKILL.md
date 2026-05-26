@@ -47,6 +47,16 @@ Self-contained. Reads .planning/STATE.md for phase resolution when no argument p
    If `PHASE_NUM` is empty after running this block, print exactly: `Could not resolve current phase. Pass phase number explicitly: /super-gsd:sg-plan <phase>` and stop execution. Do not proceed to Step 2.
 
 2. Print: `[sg-plan] Step 1/2: Gathering context via gsd-discuss-phase...`
+
+2.1. **Phase 디렉토리 pre-create.** discuss-phase 실행 전, Phase 디렉토리가 없으면 임시 슬러그로 미리 생성한다. 이미 있으면 건너뛴다:
+   ```bash
+   PHASE_PAD=$(printf "%02d" "$PHASE_NUM" 2>/dev/null || echo "$PHASE_NUM")
+   if ! ls -d .planning/phases/${PHASE_PAD}-* 2>/dev/null | grep -q .; then
+     mkdir -p ".planning/phases/${PHASE_PAD}-new-phase"
+     echo "[sg-plan] Pre-created .planning/phases/${PHASE_PAD}-new-phase for discuss-phase output"
+   fi
+   ```
+
    Spawn a subagent to run gsd-discuss-phase and wait for it to complete.
    **Before calling Agent, replace every occurrence of `$PHASE_NUM` in the block below with the actual resolved value** (e.g. `6`):
    ```
@@ -56,7 +66,28 @@ Self-contained. Reads .planning/STATE.md for phase resolution when no argument p
      subagent_type="general-purpose"
    )
    ```
-   Wait for the agent to complete before proceeding. If the agent exits with an error, print: `[sg-plan] gsd-discuss-phase failed. Aborting.` and stop execution. Do not proceed to Step 3.
+   Wait for the agent to complete before proceeding. If the agent exits with an error, print: `[sg-plan] gsd-discuss-phase failed. Aborting.` and stop execution. Do not proceed to Step 2.3.
+
+2.3. **discuss-phase 출력 위치 검증.** discuss-phase가 올바른 Phase 디렉토리에 CONTEXT.md를 작성했는지 확인한다:
+   ```bash
+   CONTEXT_OK=$(ls .planning/phases/${PHASE_PAD}-*/${PHASE_PAD}-CONTEXT.md 2>/dev/null | head -1)
+   if [ -z "$CONTEXT_OK" ]; then
+     MISPLACED=$(ls .planning/phases/*/${PHASE_PAD}-CONTEXT.md 2>/dev/null | grep -v "/${PHASE_PAD}-" | head -1)
+     if [ -n "$MISPLACED" ]; then
+       WRONG_DIR=$(dirname "$MISPLACED")
+       CORRECT_DIR=$(ls -d .planning/phases/${PHASE_PAD}-* 2>/dev/null | head -1)
+       echo "[sg-plan] WARNING: discuss-phase wrote CONTEXT.md to wrong directory: $WRONG_DIR"
+       echo "[sg-plan] Moving ${PHASE_PAD}-*.md files to $CORRECT_DIR ..."
+       for f in "${WRONG_DIR}/${PHASE_PAD}"-*.md; do
+         [ -f "$f" ] && mv "$f" "$CORRECT_DIR/"
+       done
+       echo "[sg-plan] Move complete. Verify $CORRECT_DIR before proceeding."
+     else
+       echo "[sg-plan] WARNING: ${PHASE_PAD}-CONTEXT.md not found in any phase directory."
+       echo "[sg-plan] discuss-phase may have written to an unexpected location. Check .planning/phases/."
+     fi
+   fi
+   ```
 
 2.5. **HANDOFF.md에 gsd-plan 행 idempotent 기록.** gsd-plan-phase가 terminal Skill이므로 제어가 반환되지 않는다. 호출 직전이 기록 가능한 최후 시점이다. 동일 phase의 gsd-plan 행이 이미 있으면 skip한다:
    ```bash
@@ -87,9 +118,11 @@ Self-contained. Reads .planning/STATE.md for phase resolution when no argument p
 <success_criteria>
 0. .planning/lessons/ 에 파일이 있으면 Step 0이 weighted top-N을 먼저 표시하고 전체 lessons를 "=== Weighted Top-N Patterns ===" → ranked list → "=== All Lessons (below) ===" → cat 내용 → "=== End of Lessons ===" 순서로 출력한다. 파일이 없으면 Step 0이 조용히 건너뛰어진다.
 1. PHASE_NUM이 비어 있으면 명시적 오류 메시지를 출력하고 종료한다.
-2. gsd-discuss-phase는 Agent()로 서브에이전트에서 실행되고, 완료 후 제어가 반환된다.
-3. gsd-discuss-phase Agent가 에러로 종료되면 오류 메시지를 출력하고 Step 3(gsd-plan-phase)을 실행하지 않는다.
-4. gsd-plan-phase Skill 호출 직전에 HANDOFF.md에 To=gsd-plan 행이 기록된다 (이미 동일 phase+gsd-plan 조합이 있으면 skip).
-5. gsd-plan-phase Skill is invoked exactly once with the resolved phase number as the terminal action.
-6. Progress messages "[sg-plan] Step 1/2:" and "[sg-plan] Step 2/2:" are printed before each respective invocation.
+2. Step 2.1이 Phase ${PHASE_PAD}-* 디렉토리가 없으면 `${PHASE_PAD}-new-phase` 플레이스홀더를 생성한다. 이미 있으면 건너뛴다.
+3. gsd-discuss-phase는 Agent()로 서브에이전트에서 실행되고, 완료 후 제어가 반환된다.
+4. Step 2.3이 `${PHASE_PAD}-CONTEXT.md`의 위치를 검증한다. 잘못된 디렉토리에 있으면 올바른 `${PHASE_PAD}-*` 디렉토리로 자동 이동한다.
+5. gsd-discuss-phase Agent가 에러로 종료되면 오류 메시지를 출력하고 Step 2.3 및 gsd-plan-phase를 실행하지 않는다.
+6. gsd-plan-phase Skill 호출 직전에 HANDOFF.md에 To=gsd-plan 행이 기록된다 (이미 동일 phase+gsd-plan 조합이 있으면 skip).
+7. gsd-plan-phase Skill is invoked exactly once with the resolved phase number as the terminal action.
+8. Progress messages "[sg-plan] Step 1/2:" and "[sg-plan] Step 2/2:" are printed before each respective invocation.
 </success_criteria>

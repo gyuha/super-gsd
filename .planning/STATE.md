@@ -3,8 +3,8 @@ gsd_state_version: 1.0
 milestone: v2.6
 milestone_name: Codex/Gemini 설치 UX 개선
 status: executing
-last_updated: "2026-05-26T11:03:57.202Z"
-last_activity: 2026-05-26 -- Phase 33 planning complete
+last_updated: "2026-05-26T11:04:47.334Z"
+last_activity: 2026-05-26 -- Phase 33 execution started
 progress:
   total_phases: 11
   completed_phases: 0
@@ -20,14 +20,14 @@ progress:
 See: .planning/PROJECT.md (updated 2026-05-26)
 
 **Core value:** GSD → Superpowers → sg-retro 단계 전환을 자동화하여 학습 루프가 끊기지 않도록 한다
-**Current focus:** v2.6 — Codex/Gemini 설치 UX 개선 (npx 단일 명령 + $sg-setup 인세션 스킬 + 문서 개선)
+**Current focus:** Phase 33 — npx-installer
 
 ## Current Position
 
-Phase: 33
-Plan: —
-Status: Ready to execute
-Last activity: 2026-05-26 -- Phase 33 planning complete
+Phase: 33 (npx-installer) — EXECUTING
+Plan: 1 of 1
+Status: Executing Phase 33
+Last activity: 2026-05-26 -- Phase 33 execution started
 
 ## Performance Metrics
 

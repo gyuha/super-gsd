@@ -338,7 +338,7 @@ Plans:
 
 **Plans**: 1 planPlans:
 
-- [ ] 33-01-PLAN.md — package.json + bin/setup.js 구현 + CLAUDE.md 배포 트리거 업데이트 (INSTALL-01, INSTALL-02, INSTALL-03)
+- [x] 33-01-PLAN.md — package.json + bin/setup.js 구현 + CLAUDE.md 배포 트리거 업데이트 (INSTALL-01, INSTALL-02, INSTALL-03)
 
 ### Phase 34: $sg-setup 인세션 스킬
 
@@ -397,6 +397,6 @@ Plans:
 | 30. Skill/Agent 내부 호출 교체 | v2.4 | 1/1 | Complete | 2026-05-25 |
 | 31. 정리 + 문서 | v2.4 | 1/1 | Complete | 2026-05-26 |
 | 32. 파일 파싱 방식 전환 | v2.5 | 2/2 | Complete | 2026-05-26 |
-| 33. npx Installer | v2.6 | 0/1 | Not started | - |
+| 33. npx Installer | v2.6 | 1/1 | Complete   | 2026-05-26 |
 | 34. $sg-setup 인세션 스킬 | v2.6 | 0/TBD | Not started | - |
 | 35. 문서 개선 | v2.6 | 0/TBD | Not started | - |

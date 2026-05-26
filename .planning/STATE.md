@@ -4,7 +4,7 @@ milestone: v2.6
 milestone_name: Codex/Gemini 설치 UX 개선
 status: milestone_complete
 last_updated: 2026-05-26T11:15:52.829Z
-last_activity: 2026-05-26 -- Phase 33 execution started
+last_activity: 2026-05-26 -- Phase 33 shipped — pushed to origin/main
 progress:
   total_phases: 11
   completed_phases: 0

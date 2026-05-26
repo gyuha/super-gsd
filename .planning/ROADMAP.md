@@ -13,7 +13,7 @@
 - [x] **v2.2 sg-next Auto-Advance** (2026-05-24) — sg-next 명령으로 현재 단계 자동 감지 + 다음 sg-* 명령 즉시 invoke → [Archive](.planning/milestones/v2.2-ROADMAP.md)
 - [x] **v2.3 GSD Repository Migration Update** (2026-05-25) — GSD 저장소 이전(`get-shit-done-cc` → `@opengsd/get-shit-done-redux`) 참조 업데이트 → [Archive](.planning/milestones/v2.3-ROADMAP.md)
 - [x] **v2.4 Hooks Node Migration** (2026-05-26) — Python 의존성 제거, `hooks/*.py` 4개를 순수 JS(`.cjs`)로 재작성 + 설정/스킬/문서 일괄 교체 → [Archive](.planning/milestones/v2.4-ROADMAP.md)
-- [ ] **v2.5 Superpowers-Native File Parsing** — super-gsd skills의 bash 파이프라인(grep/sed/awk) 파일 파싱을 Read 도구 + Claude 해석 방식으로 전환 + CLAUDE.md 컨벤션 업데이트
+- [x] **v2.5 Superpowers-Native File Parsing** (2026-05-26) — super-gsd skills의 bash 파이프라인(grep/sed/awk) 파일 파싱을 Read 도구 + Claude 해석 방식으로 전환 + CLAUDE.md 컨벤션 업데이트 → [Archive](.planning/milestones/v2.5-ROADMAP.md)
 
 ## Phases
 
@@ -306,25 +306,12 @@ Plans:
 
 ---
 
-## v2.5 Superpowers-Native File Parsing
+<details>
+<summary>✅ v2.5 Superpowers-Native File Parsing (Phase 32) — SHIPPED 2026-05-26</summary>
 
-### Phase 32: 파일 파싱 방식 전환
+- [x] Phase 32: 파일 파싱 방식 전환 (2/2 plans) — completed 2026-05-26
 
-**Goal**: super-gsd skills의 파일 파싱 방식을 bash 파이프라인(grep|sed|awk)에서 Superpowers 방식(Read 도구 + Claude 해석)으로 전환하고, CLAUDE.md 컨벤션을 업데이트한다
-**Depends on**: Phase 31 (v2.5 신규 시작)
-**Requirements**: PARSE-01, PARSE-02, PARSE-03
-**Success Criteria** (what must be TRUE):
-
-  1. `skills/sg-*/SKILL.md` 전체에서 STATE.md/HANDOFF.md/ROADMAP.md를 bash 파이프라인(grep/sed/awk)으로 파싱하는 코드가 제거되고 Read 도구 직접 호출로 교체된다
-  2. `CLAUDE.md`의 "macOS 셸 이식성" 섹션에서 D-04/D-05/D-06 STATE.md Phase 파싱 lock 항목이 제거되고 Superpowers 방식(Read 도구 + Claude 해석)이 권장 방식으로 명시된다
-  3. 전환 후 sg-next, sg-status, sg-start 등 파일 읽기에 의존하는 skills가 정상 동작함을 수동 검증한다
-
-**Plans**: 2 plans
-Plans:
-**Wave 1** (병렬 실행 가능)
-
-- [ ] 32-01-PLAN.md — skills/sg-{complete,execute,plan,review,ship,ui-plan,lessons,quick}/SKILL.md bash 파싱 → Read 도구 전환 (PARSE-01)
-- [ ] 32-02-PLAN.md — .agents/skills/ 4개 + sg-retro lock 주석 + CLAUDE.md 컨벤션 업데이트 (PARSE-02, PARSE-03)
+</details>
 
 ---
 
@@ -355,4 +342,4 @@ Plans:
 | 29. Hook 설정 명령 교체 | v2.4 | 1/1 | Complete | 2026-05-25 |
 | 30. Skill/Agent 내부 호출 교체 | v2.4 | 1/1 | Complete | 2026-05-25 |
 | 31. 정리 + 문서 | v2.4 | 1/1 | Complete | 2026-05-26 |
-| 32. 파일 파싱 방식 전환 | v2.5 | 0/2 | Not started | - |
+| 32. 파일 파싱 방식 전환 | v2.5 | 2/2 | Complete | 2026-05-26 |

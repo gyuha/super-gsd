@@ -1,16 +1,16 @@
 ---
 gsd_state_version: 1.0
-milestone: v2.4
-milestone_name: Hooks Node Migration
+milestone: v2.5
+milestone_name: Superpowers-Native File Parsing
 status: complete
-stopped_at: Phase 31 — complete
-last_updated: "2026-05-26T00:00:00.000Z"
-last_activity: 2026-05-26 — v2.4 milestone complete, Python 의존성 제거 완료, version 0.0.38
+stopped_at: Phase 32 — complete
+last_updated: "2026-05-26T01:00:00.000Z"
+last_activity: 2026-05-26 — v2.5 milestone complete, Superpowers-Native 파일 파싱 전환 완료, 3개 sg-rule 생성
 progress:
-  total_phases: 4
-  completed_phases: 4
-  total_plans: 8
-  completed_plans: 8
+  total_phases: 1
+  completed_phases: 1
+  total_plans: 2
+  completed_plans: 2
   percent: 100
 ---
 
@@ -18,17 +18,16 @@ progress:
 
 ## Project Reference
 
-See: .planning/PROJECT.md (updated 2026-05-25)
+See: .planning/PROJECT.md (updated 2026-05-26)
 
 **Core value:** GSD → Superpowers → sg-retro 단계 전환을 자동화하여 학습 루프가 끊기지 않도록 한다
-**Current focus:** v2.4 — Python 의존성 제거, hooks를 Node.js로 재작성
+**Current focus:** v2.5 milestone complete — Next: v1.3 Multi-Platform Support 또는 v2.6 신규 마일스톤 계획
 
 ## Current Position
 
-Phase: 29 — implementation complete, code review passed (`3ffffde`)
-Plan: 29-01 — complete (3ffffde feat + 3b4c019 SUMMARY)
-Status: Ready to execute
-Last activity: 2026-05-25 -- Phase 30 planning complete
+Phase: 32 — complete (v2.5 milestone shipped)
+Status: Milestone complete — ready for /sg-new
+Last activity: 2026-05-26 — v2.5 Superpowers-Native File Parsing complete
 
 ## Performance Metrics
 

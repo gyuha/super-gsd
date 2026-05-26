@@ -1,5 +1,38 @@
 # Milestones: super-gsd
 
+## v2.5 Superpowers-Native File Parsing
+
+**Shipped:** 2026-05-26
+**Phases:** 1 (Phase 32)
+**Plans:** 2
+**Commits:** 11 (5b7d8e7..dbbcef5)
+**Files:** 16 changed, +285 / -101 lines
+**Timeline:** 2026-05-25 → 2026-05-26 (1 day)
+
+### Delivered
+
+super-gsd skills의 bash 파이프라인(grep/sed/awk) 파일 파싱을 Superpowers 방식(Read 도구 + Claude 해석)으로 전환. `skills/sg-*/SKILL.md` 8개 + `.agents/skills/sg-*/SKILL.md` 4개에서 STATE.md/HANDOFF.md/ROADMAP.md 파싱 코드 제거. CLAUDE.md 컨벤션 업데이트. Phase 32 Conversation Analyzer 회고에서 3개 sg-rule 신규 생성 + sg-plan 디렉토리 버그 패치.
+
+### Key Accomplishments
+
+1. **12개 SKILL.md 파싱 전환** — `skills/sg-*/SKILL.md` 8개 + `.agents/skills/sg-*/SKILL.md` 4개에서 bash grep/sed/awk → Read 도구 + Claude 해석 방식으로 전환
+2. **3개 sg-rule 신규 생성** — `warn-agents-read-comment-in-bash`, `warn-node-process-env-arguments`, `warn-read-inside-bash-fence` (Phase 32 retro 3개 High severity 기반)
+3. **sg-plan discuss-phase 버그 패치** — 신규 phase 디렉토리 pre-create + CONTEXT.md 위치 자동 검증·이동 (retro Medium severity → 즉각 수정)
+4. **CLAUDE.md `.agents/` 쌍 커버 규칙 추가** — `skills/` 패턴 변환 시 `.agents/` 변형 누락 방지
+5. **Phase 32 코드 리뷰 → Critical 2건 + Important 3건 수정** — `-new-phase` 플레이스홀더 필터링, 정확한 파일 이동 로직
+6. **sg-retro macOS 호환 주석 교체** — Phase lock 주석 → macOS 호환성 명시 주석으로 교체
+
+### Archive
+
+- `.planning/milestones/v2.5-ROADMAP.md`
+- `.planning/milestones/v2.5-LESSONS.md`
+
+---
+
+*See [v2.5-ROADMAP.md](milestones/v2.5-ROADMAP.md) for full phase details.*
+
+---
+
 ## v2.2 sg-next Auto-Advance
 
 **Shipped:** 2026-05-24

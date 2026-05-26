@@ -143,3 +143,9 @@
 | 2026-05-25T15:17:08Z | 31-cleanup-docs | execute | review | - |
 | 2026-05-25T21:16:43Z | 31-cleanup-docs | review | ship | - |
 | 2026-05-25T21:35:24Z | 31-cleanup-docs | ship | complete | - |
+| 2026-05-25T22:11:17Z | 32-skill-superpowers-migration | complete | gsd-plan | - |
+| 2026-05-25T22:37:22Z | 32-skill-superpowers-migration | gsd-plan | parallel | e226238 |
+| 2026-05-25T23:15:18Z | 32-skill-superpowers-migration | parallel | review | - |
+| 2026-05-25T23:48:20Z | 32-skill-superpowers-migration | review | sg-retro | - |
+| 2026-05-26T00:37:42Z | 32-skill-superpowers-migration | sg-retro | review | - |
+| 2026-05-26T00:52:39Z | 32-skill-superpowers-migration | sg-retro | complete | - |

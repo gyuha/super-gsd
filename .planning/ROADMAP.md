@@ -336,7 +336,10 @@ Plans:
   3. 리포지토리 루트에 `package.json`과 `bin/setup.js`가 존재하여 사전 설치 없이 `npx`가 즉시 실행된다
   4. 이미 파일이 존재하는 경우 덮어쓸지 확인하거나 명확한 결과를 출력한다
 
-**Plans**: TBD
+**Plans**: 1 plan
+Plans:
+
+- [ ] 33-01-PLAN.md — package.json + bin/setup.js 구현 + CLAUDE.md 배포 트리거 업데이트 (INSTALL-01, INSTALL-02, INSTALL-03)
 
 ### Phase 34: $sg-setup 인세션 스킬
 
@@ -395,6 +398,6 @@ Plans:
 | 30. Skill/Agent 내부 호출 교체 | v2.4 | 1/1 | Complete | 2026-05-25 |
 | 31. 정리 + 문서 | v2.4 | 1/1 | Complete | 2026-05-26 |
 | 32. 파일 파싱 방식 전환 | v2.5 | 2/2 | Complete | 2026-05-26 |
-| 33. npx Installer | v2.6 | 0/TBD | Not started | - |
+| 33. npx Installer | v2.6 | 0/1 | Not started | - |
 | 34. $sg-setup 인세션 스킬 | v2.6 | 0/TBD | Not started | - |
 | 35. 문서 개선 | v2.6 | 0/TBD | Not started | - |

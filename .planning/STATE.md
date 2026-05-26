@@ -1,17 +1,16 @@
 ---
 gsd_state_version: 1.0
-milestone: v2.5
-milestone_name: Superpowers-Native File Parsing
-status: complete
-stopped_at: Phase 32 — complete
-last_updated: "2026-05-26T01:00:00.000Z"
-last_activity: 2026-05-26 — v2.5 milestone complete, Superpowers-Native 파일 파싱 전환 완료, 3개 sg-rule 생성
+milestone: v2.6
+milestone_name: Codex/Gemini 설치 UX 개선
+status: planning
+last_updated: "2026-05-26T10:30:06.144Z"
+last_activity: 2026-05-26
 progress:
-  total_phases: 1
-  completed_phases: 1
-  total_plans: 2
-  completed_plans: 2
-  percent: 100
+  total_phases: 0
+  completed_phases: 0
+  total_plans: 0
+  completed_plans: 0
+  percent: 0
 ---
 
 # Project State
@@ -25,9 +24,10 @@ See: .planning/PROJECT.md (updated 2026-05-26)
 
 ## Current Position
 
-Phase: 32 — complete (v2.5 milestone shipped)
-Status: Milestone complete — ready for /sg-new
-Last activity: 2026-05-26 — v2.5 Superpowers-Native File Parsing complete
+Phase: Not started (defining requirements)
+Plan: —
+Status: Defining requirements
+Last activity: 2026-05-26 — Milestone v2.6 started
 
 ## Performance Metrics
 

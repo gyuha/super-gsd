@@ -49,12 +49,12 @@ Codex/Gemini CLI에서 super-gsd 설치를 GSD(npm) · Superpowers(marketplace) 
 
 | REQ-ID | Phase | Status |
 |--------|-------|--------|
-| INSTALL-01 | TBD | Pending |
-| INSTALL-02 | TBD | Pending |
-| INSTALL-03 | TBD | Pending |
-| SKILL-01 | TBD | Pending |
-| SKILL-02 | TBD | Pending |
-| DOC-01 | TBD | Pending |
-| DOC-02 | TBD | Pending |
-| DOC-03 | TBD | Pending |
-| DOC-04 | TBD | Pending |
+| INSTALL-01 | Phase 33 | Pending |
+| INSTALL-02 | Phase 33 | Pending |
+| INSTALL-03 | Phase 33 | Pending |
+| SKILL-01 | Phase 34 | Pending |
+| SKILL-02 | Phase 34 | Pending |
+| DOC-01 | Phase 35 | Pending |
+| DOC-02 | Phase 35 | Pending |
+| DOC-03 | Phase 35 | Pending |
+| DOC-04 | Phase 35 | Pending |

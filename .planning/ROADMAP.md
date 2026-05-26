@@ -14,6 +14,7 @@
 - [x] **v2.3 GSD Repository Migration Update** (2026-05-25) — GSD 저장소 이전(`get-shit-done-cc` → `@opengsd/get-shit-done-redux`) 참조 업데이트 → [Archive](.planning/milestones/v2.3-ROADMAP.md)
 - [x] **v2.4 Hooks Node Migration** (2026-05-26) — Python 의존성 제거, `hooks/*.py` 4개를 순수 JS(`.cjs`)로 재작성 + 설정/스킬/문서 일괄 교체 → [Archive](.planning/milestones/v2.4-ROADMAP.md)
 - [x] **v2.5 Superpowers-Native File Parsing** (2026-05-26) — super-gsd skills의 bash 파이프라인(grep/sed/awk) 파일 파싱을 Read 도구 + Claude 해석 방식으로 전환 + CLAUDE.md 컨벤션 업데이트 → [Archive](.planning/milestones/v2.5-ROADMAP.md)
+- [ ] **v2.6 Codex/Gemini 설치 UX 개선** — npx 단일 명령 설치 + $sg-setup 인세션 스킬 + 문서 개선
 
 ## Phases
 
@@ -54,6 +55,12 @@
 - [ ] **Phase 29: Hook 설정 명령 교체** — `hooks/hooks.json`, `.codex/hooks.json`, `.gemini/settings.json`의 `python3` → `node` 교체
 - [ ] **Phase 30: Skill/Agent 내부 호출 교체** — `skills/sg-{plan,execute,complete,quick,ui-plan}/SKILL.md`와 `.agents/skills/sg-{ship,plan,execute}/SKILL.md`의 python3 호출 일괄 교체
 - [ ] **Phase 31: 정리 + 문서** — `hooks/*.py` 4개 일괄 삭제 + CLAUDE.md/README/CHANGELOG 갱신
+
+### v2.6 Codex/Gemini 설치 UX 개선
+
+- [ ] **Phase 33: npx Installer** — `package.json` + `bin/setup.js` 신규 작성, `npx @gyuha/super-gsd install` 단일 명령으로 Codex/Gemini 설치 파일 복사
+- [ ] **Phase 34: $sg-setup 인세션 스킬** — `.agents/skills/sg-setup/SKILL.md` 신규 생성, 세션 내부에서 파일 복사 자동화
+- [ ] **Phase 35: 문서 개선** — README.md Codex/Gemini 설치 섹션 재작성 + Verify install 섹션 추가 + AGENTS.md 업데이트 + README.ko.md 동기화
 
 ## Phase Details
 
@@ -315,6 +322,51 @@ Plans:
 
 ---
 
+## v2.6 Codex/Gemini 설치 UX 개선
+
+### Phase 33: npx Installer
+
+**Goal**: 사용자가 `npx @gyuha/super-gsd install` 한 명령으로 Codex/Gemini 설치에 필요한 파일을 현재 프로젝트에 복사할 수 있다
+**Depends on**: Phase 32 (v2.6 신규 시작)
+**Requirements**: INSTALL-01, INSTALL-02, INSTALL-03
+**Success Criteria** (what must be TRUE):
+
+  1. `npx @gyuha/super-gsd install` 실행 시 `.codex/hooks.json`, `hooks/`, `.agents/` 파일이 현재 프로젝트 디렉토리에 복사된다
+  2. `npx @gyuha/super-gsd install --gemini` 실행 시 `.gemini/settings.json`도 함께 복사된다
+  3. 리포지토리 루트에 `package.json`과 `bin/setup.js`가 존재하여 사전 설치 없이 `npx`가 즉시 실행된다
+  4. 이미 파일이 존재하는 경우 덮어쓸지 확인하거나 명확한 결과를 출력한다
+
+**Plans**: TBD
+
+### Phase 34: $sg-setup 인세션 스킬
+
+**Goal**: Codex/Gemini 세션 내부에서 `$sg-setup` 스킬 하나로 프로젝트에 필요한 파일이 자동으로 복사된다
+**Depends on**: Phase 33
+**Requirements**: SKILL-01, SKILL-02
+**Success Criteria** (what must be TRUE):
+
+  1. `.agents/skills/sg-setup/SKILL.md`가 존재하고 `$sg-setup` 명령으로 호출 가능하다
+  2. `$sg-setup` 실행 시 `hooks/`, `.agents/`, 플랫폼별 설정 파일이 프로젝트 루트에 자동으로 복사된다
+  3. 스킬 실행 결과로 복사된 파일 목록과 완료 메시지가 출력된다
+
+**Plans**: TBD
+
+### Phase 35: 문서 개선
+
+**Goal**: README.md와 AGENTS.md를 보는 사용자가 npx 단일 명령으로 설치하고 설치 결과를 직접 검증할 수 있다
+**Depends on**: Phase 34
+**Requirements**: DOC-01, DOC-02, DOC-03, DOC-04
+**Success Criteria** (what must be TRUE):
+
+  1. `README.md` Codex/Gemini 설치 섹션이 `npx @gyuha/super-gsd install` 단일 명령으로 재작성되고 기존 4단계 cp 명령이 제거된다
+  2. `README.md`에 Verify install 섹션이 추가되어 hooks 동작 확인 방법과 스킬 실행 확인 방법이 명시된다
+  3. `AGENTS.md`에 설치 방법과 Verify 체크리스트가 업데이트된다
+  4. `README.ko.md`가 README.md의 변경 사항과 동기화된다
+
+**Plans**: TBD
+
+---
+
 ## Progress
 
 | Phase | Milestone | Plans Complete | Status | Completed |
@@ -343,3 +395,6 @@ Plans:
 | 30. Skill/Agent 내부 호출 교체 | v2.4 | 1/1 | Complete | 2026-05-25 |
 | 31. 정리 + 문서 | v2.4 | 1/1 | Complete | 2026-05-26 |
 | 32. 파일 파싱 방식 전환 | v2.5 | 2/2 | Complete | 2026-05-26 |
+| 33. npx Installer | v2.6 | 0/TBD | Not started | - |
+| 34. $sg-setup 인세션 스킬 | v2.6 | 0/TBD | Not started | - |
+| 35. 문서 개선 | v2.6 | 0/TBD | Not started | - |

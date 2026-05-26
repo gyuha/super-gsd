@@ -6,7 +6,7 @@ status: planning
 last_updated: "2026-05-26T10:30:06.144Z"
 last_activity: 2026-05-26
 progress:
-  total_phases: 0
+  total_phases: 3
   completed_phases: 0
   total_plans: 0
   completed_plans: 0
@@ -20,14 +20,14 @@ progress:
 See: .planning/PROJECT.md (updated 2026-05-26)
 
 **Core value:** GSD → Superpowers → sg-retro 단계 전환을 자동화하여 학습 루프가 끊기지 않도록 한다
-**Current focus:** v2.5 milestone complete — Next: v1.3 Multi-Platform Support 또는 v2.6 신규 마일스톤 계획
+**Current focus:** v2.6 — Codex/Gemini 설치 UX 개선 (npx 단일 명령 + $sg-setup 인세션 스킬 + 문서 개선)
 
 ## Current Position
 
-Phase: Not started (defining requirements)
+Phase: 33
 Plan: —
-Status: Defining requirements
-Last activity: 2026-05-26 — Milestone v2.6 started
+Status: Not started
+Last activity: 2026-05-26 — v2.6 roadmap created (Phases 33-35)
 
 ## Performance Metrics
 
@@ -44,10 +44,10 @@ Last activity: 2026-05-26 — Milestone v2.6 started
 Decisions are logged in PROJECT.md Key Decisions table.
 Recent decisions affecting current work:
 
-- v2.4 phase shape: 4 phases (coarse granularity) — Phase 28 (NODE-01~04 묶음 포팅), Phase 29 (config 3개), Phase 30 (skill/agent 호출), Phase 31 (CLEAN-01 + DOC)
-- v2.4 CLEAN-01은 반드시 마지막 phase (Phase 31)에서 수행 — 모든 `.cjs` 검증 후
-- v2.4는 v2.3과 독립 마일스톤이지만 phase 번호는 연속 (28부터 시작)
-- v2.3 scope: 6개 파일(README.md, README.ko.md, CLAUDE.md, AGENTS.md, sg-update/SKILL.md, PROJECT.md)의 `get-shit-done-cc` → `@opengsd/get-shit-done-redux` 교체
+- v2.6 phase shape: 3 phases (coarse granularity) — Phase 33 (npx installer), Phase 34 ($sg-setup 스킬), Phase 35 (문서 개선)
+- v2.6은 v2.5와 독립 마일스톤이지만 phase 번호는 연속 (33부터 시작)
+- npx 설치 방식 채택: `npx @gyuha/super-gsd install` — GSD npm 패턴 참조, 사전 설치 불필요
+- $sg-setup은 .agents/skills/ 에 위치 — Codex/Gemini 세션 내 인세션 부트스트랩 전용
 
 ### Pending Todos
 
@@ -86,6 +86,6 @@ Items acknowledged and deferred at v2.2 milestone close on 2026-05-24:
 
 ## Session Continuity
 
-Last session: 2026-05-25T13:34:36.808Z
-Stopped at: Phase 30 context gathered
-Resume file: .planning/phases/30-skill-agent/30-CONTEXT.md
+Last session: 2026-05-26
+Stopped at: v2.6 roadmap created — ready for Phase 33 planning
+Resume file: .planning/ROADMAP.md

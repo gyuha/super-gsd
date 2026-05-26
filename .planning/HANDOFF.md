@@ -159,3 +159,4 @@
 | 2026-05-26T12:16:44Z | 34-sg-setup-skill | superpowers | complete | - |
 | 2026-05-26T12:25:49Z | 33-npx-installer | complete | sg-next | - |
 | 2026-05-26T12:33:47Z | 35-doc-improvement | sg-next | gsd-plan | - |
+| 2026-05-26T12:43:48Z | 35-doc-improvement | gsd-plan | complete | - |

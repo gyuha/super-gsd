@@ -180,7 +180,7 @@ super-gsd hooks work on Codex and Gemini/Antigravity CLI without the Claude Code
 | Feature | Claude Code | Codex | Gemini / Antigravity CLI |
 |---------|:-----------:|:-----:|:------------------------:|
 | `/sg-*` slash commands | ✅ | ❌ use `$sg-*` skills | ❌ use `$sg-*` skills |
-| Stop hook auto-handoff | ✅ | ✅ `.codex/hooks.json` | ✅ `.gemini/settings.json` |
+| Stop hook next-step reminder | ✅ auto-invoke | ⚠️ reminder only | ⚠️ reminder only |
 | SubagentStop hook | ✅ | ❌ not supported | ❌ not supported |
 | PreToolUse / BeforeTool hook | ✅ | ✅ | ✅ |
 | Superpowers integration | ✅ | ❌ | ❌ |
@@ -192,13 +192,16 @@ super-gsd hooks work on Codex and Gemini/Antigravity CLI without the Claude Code
 ```bash
 git clone https://github.com/gyuha/super-gsd.git ~/super-gsd
 cd your-project
-# Copy hook config and hook scripts (both are required):
+# Copy hook config, hook scripts, and agent skills (all three are required):
 mkdir -p .codex
 cp ~/super-gsd/.codex/hooks.json .codex/hooks.json
 cp -r ~/super-gsd/hooks .
+cp -r ~/super-gsd/.agents .
 ```
 
-`.codex/hooks.json` registers Stop and PreToolUse hooks automatically. The `hooks/` directory contains the Node.js scripts (CommonJS .cjs) that the hooks invoke — omitting it causes all hooks to fail silently. Use `$sg-retro`, `$sg-plan`, `$sg-execute`, `$sg-review`, `$sg-start`, `$sg-status` skill syntax. See `AGENTS.md` for the full workflow.
+`.codex/hooks.json` registers Stop and PreToolUse hooks automatically. The `hooks/` directory contains the Node.js scripts (CommonJS .cjs) that the hooks invoke. The `.agents/` directory contains the `$sg-*` skills — omitting it means no skills are available. Use `$sg-retro`, `$sg-plan`, `$sg-execute`, `$sg-review`, `$sg-start`, `$sg-status` skill syntax. See `AGENTS.md` for the full workflow.
+
+> **Note:** The Stop hook prints a `Run $sg-*` reminder message — it does not auto-invoke the next skill. You must run each `$sg-*` command manually after each stage.
 
 ### Gemini / Antigravity CLI
 
@@ -207,13 +210,16 @@ Gemini CLI is supported. Antigravity CLI compatibility has not been independentl
 ```bash
 git clone https://github.com/gyuha/super-gsd.git ~/super-gsd
 cd your-project
-# Copy hook config and hook scripts (both are required):
+# Copy hook config, hook scripts, and agent skills (all three are required):
 mkdir -p .gemini
 cp ~/super-gsd/.gemini/settings.json .gemini/settings.json
 cp -r ~/super-gsd/hooks .
+cp -r ~/super-gsd/.agents .
 ```
 
-`.gemini/settings.json` registers SessionEnd and BeforeTool hooks. The `hooks/` directory contains the Node.js scripts (CommonJS .cjs) that the hooks invoke — omitting it causes all hooks to fail silently. Use `.agents/skills/` skills. See `AGENTS.md` for the full workflow.
+`.gemini/settings.json` registers SessionEnd and BeforeTool hooks. The `hooks/` directory contains the Node.js scripts (CommonJS .cjs) that the hooks invoke. The `.agents/` directory contains the `$sg-*` skills — omitting it means no skills are available. Use `.agents/skills/` skills. See `AGENTS.md` for the full workflow.
+
+> **Note:** The SessionEnd hook prints a `Run $sg-*` reminder message — it does not auto-invoke the next skill. You must run each `$sg-*` command manually after each stage.
 
 ## Prerequisites
 

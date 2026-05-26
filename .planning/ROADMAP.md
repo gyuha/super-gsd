@@ -336,8 +336,7 @@ Plans:
   3. 리포지토리 루트에 `package.json`과 `bin/setup.js`가 존재하여 사전 설치 없이 `npx`가 즉시 실행된다
   4. 이미 파일이 존재하는 경우 덮어쓸지 확인하거나 명확한 결과를 출력한다
 
-**Plans**: 1 plan
-Plans:
+**Plans**: 1 planPlans:
 
 - [ ] 33-01-PLAN.md — package.json + bin/setup.js 구현 + CLAUDE.md 배포 트리거 업데이트 (INSTALL-01, INSTALL-02, INSTALL-03)
 

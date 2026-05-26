@@ -38,8 +38,8 @@
 
 - **D-06:** **npm 배포 방식** — `npm publish`로 패키지를 npm registry에 게시하고, `npx @gyuha/super-gsd install` 실행 시 npm 캐시에서 파일을 가져온다.
 - **D-07:** `bin/setup.js`는 `__dirname`으로 자신의 위치(패키지 루트)를 결정하고, `path.join(__dirname, '..', 'hooks')` 등 상대 경로로 소스 파일에 접근한다.
-- **D-08:** GitHub 직접 방식(`npx github:gyuha/super-gsd`)은 채택하지 않는다 — 브랜치 변경에 취약하고 버전 고정이 불가하다.
-- **D-09:** 번들(파일 내장) 방식은 채택하지 않는다 — hooks/*.cjs가 독립 파일로 작동해야 하고 유지보수 비용이 높다.
+- **D-08** `[informational]`: GitHub 직접 방식(`npx github:gyuha/super-gsd`)은 채택하지 않는다 — 브랜치 변경에 취약하고 버전 고정이 불가하다.
+- **D-09** `[informational]`: 번들(파일 내장) 방식은 채택하지 않는다 — hooks/*.cjs가 독립 파일로 작동해야 하고 유지보수 비용이 높다.
 
 ### C. 파일 충돌 처리
 
@@ -51,7 +51,7 @@
   ```
   ✓ .codex/hooks.json (overwritten)
   ```
-- **D-12:** 대화형 readline 프롬프트는 사용하지 않는다 — npx 비대화형 파이프 환경에서 깨질 수 있다.
+- **D-12** `[informational]`: 대화형 readline 프롬프트는 사용하지 않는다 — npx 비대화형 파이프 환경에서 깨질 수 있다.
 - **D-13:** 복사 완료 후 summary를 출력한다:
   ```
   Installation complete.

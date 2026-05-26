@@ -149,3 +149,13 @@
 | 2026-05-25T23:48:20Z | 32-skill-superpowers-migration | review | sg-retro | - |
 | 2026-05-26T00:37:42Z | 32-skill-superpowers-migration | sg-retro | review | - |
 | 2026-05-26T00:52:39Z | 32-skill-superpowers-migration | sg-retro | complete | - |
+| 2026-05-26T10:55:37Z | 33-npx-installer | sg-retro | gsd-plan | - |
+| 2026-05-26T11:28:33Z | 33-npx-installer | sg-retro | ship | - |
+| 2026-05-26T11:33:28Z | 33-npx-installer | init | complete | - |
+| 2026-05-26T12:00:00Z | 34-sg-setup-skill | complete | context-done | - |
+| 2026-05-26T11:55:54Z | 34-sg-setup-skill | context-done | gsd-plan | - |
+| 2026-05-26T12:10:27Z | 34-sg-setup-skill | gsd-plan | sg-next | - |
+| 2026-05-26T12:11:32Z | 34-sg-setup-skill | sg-next | superpowers | a352be6 |
+| 2026-05-26T12:16:44Z | 34-sg-setup-skill | superpowers | complete | - |
+| 2026-05-26T12:25:49Z | 33-npx-installer | complete | sg-next | - |
+| 2026-05-26T12:33:47Z | 35-doc-improvement | sg-next | gsd-plan | - |

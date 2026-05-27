@@ -94,7 +94,7 @@ function main() {
     const stdinRaw = fs.readFileSync(0, 'utf-8');
     const inputData = JSON.parse(stdinRaw);
 
-    // HOOK-03: config guard — auto_advance: false 이면 즉시 종료
+    // HOOK-03: config guard — exit immediately if auto_advance: false
     const cfg = loadConfig();
     const autoAdvance = (cfg.auto_advance !== undefined) ? cfg.auto_advance : true;
     if (!autoAdvance) {
@@ -102,7 +102,7 @@ function main() {
       process.exit(0);
     }
 
-    // HOOK-04: transcript 기반 신호 감지
+    // HOOK-04: transcript-based signal detection
     const transcriptPath = inputData.transcript_path || '';
     const signal = detectSignal(transcriptPath);
 

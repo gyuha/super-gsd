@@ -1,8 +1,8 @@
 #!/usr/bin/env node
 // rule_runner.cjs -- evaluates .claude/sg-rule.*.local.md rules on PreToolUse.
 //
-// 지원 이벤트: bash (Bash 도구), file (Edit/Write/MultiEdit 도구).
-// prompt 이벤트 규칙은 PreToolUse에서 평가 불가.
+// Supported events: bash (Bash tool), file (Edit/Write/MultiEdit tools).
+// prompt event rules cannot be evaluated in PreToolUse.
 
 const fs = require('fs');
 const path = require('path');

@@ -26,7 +26,15 @@ Self-contained. Delegates entirely to sg-retro (terminal action).
 </execution_context>
 
 <process>
-1. Read and follow the instructions in `.agents/skills/sg-retro/SKILL.md`, passing any ARGUMENTS through as-is.
+1. Check that `.agents/skills/sg-retro/SKILL.md` exists before proceeding:
+   ```bash
+   if [ ! -f ".agents/skills/sg-retro/SKILL.md" ]; then
+     echo "[sg-learn] Error: .agents/skills/sg-retro/SKILL.md not found. Run \$sg-setup to install missing skill files."
+     exit 1
+   fi
+   ```
+
+2. Read and follow the instructions in `.agents/skills/sg-retro/SKILL.md`, passing any ARGUMENTS through as-is.
    Output: `→ $sg-retro`
    Then execute the sg-retro skill process directly.
 </process>

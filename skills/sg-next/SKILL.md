@@ -55,6 +55,11 @@ else
         | grep -vE '^sg-next$' | tail -1)
       [ -z "$STAGE_RAW" ] && STAGE_RAW="init"
     fi
+    # Re-validate after scan-back — corrupt HANDOFF.md data must not propagate to FROM_STAGE
+    case "$STAGE_RAW" in
+      init|gsd-plan|ui-plan|superpowers|parallel|execute|review|sg-retro|ship|complete) ;;
+      *) echo "Scan-back recovered unknown stage '${STAGE_RAW}' — defaulting to init." >&2; STAGE_RAW="init" ;;
+    esac
   fi
 fi
 case "$STAGE_RAW" in
@@ -68,6 +73,7 @@ case "$STAGE_RAW" in
   sg-retro)     STAGE_DISPLAY="sg-retro" ;;
   ship)         STAGE_DISPLAY="ship" ;;
   complete)     STAGE_DISPLAY="complete" ;;
+  *)            STAGE_DISPLAY="$STAGE_RAW" ;;
 esac
 # STAGE_DISPLAY is not printed in sg-next — preserved to maintain D-07 block identity
 # --- END HANDOFF.md stage detection block ---

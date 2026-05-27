@@ -49,15 +49,21 @@ Self-contained — reads .planning/HANDOFF.md, .planning/STATE.md, .planning/ROA
        gsd-plan|ui-plan|superpowers|parallel|execute|review|sg-retro|hookify|ship|complete|sg-next) ;;
        *) echo "Unknown stage '${STAGE_RAW}' in .planning/HANDOFF.md last row. Schema may be corrupted." >&2; exit 1 ;;
      esac
-   fi
-   # sg-next is a meta-transition row; recover actual stage from FROM column ($4)
-   if [ "$STAGE_RAW" = "sg-next" ]; then
-     STAGE_RAW=$(echo "$LAST_ROW" | awk -F'|' '{gsub(/ /,"",$4); print $4}')
-     if [ "$STAGE_RAW" = "sg-next" ] || [ -z "$STAGE_RAW" ]; then
-       STAGE_RAW=$(grep -E '^\| [0-9]{4}-' .planning/HANDOFF.md 2>/dev/null \
-         | awk -F'|' '{gsub(/ /,"",$5); print $5}' \
-         | grep -vE '^sg-next$' | tail -1)
-       [ -z "$STAGE_RAW" ] && STAGE_RAW="init"
+     # sg-next is a meta-transition row; recover actual stage from FROM column ($4)
+     if [ "$STAGE_RAW" = "sg-next" ]; then
+       STAGE_RAW=$(echo "$LAST_ROW" | awk -F'|' '{gsub(/ /,"",$4); print $4}')
+       if [ "$STAGE_RAW" = "sg-next" ] || [ -z "$STAGE_RAW" ]; then
+         SCAN_ROW=$(grep -E '^\| [0-9]{4}-' .planning/HANDOFF.md 2>/dev/null \
+           | awk -F'|' 'BEGIN{last=""} {gsub(/ /,"",$5); if ($5 != "sg-next") last=$0} END{print last}')
+         STAGE_RAW=$(echo "$SCAN_ROW" | awk -F'|' '{gsub(/ /,"",$5); print $5}')
+         TS=$(echo "$SCAN_ROW" | awk -F'|' '{gsub(/ /,"",$2); print $2}')
+         [ -z "$STAGE_RAW" ] && STAGE_RAW="init"
+       fi
+       # Re-validate after scan-back — corrupt HANDOFF.md data must not propagate
+       case "$STAGE_RAW" in
+         init|gsd-plan|ui-plan|superpowers|parallel|execute|review|sg-retro|hookify|ship|complete) ;;
+         *) echo "Scan-back recovered unknown stage '${STAGE_RAW}' — defaulting to init." >&2; STAGE_RAW="init" ;;
+       esac
      fi
    fi
 

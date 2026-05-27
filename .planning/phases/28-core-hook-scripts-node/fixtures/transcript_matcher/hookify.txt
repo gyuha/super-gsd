@@ -1,8 +1,0 @@
-noise preamble line 1
-noise preamble line 2
-Retrospective complete
-## Lessons
-
-- Always verify em-dash bytes before writing JS literals.
-- splitlines() and split(/\r?\n/) diverge on trailing newlines.
-- hookify-cache short-circuit silently masks divergent rule_runner ports.

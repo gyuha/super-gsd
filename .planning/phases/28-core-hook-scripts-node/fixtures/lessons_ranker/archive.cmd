@@ -1,1 +1,0 @@
-python3 hooks/lessons_ranker.py --archive --milestone vTEST-FIXTURE .planning/lessons/*.md

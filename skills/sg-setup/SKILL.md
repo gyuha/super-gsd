@@ -74,6 +74,8 @@ Self-contained. Determine the @gyuha/super-gsd package root via require.resolve,
    - `hooks/lessons_ranker.cjs`
    - `hooks/hooks.json`
    - `.agents/skills/sg-execute/SKILL.md`
+   - `.agents/skills/sg-learn/SKILL.md`
+   - `.agents/skills/sg-next/SKILL.md`
    - `.agents/skills/sg-plan/SKILL.md`
    - `.agents/skills/sg-retro/SKILL.md`
    - `.agents/skills/sg-review/SKILL.md`
@@ -132,6 +134,8 @@ Self-contained. Determine the @gyuha/super-gsd package root via require.resolve,
    copy_file "hooks/lessons_ranker.cjs"
    copy_file "hooks/hooks.json"
    copy_file ".agents/skills/sg-execute/SKILL.md"
+   copy_file ".agents/skills/sg-learn/SKILL.md"
+   copy_file ".agents/skills/sg-next/SKILL.md"
    copy_file ".agents/skills/sg-plan/SKILL.md"
    copy_file ".agents/skills/sg-retro/SKILL.md"
    copy_file ".agents/skills/sg-review/SKILL.md"
@@ -163,7 +167,7 @@ Self-contained. Determine the @gyuha/super-gsd package root via require.resolve,
 <success_criteria>
 1. If the @gyuha/super-gsd package is not found, a clear error message with installation instructions is printed and execution exits.
 2. When --gemini flag or environment variables (GEMINI_PROJECT_DIR, GEMINI_API_KEY) are detected, .gemini/settings.json is also copied.
-3. All default files (5 hooks/, 7 .agents/skills/ SKILL.md, .codex/hooks.json) are copied via the Bash tool.
+3. All default files (5 hooks/, 9 .agents/skills/ SKILL.md, .codex/hooks.json) are copied via the Bash tool.
 4. Target file exists + no --force → skip + warning. --force present → overwrite.
 5. After completion, a Copied/Skipped summary and next-step guidance are printed.
 6. The /super-gsd:sg-setup command is auto-registered via skills/ directory scan without modifying plugin.json (per D-18).

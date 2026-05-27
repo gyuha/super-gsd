@@ -50,12 +50,12 @@ Self-contained. Forwards $ARGUMENTS unchanged to gsd-new-milestone Skill, then a
 
    /clear
 
-   /super-gsd:sg-plan ${NEXT_PHASE}   ← lessons 주입 + discuss + plan 자동 체인 (권장)
+   /super-gsd:sg-plan ${NEXT_PHASE}   ← lessons injection + discuss + plan auto-chain (recommended)
 
-   또는:
-     /super-gsd:sg-next                 자동 진행 (HANDOFF/STATE 기반 라우팅)
-     /gsd-discuss-phase ${NEXT_PHASE}   raw GSD discuss만
-     /gsd-plan-phase ${NEXT_PHASE}      raw GSD plan만
+   or:
+     /super-gsd:sg-next                 auto-advance (HANDOFF/STATE-based routing)
+     /gsd-discuss-phase ${NEXT_PHASE}   raw GSD discuss only
+     /gsd-plan-phase ${NEXT_PHASE}      raw GSD plan only
    ```
 </process>
 

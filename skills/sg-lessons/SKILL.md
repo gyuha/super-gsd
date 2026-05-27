@@ -5,7 +5,7 @@ argument-hint: "[phase] - optional. If provided, show only lessons for that phas
 ---
 
 <objective>
-.planning/lessons/ 디렉토리의 모든 Markdown 파일을 읽어 순서대로 출력한다. 사용자가 /super-gsd:sg-plan을 실행하기 전에 이전 lessons를 확인하거나 컨텍스트로 활용할 수 있도록 한다.
+Read all Markdown files in the .planning/lessons/ directory and print them in order. Allows the user to review prior lessons or use them as context before running /super-gsd:sg-plan.
 </objective>
 
 <execution_context>
@@ -13,7 +13,7 @@ Self-contained. Reads .planning/lessons/ directory. Writes nothing.
 </execution_context>
 
 <process>
-0. **milestone 필터 확인.** $ARGUMENTS가 `--milestone=vX.Y` 또는 `milestone=vX.Y` 형식이면 milestone 아카이브 파일을 직접 읽는다:
+0. **Milestone filter check.** If $ARGUMENTS matches the `--milestone=vX.Y` or `milestone=vX.Y` format, read the milestone archive file directly:
    ```bash
    MILESTONE_ARG=$(node -e "
      const args = process.argv[2] || '';
@@ -38,9 +38,9 @@ Self-contained. Reads .planning/lessons/ directory. Writes nothing.
      exit 0
    fi
    ```
-   milestone 필터가 없으면 기존 Step 1~4 흐름을 그대로 실행한다.
+   If no milestone filter, continue with the existing Step 1–4 flow.
 
-1. **Glob으로 파일 목록 수집:**
+1. **Collect file list via glob:**
    ```bash
    FILES=$(ls .planning/lessons/*.md 2>/dev/null | sort)
    if [ -z "$FILES" ]; then
@@ -49,7 +49,7 @@ Self-contained. Reads .planning/lessons/ directory. Writes nothing.
    fi
    ```
 
-2. **ARGUMENTS로 phase 필터 적용.** $ARGUMENTS가 비어 있지 않으면 해당 phase 번호로 시작하는 파일만 남긴다. `phase-03`, `03`, `3` 등 다양한 형식을 숫자로 정규화한다:
+2. **Apply phase filter from ARGUMENTS.** If $ARGUMENTS is non-empty, keep only files starting with that phase number. Normalize various formats like `phase-03`, `03`, `3` to a number:
    ```bash
    if [ -n "$ARGUMENTS" ]; then
      ARG_NUM=$(node -e "
@@ -70,7 +70,7 @@ Self-contained. Reads .planning/lessons/ directory. Writes nothing.
    fi
    ```
 
-3. **각 파일 내용 출력.** 파일명을 헤더로 표시하고 내용을 출력한다:
+3. **Print each file's content.** Display filename as header then print content:
    ```bash
    while IFS= read -r FILE; do
      echo "--- $FILE ---"
@@ -79,15 +79,15 @@ Self-contained. Reads .planning/lessons/ directory. Writes nothing.
    done <<< "$FILES"
    ```
 
-4. **안내 메시지 출력:**
+4. **Print guidance message:**
    `Lessons loaded. Run /super-gsd:sg-plan to start the next phase — prior lessons are auto-injected.`
 </process>
 
 <success_criteria>
-1. .planning/lessons/ 에 파일이 있으면 내용이 출력된다.
-2. 파일이 없으면 안내 메시지만 출력되고 오류 없이 종료된다.
-3. phase 필터가 주어지면 해당 phase 파일만 출력된다.
-4. 필터 후 결과가 없으면 "No lessons found for phase..." 메시지를 출력하고 오류 없이 종료된다.
-5. --milestone=vX.Y 인수가 있으면 .planning/milestones/vX.Y-LESSONS.md를 읽어 출력한다.
-6. milestone 아카이브 파일이 없으면 안내 메시지를 출력하고 오류 없이 종료된다.
+1. If files exist in .planning/lessons/, their content is printed.
+2. If no files exist, only a guidance message is printed and execution exits without error.
+3. If a phase filter is provided, only files for that phase are printed.
+4. If no results remain after filtering, a "No lessons found for phase..." message is printed and execution exits without error.
+5. If --milestone=vX.Y argument is provided, .planning/milestones/vX.Y-LESSONS.md is read and printed.
+6. If the milestone archive file does not exist, a guidance message is printed and execution exits without error.
 </success_criteria>

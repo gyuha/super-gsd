@@ -26,7 +26,7 @@ Self-contained. Reads .planning/STATE.md for phase resolution when no argument p
    fi
    ```
 
-1.3. **Lessons archive (milestone close).** STATE.md에서 milestone 버전을 읽고 lessons_ranker.cjs --archive를 실행한다. 실패해도 sg-complete를 차단하지 않는다:
+1.3. **Lessons archive (milestone close).** Read the milestone version from STATE.md and run lessons_ranker.cjs --archive. Failure does not block sg-complete:
    ```bash
    Read .planning/STATE.md, then extract the milestone: value from the YAML frontmatter. Set MILESTONE_VER to the extracted value.
    if [ -z "$MILESTONE_VER" ]; then
@@ -64,5 +64,5 @@ Self-contained. Reads .planning/STATE.md for phase resolution when no argument p
 2. $ARGUMENTS is used as phase number when provided.
 3. `.planning/HANDOFF.md` gains a `complete` row immediately before the Skill is invoked, enabling `/super-gsd:sg-status` to recommend `/super-gsd:sg-new` after milestone completion.
 4. If phase cannot be resolved, the command exits with the prescribed error message and does not invoke the Skill.
-5. Step 1.3이 STATE.md에서 milestone 버전을 읽어 lessons archive를 실행한다. 버전 읽기 실패 시 warn만 출력하고 Step 2(Skill 호출)로 진행한다.
+5. Step 1.3 reads the milestone version from STATE.md and runs lessons archive. On version read failure, only a warn is emitted and execution proceeds to Step 2 (Skill invocation).
 </success_criteria>

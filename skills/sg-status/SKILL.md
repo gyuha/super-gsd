@@ -14,7 +14,7 @@ Self-contained — reads .planning/HANDOFF.md, .planning/STATE.md, .planning/ROA
 <process>
 1. **Read `Phase:` line verbatim from STATE.md.** Capture the full string after the colon (trimmed). STATE.md is the single source of truth for the displayed phase value — no ROADMAP name lookup, no token splitting (D-04, D-05, D-06):
    ```bash
-   # --- BEGIN STATE.md Phase parsing block (D-07: Phase 8 sg-start이 동일 블록을 복제) ---
+   # --- BEGIN STATE.md Phase parsing block (D-07: Phase 8 sg-start replicates this same block) ---
    PHASE_LINE=$(grep -E '^Phase:' .planning/STATE.md 2>/dev/null | head -1 | sed -E 's/^Phase:[[:space:]]*//' | sed -E 's/[[:space:]]+$//')
    [ -z "$PHASE_LINE" ] && PHASE_LINE="(none)"
    PHASE_NUM=$(echo "$PHASE_LINE" | grep -oE '^[0-9]+' || echo "")

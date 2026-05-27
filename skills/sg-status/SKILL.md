@@ -65,6 +65,7 @@ Self-contained — reads .planning/HANDOFF.md, .planning/STATE.md, .planning/ROA
      sg-retro)     STAGE_DISPLAY="sg-retro" ;;
      ship)         STAGE_DISPLAY="ship" ;;
      complete)     STAGE_DISPLAY="complete" ;;
+     *)            STAGE_DISPLAY="$STAGE_RAW" ;;
    esac
    ```
 

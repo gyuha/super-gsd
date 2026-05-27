@@ -45,6 +45,10 @@ Self-contained — reads .planning/HANDOFF.md, .planning/STATE.md, .planning/ROA
    else
      STAGE_RAW=$(echo "$LAST_ROW" | awk -F'|' '{gsub(/ /,"",$5); print $5}')
      TS=$(echo "$LAST_ROW" | awk -F'|' '{gsub(/ /,"",$2); print $2}')
+     case "$STAGE_RAW" in
+       gsd-plan|ui-plan|superpowers|parallel|execute|review|sg-retro|hookify|ship|complete|sg-next) ;;
+       *) echo "Unknown stage '${STAGE_RAW}' in .planning/HANDOFF.md last row. Schema may be corrupted." >&2; exit 1 ;;
+     esac
    fi
    # sg-next is a meta-transition row; recover actual stage from FROM column ($4)
    if [ "$STAGE_RAW" = "sg-next" ]; then

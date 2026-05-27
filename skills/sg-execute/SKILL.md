@@ -145,7 +145,7 @@ This command is self-contained — no external workflow files imported. Reads .p
        if [ -z "$WAVE_NUM" ]; then
          WAVE_NUM="99"
        fi
-       # files_modified 블록: "  - path/to/file" 형식 파싱 (YAML 목록, frontmatter 경계 보호)
+       # Parse files_modified block: "  - path/to/file" format (YAML list, frontmatter boundary guard)
        FILES_IN_PLAN=$(awk '/^---$/{if(front++>0) exit} /^files_modified:/{found=1; next} found && /^[[:space:]]*-[[:space:]]/{gsub(/^[[:space:]]*-[[:space:]]*/,""); printf "%s,", $0} found && /^[^[:space:]-]/{found=0}' "$PLAN_FILE" | sed 's/,$//')
        PLAN_WAVE_FILES="$PLAN_WAVE_FILES
    ${WAVE_NUM}|${PLAN_BASE}|${FILES_IN_PLAN}"
@@ -162,7 +162,7 @@ This command is self-contained — no external workflow files imported. Reads .p
      FIRST_GROUP=1
 
      for W in $WAVE_NUMS; do
-       # 이 wave의 plan들
+       # Plans in this wave
        WAVE_PLANS=$(echo "$PLAN_WAVE_FILES" | awk -F'|' -v w="$W" '$1==w {print $2}')
        WAVE_FILES=$(echo "$PLAN_WAVE_FILES" | awk -F'|' -v w="$W" '$1==w {print $3}')
 

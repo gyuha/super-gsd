@@ -124,8 +124,7 @@ fi
 PHASE_PAD=$(printf "%02d" "${PHASE_NUM:-0}" 2>/dev/null || echo "${PHASE_NUM:-0}")
 PHASE_SLUG=$(ls -d .planning/phases/${PHASE_PAD}-* 2>/dev/null | head -1 | xargs basename 2>/dev/null)
 [ -z "$PHASE_SLUG" ] && PHASE_SLUG="${PHASE_NUM:-unknown}"
-FROM_STAGE=$(grep -E '^\| [0-9]{4}-' "$HANDOFF_FILE" | tail -1 | awk -F'|' '{gsub(/ /,"",$5); print $5}')
-[ -z "$FROM_STAGE" ] && FROM_STAGE="init"
+FROM_STAGE="$STAGE_RAW"
 if [ "$STAGE_RAW" != "complete" ] && [ "$STAGE_RAW" != "init" ]; then
   TS=$(date -u +%Y-%m-%dT%H:%M:%SZ)
   echo "| $TS | $PHASE_SLUG | $FROM_STAGE | sg-next | - |" >> "$HANDOFF_FILE"

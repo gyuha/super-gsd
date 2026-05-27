@@ -1,47 +1,50 @@
-# Requirements: v2.6 Codex/Gemini 설치 UX 개선
+# Requirements: v2.7 Skills & Hooks Internationalization
 
 ## Milestone Goal
 
-Codex/Gemini CLI에서 super-gsd 설치를 GSD(npm) · Superpowers(marketplace) 수준으로 단순화한다.
-현재 `git clone + cp×3` 4단계를 `npx @gyuha/super-gsd install` 1단계로 줄인다.
+`skills/` 및 `hooks/` 내 한글 콘텐츠를 영문으로 전환하고, 모든 SKILL.md에 사용자 언어 자동 감지 지침을 추가한다.
+사용자가 한국어로 입력하면 한국어로, 영어로 입력하면 영어로 응답하도록 스킬 출력 언어가 자동 조정된다.
 
 ---
 
 ## v1 Requirements
 
-### INSTALL — npx 설치 자동화
+### Ko→EN Migration (영문화)
 
-- [ ] **INSTALL-01**: 사용자가 `npx @gyuha/super-gsd install` 한 명령으로 Codex 설치에 필요한 파일(`.codex/hooks.json`, `hooks/`, `.agents/`)을 현재 프로젝트 디렉토리에 복사할 수 있다
-- [ ] **INSTALL-02**: 사용자가 `npx @gyuha/super-gsd install --gemini` 플래그로 Gemini 설치(`.gemini/settings.json`)도 동일하게 수행할 수 있다
-- [ ] **INSTALL-03**: 리포지토리 루트에 `package.json`(또는 기존 업데이트)과 `bin/setup.js` 스크립트가 있어 `npx`가 별도 사전 설치 없이 즉시 실행된다
+- [ ] **I18N-01**: `skills/sg-*/SKILL.md` 14개에서 한글 콘텐츠를 영문으로 변환한다
+      - 대상: process, objective, success_criteria, bash 출력 메시지, 인라인 한글 텍스트 전체
+      - 기술 명령어(bash 코드, flag 이름)는 변경하지 않음
+      - 대상 파일: sg-complete, sg-execute, sg-health, sg-lessons, sg-new, sg-next, sg-parallel-execute, sg-plan, sg-retro, sg-review, sg-setup, sg-start, sg-status, sg-ui-plan
 
-### SKILL — 인세션 부트스트랩
+- [ ] **I18N-02**: `.agents/skills/sg-*/SKILL.md` 8개에서 한글 콘텐츠를 영문으로 변환한다
+      - 쌍 커버 컨벤션 준수 (skills/ 변경과 .agents/ 변경은 동일 milestone에서 완료)
+      - 대상 파일: sg-execute, sg-plan, sg-retro, sg-review, sg-setup, sg-ship, sg-start, sg-status
 
-- [ ] **SKILL-01**: Codex/Gemini 세션 내에서 `$sg-setup` 스킬을 실행하면 프로젝트 루트에 `hooks/`, `.agents/`, 플랫폼별 설정 파일이 자동으로 복사된다
-- [ ] **SKILL-02**: `.agents/skills/sg-setup/SKILL.md`가 생성되어 `$sg-setup` 명령으로 호출 가능하다
+- [ ] **I18N-03**: `hooks/stop_hook.cjs` + `hooks/rule_runner.cjs` 내 한글 주석·인라인 메시지를 영문으로 변환한다
+      - 코드 로직 변경 없음 — 한글 문자열/주석만 교체
 
-### DOC — 문서 개선
+### Language Auto-Detection (언어 자동 감지)
 
-- [ ] **DOC-01**: `README.md`의 Codex/Gemini 설치 섹션이 `npx @gyuha/super-gsd install` 단일 명령으로 재작성된다 (기존 4단계 cp 명령 대체)
-- [ ] **DOC-02**: `README.md`에 Codex/Gemini 전용 Verify install 섹션이 추가되어 설치 후 hooks 동작 및 스킬 확인 방법이 명시된다
-- [ ] **DOC-03**: `AGENTS.md`에 설치 방법과 Verify 체크리스트가 업데이트된다
-- [ ] **DOC-04**: `README.ko.md`가 README.md 변경 사항과 동기화된다
+- [ ] **I18N-04**: `skills/` 19개 + `.agents/skills/` 8개 = 총 27개 SKILL.md 모두에 언어 자동 감지 지침을 추가한다
+      - 사용자 입력 언어를 감지하여 동일 언어로 응답하는 `<language>` 블록 삽입
+      - 형식: SKILL.md frontmatter 바로 아래 또는 `<objective>` 앞에 위치
+      - 내용: 한국어 입력 → 한국어, 영어 입력 → 영어, 혼용 → 주된 언어
 
 ---
 
-## Future Requirements (이번 마일스톤 외)
+## Future Requirements
 
-- Codex 공식 plugin marketplace 등록 — 제3자 플랫폼 의존, 별도 검토 필요
-- Windows(PowerShell) 지원 — setup.js에서 경로 처리 추가 필요
-- super-gsd 자동 업데이트 — `npx @gyuha/super-gsd update` 명령
+- 다른 언어(일본어, 스페인어 등) 지원 — v2.7 범위 외
+- hooks/lessons_ranker.cjs, hooks/transcript_matcher.cjs 검토 — 현재 한글 없음
+- CLAUDE.md/AGENTS.md/README 추가 영문화 — v2.7 범위 외
 
 ---
 
 ## Out of Scope
 
-- npm registry 패키지 퍼블리싱 이외의 CDN/curl 설치 방식 — npx로 충분히 단순화됨
-- Claude Code 플러그인 설치 방식 변경 — 이미 `/plugin install` 1단계로 충분
-- GSD/Superpowers 내부 수정 — 비침투적 원칙 유지
+- 기능 변경 없음 — 순수 언어·지침 교체만
+- bash 코드 블록 내 명령어/flag/변수명 변경 금지
+- 영문 전환 완료 파일에 불필요한 리팩토링 금지
 
 ---
 
@@ -49,12 +52,7 @@ Codex/Gemini CLI에서 super-gsd 설치를 GSD(npm) · Superpowers(marketplace) 
 
 | REQ-ID | Phase | Status |
 |--------|-------|--------|
-| INSTALL-01 | Phase 33 | Pending |
-| INSTALL-02 | Phase 33 | Pending |
-| INSTALL-03 | Phase 33 | Pending |
-| SKILL-01 | Phase 34 | Pending |
-| SKILL-02 | Phase 34 | Pending |
-| DOC-01 | Phase 35 | Pending |
-| DOC-02 | Phase 35 | Pending |
-| DOC-03 | Phase 35 | Pending |
-| DOC-04 | Phase 35 | Pending |
+| I18N-01 | TBD | planned |
+| I18N-02 | TBD | planned |
+| I18N-03 | TBD | planned |
+| I18N-04 | TBD | planned |

@@ -64,6 +64,7 @@ None.
 |----|-------------|------|--------|-----|
 | 260525-tr1 | hookify 통합·문서 완전 제거 (Category A 런타임 로직 + Category B 문서 모두). .py 파일은 Phase 31에서 일괄 삭제 예정이므로 .cjs 파일과 문서만 수정한다. | 2026-05-25 | e3ae6ea | [260525-tr1-hookify-category-a-category-b-py-phase-3](./quick/260525-tr1-hookify-category-a-category-b-py-phase-3/) |
 | 260525-vp6 | hooks/*.py 4개 파일 일괄 삭제 (Phase 31 CLEAN-01을 앞당김) + transcript_matcher.cjs/stop_hook.cjs에 sg-retro-complete 신호 감지 추가 (지난번 cleanup에서 제거한 hookify-complete 분기를 sg-retro 명명으로 대체) | 2026-05-25 | 877a666 | [260525-vp6-hooks-py-4-phase-31-clean-01-transcript-](./quick/260525-vp6-hooks-py-4-phase-31-clean-01-transcript-/) |
+| 260527-w6z | sg-status에 milestones+현재 마일스톤 phase 완료 상태 표를 5줄 상태 블록 앞에 추가하고, 프로즈/표 헤더를 사용자 언어로 출력하도록 변경 + CLAUDE.md에 skill 스크립트 메시지 사용자 언어 출력 컨벤션 명시 | 2026-05-27 | (pending) | [260527-w6z-sg-status-milestones-phase-5-claude-md-s](./quick/260527-w6z-sg-status-milestones-phase-5-claude-md-s/) |
 
 ## Deferred Items
 

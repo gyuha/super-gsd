@@ -160,3 +160,11 @@
 | 2026-05-26T12:25:49Z | 33-npx-installer | complete | sg-next | - |
 | 2026-05-26T12:33:47Z | 35-doc-improvement | sg-next | gsd-plan | - |
 | 2026-05-26T12:43:48Z | 35-doc-improvement | gsd-plan | complete | - |
+| 2026-05-27T02:28:44Z | 36-skills-skills | complete | parallel | f71e6ff |
+| 2026-05-27T04:03:57Z | 36-skills-skills | parallel | review | - |
+| 2026-05-27T06:42:40Z | 36-skills-skills | review | sg-next | - |
+| 2026-05-27T06:54:08Z | 36-skills-skills | sg-next | sg-retro | - |
+| 2026-05-27T09:14:55Z | 36-skills-skills | sg-retro | review | - |
+| 2026-05-27T11:40:24Z | 36-skills-skills | review | review | - |
+| 2026-05-27T14:27:54Z | 36-skills-skills | review | sg-retro | - |
+| 2026-05-27T14:42:59Z | 36-skills-skills | sg-retro | ship | - |

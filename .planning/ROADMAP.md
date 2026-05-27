@@ -15,7 +15,7 @@
 - [x] **v2.4 Hooks Node Migration** (2026-05-26) — Python 의존성 제거, `hooks/*.py` 4개를 순수 JS(`.cjs`)로 재작성 + 설정/스킬/문서 일괄 교체 → [Archive](.planning/milestones/v2.4-ROADMAP.md)
 - [x] **v2.5 Superpowers-Native File Parsing** (2026-05-26) — super-gsd skills의 bash 파이프라인(grep/sed/awk) 파일 파싱을 Read 도구 + Claude 해석 방식으로 전환 + CLAUDE.md 컨벤션 업데이트 → [Archive](.planning/milestones/v2.5-ROADMAP.md)
 - [ ] **v2.6 Codex/Gemini 설치 UX 개선** — npx 단일 명령 설치 + $sg-setup 인세션 스킬 + 문서 개선
-- [ ] **v2.7 Skills & Hooks Internationalization** — skills/ + .agents/skills/ + hooks/ 한글→영문 전환 + 27개 SKILL.md 언어 자동 감지 지침 추가
+- [x] **v2.7 Skills & Hooks Internationalization** (2026-05-28) — skills/ + .agents/skills/ + hooks/ 한글→영문 전환 + 27개 SKILL.md 언어 자동 감지 지침 추가
 
 ## Phases
 
@@ -65,9 +65,9 @@
 
 ### v2.7 Skills & Hooks Internationalization
 
-- [ ] **Phase 36: skills/ 영문화 + 언어 자동 감지 (skills/)** — `skills/sg-*/SKILL.md` 14개 한글→영문 + 19개 전체 `<language>` 지침 추가
-- [ ] **Phase 37: .agents/skills/ 영문화 + 언어 자동 감지 (.agents/)** — `.agents/skills/sg-*/SKILL.md` 8개 한글→영문 + 8개 전체 `<language>` 지침 추가
-- [ ] **Phase 38: hooks/ 영문화** — `hooks/stop_hook.cjs` + `hooks/rule_runner.cjs` 한글 주석·메시지 영문 전환
+- [x] **Phase 36: skills/ 영문화 + 언어 자동 감지 (skills/)** — `skills/sg-*/SKILL.md` 14개 한글→영문 + 19개 전체 `<language>` 지침 추가
+- [x] **Phase 37: .agents/skills/ 영문화 + 언어 자동 감지 (.agents/)** — `.agents/skills/sg-*/SKILL.md` 8개 한글→영문 + 8개 전체 `<language>` 지침 추가 *(ad-hoc: 36-fix 커밋에 흡수, 별도 plan 없음)*
+- [x] **Phase 38: hooks/ 영문화** — `hooks/stop_hook.cjs` + `hooks/rule_runner.cjs` 한글 주석·메시지 영문 전환 *(ad-hoc: 커밋 391326c 직접 수행, 별도 plan 없음)*
 
 ## Phase Details
 
@@ -464,6 +464,6 @@ Plans:
 | 33. npx Installer | v2.6 | 1/1 | Complete    | 2026-05-26 |
 | 34. $sg-setup 인세션 스킬 | v2.6 | 0/TBD | Not started | - |
 | 35. 문서 개선 | v2.6 | 0/TBD | Not started | - |
-| 36. skills/ 영문화 + 언어 자동 감지 (skills/) | v2.7 | 2/3 | In Progress|  |
-| 37. .agents/skills/ 영문화 + 언어 자동 감지 (.agents/) | v2.7 | 0/TBD | Not started | - |
-| 38. hooks/ 영문화 | v2.7 | 0/TBD | Not started | - |
+| 36. skills/ 영문화 + 언어 자동 감지 (skills/) | v2.7 | 3/3 | Complete | 2026-05-27 |
+| 37. .agents/skills/ 영문화 + 언어 자동 감지 (.agents/) | v2.7 | — (ad-hoc) | Complete | 2026-05-27 |
+| 38. hooks/ 영문화 | v2.7 | — (ad-hoc) | Complete | 2026-05-28 |

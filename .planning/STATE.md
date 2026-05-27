@@ -2,15 +2,15 @@
 gsd_state_version: 1.0
 milestone: v2.7
 milestone_name: Skills & Hooks Internationalization
-status: executing
-last_updated: "2026-05-27T02:40:29.717Z"
-last_activity: 2026-05-27 -- Phase 36 planning complete
+status: complete
+last_updated: "2026-05-28T00:00:00.000Z"
+last_activity: 2026-05-28 -- v2.7 milestone complete (phases 36-38)
 progress:
-  total_phases: 11
-  completed_phases: 0
+  total_phases: 3
+  completed_phases: 3
   total_plans: 3
-  completed_plans: 2
-  percent: 0
+  completed_plans: 3
+  percent: 100
 ---
 
 # Project State
@@ -20,14 +20,14 @@ progress:
 See: .planning/PROJECT.md (updated 2026-05-26)
 
 **Core value:** GSD → Superpowers → sg-retro 단계 전환을 자동화하여 학습 루프가 끊기지 않도록 한다
-**Current focus:** v2.7 roadmap created — ready for Phase 36 planning
+**Current focus:** v2.7 complete (phases 36-38 shipped) — ready to close milestone
 
 ## Current Position
 
-Phase: 36 (Not started)
+Phase: 38 (Complete)
 Plan: —
-Status: Ready to execute
-Last activity: 2026-05-27 -- Phase 36 planning complete
+Status: v2.7 milestone complete
+Last activity: 2026-05-28 -- v2.7 milestone complete (phases 36-38)
 
 ## Performance Metrics
 

@@ -46,6 +46,16 @@ Self-contained — reads .planning/HANDOFF.md, .planning/STATE.md, .planning/ROA
      STAGE_RAW=$(echo "$LAST_ROW" | awk -F'|' '{gsub(/ /,"",$5); print $5}')
      TS=$(echo "$LAST_ROW" | awk -F'|' '{gsub(/ /,"",$2); print $2}')
    fi
+   # sg-next is a meta-transition row; recover actual stage from FROM column ($4)
+   if [ "$STAGE_RAW" = "sg-next" ]; then
+     STAGE_RAW=$(echo "$LAST_ROW" | awk -F'|' '{gsub(/ /,"",$4); print $4}')
+     if [ "$STAGE_RAW" = "sg-next" ] || [ -z "$STAGE_RAW" ]; then
+       STAGE_RAW=$(grep -E '^\| [0-9]{4}-' .planning/HANDOFF.md 2>/dev/null \
+         | awk -F'|' '{gsub(/ /,"",$5); print $5}' \
+         | grep -vE '^sg-next$' | tail -1)
+       [ -z "$STAGE_RAW" ] && STAGE_RAW="init"
+     fi
+   fi
 
    # Storage → Display enum mapping
    case "$STAGE_RAW" in

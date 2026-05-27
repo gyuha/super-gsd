@@ -48,7 +48,13 @@ else
   # sg-next is a meta-transition row, so use the preceding FROM column ($4) as the actual current stage
   if [ "$STAGE_RAW" = "sg-next" ]; then
     STAGE_RAW=$(echo "$LAST_ROW" | awk -F'|' '{gsub(/ /,"",$4); print $4}')
-    [ -z "$STAGE_RAW" ] && STAGE_RAW="init"
+    # If FROM is also sg-next (corrupted chain), scan back for the last real stage
+    if [ "$STAGE_RAW" = "sg-next" ] || [ -z "$STAGE_RAW" ]; then
+      STAGE_RAW=$(grep -E '^\| [0-9]{4}-' .planning/HANDOFF.md 2>/dev/null \
+        | awk -F'|' '{gsub(/ /,"",$5); print $5}' \
+        | grep -vE '^sg-next$' | tail -1)
+      [ -z "$STAGE_RAW" ] && STAGE_RAW="init"
+    fi
   fi
 fi
 case "$STAGE_RAW" in

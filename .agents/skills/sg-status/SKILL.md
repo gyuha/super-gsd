@@ -139,9 +139,19 @@ Self-contained — reads .planning/HANDOFF.md, .planning/STATE.md, .planning/ROA
 
    Note: `execute` stage (Codex direct execution mode) routes to `/super-gsd:sg-review`.
 
-6. **Print output.**
+6. **Render milestone & phase progress context (before the status block).** Read `.planning/ROADMAP.md` and `.planning/STATE.md`, then render two sections ABOVE the workflow-status block. Do not use fragile bash table parsing (`grep -P`, awk pipe-splitting) — read the files and render the tables directly.
 
-   Output exactly 5 lines and exit. No additional output:
+   (a) **Milestones summary.** From ROADMAP.md `## Milestones`, render the checkbox list preserving each milestone's `[x]`/`[ ]` completion state, version ID (`vX.Y`), and date. The section heading and any prose are written in the user's language (per this skill's language-detection directive); version IDs, dates, and milestone names stay verbatim.
+
+   (b) **Current-milestone phase table.** Read STATE.md's `milestone:` field (e.g. `v2.7`) to identify the current milestone, then from ROADMAP.md `## Progress` (columns `| Phase | Milestone | Plans Complete | Status | Completed |`) select ONLY the rows whose Milestone column equals the current milestone, and render them as a compact table. The table headers are written in the user's language; cell values (phase slug text, plan counts like `2/3`, status text, dates) stay verbatim from ROADMAP.
+
+   **Localization rule:** prose and table headers → user's language. Machine tokens (milestone version IDs, command names, stage/status enum values, phase slugs, dates, timestamps) → verbatim in their source form.
+
+   Emit these two sections first, then a single blank line, then the Step 7 status block.
+
+7. **Print output (status block — final section).**
+
+   Emit the following five lines as the LAST section, immediately after one blank line below the Step 6 sections. Keep the labels `Phase:`/`Stage:`/`Last handoff:`/`Next:` and all machine tokens in English (verbatim); do not localize this block:
    ```
    Phase: <PHASE_LINE>
    Stage: <STAGE_DISPLAY>
@@ -152,7 +162,7 @@ Self-contained — reads .planning/HANDOFF.md, .planning/STATE.md, .planning/ROA
 </process>
 
 <success_criteria>
-1. Output is exactly 5 lines: 3 header lines + 1 blank line + 1 Next line.
+1. Output is ordered: (a) a Milestones summary + a current-milestone phase table (selected from ROADMAP.md `## Progress` by STATE.md `milestone:`) appear FIRST, with prose and table headers in the user's language and all machine tokens (version IDs, slugs, status text, dates) verbatim; then (b) the workflow-status block appears LAST as the 5-line block with English labels and English machine tokens. The former "exactly 5 lines" lock is relaxed to permit the preceding milestone/phase sections.
 2. If HANDOFF.md has no data rows, Stage=init and Last handoff=(none).
 3. `/super-gsd:sg-*` slash commands are used in the NEXT_CMD mapping.
 4. `execute` stage routes to `/super-gsd:sg-review`.

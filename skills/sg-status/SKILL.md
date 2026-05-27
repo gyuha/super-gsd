@@ -129,7 +129,17 @@ Self-contained — reads .planning/HANDOFF.md, .planning/STATE.md, .planning/ROA
    esac
    ```
 
-6. **Print output (D-29).** Emit exactly the following five lines (three header lines, one blank line, and the `Next:` line) and a single trailing newline. No additional output is permitted:
+6. **Render milestone & phase progress context (before the status block).** Use the Read tool to read `.planning/ROADMAP.md` and `.planning/STATE.md`, then render two sections ABOVE the workflow-status block. Do not use fragile bash table parsing (`grep -P`, awk pipe-splitting) — read the files with the Read tool and render the tables directly.
+
+   (a) **Milestones summary.** From ROADMAP.md `## Milestones`, render the checkbox list preserving each milestone's `[x]`/`[ ]` completion state, version ID (`vX.Y`), and date. The section heading and any prose are written in the user's language (per this skill's language-detection directive); version IDs, dates, and milestone names stay verbatim.
+
+   (b) **Current-milestone phase table.** Read STATE.md's `milestone:` field (e.g. `v2.7`) to identify the current milestone, then from ROADMAP.md `## Progress` (columns `| Phase | Milestone | Plans Complete | Status | Completed |`) select ONLY the rows whose Milestone column equals the current milestone, and render them as a compact table. The table headers are written in the user's language; cell values (phase slug text, plan counts like `2/3`, status text, dates) stay verbatim from ROADMAP.
+
+   **Localization rule:** prose and table headers → user's language. Machine tokens (milestone version IDs, command names, stage/status enum values, phase slugs, dates, timestamps) → verbatim in their source form.
+
+   Emit these two sections first, then a single blank line, then the Step 7 status block.
+
+7. **Print output (status block — final section).** Emit the following five lines as the LAST section, immediately after one blank line below the Step 6 sections. Keep the labels `Phase:`/`Stage:`/`Last handoff:`/`Next:` and all machine tokens in English (verbatim); do not localize this block:
    ```
    Phase: <PHASE_LINE>
    Stage: <STAGE_DISPLAY>
@@ -140,7 +150,7 @@ Self-contained — reads .planning/HANDOFF.md, .planning/STATE.md, .planning/ROA
 </process>
 
 <success_criteria>
-1. The output is exactly five lines (D-29 lock): three non-empty header lines, one blank line, and one non-empty `Next:` line — no extra lines or trailing output.
+1. Output is ordered: (a) a Milestones summary + a current-milestone phase table (selected from ROADMAP.md `## Progress` by STATE.md `milestone:`) appear FIRST, with prose and table headers in the user's language and all machine tokens (version IDs, slugs, status text, dates) verbatim; then (b) the workflow-status block appears LAST and still contains the four `Phase:`/`Stage:`/`Last handoff:`/`Next:` lines with English labels and English machine tokens. The former D-29 "exactly five lines" lock is relaxed to permit the preceding milestone/phase sections.
 2. When `.planning/HANDOFF.md` contains only the header and separator rows (no data rows), `Stage` is `init` and `Last handoff:` is `(none)` (STATUS-02).
 3. The `Stage:` value uses the display enum (`init|gsd|superpowers|sg-retro|ship|complete`) per D-01/D-02, and the `Next:` command branches on the storage 7-state enum per D-03 — so `superpowers` routes to `/super-gsd:sg-review`, `review` displays as `superpowers` but routes to `/super-gsd:sg-learn`, `sg-retro` routes to `/super-gsd:sg-ship`, `ship` routes to the next phase or `/super-gsd:sg-complete`, and `complete` routes to `/super-gsd:sg-new`.
 </success_criteria>

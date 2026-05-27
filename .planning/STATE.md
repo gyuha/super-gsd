@@ -2,13 +2,13 @@
 gsd_state_version: 1.0
 milestone: v2.7
 milestone_name: Skills & Hooks Internationalization
-status: planning
-last_updated: "2026-05-27T00:53:47.842Z"
-last_activity: 2026-05-27
+status: executing
+last_updated: "2026-05-27T01:24:09.646Z"
+last_activity: 2026-05-27 -- Phase 36 planning complete
 progress:
-  total_phases: 0
+  total_phases: 11
   completed_phases: 0
-  total_plans: 0
+  total_plans: 3
   completed_plans: 0
   percent: 0
 ---
@@ -20,14 +20,14 @@ progress:
 See: .planning/PROJECT.md (updated 2026-05-26)
 
 **Core value:** GSD → Superpowers → sg-retro 단계 전환을 자동화하여 학습 루프가 끊기지 않도록 한다
-**Current focus:** v2.6 milestone complete — ready for v2.7
+**Current focus:** v2.7 roadmap created — ready for Phase 36 planning
 
 ## Current Position
 
-Phase: Not started (defining requirements)
+Phase: 36 (Not started)
 Plan: —
-Status: Defining requirements
-Last activity: 2026-05-27 — Milestone v2.7 started
+Status: Ready to execute
+Last activity: 2026-05-27 -- Phase 36 planning complete
 
 ## Performance Metrics
 
@@ -44,10 +44,11 @@ Last activity: 2026-05-27 — Milestone v2.7 started
 Decisions are logged in PROJECT.md Key Decisions table.
 Recent decisions affecting current work:
 
-- v2.6 phase shape: 3 phases (coarse granularity) — Phase 33 (npx installer), Phase 34 ($sg-setup 스킬), Phase 35 (문서 개선)
-- v2.6은 v2.5와 독립 마일스톤이지만 phase 번호는 연속 (33부터 시작)
-- npx 설치 방식 채택: `npx @gyuha/super-gsd install` — GSD npm 패턴 참조, 사전 설치 불필요
-- $sg-setup은 .agents/skills/ 에 위치 — Codex/Gemini 세션 내 인세션 부트스트랩 전용
+- v2.7 phase shape: 3 phases (coarse granularity) — Phase 36 (skills/ 영문화 + language directive), Phase 37 (.agents/skills/ 영문화 + language directive), Phase 38 (hooks/ 영문화)
+- Phase 36+37 쌍 분리: pairwise convention — skills/ 변경과 .agents/ 변경을 동일 milestone 내 인접 phase로 완료
+- I18N-04 분할: 19개(Phase 36) + 8개(Phase 37) = 27개 전체를 milestone 내에서 완전히 커버
+- text-only rule: bash 코드 블록 내 명령어·flag·변수명은 변경하지 않음
+- Phase 36이 I18N-04의 partial 커버, Phase 37 완료 시 I18N-04 전체 달성
 
 ### Pending Todos
 
@@ -86,6 +87,6 @@ Items acknowledged and deferred at v2.2 milestone close on 2026-05-24:
 
 ## Session Continuity
 
-Last session: 2026-05-26
-Stopped at: v2.6 roadmap created — ready for Phase 33 planning
+Last session: 2026-05-27
+Stopped at: v2.7 roadmap created — ready for Phase 36 planning
 Resume file: .planning/ROADMAP.md

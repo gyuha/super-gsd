@@ -1,8 +1,15 @@
 ---
 name: sg-start
-description: 기존 세션 감지 또는 신규 프로젝트 시작 — super-gsd 워크플로우 진입점
-argument-hint: "[project-name] - 신규 프로젝트 시작 시에만 사용. 기존 세션이 없을 때 gsd-new-project에 전달."
+description: Detect existing session or start new project — super-gsd workflow entry point
+argument-hint: "[project-name] - Only used when starting a new project. Passed to gsd-new-project when no existing session is found."
 ---
+
+<language>
+Detect the user's input language and respond in that language throughout this skill's output.
+- Korean input → respond in Korean
+- English input → respond in English
+- Mixed input → match the dominant language
+</language>
 
 <objective>
 Detect existing session via STATE.md + HANDOFF.md. If detected, show 5-line summary (Milestone / Phase / Stage / Last activity / Next) and ask user (Resume / Start new milestone / Cancel) via numbered text list. If no STATE.md, delegate to gsd-new-project Skill or run prose fallback.
@@ -10,9 +17,9 @@ Detect existing session via STATE.md + HANDOFF.md. If detected, show 5-line summ
 
 <constraints>
 ## Platform Constraints (Codex / Gemini CLI / Antigravity CLI)
-- Superpowers 연동 불가: Claude Code 전용 도구
-- SubagentStop 미지원: 단계 종료 시 자동 트리거 없음
-- AskUserQuestion 미지원: 선택지를 텍스트로 출력하고 자유 입력을 받음
+- Superpowers integration not available: Claude Code exclusive tool
+- SubagentStop not supported: no automatic trigger on stage completion
+- AskUserQuestion not supported: output choices as text and accept free-form input
 </constraints>
 
 <execution_context>
@@ -20,17 +27,17 @@ Reads .planning/STATE.md, .planning/HANDOFF.md, .planning/ROADMAP.md. Writes not
 </execution_context>
 
 <process>
-1. **STATE.md Phase 파싱.**
+1. **STATE.md Phase parsing.**
 
    ```bash
-   # --- BEGIN STATE.md Phase parsing block (D-07: Phase 8 sg-start이 동일 블록을 복제) ---
+   # --- BEGIN STATE.md Phase parsing block (D-07: Phase 8 sg-start replicates this block) ---
    PHASE_LINE=$(grep -E '^Phase:' .planning/STATE.md 2>/dev/null | head -1 | sed -E 's/^Phase:[[:space:]]*//' | sed -E 's/[[:space:]]+$//')
    [ -z "$PHASE_LINE" ] && PHASE_LINE="(none)"
    PHASE_NUM=$(echo "$PHASE_LINE" | grep -oE '^[0-9]+' || echo "")
    # --- END STATE.md Phase parsing block ---
    ```
 
-   D-01 트리거 판정:
+   D-01 trigger determination:
    ```bash
    if [ ! -f .planning/STATE.md ] || [ "$PHASE_LINE" = "(none)" ]; then
      EXISTING_SESSION=0
@@ -39,11 +46,11 @@ Reads .planning/STATE.md, .planning/HANDOFF.md, .planning/ROADMAP.md. Writes not
    fi
    ```
 
-   `EXISTING_SESSION=0`이면 Step 6의 fallback으로 점프.
+   If `EXISTING_SESSION=0`, jump to Step 6 fallback.
 
-2. **STATE.md frontmatter 추가 파싱 + HANDOFF.md 마지막 행 파싱.**
+2. **Parse additional STATE.md frontmatter + parse last HANDOFF.md row.**
 
-   `EXISTING_SESSION=1`일 때만 실행.
+   Execute only when `EXISTING_SESSION=1`.
 
    ```bash
    MILESTONE=$(grep -E '^milestone:' .planning/STATE.md 2>/dev/null | head -1 | sed -E 's/^milestone:[[:space:]]*//' | sed -E 's/[[:space:]]+$//' | sed -E 's/^"//;s/"$//')
@@ -52,7 +59,7 @@ Reads .planning/STATE.md, .planning/HANDOFF.md, .planning/ROADMAP.md. Writes not
    LAST_ACTIVITY=$(grep -E '^last_activity:' .planning/STATE.md 2>/dev/null | head -1 | sed -E 's/^last_activity:[[:space:]]*//' | sed -E 's/[[:space:]]+$//' | sed -E 's/^"//;s/"$//')
    ```
 
-   Milestone 표시 조립:
+   Milestone display assembly:
    ```bash
    if [ -n "$MILESTONE" ] && [ -n "$MILESTONE_NAME" ]; then
      MILESTONE_DISPLAY="${MILESTONE} ${MILESTONE_NAME}"
@@ -63,7 +70,7 @@ Reads .planning/STATE.md, .planning/HANDOFF.md, .planning/ROADMAP.md. Writes not
    fi
    ```
 
-   HANDOFF.md 마지막 데이터 행 + Stage 매핑:
+   Last HANDOFF.md data row + Stage mapping:
    ```bash
    LAST_ROW=$(grep -E '^\| [0-9]{4}-' .planning/HANDOFF.md 2>/dev/null | tail -1)
    if [ -z "$LAST_ROW" ]; then
@@ -87,7 +94,7 @@ Reads .planning/STATE.md, .planning/HANDOFF.md, .planning/ROADMAP.md. Writes not
    esac
    ```
 
-3. **Last activity 시각 결정 (절대시각만 — 상대시각 금지).**
+3. **Determine last activity timestamp (absolute time only — relative time prohibited).**
    ```bash
    if [ -n "$TS" ]; then
      LAST_ACTIVITY_DISPLAY="$TS"
@@ -100,7 +107,7 @@ Reads .planning/STATE.md, .planning/HANDOFF.md, .planning/ROADMAP.md. Writes not
    fi
    ```
 
-4. **NEXT_PHASE 계산 + Next 명령 매핑.**
+4. **Compute NEXT_PHASE + Next command mapping.**
 
    ```bash
    if [ "$STAGE_RAW" = "hookify" ] || [ "$STAGE_RAW" = "ship" ]; then
@@ -141,9 +148,9 @@ Reads .planning/STATE.md, .planning/HANDOFF.md, .planning/ROADMAP.md. Writes not
    esac
    ```
 
-5. **5개 라인 emit + 텍스트 선택 분기.**
+5. **Emit 5 lines + text selection branch.**
 
-   안내 헤더 + 5개 라인 출력:
+   Output guidance header + 5 lines:
    ```
    Existing session detected.
 
@@ -154,29 +161,29 @@ Reads .planning/STATE.md, .planning/HANDOFF.md, .planning/ROADMAP.md. Writes not
    Next: <NEXT_CMD>
    ```
 
-   텍스트 선택 목록 출력 (AskUserQuestion 미지원):
+   Output text selection list (AskUserQuestion not supported):
    ```
-   다음 중 선택하세요:
-   1) Resume — Next 명령을 직접 실행합니다
-   2) Start new milestone — 새 마일스톤을 시작합니다
-   3) Cancel — 변경 없이 종료합니다
+   Select one of the following:
+   1) Resume — Run the Next command directly
+   2) Start new milestone — Start a new milestone
+   3) Cancel — Exit without changes
 
-   번호 또는 텍스트로 입력하세요.
+   Enter a number or text.
    ```
 
-   응답 분기:
-   - **"1" 또는 "Resume"**: 추가 출력 없음, 종료. 사용자가 Next 라인의 명령을 직접 실행.
-   - **"2" 또는 "Start new milestone"**:
+   Response branch:
+   - **"1" or "Resume"**: No additional output, exit. User runs the Next line command directly.
+   - **"2" or "Start new milestone"**:
      ```
      Skill(skill="gsd-new-milestone", args="")
      ```
-   - **"3" 또는 "Cancel"**: `Cancelled. No changes made.` emit 후 종료.
+   - **"3" or "Cancel"**: Emit `Cancelled. No changes made.` and exit.
 
-   세 분기 모두 `.planning/HANDOFF.md`를 read-only로만 접근.
+   All three branches access `.planning/HANDOFF.md` as read-only only.
 
-6. **Fallback 분기 (`EXISTING_SESSION=0`).**
+6. **Fallback branch (`EXISTING_SESSION=0`).**
 
-   GSD 설치 여부 확인:
+   Check GSD installation:
    ```bash
    if command -v gsd-sdk >/dev/null 2>&1 || ls ~/.claude/get-shit-done 2>/dev/null | grep -q .; then
      GSD_AVAILABLE=1
@@ -185,29 +192,29 @@ Reads .planning/STATE.md, .planning/HANDOFF.md, .planning/ROADMAP.md. Writes not
    fi
    ```
 
-   GSD 있으면:
+   With GSD:
    ```
    Skill(skill="gsd-new-project", args="$ARGUMENTS")
    ```
 
-   GSD 없으면 (prose 폴백):
+   Without GSD (prose fallback):
    ```
    [sg-start] GSD not found. Running manual project setup.
 
-   신규 프로젝트 초기화 절차:
+   New project initialization procedure:
    1. mkdir -p .planning/phases .planning/lessons
-   2. .planning/STATE.md 생성 (Phase: 1, milestone: v1.0)
-   3. .planning/ROADMAP.md 생성 (Phase 1 섹션 추가)
-   4. .planning/REQUIREMENTS.md 생성 (요구사항 목록)
-   5. /super-gsd:sg-plan 1을 실행하여 첫 phase 계획을 시작하세요
+   2. Create .planning/STATE.md (Phase: 1, milestone: v1.0)
+   3. Create .planning/ROADMAP.md (add Phase 1 section)
+   4. Create .planning/REQUIREMENTS.md (requirements list)
+   5. Run /super-gsd:sg-plan 1 to start planning the first phase
    ```
 </process>
 
 <success_criteria>
-1. STATE.md/HANDOFF.md를 읽어 기존 세션을 감지하고 5개 라인을 emit한다.
-2. 텍스트 선택 목록(1/2/3)을 출력하고 사용자 입력을 기다린다. AskUserQuestion 호출 없음.
-3. Resume → emit-only 종료, Start new milestone → gsd-new-milestone Skill, Cancel → `Cancelled.` emit.
-4. HANDOFF.md는 read-only 접근만.
-5. STATE.md 미감지 시 GSD 위임 또는 prose 폴백.
-6. NEXT_CMD 매핑에 `/super-gsd:sg-*` 슬래시 명령 사용.
+1. Read STATE.md/HANDOFF.md to detect existing session and emit 5 lines.
+2. Output text selection list (1/2/3) and wait for user input. No AskUserQuestion call.
+3. Resume → emit-only exit, Start new milestone → gsd-new-milestone Skill, Cancel → emit `Cancelled.`.
+4. HANDOFF.md is accessed as read-only only.
+5. When STATE.md is not detected, delegate to GSD or use prose fallback.
+6. `/super-gsd:sg-*` slash commands are used in NEXT_CMD mapping.
 </success_criteria>

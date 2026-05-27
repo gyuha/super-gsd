@@ -1,7 +1,14 @@
 ---
 name: sg-status
-description: 현재 워크플로우 단계, 마지막 handoff 시각, 다음 권장 명령 표시
+description: Display current workflow stage, last handoff timestamp, and next recommended command
 ---
+
+<language>
+Detect the user's input language and respond in that language throughout this skill's output.
+- Korean input → respond in Korean
+- English input → respond in English
+- Mixed input → match the dominant language
+</language>
 
 <objective>
 Inspect the current super-gsd workflow state. Read .planning/HANDOFF.md to determine the current stage, .planning/STATE.md for the current phase line (single source of truth), and .planning/ROADMAP.md only to detect whether a following phase exists. Output exactly three header lines, a blank line, and one "Next:" line. Fully independent — no GSD delegation needed.
@@ -9,9 +16,9 @@ Inspect the current super-gsd workflow state. Read .planning/HANDOFF.md to deter
 
 <constraints>
 ## Platform Constraints (Codex / Gemini CLI / Antigravity CLI)
-- Superpowers 연동 없음: 이 스킬은 완전 독립 실행 가능합니다
-- SubagentStop 미지원: 워크플로우 상태만 표시하므로 영향 없음
-- AskUserQuestion 미지원: 출력만 수행하므로 영향 없음
+- No Superpowers integration: this skill runs fully standalone
+- SubagentStop not supported: no impact since this skill only displays workflow state
+- AskUserQuestion not supported: no impact since this skill only produces output
 </constraints>
 
 <execution_context>
@@ -22,7 +29,7 @@ Self-contained — reads .planning/HANDOFF.md, .planning/STATE.md, .planning/ROA
 1. **Read `Phase:` line verbatim from STATE.md.**
 
    ```bash
-   # --- BEGIN STATE.md Phase parsing block (D-07: Phase 8 sg-start이 동일 블록을 복제) ---
+   # --- BEGIN STATE.md Phase parsing block (D-07: Phase 8 sg-start replicates this block) ---
    PHASE_LINE=$(grep -E '^Phase:' .planning/STATE.md 2>/dev/null | head -1 | sed -E 's/^Phase:[[:space:]]*//' | sed -E 's/[[:space:]]+$//')
    [ -z "$PHASE_LINE" ] && PHASE_LINE="(none)"
    PHASE_NUM=$(echo "$PHASE_LINE" | grep -oE '^[0-9]+' || echo "")
@@ -81,7 +88,7 @@ Self-contained — reads .planning/HANDOFF.md, .planning/STATE.md, .planning/ROA
    fi
    ```
 
-5. **Map stage to next command (`/super-gsd:sg-*` 슬래시 명령).**
+5. **Map stage to next command (`/super-gsd:sg-*` slash commands).**
    ```bash
    case "$STAGE_RAW" in
      init)
@@ -110,11 +117,11 @@ Self-contained — reads .planning/HANDOFF.md, .planning/STATE.md, .planning/ROA
    esac
    ```
 
-   주의: `execute` stage (Codex 직접 실행 모드)는 `/super-gsd:sg-review`로 라우팅한다.
+   Note: `execute` stage (Codex direct execution mode) routes to `/super-gsd:sg-review`.
 
 6. **Print output.**
 
-   아래 정확히 5개 라인을 출력하고 종료한다. 추가 출력 없음:
+   Output exactly 5 lines and exit. No additional output:
    ```
    Phase: <PHASE_LINE>
    Stage: <STAGE_DISPLAY>
@@ -125,10 +132,10 @@ Self-contained — reads .planning/HANDOFF.md, .planning/STATE.md, .planning/ROA
 </process>
 
 <success_criteria>
-1. 출력은 정확히 5개 라인: 3개 헤더 라인 + 1개 빈 줄 + 1개 Next 라인.
-2. HANDOFF.md에 데이터 행이 없으면 Stage=init, Last handoff=(none).
-3. `/super-gsd:sg-*` 슬래시 명령이 NEXT_CMD 매핑에 사용된다.
-4. `execute` stage가 `/super-gsd:sg-review`로 라우팅된다.
-5. STATE.md Phase parsing block이 보존되어 있다 (grep-sed-awk 파이프라인).
-6. GSD 설치 여부에 관계없이 완전 독립 실행 가능하다.
+1. Output is exactly 5 lines: 3 header lines + 1 blank line + 1 Next line.
+2. If HANDOFF.md has no data rows, Stage=init and Last handoff=(none).
+3. `/super-gsd:sg-*` slash commands are used in the NEXT_CMD mapping.
+4. `execute` stage routes to `/super-gsd:sg-review`.
+5. STATE.md Phase parsing block is preserved (grep-sed-awk pipeline).
+6. Fully standalone regardless of whether GSD is installed.
 </success_criteria>

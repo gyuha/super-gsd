@@ -1,8 +1,15 @@
 ---
 name: sg-ship
-description: Phase 작업을 main 브랜치에 병합하고 원격에 push한다 — GSD ship 폴백 또는 직접 git 병합 모드
-argument-hint: "[phase] - optional. STATE.md 현재 phase 사용."
+description: Merge phase work into main branch and push to remote — GSD ship fallback or direct git merge mode
+argument-hint: "[phase] - optional. Defaults to STATE.md current phase."
 ---
+
+<language>
+Detect the user's input language and respond in that language throughout this skill's output.
+- Korean input → respond in Korean
+- English input → respond in English
+- Mixed input → match the dominant language
+</language>
 
 <objective>
 Merge the completed phase branch into main and push. If GSD is installed, delegate to gsd-ship. Otherwise guide the user through a manual git merge + push + optional PR creation flow.
@@ -10,9 +17,9 @@ Merge the completed phase branch into main and push. If GSD is installed, delega
 
 <constraints>
 ## Platform Constraints (Codex / Gemini CLI / Antigravity CLI)
-- Superpowers 연동 불가: Claude Code 전용 도구
-- SubagentStop 미지원: 단계 종료 시 자동 트리거 없음
-- AskUserQuestion 미지원: 선택지를 텍스트로 출력하고 자유 입력을 받음
+- Superpowers integration not available: Claude Code exclusive tool
+- SubagentStop not supported: no automatic trigger on stage completion
+- AskUserQuestion not supported: output choices as text and accept free-form input
 </constraints>
 
 <execution_context>
@@ -67,33 +74,33 @@ fi
 
 **Step 5 — Ship.**
 
-**GSD 있는 경우 (주 경로):**
+**With GSD (main path):**
 
-Skill(skill="gsd-ship", args="$PHASE_NUM")을 호출하고 세션 제어를 이전한다.
+Call Skill(skill="gsd-ship", args="$PHASE_NUM") and transfer session control.
 
-**GSD 없는 경우 (직접 git 병합 모드):**
+**Without GSD (direct git merge mode):**
 
-현재 작업 유형을 선택지로 출력하고 사용자 입력을 기다린다:
+Output the available options as text and wait for user input:
 
 ```
-[sg-ship] 직접 git 병합 모드 (GSD 미설치)
+[sg-ship] Direct git merge mode (GSD not installed)
 
-Phase ${PHASE_NUM} 배포 방법을 선택하세요:
-1) ${BASE_BRANCH}에 로컬 병합
-2) Push 후 Pull Request 생성 (gh CLI 필요)
-3) 현재 상태 유지 (나중에 수동 처리)
+Select deployment method for Phase ${PHASE_NUM}:
+1) Local merge into ${BASE_BRANCH}
+2) Create Pull Request after push (requires gh CLI)
+3) Keep current state (manual handling later)
 
-번호를 입력하세요:
+Enter a number:
 ```
 
-**Option 1 — 로컬 병합:**
+**Option 1 — Local merge:**
 
 ```bash
 git checkout "$BASE_BRANCH" && git pull origin "$BASE_BRANCH" && git merge "$CURRENT_BRANCH" || {
-  echo "[sg-ship] merge 실패 — push 취소."
+  echo "[sg-ship] merge failed — push cancelled."
   exit 1
 }
-# 테스트 실행 (있는 경우) — 실패 시 push 차단
+# Run tests if present — block push on failure
 TEST_FAILED=0
 if [ -f "package.json" ] && grep -q '"test"' package.json 2>/dev/null; then
   npm test || TEST_FAILED=1
@@ -103,14 +110,14 @@ elif [ -f "pyproject.toml" ] || [ -f "setup.py" ]; then
   pytest 2>&1 || TEST_FAILED=1
 fi
 if [ "$TEST_FAILED" -eq 1 ]; then
-  echo "[sg-ship] 테스트 실패 — push 취소. 실패를 수정한 뒤 다시 실행하세요."
+  echo "[sg-ship] tests failed — push cancelled. Fix the failures and run again."
   exit 1
 fi
 git push origin "$BASE_BRANCH"
-echo "[sg-ship] Phase ${PHASE_NUM} 병합 완료. 브랜치 정리: git branch -d ${CURRENT_BRANCH}"
+echo "[sg-ship] Phase ${PHASE_NUM} merge complete. Clean up branch: git branch -d ${CURRENT_BRANCH}"
 ```
 
-**Option 2 — PR 생성:**
+**Option 2 — Create PR:**
 
 ```bash
 git push -u origin "$CURRENT_BRANCH"
@@ -124,13 +131,13 @@ Phase ${PHASE_NUM} implementation complete.
 - [ ] Confirm success_criteria pass"
 ```
 
-**Option 3 — 유지:**
+**Option 3 — Keep:**
 
 ```
-[sg-ship] 브랜치 ${CURRENT_BRANCH} 유지. 준비되면 수동으로 병합하세요.
+[sg-ship] Branch ${CURRENT_BRANCH} kept. Merge manually when ready.
 ```
 
-**Step 6 — HANDOFF.md 기록.**
+**Step 6 — Record HANDOFF.md.**
 
 ```bash
 HANDOFF_FILE=".planning/HANDOFF.md"
@@ -151,20 +158,20 @@ Read .planning/HANDOFF.md, then extract the To column (5th pipe-delimited field)
 echo "| $TS | $PHASE_SLUG | $FROM_STAGE | ship | - |" >> "$HANDOFF_FILE"
 ```
 
-**Step 7 — 완료 안내.**
+**Step 7 — Completion guidance.**
 
 ```
-Phase ${PHASE_NUM} 배포 완료. 다음 단계: $sg-plan <next-phase>
-또는 마지막 phase이면: $sg-status 로 현재 상태 확인
+Phase ${PHASE_NUM} deployment complete. Next step: $sg-plan <next-phase>
+Or if this is the last phase: check current state with $sg-status
 ```
 
 </process>
 
 <success_criteria>
-1. PHASE_NUM이 비어 있으면 명시적 오류 메시지를 출력하고 종료한다.
-2. 커밋되지 않은 변경 사항이 있으면 병합을 거부한다.
-3. GSD 있으면 gsd-ship Skill로 위임한다.
-4. GSD 없으면 3가지 선택지를 텍스트로 출력하고 사용자 입력에 따라 처리한다.
-5. HANDOFF.md에 `ship` 행이 기록된다.
-6. decimal phase (7.1 형태)를 올바르게 처리한다.
+1. If PHASE_NUM is empty, output an explicit error message and exit.
+2. Refuse to merge if there are uncommitted changes.
+3. If GSD is present, delegate to the gsd-ship Skill.
+4. If GSD is absent, output 3 options as text and handle based on user input.
+5. A `ship` row is recorded in HANDOFF.md.
+6. Decimal phase numbers (e.g. 7.1) are handled correctly.
 </success_criteria>

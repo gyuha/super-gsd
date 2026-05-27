@@ -2,15 +2,15 @@
 gsd_state_version: 1.0
 milestone: v2.7
 milestone_name: Skills & Hooks Internationalization
-status: complete
-last_updated: "2026-05-28T00:00:00.000Z"
-last_activity: 2026-05-28 -- v2.7 milestone complete (phases 36-38)
+status: Awaiting next milestone
+last_updated: "2026-05-27T15:10:08.303Z"
+last_activity: 2026-05-27 — Milestone v2.7 completed and archived
 progress:
-  total_phases: 3
-  completed_phases: 3
+  total_phases: 11
+  completed_phases: 1
   total_plans: 3
   completed_plans: 3
-  percent: 100
+  percent: 9
 ---
 
 # Project State
@@ -24,10 +24,10 @@ See: .planning/PROJECT.md (updated 2026-05-26)
 
 ## Current Position
 
-Phase: 38 (Complete)
+Phase: Milestone v2.7 complete
 Plan: —
-Status: v2.7 milestone complete
-Last activity: 2026-05-28 -- v2.7 milestone complete (phases 36-38)
+Status: Awaiting next milestone
+Last activity: 2026-05-27 — Milestone v2.7 completed and archived
 
 ## Performance Metrics
 
@@ -91,3 +91,7 @@ Items acknowledged and deferred at v2.2 milestone close on 2026-05-24:
 Last session: 2026-05-27T02:40:29.710Z
 Stopped at: v2.7 roadmap created — ready for Phase 36 planning
 Resume file: None
+
+## Operator Next Steps
+
+- Start the next milestone with /gsd-new-milestone

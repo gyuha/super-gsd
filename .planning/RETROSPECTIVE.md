@@ -94,6 +94,47 @@
 
 ---
 
+## Milestone: v2.7 — Skills & Hooks Internationalization
+
+**Shipped:** 2026-05-28
+**Phases:** 3 (36-38) | **Plans:** 3 (Phase 36만 정식; 37-38 ad-hoc)
+
+### What Was Built
+
+- `skills/sg-*/SKILL.md` 19개 한글→영문 + `<language>` 자동 감지 지침
+- `.agents/skills/sg-*/SKILL.md` 10개 영문화 + `<language>` 지침
+- `hooks/{stop_hook,rule_runner}.cjs` 한글 주석 4줄 영문화 (commit 391326c)
+- I18N-01~04 전체 요건 충족
+
+### What Worked
+
+- **검증 우선 종료**: 각 phase를 "실행"하기 전 grep으로 한글 잔존 여부를 먼저 확인 → 이미 완료된 작업의 중복 실행/계획을 회피
+- **멱등성 가드**: sg-execute의 plan-hash 가드가 이미 핸드오프된 Phase 36 재실행을 정확히 차단
+
+### What Was Inefficient
+
+- **메타데이터 드리프트 (반복 패턴)**: Phase 36은 실행·배포까지 끝났으나 ROADMAP/STATE는 `2/3 In Progress`로 정체. Phase 37/38은 정식 plan/execute 없이 ad-hoc(36-fix 흡수, 직접 커밋)로 완료되어 phase 디렉토리·SUMMARY 부재 → milestone-close 시 수동 정합화 필요
+- **milestone-close 의식 반복 누락**: v2.6도 미아카이브(34/35 Not started 표기). 작업→main 커밋→CHANGELOG는 하지만 GSD close를 건너뛰는 패턴
+- **워킹 트리 방치**: 옛 milestone phase 파일 120개가 미커밋 삭제 상태로 누적
+
+### Patterns Established
+
+- **ad-hoc phase 표기**: 정식 plan 없이 완료된 phase는 ROADMAP/REQUIREMENTS에 `(ad-hoc: 출처)` 주석으로 명시
+- **종료 전 코드-현실 검증**: milestone-close 전 요건별 실제 코드 상태를 grep으로 확인 후 메타데이터 정합화
+
+### Key Lessons
+
+1. **phase 종료 즉시 메타데이터 갱신**: main 커밋했으면 같은 세션에서 ROADMAP/STATE도 완료로 갱신 — 드리프트 누적 시 close 비용 폭증
+2. **ad-hoc 작업도 phase 디렉토리 최소 기록**: SUMMARY 부재 시 gsd-sdk가 phase를 미완료로 집계(percent 왜곡 — close 후 1/11, 9%로 표시됨)
+3. **소규모 milestone은 누적 말고 즉시 close**: i18n 같은 작은 milestone을 미루면 드리프트만 쌓임
+
+### Cost Observations
+
+- 3 phases, 핵심 작업은 Phase 36(19파일) — 37/38은 소규모
+- Notable: 실제 i18n 작업보다 누적된 메타데이터·트리 드리프트 정리 비용이 더 컸음
+
+---
+
 ## Cross-Milestone Trends
 
 ### Process Evolution
@@ -105,6 +146,7 @@
 | v1.2 Self-Contained | 5 | 5 | sg-retro 내장 + rule runner + hookify 의존성 제거 |
 | v1.5 Visual Companion | 2 | 3 | sg-ui-plan + sg-plan Visual Companion 분기 |
 | v2.0 Commands→Skills | 2 | 6 | commands/ → skills/ 마이그레이션 완료 |
+| v2.7 Skills & Hooks i18n | 3 | 3 | 27개 SKILL.md 영문화 + 언어 자동 감지, hooks 주석 영문화 |
 
 ### Top Lessons (Verified Across Milestones)
 

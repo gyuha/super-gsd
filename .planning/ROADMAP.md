@@ -15,6 +15,7 @@
 - [x] **v2.4 Hooks Node Migration** (2026-05-26) — Python 의존성 제거, `hooks/*.py` 4개를 순수 JS(`.cjs`)로 재작성 + 설정/스킬/문서 일괄 교체 → [Archive](.planning/milestones/v2.4-ROADMAP.md)
 - [x] **v2.5 Superpowers-Native File Parsing** (2026-05-26) — super-gsd skills의 bash 파이프라인(grep/sed/awk) 파일 파싱을 Read 도구 + Claude 해석 방식으로 전환 + CLAUDE.md 컨벤션 업데이트 → [Archive](.planning/milestones/v2.5-ROADMAP.md)
 - [ ] **v2.6 Codex/Gemini 설치 UX 개선** — npx 단일 명령 설치 + $sg-setup 인세션 스킬 + 문서 개선
+- [ ] **v2.7 Skills & Hooks Internationalization** — skills/ + .agents/skills/ + hooks/ 한글→영문 전환 + 27개 SKILL.md 언어 자동 감지 지침 추가
 
 ## Phases
 
@@ -61,6 +62,12 @@
 - [x] **Phase 33: npx Installer** — `package.json` + `bin/setup.js` 신규 작성, `npx @gyuha/super-gsd install` 단일 명령으로 Codex/Gemini 설치 파일 복사 (completed 2026-05-26)
 - [ ] **Phase 34: $sg-setup 인세션 스킬** — `.agents/skills/sg-setup/SKILL.md` 신규 생성, 세션 내부에서 파일 복사 자동화
 - [ ] **Phase 35: 문서 개선** — README.md Codex/Gemini 설치 섹션 재작성 + Verify install 섹션 추가 + AGENTS.md 업데이트 + README.ko.md 동기화
+
+### v2.7 Skills & Hooks Internationalization
+
+- [ ] **Phase 36: skills/ 영문화 + 언어 자동 감지 (skills/)** — `skills/sg-*/SKILL.md` 14개 한글→영문 + 19개 전체 `<language>` 지침 추가
+- [ ] **Phase 37: .agents/skills/ 영문화 + 언어 자동 감지 (.agents/)** — `.agents/skills/sg-*/SKILL.md` 8개 한글→영문 + 8개 전체 `<language>` 지침 추가
+- [ ] **Phase 38: hooks/ 영문화** — `hooks/stop_hook.cjs` + `hooks/rule_runner.cjs` 한글 주석·메시지 영문 전환
 
 ## Phase Details
 
@@ -369,6 +376,63 @@ Plans:
 
 ---
 
+## v2.7 Skills & Hooks Internationalization
+
+### Phase 36: skills/ 영문화 + 언어 자동 감지 (skills/)
+
+**Goal**: `skills/sg-*/SKILL.md` 14개의 한글 콘텐츠가 영문으로 전환되고, `skills/` 내 19개 SKILL.md 전체에 언어 자동 감지 지침이 추가된다
+**Depends on**: Phase 35 (v2.7 신규 시작)
+**Requirements**: I18N-01, I18N-04 (partial — skills/ 19개)
+**Success Criteria** (what must be TRUE):
+
+  1. `skills/sg-*/SKILL.md` 14개에서 한글 문자(process, objective, success_criteria, bash 출력 메시지)가 모두 영문으로 대체된다
+  2. `skills/` 내 19개 SKILL.md 전체에 `<language>` 자동 감지 블록이 삽입되어 있다
+  3. 사용자가 한국어로 입력하면 한국어로, 영어로 입력하면 영어로 응답한다는 지침이 명시된다
+  4. bash 코드 블록 내 명령어·flag·변수명은 변경되지 않는다 (text-only rule 준수)
+  5. 19개 파일 각각의 YAML frontmatter 구조가 변경 전과 동일하게 유지된다
+
+**Plans**: 3 plans
+Plans:
+**Wave 1** (병렬 실행 가능)
+
+- [ ] 36-01-PLAN.md — Translate top 5 Korean-volume files: sg-retro, sg-next, sg-parallel-execute, sg-start, sg-health (I18N-01)
+- [ ] 36-02-PLAN.md — Translate remaining 9 Korean files: sg-setup, sg-execute, sg-ui-plan, sg-plan, sg-lessons, sg-new, sg-complete, sg-status, sg-review (I18N-01)
+
+**Wave 2** *(blocked on Wave 1 completion)*
+
+- [ ] 36-03-PLAN.md — Insert <language> auto-detection directive into all 19 SKILL.md files in skills/ (I18N-04)
+
+### Phase 37: .agents/skills/ 영문화 + 언어 자동 감지 (.agents/)
+
+**Goal**: `.agents/skills/sg-*/SKILL.md` 8개의 한글 콘텐츠가 영문으로 전환되고, `.agents/skills/` 내 8개 SKILL.md 전체에 언어 자동 감지 지침이 추가된다 (pairwise convention 완료)
+**Depends on**: Phase 36
+**Requirements**: I18N-02, I18N-04 (complete — .agents/skills/ 8개)
+**Success Criteria** (what must be TRUE):
+
+  1. `.agents/skills/sg-*/SKILL.md` 8개에서 한글 문자(process, objective, success_criteria, 인라인 메시지)가 모두 영문으로 대체된다
+  2. `.agents/skills/` 내 8개 SKILL.md 전체에 `<language>` 자동 감지 블록이 삽입되어 있다
+  3. I18N-04 요건이 완전히 충족된다 — `skills/` 19개(Phase 36) + `.agents/skills/` 8개(Phase 37) = 27개 전체 커버
+  4. bash 코드 블록 내 명령어·flag·변수명은 변경되지 않는다 (text-only rule 준수)
+  5. pairwise convention이 충족된다 — Phase 36과 Phase 37이 동일 milestone(v2.7) 내 완료
+
+**Plans**: TBD
+
+### Phase 38: hooks/ 영문화
+
+**Goal**: `hooks/stop_hook.cjs`와 `hooks/rule_runner.cjs`의 한글 주석·인라인 메시지가 영문으로 전환된다
+**Depends on**: Phase 37
+**Requirements**: I18N-03
+**Success Criteria** (what must be TRUE):
+
+  1. `hooks/stop_hook.cjs`에서 한글 문자열을 포함하는 주석과 인라인 메시지가 모두 영문으로 대체된다
+  2. `hooks/rule_runner.cjs`에서 한글 문자열을 포함하는 주석과 인라인 메시지가 모두 영문으로 대체된다
+  3. 두 파일의 코드 로직(분기, 조건, 함수 구조)은 변경되지 않는다
+  4. `grep -r '[가-힣]' hooks/stop_hook.cjs hooks/rule_runner.cjs` 실행 결과가 빈 출력이다
+
+**Plans**: TBD
+
+---
+
 ## Progress
 
 | Phase | Milestone | Plans Complete | Status | Completed |
@@ -400,3 +464,6 @@ Plans:
 | 33. npx Installer | v2.6 | 1/1 | Complete    | 2026-05-26 |
 | 34. $sg-setup 인세션 스킬 | v2.6 | 0/TBD | Not started | - |
 | 35. 문서 개선 | v2.6 | 0/TBD | Not started | - |
+| 36. skills/ 영문화 + 언어 자동 감지 (skills/) | v2.7 | 0/TBD | Not started | - |
+| 37. .agents/skills/ 영문화 + 언어 자동 감지 (.agents/) | v2.7 | 0/TBD | Not started | - |
+| 38. hooks/ 영문화 | v2.7 | 0/TBD | Not started | - |

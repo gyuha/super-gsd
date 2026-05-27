@@ -4,7 +4,7 @@ description: Use this when parallel_groups.json exists and independent plan grou
 ---
 
 <objective>
-$ARGUMENTS로 전달된 parallel_groups.json 파일 경로를 Read tool로 읽어 그룹 목록을 파악한다. GROUP_COUNT(배열 길이)를 계산하고, min(GROUP_COUNT, 3)개의 Task()를 동시(병렬)로 실행한다. 각 Task()는 해당 그룹의 PLAN.md를 직접 읽어 태스크를 실행하며 superpowers:executing-plans를 호출하지 않는다. GROUP_COUNT > 3이면 wave 번호 오름차순 앞 3개 그룹을 병렬 실행한 뒤 나머지를 순차 처리한다.
+Read the parallel_groups.json file path passed via $ARGUMENTS using the Read tool to identify the group list. Compute GROUP_COUNT (array length) and execute min(GROUP_COUNT, 3) Task()s concurrently (in parallel). Each Task() reads its group's PLAN.md directly and executes tasks without calling superpowers:executing-plans. When GROUP_COUNT > 3, execute the first 3 groups in parallel (wave-ascending order) and process the remainder sequentially.
 </objective>
 
 <execution_context>
@@ -13,9 +13,9 @@ Self-contained. Reads $ARGUMENTS (parallel_groups.json path), then reads each gr
 
 <process>
 
-**Step 1 — 입력 검증.**
+**Step 1 — Input validation.**
 
-`$ARGUMENTS`가 비어 있으면 에러 메시지를 출력하고 종료한다:
+If `$ARGUMENTS` is empty, print an error message and exit:
 
 ```
 [sg-parallel-execute] Error: $ARGUMENTS must be the path to parallel_groups.json. Got empty.
@@ -29,49 +29,49 @@ if [ -z "$GROUPS_JSON_FILE" ]; then
 fi
 ```
 
-**Step 2 — parallel_groups.json 읽기.**
+**Step 2 — Read parallel_groups.json.**
 
-Read tool로 `$ARGUMENTS` 경로의 파일을 읽는다. 파일이 없거나 JSON 파싱이 불가능한 경우 에러 메시지를 출력하고 종료한다. 자동 폴백 없음 (D-07):
+Read the file at the `$ARGUMENTS` path using the Read tool. If the file does not exist or cannot be parsed as JSON, print an error message and exit. No automatic fallback (D-07):
 
 ```
 [sg-parallel-execute] Error: Cannot read parallel_groups.json at <path>. Ensure sg-execute Step 8.5 ran successfully.
 ```
 
-Read tool로 읽은 내용을 JSON 배열로 파싱한다. 파싱된 각 항목은 `{"wave": N, "plans": ["NN-01-PLAN.md", ...], "merged": false}` 형태이다.
+Parse the content read by the Read tool as a JSON array. Each parsed item has the shape `{"wave": N, "plans": ["NN-01-PLAN.md", ...], "merged": false}`.
 
-**Step 3 — GROUP_COUNT 계산 및 실행 그룹 결정.**
+**Step 3 — Compute GROUP_COUNT and determine execution groups.**
 
-파싱된 배열의 길이 = GROUP_COUNT.
-GROUP_COUNT가 0이면 에러 메시지를 출력하고 종료한다 (D-07, 자동 폴백 없음):
+Length of parsed array = GROUP_COUNT.
+If GROUP_COUNT is 0, print an error message and exit (D-07, no automatic fallback):
 ```
 [sg-parallel-execute] Error: parallel_groups.json contains zero groups. Nothing to execute.
 ```
 
 EXEC_COUNT = min(GROUP_COUNT, 3).
-wave 번호 오름차순으로 정렬한 뒤 앞 EXEC_COUNT개를 병렬 실행 대상으로 선택 (D-02).
-GROUP_COUNT > 3이면 나머지 (EXEC_COUNT 이후) 그룹은 순차 처리 대상으로 분리한다.
+Sort in wave-ascending order and select the first EXEC_COUNT groups for parallel execution (D-02).
+If GROUP_COUNT > 3, separate the remaining groups (after EXEC_COUNT) for sequential processing.
 
-출력:
+Output:
 ```
 [sg-parallel-execute] GROUP_COUNT=N, EXEC_COUNT=M (wave-ascending order)
 ```
 
-**Step 4 — 각 병렬 그룹의 PLAN.md 읽기.**
+**Step 4 — Read PLAN.md for each parallel group.**
 
-PHASE_DIR는 `$ARGUMENTS` 경로의 디렉토리 부분으로 결정한다 (예: `$ARGUMENTS`가 `.planning/phases/18-sg-parallel-execute/parallel_groups.json`이면 PHASE_DIR = `.planning/phases/18-sg-parallel-execute`).
+Determine PHASE_DIR from the directory portion of the `$ARGUMENTS` path (e.g. if `$ARGUMENTS` is `.planning/phases/18-sg-parallel-execute/parallel_groups.json`, then PHASE_DIR = `.planning/phases/18-sg-parallel-execute`).
 
-PHASE_NUM은 PHASE_DIR의 디렉토리명에서 첫 번째 `-` 이전의 숫자를 추출한다:
+Extract PHASE_NUM from the first number before `-` in the PHASE_DIR directory name:
 ```bash
 PHASE_NUM=$(basename "$PHASE_DIR" | sed -E 's/^([0-9]+)-.*/\1/')
 ```
-(예: `18-sg-parallel-execute` → `18`, `9-foo` → `9`, `100-bar` → `100`)
+(e.g. `18-sg-parallel-execute` → `18`, `9-foo` → `9`, `100-bar` → `100`)
 
-각 그룹의 `plans` 배열 내 파일명을 순회하여 Read tool로 해당 PLAN.md 본문을 읽는다:
-- PLAN.md 경로 = `{PHASE_DIR}/{plan_filename}`
+Iterate over the filenames in each group's `plans` array and read each PLAN.md body using the Read tool:
+- PLAN.md path = `{PHASE_DIR}/{plan_filename}`
 
-**Step 5 — 병렬 Task() 디스패치.**
+**Step 5 — Parallel Task() dispatch.**
 
-EXEC_COUNT개의 Task()를 동일 응답 내에서 병렬로 실행한다 (D-02, TE-02a). 각 Task()의 프롬프트 구조 (D-03):
+Execute EXEC_COUNT Task()s in parallel within the same response (D-02, TE-02a). Prompt structure for each Task() (D-03):
 
 ```
 Execute the following plan(s) for Phase {PHASE_NUM}.
@@ -89,15 +89,15 @@ Plans to execute:
 Execute all tasks in the plan(s) above. Follow each task's <action>, <verify>, and <done> fields. Report completion status for each task.
 ```
 
-한 그룹에 여러 plan 파일이 있는 경우 동일 Task() 프롬프트 안에 모두 포함한다.
+When a group contains multiple plan files, include them all in the same Task() prompt.
 
-**Step 6 — GROUP_COUNT > 3일 경우 순차 처리.**
+**Step 6 — Sequential processing when GROUP_COUNT > 3.**
 
-병렬 배치(Step 5)가 완료된 후, 나머지 그룹(EXEC_COUNT 이후)을 wave 오름차순으로 순차 처리한다.
+After the parallel batch (Step 5) completes, process the remaining groups (after EXEC_COUNT) sequentially in wave-ascending order.
 
-각 그룹에 대해 다음을 반복한다 (Step 5의 병렬 배치와 달리, 반드시 1개씩 순서대로 실행하고 완료를 기다린 후 다음으로 진행한다):
-1. Step 4와 동일하게 해당 그룹의 PLAN.md 파일을 Read tool로 읽는다.
-2. 단일 Task()를 호출한다. 이전 Task()가 완료될 때까지 다음 Task()를 실행하지 않는다.
+For each group, repeat the following (unlike the parallel batch in Step 5, execute strictly one at a time, waiting for completion before advancing):
+1. Read the group's PLAN.md file using the Read tool, same as Step 4.
+2. Invoke a single Task(). Do not execute the next Task() until the previous one completes.
 
 ```
 [sg-parallel-execute] Sequential group {N}: executing {plan_filename}
@@ -106,9 +106,9 @@ Execute all tasks in the plan(s) above. Follow each task's <action>, <verify>, a
 </process>
 
 <success_criteria>
-1. $ARGUMENTS로 유효한 parallel_groups.json 경로가 전달되면 Read tool로 파일을 읽고 GROUP_COUNT를 출력한다.
-2. EXEC_COUNT개의 Task()가 동일 응답 내에서 병렬로 호출된다.
-3. 각 Task() 프롬프트에 superpowers:executing-plans 호출 금지, HANDOFF.md 쓰기 금지, STATE.md 업데이트 금지 지시가 포함된다.
-4. $ARGUMENTS가 빈 문자열이거나 파일이 없으면 오류 메시지를 출력하고 종료한다 (자동 폴백 없음).
-5. GROUP_COUNT > 3이면 앞 3개 그룹 병렬 실행 후 나머지를 순차 처리한다.
+1. When a valid parallel_groups.json path is passed via $ARGUMENTS, read the file with the Read tool and output GROUP_COUNT.
+2. EXEC_COUNT Task()s are invoked in parallel within the same response.
+3. Each Task() prompt includes instructions prohibiting: calling superpowers:executing-plans, writing to HANDOFF.md, and updating STATE.md.
+4. If $ARGUMENTS is empty or the file does not exist, print an error message and exit (no automatic fallback).
+5. When GROUP_COUNT > 3, execute the first 3 groups in parallel then process the remainder sequentially.
 </success_criteria>

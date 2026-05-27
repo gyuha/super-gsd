@@ -11,7 +11,7 @@
 
 ### Ko→EN Migration (영문화)
 
-- [ ] **I18N-01**: `skills/sg-*/SKILL.md` 14개에서 한글 콘텐츠를 영문으로 변환한다
+- [x] **I18N-01**: `skills/sg-*/SKILL.md` 14개에서 한글 콘텐츠를 영문으로 변환한다
       - 대상: process, objective, success_criteria, bash 출력 메시지, 인라인 한글 텍스트 전체
       - 기술 명령어(bash 코드, flag 이름)는 변경하지 않음
       - 대상 파일: sg-complete, sg-execute, sg-health, sg-lessons, sg-new, sg-next, sg-parallel-execute, sg-plan, sg-retro, sg-review, sg-setup, sg-start, sg-status, sg-ui-plan
@@ -52,7 +52,7 @@
 
 | REQ-ID | Phase | Status |
 |--------|-------|--------|
-| I18N-01 | TBD | planned |
-| I18N-02 | TBD | planned |
-| I18N-03 | TBD | planned |
-| I18N-04 | TBD | planned |
+| I18N-01 | Phase 36 | planned |
+| I18N-02 | Phase 37 | planned |
+| I18N-03 | Phase 38 | planned |
+| I18N-04 | Phase 36 (partial: skills/ 19개) + Phase 37 (complete: .agents/ 8개) | planned |

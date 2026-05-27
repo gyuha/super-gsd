@@ -395,8 +395,8 @@ Plans:
 Plans:
 **Wave 1** (병렬 실행 가능)
 
-- [ ] 36-01-PLAN.md — Translate top 5 Korean-volume files: sg-retro, sg-next, sg-parallel-execute, sg-start, sg-health (I18N-01)
-- [ ] 36-02-PLAN.md — Translate remaining 9 Korean files: sg-setup, sg-execute, sg-ui-plan, sg-plan, sg-lessons, sg-new, sg-complete, sg-status, sg-review (I18N-01)
+- [x] 36-01-PLAN.md — Translate top 5 Korean-volume files: sg-retro, sg-next, sg-parallel-execute, sg-start, sg-health (I18N-01)
+- [x] 36-02-PLAN.md — Translate remaining 9 Korean files: sg-setup, sg-execute, sg-ui-plan, sg-plan, sg-lessons, sg-new, sg-complete, sg-status, sg-review (I18N-01)
 
 **Wave 2** *(blocked on Wave 1 completion)*
 
@@ -464,6 +464,6 @@ Plans:
 | 33. npx Installer | v2.6 | 1/1 | Complete    | 2026-05-26 |
 | 34. $sg-setup 인세션 스킬 | v2.6 | 0/TBD | Not started | - |
 | 35. 문서 개선 | v2.6 | 0/TBD | Not started | - |
-| 36. skills/ 영문화 + 언어 자동 감지 (skills/) | v2.7 | 0/TBD | Not started | - |
+| 36. skills/ 영문화 + 언어 자동 감지 (skills/) | v2.7 | 2/3 | In Progress|  |
 | 37. .agents/skills/ 영문화 + 언어 자동 감지 (.agents/) | v2.7 | 0/TBD | Not started | - |
 | 38. hooks/ 영문화 | v2.7 | 0/TBD | Not started | - |

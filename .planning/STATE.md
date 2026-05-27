@@ -1,17 +1,16 @@
 ---
 gsd_state_version: 1.0
-milestone: v2.6
-milestone_name: Codex/Gemini 설치 UX 개선
-status: milestone_complete
-last_updated: 2026-05-26T13:00:00.000Z
-last_activity: 2026-05-26 -- Phase 35 complete, v2.6 milestone done
+milestone: v2.7
+milestone_name: Skills & Hooks Internationalization
+status: planning
+last_updated: "2026-05-27T00:53:47.842Z"
+last_activity: 2026-05-27
 progress:
-  total_phases: 3
-  completed_phases: 3
-  total_plans: 3
-  completed_plans: 3
-  percent: 100
-stopped_at: v2.6 milestone complete
+  total_phases: 0
+  completed_phases: 0
+  total_plans: 0
+  completed_plans: 0
+  percent: 0
 ---
 
 # Project State
@@ -25,10 +24,10 @@ See: .planning/PROJECT.md (updated 2026-05-26)
 
 ## Current Position
 
-Phase: 35
-Plan: 01 (complete)
-Status: All phases done — milestone_complete
-Last activity: 2026-05-26
+Phase: Not started (defining requirements)
+Plan: —
+Status: Defining requirements
+Last activity: 2026-05-27 — Milestone v2.7 started
 
 ## Performance Metrics
 

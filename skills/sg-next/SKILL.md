@@ -13,20 +13,20 @@ Self-contained — reads .planning/HANDOFF.md, .planning/STATE.md, .planning/ROA
 
 <process>
 
-**Step 1 — STATE.md Phase 파싱:**
+**Step 1 — STATE.md Phase parsing:**
 
 ```bash
-# --- BEGIN STATE.md Phase parsing block (D-07: skills/sg-status/SKILL.md 복제 — drift 시 양쪽 동시 수정) ---
+# --- BEGIN STATE.md Phase parsing block (D-07: replicated from skills/sg-status/SKILL.md — update both simultaneously on drift) ---
 PHASE_LINE=$(grep -E '^Phase:' .planning/STATE.md 2>/dev/null | head -1 | sed -E 's/^Phase:[[:space:]]*//' | sed -E 's/[[:space:]]+$//')
 [ -z "$PHASE_LINE" ] && PHASE_LINE="(none)"
 PHASE_NUM=$(echo "$PHASE_LINE" | grep -oE '^[0-9]+' || echo "")
 # --- END STATE.md Phase parsing block ---
 ```
 
-**Step 2 — HANDOFF.md stage 감지 + enum 매핑:**
+**Step 2 — HANDOFF.md stage detection + enum mapping:**
 
 ```bash
-# --- BEGIN HANDOFF.md stage detection block (D-07: skills/sg-status/SKILL.md 복제 — drift 시 양쪽 동시 수정) ---
+# --- BEGIN HANDOFF.md stage detection block (D-07: replicated from skills/sg-status/SKILL.md — update both simultaneously on drift) ---
 LAST_ROW=$(grep -E '^\| [0-9]{4}-' .planning/HANDOFF.md 2>/dev/null | tail -1)
 if [ -z "$LAST_ROW" ]; then
   STAGE_RAW="init"
@@ -38,7 +38,7 @@ else
     gsd-plan|ui-plan|superpowers|parallel|execute|review|sg-retro|ship|complete|sg-next) ;;
     *) echo "Unknown stage '${STAGE_RAW}' in .planning/HANDOFF.md last row. Schema may be corrupted." >&2; exit 1 ;;
   esac
-  # sg-next는 메타-전환 행이므로 직전 FROM 컬럼(column $4)을 실제 현재 stage로 사용한다
+  # sg-next is a meta-transition row, so use the preceding FROM column ($4) as the actual current stage
   if [ "$STAGE_RAW" = "sg-next" ]; then
     STAGE_RAW=$(echo "$LAST_ROW" | awk -F'|' '{gsub(/ /,"",$4); print $4}')
     [ -z "$STAGE_RAW" ] && STAGE_RAW="init"
@@ -56,14 +56,14 @@ case "$STAGE_RAW" in
   ship)         STAGE_DISPLAY="ship" ;;
   complete)     STAGE_DISPLAY="complete" ;;
 esac
-# STAGE_DISPLAY는 sg-next에서 출력하지 않음 — D-07 블록 동일성 유지를 위해 보존
+# STAGE_DISPLAY is not printed in sg-next — preserved to maintain D-07 block identity
 # --- END HANDOFF.md stage detection block ---
 ```
 
-**Step 3 — NEXT_PHASE 계산 + stage→next-command 라우팅:**
+**Step 3 — NEXT_PHASE computation + stage→next-command routing:**
 
 ```bash
-# --- BEGIN next-command routing block (D-07: skills/sg-status/SKILL.md 복제 — drift 시 양쪽 동시 수정) ---
+# --- BEGIN next-command routing block (D-07: replicated from skills/sg-status/SKILL.md — update both simultaneously on drift) ---
 if [ "$STAGE_RAW" = "sg-retro" ] || [ "$STAGE_RAW" = "ship" ]; then
   if echo "$PHASE_NUM" | grep -qE '^[0-9]+$'; then
     NEXT_PHASE=$((PHASE_NUM + 1))
@@ -104,9 +104,9 @@ esac
 # --- END next-command routing block ---
 ```
 
-**Step 4 — HANDOFF.md 초기화 + 비-모호 stage append (D-04):**
+**Step 4 — HANDOFF.md initialization + non-ambiguous stage append (D-04):**
 
-complete/init에서는 append를 Step 5 확인 후로 미룬다. cancel 시 감사 로그가 오염되지 않도록 한다.
+For complete/init, defer the append until after Step 5 confirmation. This prevents audit log contamination on cancel.
 
 ```bash
 HANDOFF_FILE=".planning/HANDOFF.md"
@@ -125,49 +125,49 @@ if [ "$STAGE_RAW" != "complete" ] && [ "$STAGE_RAW" != "init" ]; then
 fi
 ```
 
-**Step 5 — complete/init 분기 (D-02, D-03):**
+**Step 5 — complete/init branch (D-02, D-03):**
 
-`STAGE_RAW`가 `complete`이면:
+When `STAGE_RAW` is `complete`:
 
 ```
 AskUserQuestion(
   questions: [{
-    question: "현재 Phase가 완료 상태입니다. 다음 단계를 선택하세요.",
+    question: "The current Phase is in complete state. Select the next step.",
     header: "sg-next",
     multiSelect: false,
     options: [
-      { label: "sg-new 실행 (새 마일스톤 시작)", description: "gsd-new-milestone Skill을 호출합니다." },
-      { label: "취소", description: "변경 없이 종료합니다." }
+      { label: "Run sg-new (start new milestone)", description: "Invokes the gsd-new-milestone Skill." },
+      { label: "Cancel", description: "Exit without changes." }
     ]
   }]
 )
 ```
 
-- "sg-new 실행" 선택 시: HANDOFF.md에 `| TS | PHASE_SLUG | $FROM_STAGE | sg-next | - |` 행을 append한 뒤 `Skill(skill="super-gsd:sg-new", args="")`
-- "취소" 선택 시: `Cancelled. No changes made.` emit 후 종료 (append 없음)
+- If "Run sg-new" selected: append `| TS | PHASE_SLUG | $FROM_STAGE | sg-next | - |` row to HANDOFF.md, then `Skill(skill="super-gsd:sg-new", args="")`
+- If "Cancel" selected: emit `Cancelled. No changes made.` and exit (no append)
 
-`STAGE_RAW`가 `init`이면 — PHASE_NUM이 있을 때:
+When `STAGE_RAW` is `init` — with PHASE_NUM present:
 
 ```
 AskUserQuestion(
   questions: [{
-    question: "현재 단계를 감지할 수 없습니다 (init). 다음 단계를 선택하세요.",
+    question: "Cannot detect current stage (init). Select the next step.",
     header: "sg-next",
     multiSelect: false,
     options: [
-      { label: "sg-plan {PHASE_NUM} 실행", description: "/super-gsd:sg-plan {PHASE_NUM}을 호출합니다." },
-      { label: "취소", description: "변경 없이 종료합니다." }
+      { label: "Run sg-plan {PHASE_NUM}", description: "Invokes /super-gsd:sg-plan {PHASE_NUM}." },
+      { label: "Cancel", description: "Exit without changes." }
     ]
   }]
 )
 ```
 
-PHASE_NUM이 없을 때는 label=`"sg-plan 실행"`, description=`"/super-gsd:sg-plan 을 호출합니다."` 로 대체한다.
+When PHASE_NUM is absent, replace with label=`"Run sg-plan"`, description=`"Invokes /super-gsd:sg-plan."`.
 
-- "sg-plan" 선택 시: HANDOFF.md에 `| TS | PHASE_SLUG | $FROM_STAGE | sg-next | - |` 행을 append한 뒤, PHASE_NUM이 있으면 `Skill(skill="super-gsd:sg-plan", args="PHASE_NUM")`, 없으면 `Skill(skill="super-gsd:sg-plan", args="")`
-- "취소" 선택 시: `Cancelled. No changes made.` emit 후 종료 (append 없음)
+- If "sg-plan" selected: append `| TS | PHASE_SLUG | $FROM_STAGE | sg-next | - |` row to HANDOFF.md, then `Skill(skill="super-gsd:sg-plan", args="PHASE_NUM")` if PHASE_NUM exists, otherwise `Skill(skill="super-gsd:sg-plan", args="")`
+- If "Cancel" selected: emit `Cancelled. No changes made.` and exit (no append)
 
-**Step 6 — 1줄 출력 후 즉시 invoke (complete/init 이외 모든 stage):**
+**Step 6 — emit 1-line then immediately invoke (all stages except complete/init):**
 
 ```bash
 echo "→ $NEXT_CMD"
@@ -175,7 +175,7 @@ echo "→ $NEXT_CMD"
 # Session control transfers to the skill; no steps execute after this point.
 ```
 
-`NEXT_CMD` 기준 Skill() 매핑:
+Skill() mapping by `NEXT_CMD`:
 
 - `/super-gsd:sg-execute` → `Skill(skill="super-gsd:sg-execute", args="")`
 - `/super-gsd:sg-review` → `Skill(skill="super-gsd:sg-review", args="")`
@@ -184,14 +184,14 @@ echo "→ $NEXT_CMD"
 - `/super-gsd:sg-complete` → `Skill(skill="super-gsd:sg-complete", args="")`
 - `/super-gsd:sg-new` → `Skill(skill="super-gsd:sg-new", args="")`
 - `/super-gsd:sg-plan N` → `Skill(skill="super-gsd:sg-plan", args="N")`
-- `/super-gsd:sg-plan` (인자 없음) → `Skill(skill="super-gsd:sg-plan", args="")`
+- `/super-gsd:sg-plan` (no argument) → `Skill(skill="super-gsd:sg-plan", args="")`
 
 </process>
 
 <success_criteria>
-1. HANDOFF.md가 없거나 데이터 행이 0개이면 STAGE_RAW=init으로 처리한다 (NEXT-01).
-2. stage→next-command 매핑이 sg-status와 동일한 11개 분기를 사용한다 (NEXT-02).
-3. complete/init 이외 모든 stage에서 `→ /super-gsd:sg-[cmd]` 1줄을 출력한 뒤 즉시 Skill()로 invoke한다 — 확인 프롬프트 없음 (NEXT-03).
-4. STAGE_RAW가 complete 또는 init이면 AskUserQuestion을 호출하고, 취소 선택 시 `Cancelled. No changes made.`를 emit 후 종료한다 (NEXT-04).
-5. Skill() invoke 전에 HANDOFF.md에 `| TS | PHASE_SLUG | FROM_STAGE | sg-next | - |` 행이 append된다 (NEXT-05, D-04).
+1. When HANDOFF.md is missing or has zero data rows, treat as STAGE_RAW=init (NEXT-01).
+2. stage→next-command mapping uses the same 11 branches as sg-status (NEXT-02).
+3. For all stages except complete/init, emit one `→ /super-gsd:sg-[cmd]` line and immediately invoke via Skill() — no confirmation prompt (NEXT-03).
+4. When STAGE_RAW is complete or init, call AskUserQuestion; emit `Cancelled. No changes made.` and exit when cancel is selected (NEXT-04).
+5. Before Skill() invoke, append `| TS | PHASE_SLUG | FROM_STAGE | sg-next | - |` row to HANDOFF.md (NEXT-05, D-04).
 </success_criteria>

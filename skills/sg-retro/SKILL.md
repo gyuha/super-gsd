@@ -15,7 +15,7 @@ Self-contained. Reads `.planning/STATE.md`, `.planning/phases/{NN}-*/{NN}-CONTEX
 
 **Step 1 — Argument parsing + phase resolve.**
 
-Parse `$ARGUMENTS` into `PHASE_RAW` and `LENS_RAW`. If `PHASE_RAW` is empty, fall back to `.planning/STATE.md` `^Phase:` line using the multi-line `grep + sed + awk` pattern below (macOS 호환 파이프라인). **Do not replace with a single-token regex** — preserve the full pipeline for macOS/BSD compatibility.
+Parse `$ARGUMENTS` into `PHASE_RAW` and `LENS_RAW`. If `PHASE_RAW` is empty, fall back to `.planning/STATE.md` `^Phase:` line using the multi-line `grep + sed + awk` pattern below (macOS-compatible pipeline). **Do not replace with a single-token regex** — preserve the full pipeline for macOS/BSD compatibility.
 
 ```bash
 set -- $ARGUMENTS
@@ -23,7 +23,7 @@ PHASE_RAW="${1:-}"
 LENS_RAW="${2:-}"
 
 if [ -z "$PHASE_RAW" ]; then
-  # --- BEGIN STATE.md Phase parsing block (macOS 호환 grep + sed + awk 파이프라인) ---
+  # --- BEGIN STATE.md Phase parsing block (macOS-compatible grep + sed + awk pipeline) ---
   PHASE_RAW=$(grep -E '^Phase:' .planning/STATE.md 2>/dev/null | head -1 \
               | sed -E 's/^Phase:[[:space:]]*//' \
               | sed -E 's/[[:space:]]+$//' \
@@ -31,7 +31,7 @@ if [ -z "$PHASE_RAW" ]; then
   # --- END STATE.md Phase parsing block ---
 fi
 
-# D-02: 정수 또는 소수점 phase 허용 (예: 7, 7.1)
+# D-02: integer or decimal phase allowed (e.g. 7 or 7.1)
 if ! printf '%s' "$PHASE_RAW" | grep -qE '^[0-9]+(\.[0-9]+)?$'; then
   echo "Phase token must be a number or decimal (e.g. 7 or 7.1). Got: '${PHASE_RAW}'." >&2
   if [ -d .planning/phases ]; then
@@ -48,15 +48,15 @@ else
 fi
 PHASE_DIR=$(ls -d .planning/phases/${PHASE_PAD}-*/ 2>/dev/null | head -1)
 
-# D-04: 디렉터리 미존재 에러
+# D-04: directory not found error
 if [ -z "$PHASE_DIR" ]; then
   echo "Phase ${PHASE_RAW} not found. Available phases:" >&2
   ls .planning/phases/ 2>/dev/null >&2 || echo "  (no phases yet)" >&2
   exit 1
 fi
-PHASE_DIR="${PHASE_DIR%/}"  # trailing slash 제거
+PHASE_DIR="${PHASE_DIR%/}"  # strip trailing slash
 
-# D-21: 3번째 이후 토큰을 추가 lens 코드로 파싱
+# D-21: parse tokens from the 3rd onward as additional lens codes
 EXTRA_LENS_CODES=""
 if [ -n "${3:-}" ]; then
   shift 2
@@ -81,7 +81,7 @@ if [ -n "$LENS_RAW" ]; then
     sail)    LENS_CODE="sail"    ;;
     5why)    LENS_CODE="5why"    ;;
     analyze) LENS_CODE="analyze" ;;
-    *)       LENS_CODE=""        ;;  # 매핑 실패 → AskUserQuestion fallback
+    *)       LENS_CODE=""        ;;  # no match → AskUserQuestion fallback
   esac
 fi
 ```
@@ -109,7 +109,7 @@ AskUserQuestion(
 Extract lens codes from multiSelect response and build LENS_CODES_ARRAY:
 
 ```bash
-# multiSelect 응답에서 각 코드 추출 (괄호 안 코드 파싱)
+# extract each code from multiSelect response (parse code inside parentheses)
 LENS_CODES_ARRAY=$(printf '%s' "$ASKUSERQUESTION_RESPONSE" \
   | grep -oE '\((ssc|4ls|dspm|sail|5why|analyze)\)' \
   | tr -d '()')
@@ -119,10 +119,10 @@ if [ -z "$LENS_CODES_ARRAY" ]; then
 fi
 ```
 
-Single-lens argument 경로 (D-19):
+Single-lens argument path (D-19):
 
 ```bash
-# D-19: 인수 경로 — LENS_CODE가 있으면 배열 구성, EXTRA_LENS_CODES가 있으면 추가
+# D-19: argument path — build array if LENS_CODE set, append EXTRA_LENS_CODES if present
 VALID_EXTRAS=""
 if [ -n "$EXTRA_LENS_CODES" ]; then
   for EC in $EXTRA_LENS_CODES; do
@@ -135,7 +135,7 @@ fi
 if [ -n "$LENS_CODE" ]; then
   LENS_CODES_ARRAY="${LENS_CODE}${VALID_EXTRAS}"
 elif [ -n "$VALID_EXTRAS" ]; then
-  # F-01 fix: LENS_CODE 빈 경우에도 extras로 배열 구성
+  # F-01 fix: build array from extras even when LENS_CODE is empty
   LENS_CODES_ARRAY="$VALID_EXTRAS"
 fi
 ```
@@ -149,17 +149,17 @@ CONTEXT_FILE="${PHASE_DIR}/${PHASE_PAD}-CONTEXT.md"
 PLAN_FILES=$(ls -1 ${PHASE_DIR}/${PHASE_PAD}-*-PLAN.md 2>/dev/null)
 SUMMARY_FILES=$(ls -1 ${PHASE_DIR}/${PHASE_PAD}-*-SUMMARY.md 2>/dev/null)
 
-# 표시(stderr 진단용; lens facilitation은 본문에서 직접 Read 도구로 읽음)
+# display (for stderr diagnostics; lens facilitation reads directly with Read tool inline)
 echo "Collected artifacts:" >&2
 [ -f "$CONTEXT_FILE" ] && echo "  $CONTEXT_FILE" >&2
 [ -n "$PLAN_FILES" ] && printf '  %s\n' $PLAN_FILES >&2
 [ -n "$SUMMARY_FILES" ] && printf '  %s\n' $SUMMARY_FILES >&2
 ```
 
-**Step 3b — Collect session transcript (analyze lens용).**
+**Step 3b — Collect session transcript (for analyze lens).**
 
 ```bash
-# D-06: 세션 transcript 수집 (analyze lens용)
+# D-06: collect session transcript (for analyze lens)
 PROJECT_SLUG=$(pwd | tr '/' '-' | sed 's/^-//')
 TRANSCRIPT_DIR="$HOME/.claude/projects/${PROJECT_SLUG}"
 TRANSCRIPT_FILE=$(ls -t "${TRANSCRIPT_DIR}"/*.jsonl 2>/dev/null | head -1)
@@ -181,10 +181,10 @@ else
   RANGE="${BASE}..HEAD"
 fi
 
-# git log: cap 없이 oneline 전체
+# git log: uncapped, full oneline output
 GIT_LOG=$(git log ${RANGE} --oneline 2>/dev/null)
 
-# git diff: 적응형 1000줄 cap
+# git diff: adaptive 1000-line cap
 DIFF=$(git diff ${RANGE} 2>/dev/null)
 LINES=$(printf '%s\n' "$DIFF" | wc -l | tr -d ' ')
 if [ "$LINES" -gt 1000 ]; then
@@ -199,7 +199,7 @@ echo "Git range: ${RANGE}" >&2
 **Step 5 — Multi-lens execution loop + lens facilitation (artifact-grounded draft-then-confirm).**
 
 ```bash
-# F-02 fix: 루프 시작 전 초기화 (analyze sub-block 내부에서 true로 설정됨)
+# F-02 fix: initialize before loop (set to true inside analyze sub-block)
 ANALYZE_LENS_RAN=false
 ```
 
@@ -212,7 +212,7 @@ for LENS_CODE in $LENS_CODES_ARRAY; do
 done
 ```
 
-Five Whys(`5why`)가 배열에 포함된 경우, 대화형 흐름이 완전히 완료될 때까지 다음 lens로 진행하지 않는다. Lens 사이 "다음으로 진행?" 확인은 없다 — 자동 순차 실행.
+When Five Whys (`5why`) is in the array, do not advance to the next lens until the interactive flow is fully complete. There is no "proceed to next?" confirmation between lenses — fully automatic sequential execution.
 
 Common flow for ssc/4ls/dspm/sail lenses (D-09 hybrid + D-10 artifact-grounded draft-then-confirm):
 
@@ -239,37 +239,37 @@ Lens-specific sub-blocks:
 
 **Sub-block `sail` (Sailboat):**
 - Fixed subheadings: `### Wind` / `### Anchor` / `### Sun` / `### Rock`
-- Facilitation: D-11 artifact-grounded draft-then-confirm 방식. Wind/Sun은 SUMMARY의 긍정 신호(완료 항목, 예상보다 빠른 성과)에서, Anchor/Rock은 CONTEXT "Known Risk Sites" + 지연된 태스크 + git diff의 revertion 패턴에서 초안 도출. 각 항목은 출처 파일 경로 또는 commit hash를 인용. 전체 초안을 한 번에 제시한 뒤 사용자 수정/확정. Action Items 2-4개 확정 후 append.
+- Facilitation: D-11 artifact-grounded draft-then-confirm approach. Draft Wind/Sun from positive signals in SUMMARY (completed items, faster-than-expected results); draft Anchor/Rock from CONTEXT "Known Risk Sites" + delayed tasks + reversion patterns in git diff. Each item cites its source file path or commit hash. Present the full draft at once, then accept user edits/confirmation. Confirm 2-4 Action Items and append.
 
 **Sub-block `5why` (Five Whys):**
 - Fixed subheadings: `### Problem Statement` / `### Why 1` ~ `### Why 5` / `### Root Cause`
-- Facilitation (D-14, D-16 — 사용자 주도 대화형; F-06 fix: all turns use AskUserQuestion):
-  1. AskUserQuestion header `"Five Whys — Problem"`, question `"What problem do you want to analyze? (Leave blank to let me suggest from phase artifacts)"` 로 problem statement 수집. 사용자가 공백 입력 시 Claude가 phase artifacts에서 Mistakes 또는 알려진 위험 항목을 후보로 제시하되 사용자 확인 필요.
-  2. AskUserQuestion header `"Why 1"`, question `"Why did [problem statement] happen?"` 으로 Why 1 수집.
-  3. AskUserQuestion header `"Why 2"`, question `"Why did [Why 1 answer] happen?"` 으로 Why 2 수집.
-  4. AskUserQuestion header `"Why 3"`, question `"Why did [Why 2 answer] happen?"` 으로 Why 3 수집.
-  5. AskUserQuestion header `"Why 4"`, question `"Why did [Why 3 answer] happen?"` 으로 Why 4 수집.
-  6. AskUserQuestion header `"Why 5"`, question `"Why did [Why 4 answer] happen?"` 으로 Why 5 수집.
-  7. 5번 완료 후 Root Cause 도출 요약 + Action Items AskUserQuestion 확정 후 append.
-  - git artifacts는 문맥 보강용으로만 참조 (D-16).
+- Facilitation (D-14, D-16 — user-driven interactive; F-06 fix: all turns use AskUserQuestion):
+  1. Collect problem statement via AskUserQuestion header `"Five Whys — Problem"`, question `"What problem do you want to analyze? (Leave blank to let me suggest from phase artifacts)"`. If user leaves blank, Claude proposes Mistakes or known-risk candidates from phase artifacts but requires user confirmation.
+  2. Collect Why 1 via AskUserQuestion header `"Why 1"`, question `"Why did [problem statement] happen?"`.
+  3. Collect Why 2 via AskUserQuestion header `"Why 2"`, question `"Why did [Why 1 answer] happen?"`.
+  4. Collect Why 3 via AskUserQuestion header `"Why 3"`, question `"Why did [Why 2 answer] happen?"`.
+  5. Collect Why 4 via AskUserQuestion header `"Why 4"`, question `"Why did [Why 3 answer] happen?"`.
+  6. Collect Why 5 via AskUserQuestion header `"Why 5"`, question `"Why did [Why 4 answer] happen?"`.
+  7. After Why 5, derive Root Cause summary + confirm Action Items via AskUserQuestion, then append.
+  - git artifacts are referenced for context enrichment only (D-16).
 
 **Sub-block `analyze` (Conversation Analyzer):**
-- Fixed subheadings: `### Analysis Findings` (표) / `### Draft sg-rules` / `### Action Items`
+- Fixed subheadings: `### Analysis Findings` (table) / `### Draft sg-rules` / `### Action Items`
 - Facilitation (D-05, D-07, D-08):
-  1. TRANSCRIPT_FILE이 비어 있으면 즉시 종료: `echo "No transcript found — skipping Conversation Analyzer." >&2` 후 해당 lens 결과 없이 다음 lens로 진행 또는 종료. ANALYZE_LENS_RAN은 설정하지 않음.
-  2. TRANSCRIPT_FILE이 있으면 Claude가 Read 도구로 TRANSCRIPT_FILE을 직접 읽는다 (bash grep 금지 — D-05).
-  3. 기본 스캔 범위: 최근 20-30 메시지 (D-07). 사용자가 "deep" 또는 `analyze deep` 토큰을 명시하면 전체 transcript 또는 최근 100 메시지로 확장.
-  4. D-08 신호를 탐색하여 4 카테고리 분류:
-     - `frustration`: "왜", "안 돼", "다시", "틀렸", "I didn't ask", "That's wrong" 등 사용자 불만 표현
-     - `correction`: 사용자가 assistant의 이전 행동을 되돌리거나 재지시하는 패턴
-     - `repeated`: 같은 종류의 실수 또는 지시가 2회 이상 반복
-     - `validated-success`: 사용자가 명시적으로 수용·확인한 non-obvious assistant 선택
-  5. 결과를 D-03 스키마 표로 출력:
+  1. If TRANSCRIPT_FILE is empty, exit immediately: `echo "No transcript found — skipping Conversation Analyzer." >&2`, then proceed to next lens or finish without appending a result for this lens. ANALYZE_LENS_RAN is not set.
+  2. If TRANSCRIPT_FILE exists, Claude reads it directly with the Read tool (bash grep is forbidden — D-05).
+  3. Default scan range: most recent 20-30 messages (D-07). If user specifies "deep" or `analyze deep` token, expand to full transcript or most recent 100 messages.
+  4. Scan for D-08 signals and classify into 4 categories:
+     - `frustration`: user dissatisfaction expressions such as "why", "doesn't work", "again", "wrong", "I didn't ask", "That's wrong"
+     - `correction`: patterns where user reverts or re-directs the assistant's prior action
+     - `repeated`: same type of mistake or instruction occurring 2 or more times
+     - `validated-success`: non-obvious assistant choices explicitly accepted or confirmed by the user
+  5. Output results as a D-03 schema table:
      `| category | tool/event | pattern | context | severity |`
-     severity: high(즉각 수정 필요) / medium(주의) / low(참고용)
-  6. high/medium severity 항목 기반 Draft sg-rules 섹션 생성. 각 rule: `warn-{slug}` 또는 `block-{slug}` — Event: {tool}, Pattern: `{regex}`, Severity: {level} 형식.
-  7. Action Items 확정 후 append.
-  8. D-02 auto-suggest: `analyze` lens를 명시 선택한 경우, 이 sub-block 내부에서 rule draft를 포함하므로 Step 6의 별도 auto-suggest와 중복되지 않도록 `ANALYZE_LENS_RAN=true` 플래그를 설정.
+     severity: high (requires immediate fix) / medium (caution) / low (informational)
+  6. Generate Draft sg-rules section based on high/medium severity items. Each rule format: `warn-{slug}` or `block-{slug}` — Event: {tool}, Pattern: `{regex}`, Severity: {level}.
+  7. Confirm Action Items and append.
+  8. D-02 auto-suggest: when `analyze` lens is explicitly selected, rule drafts are included inside this sub-block; set the `ANALYZE_LENS_RAN=true` flag to avoid duplicating Step 6's separate auto-suggest.
 
 ```bash
 ANALYZE_LENS_RAN=true
@@ -280,7 +280,7 @@ ANALYZE_LENS_RAN=true
 Write the assembled lens section (header `## Lens: {name}{run-suffix}` + `_Captured: ${NOW_ISO}_` italic line + lens-specific subheadings + Action Items table) to `.planning/lessons/${PHASE_PAD}-${TODAY}.md` using a single `>>` redirect block (D-21). Create the directory if missing. Emit `lessons file: {path} +N lines` to stderr for verification.
 
 ```bash
-# UTC 기준 ISO 날짜 (D-17)
+# UTC ISO date (D-17)
 TODAY=$(date -u +%Y-%m-%d)
 NOW_ISO=$(date -u +%Y-%m-%dT%H:%M:%SZ)
 LESSONS_DIR=".planning/lessons"
@@ -288,7 +288,7 @@ LESSONS_FILE="${LESSONS_DIR}/${PHASE_PAD}-${TODAY}.md"
 
 mkdir -p "$LESSONS_DIR"
 
-# Lens English name 결정 (D-13 라벨과 일치)
+# Determine Lens English name (matches D-13 labels)
 case "$LENS_CODE" in
   ssc)     LENS_NAME="Start/Stop/Continue" ;;
   4ls)     LENS_NAME="4Ls" ;;
@@ -298,8 +298,8 @@ case "$LENS_CODE" in
   analyze) LENS_NAME="Conversation Analyzer" ;;
 esac
 
-# D-20: 같은 lens 중복 실행 disambiguation
-# 파일이 있으면 같은 lens 헤더 개수를 세서 (run N) 접미사 결정
+# D-20: same-lens duplicate-run disambiguation
+# if file exists, count same lens headers to determine (run N) suffix
 RUN_SUFFIX=""
 if [ -f "$LESSONS_FILE" ]; then
   COUNT=$(grep -cE "^## Lens: ${LENS_NAME}( \(run [0-9]+\))?\$" "$LESSONS_FILE" 2>/dev/null)
@@ -311,21 +311,21 @@ fi
 
 LENS_HEADER="## Lens: ${LENS_NAME}${RUN_SUFFIX}"
 
-# D-21: append 전 라인 카운트
+# D-21: line count before append
 if [ -f "$LESSONS_FILE" ]; then
   BEFORE=$(wc -l < "$LESSONS_FILE" | tr -d ' ')
 else
   BEFORE=0
 fi
 
-# D-21: 새 파일이면 최상위 헤더 + 빈 줄 1개 먼저 작성
+# D-21: if new file, write top-level header + one blank line first
 if [ ! -f "$LESSONS_FILE" ]; then
   {
     printf '# Lessons: Phase %s (%s)\n\n' "$PHASE_RAW" "$TODAY"
   } > "$LESSONS_FILE"
 fi
 
-# D-19/D-21: lens 섹션 전체를 한 번에 >> append (partial-write 회피)
+# D-19/D-21: >> append entire lens section in one shot (avoid partial-write)
 #
 # IMPORTANT — Claude execution contract:
 # Before running this block, Claude MUST replace the BODY_PRINTF placeholder
@@ -367,12 +367,12 @@ echo "lessons file: ${LESSONS_FILE} +${DELTA} lines" >&2
 After the multi-lens loop completes, auto-suggest sg-rule drafts once:
 
 ```bash
-# D-02: 모든 lens 완료 후 sg-rule draft auto-suggest (1회만)
-# analyze lens가 이미 rule draft를 생성했으면 별도 출력 없이 reminder만.
+# D-02: sg-rule draft auto-suggest after all lenses complete (once only)
+# if analyze lens already generated rule drafts, emit only a reminder with no separate output.
 if [ "${ANALYZE_LENS_RAN:-false}" = "true" ]; then
   echo "sg-rule drafts were included in the Conversation Analyzer output above." >&2
 else
-  # Claude: high/medium severity 분석 결과 기반 또는 Action Items 기반 rule draft 제안
+  # Claude: suggest rule drafts based on high/medium severity findings or Action Items
   echo "[Auto-suggest] Review the Action Items above and consider creating sg-rules for repeated patterns." >&2
 fi
 ```
@@ -380,7 +380,7 @@ fi
 After the auto-suggest block completes, record the successful retrospective in HANDOFF.md (success-based — only runs when at least one lens has been written):
 
 ```bash
-# HANDOFF.md 기록 — 모든 lens 완료 + lessons 저장 확인 후 (success-based, D-04)
+# HANDOFF.md record — after all lenses complete + lessons saved confirmed (success-based, D-04)
 HANDOFF_FILE=".planning/HANDOFF.md"
 if [ ! -f "$HANDOFF_FILE" ] || ! grep -q "Timestamp.*Phase.*From.*To.*Plan Hash" "$HANDOFF_FILE" 2>/dev/null; then
   mkdir -p "$(dirname "$HANDOFF_FILE")"

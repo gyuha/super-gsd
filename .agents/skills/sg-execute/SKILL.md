@@ -1,8 +1,15 @@
 ---
 name: sg-execute
-description: PLAN.md를 읽고 phase 태스크를 순차 실행 — Superpowers 없이 직접 구현 모드
-argument-hint: "[phase] - optional. STATE.md 현재 phase 사용."
+description: Read PLAN.md and execute phase tasks sequentially — direct implementation mode without Superpowers
+argument-hint: "[phase] - optional. Defaults to STATE.md current phase."
 ---
+
+<language>
+Detect the user's input language and respond in that language throughout this skill's output.
+- Korean input → respond in Korean
+- English input → respond in English
+- Mixed input → match the dominant language
+</language>
 
 <objective>
 Package the current phase's PLAN.md, extract goal and success criteria, then directly execute each task in order. Superpowers:executing-plans is not available on this platform — all implementation is done inline.
@@ -10,9 +17,9 @@ Package the current phase's PLAN.md, extract goal and success criteria, then dir
 
 <constraints>
 ## Platform Constraints (Codex / Gemini CLI / Antigravity CLI)
-- Superpowers 연동 불가: superpowers:executing-plans 스킬을 사용할 수 없습니다. 직접 구현 모드로 실행됩니다.
-- SubagentStop 미지원: 단계 종료 시 자동 트리거 없음. 완료 후 $sg-review를 수동 실행하세요.
-- AskUserQuestion 미지원
+- Superpowers integration unavailable: superpowers:executing-plans skill cannot be used. Runs in direct implementation mode.
+- SubagentStop not supported: no automatic trigger on stage completion. Run $sg-review manually after completion.
+- AskUserQuestion not supported
 </constraints>
 
 <execution_context>
@@ -20,7 +27,7 @@ Reads .planning/STATE.md, .planning/ROADMAP.md, .planning/REQUIREMENTS.md, .plan
 </execution_context>
 
 <process>
-0. **Lessons 리마인더.** .planning/lessons/ 에 파일이 있으면 weighted top-N 한 줄 요약을 출력한다:
+0. **Lessons reminder.** If files exist in .planning/lessons/, output a weighted top-N one-line summary:
    ```bash
    if ls .planning/lessons/*.md 2>/dev/null | grep -q .; then
      echo "=== Top Recurring Patterns (reminder) ==="
@@ -90,7 +97,7 @@ Reads .planning/STATE.md, .planning/ROADMAP.md, .planning/REQUIREMENTS.md, .plan
    fi
    ```
 
-7.5. **HANDOFF.md 자동 초기화.**
+7.5. **HANDOFF.md auto-initialization.**
    ```bash
    HANDOFF_FILE=".planning/HANDOFF.md"
    if [ ! -f "$HANDOFF_FILE" ] || ! grep -q "Timestamp.*Phase.*From.*To.*Plan Hash" "$HANDOFF_FILE" 2>/dev/null; then
@@ -99,38 +106,38 @@ Reads .planning/STATE.md, .planning/ROADMAP.md, .planning/REQUIREMENTS.md, .plan
    fi
    ```
 
-9. **직접 구현 모드 실행.**
+9. **Direct implementation mode execution.**
 
-   수집한 PLAN.md 내용을 표시한 뒤, 아래 지침에 따라 각 task를 순차적으로 직접 실행한다:
+   Display the collected PLAN.md content, then execute each task sequentially according to the instructions below:
 
    ```
-   ## 직접 구현 지침
+   ## Direct Implementation Instructions
 
-   Phase <PHASE_NUM> (<PHASE_NAME>) 실행을 시작합니다.
+   Starting execution of Phase <PHASE_NUM> (<PHASE_NAME>).
    Goal: <GOAL>
 
    Success Criteria:
    <SC_TEXT>
 
-   --- 실행 순서 ---
-   각 PLAN.md의 task를 wave 순서대로 순차 실행합니다:
+   --- Execution order ---
+   Execute each task from PLAN.md sequentially in wave order:
 
-   1. 각 task의 <files>에 명시된 파일을 생성하거나 수정합니다
-   2. <action>의 지침을 따라 구현합니다
-   3. <verify>의 자동화 명령을 실행해 검증합니다
-   4. <done>의 완료 조건이 충족됐는지 확인합니다
-   5. 모든 task 완료 후 성공 기준을 재확인합니다
+   1. Create or modify the files specified in each task's <files>
+   2. Implement following the instructions in <action>
+   3. Run the automated commands in <verify> to validate
+   4. Confirm the completion conditions in <done> are satisfied
+   5. Re-verify success criteria after all tasks complete
 
-   checkpoint:human-verify 태스크는 멈추고 사용자 확인을 요청합니다.
-   checkpoint:decision 태스크는 선택지를 텍스트로 출력하고 입력을 기다립니다.
+   checkpoint:human-verify tasks stop and request user confirmation.
+   checkpoint:decision tasks output the choices as text and wait for input.
    ```
 
-   모든 task 완료 후:
+   After all tasks complete:
    ```
-   Phase <PHASE_NUM> 실행 완료. 다음 단계: /super-gsd:sg-review
+   Phase <PHASE_NUM> execution complete. Next step: /super-gsd:sg-review
    ```
 
-9.5. **HANDOFF.md 행 append — 모든 task 완료 후에만 기록.**
+9.5. **HANDOFF.md row append — record only after all tasks are complete.**
    ```bash
    TS=$(date -u +%Y-%m-%dT%H:%M:%SZ)
    Read .planning/HANDOFF.md, then extract the To column (5th pipe-delimited field) from the last row starting with "| " followed by a 4-digit year. Set FROM_STAGE (default "init" if empty).
@@ -141,9 +148,9 @@ Reads .planning/STATE.md, .planning/ROADMAP.md, .planning/REQUIREMENTS.md, .plan
 </process>
 
 <success_criteria>
-1. superpowers:executing-plans Skill 호출 없음 — 모든 task를 직접 실행한다.
-2. HANDOFF.md에 `execute` 행이 기록된다.
-3. 동일 plan hash로 재실행 시 idempotency 메시지를 출력하고 종료한다.
-4. Platform Constraints 블록에 Superpowers 연동 불가가 명시된다.
-5. 모든 task 완료 후 /super-gsd:sg-review 수동 실행을 안내한다.
+1. No superpowers:executing-plans Skill invocation — all tasks are executed directly.
+2. An `execute` row is recorded in HANDOFF.md.
+3. On re-execution with the same plan hash, outputs an idempotency message and exits.
+4. The Platform Constraints block explicitly states Superpowers integration is unavailable.
+5. After all tasks complete, guides user to run /super-gsd:sg-review manually.
 </success_criteria>

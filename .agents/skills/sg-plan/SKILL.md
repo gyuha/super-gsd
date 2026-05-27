@@ -1,8 +1,15 @@
 ---
 name: sg-plan
-description: 컨텍스트 수집 후 GSD phase 계획 생성 — gsd-discuss-phase → gsd-plan-phase 체인 실행 (GSD 없으면 prose 폴백)
-argument-hint: "[phase] - optional. STATE.md 현재 phase 사용."
+description: Collect context then generate GSD phase plan — gsd-discuss-phase → gsd-plan-phase chain (falls back to prose if GSD not installed)
+argument-hint: "[phase] - optional. Defaults to STATE.md current phase."
 ---
+
+<language>
+Detect the user's input language and respond in that language throughout this skill's output.
+- Korean input → respond in Korean
+- English input → respond in English
+- Mixed input → match the dominant language
+</language>
 
 <objective>
 Resolve the target phase, inject prior lessons, then execute a 2-step chain: gsd-discuss-phase (context gathering) → gsd-plan-phase (plan creation). When GSD is not installed, run manual planning prose fallback.
@@ -10,9 +17,9 @@ Resolve the target phase, inject prior lessons, then execute a 2-step chain: gsd
 
 <constraints>
 ## Platform Constraints (Codex / Gemini CLI / Antigravity CLI)
-- Superpowers 연동 불가: Claude Code 전용 도구
-- SubagentStop 미지원: 단계 종료 시 자동 트리거 없음
-- AskUserQuestion 미지원: 필요한 입력은 arguments로 전달
+- Superpowers integration unavailable: Claude Code-only tool
+- SubagentStop not supported: no automatic trigger on stage completion
+- AskUserQuestion not supported: required input must be passed via arguments
 </constraints>
 
 <execution_context>
@@ -20,7 +27,7 @@ Self-contained. Reads .planning/STATE.md for phase resolution when no argument p
 </execution_context>
 
 <process>
-0. **Prior lessons 주입.** .planning/lessons/ 아래 Markdown 파일이 있으면 내용을 먼저 출력한다:
+0. **Prior lessons injection.** If Markdown files exist under .planning/lessons/, output their contents first:
    ```bash
    if ls .planning/lessons/*.md 2>/dev/null | grep -q .; then
      echo "=== Prior Lessons (auto-injected) ==="
@@ -37,7 +44,7 @@ Self-contained. Reads .planning/STATE.md for phase resolution when no argument p
      echo "=== End of Lessons ==="
    fi
    ```
-   파일이 없으면 조용히 건너뛴다.
+   If no files exist, skip silently.
 
 1. **Resolve phase.**
    ```bash
@@ -52,7 +59,7 @@ Self-contained. Reads .planning/STATE.md for phase resolution when no argument p
    fi
    ```
 
-1.5. **Visual Companion 판단.** Phase goal에 UI 관련 키워드가 있을 때만 실행한다:
+1.5. **Visual Companion check.** Execute only when the Phase goal contains UI-related keywords:
    ```bash
    PHASE_SECTION_RAW=$(gsd-sdk query roadmap.get-phase "$PHASE_NUM" --pick section 2>/dev/null)
    PHASE_SECTION=$(echo "$PHASE_SECTION_RAW" | node -e 'let s="";process.stdin.on("data",d=>s+=d).on("end",()=>{try{process.stdout.write(JSON.parse(s.trim()))}catch(e){}})' 2>/dev/null || echo "$PHASE_SECTION_RAW")
@@ -61,33 +68,33 @@ Self-contained. Reads .planning/STATE.md for phase resolution when no argument p
      UI_DETECTED="1"
    fi
    ```
-   **UI 키워드가 없거나 PHASE_SECTION이 비어 있으면** 이 단계를 조용히 건너뛰고 Step 2로 이동한다.
+   **If no UI keywords or PHASE_SECTION is empty**, skip this step silently and move to Step 2.
 
-   **UI 키워드가 감지되면** 아래 질문을 출력하고 사용자 응답을 기다린다 (AskUserQuestion 미지원 플랫폼 폴백):
+   **If UI keywords are detected**, output the following question and wait for user response (AskUserQuestion-unavailable platform fallback):
    ```
-   [sg-plan] UI 관련 phase가 감지됩니다. Visual Companion 설계를 진행하겠습니까?
+   [sg-plan] A UI-related phase has been detected. Would you like to proceed with Visual Companion design?
 
-   1. Visual Companion 포함 — superpowers:brainstorming을 먼저 실행합니다.
-   2. UI 없음 — 기존 흐름을 진행합니다.
+   1. Include Visual Companion — runs superpowers:brainstorming first.
+   2. No UI — proceed with the existing flow.
 
-   답변을 입력하세요 (1 또는 2):
+   Enter your choice (1 or 2):
    ```
 
-   사용자가 **"1" 또는 "Visual Companion 포함"** 을 선택하면 brainstorming Agent를 실행하고 완료를 기다린다.
+   If the user selects **"1" or "Include Visual Companion"**, run the brainstorming Agent and wait for completion.
    **Before calling Agent, replace `<PHASE_NUM>` and `<PHASE_SECTION>` with actual resolved values:**
    ```
    Agent(
      description="superpowers:brainstorming for Phase <PHASE_NUM> UI design",
-     prompt="Do NOT invoke writing-plans Skill after brainstorming completes. Your task is to run the superpowers brainstorming skill for Phase <PHASE_NUM> UI design. The project root is the current working directory. Phase context:\n\n<PHASE_SECTION>\n\nInvoke Skill(skill='superpowers:brainstorming', args='Phase <PHASE_NUM> UI 설계를 진행합니다. 위 컨텍스트를 참고하십시오. 중요: brainstorming 완료 후 writing-plans Skill을 호출하지 마십시오. brainstorming 대화만 진행하고 종료하십시오.') and follow its instructions to completion.
+     prompt="Do NOT invoke writing-plans Skill after brainstorming completes. Your task is to run the superpowers brainstorming skill for Phase <PHASE_NUM> UI design. The project root is the current working directory. Phase context:\n\n<PHASE_SECTION>\n\nInvoke Skill(skill='superpowers:brainstorming', args='Proceed with UI design for Phase <PHASE_NUM>. Refer to the context above. Important: do not invoke the writing-plans Skill after brainstorming completes. Only conduct the brainstorming conversation and then exit.') and follow its instructions to completion.
 Do NOT invoke writing-plans after brainstorming finishes.",
      subagent_type="general-purpose"
    )
    ```
-   Agent가 에러로 종료되면: `[sg-plan] brainstorming 실패, 기존 흐름으로 계속...` 출력 후 Step 2로 이동한다 (중단 없음).
+   If Agent exits with error: output `[sg-plan] brainstorming failed, continuing with existing flow...` then move to Step 2 (no interruption).
 
-   사용자가 **"2" 또는 "UI 없음"** 을 선택하면: `[sg-plan] UI 설계 없이 진행합니다.` 출력 후 Step 2로 이동한다.
+   If the user selects **"2" or "No UI"**: output `[sg-plan] Proceeding without UI design.` then move to Step 2.
 
-2. **GSD 설치 여부 확인 및 경로 분기.**
+2. **Check GSD installation and branch path.**
 
    ```bash
    if command -v gsd-sdk >/dev/null 2>&1 || [ -d "$HOME/.claude/get-shit-done" ]; then
@@ -97,10 +104,10 @@ Do NOT invoke writing-plans after brainstorming finishes.",
    fi
    ```
 
-   **GSD 있는 경우 (주 경로):**
+   **With GSD (main path):**
 
    2a. Print: `[sg-plan] Step 1/2: Gathering context via gsd-discuss-phase...`
-       gsd-discuss-phase Agent 실행 (서브에이전트):
+       Run gsd-discuss-phase Agent (subagent):
        ```
        Agent(
          description="gsd-discuss-phase for Phase <PHASE_NUM>",
@@ -109,7 +116,7 @@ Do NOT invoke writing-plans after brainstorming finishes.",
        )
        ```
 
-   2b. HANDOFF.md에 gsd-plan 행 idempotent 기록:
+   2b. Idempotent record of gsd-plan row in HANDOFF.md:
        ```bash
        HANDOFF_FILE=".planning/HANDOFF.md"
        if [ ! -f "$HANDOFF_FILE" ] || ! grep -q "Timestamp.*Phase.*From.*To.*Plan Hash" "$HANDOFF_FILE" 2>/dev/null; then
@@ -133,7 +140,7 @@ Do NOT invoke writing-plans after brainstorming finishes.",
        Skill(skill="gsd-plan-phase", args="<PHASE_NUM>")
        ```
 
-   **GSD 없는 경우 (prose 폴백):**
+   **Without GSD (prose fallback):**
 
    ```
    [sg-plan] GSD not found. Running manual planning mode.
@@ -154,9 +161,9 @@ Do NOT invoke writing-plans after brainstorming finishes.",
 </process>
 
 <success_criteria>
-1. PHASE_NUM이 비어 있으면 명시적 오류 메시지를 출력하고 종료한다.
-2. GSD 있으면 gsd-discuss-phase Agent → gsd-plan-phase Skill 체인을 실행한다.
-3. GSD 없으면 prose 폴백으로 PLAN.md 생성 절차를 안내하고 직접 실행한다.
-4. Prior lessons가 있으면 Step 0에서 먼저 출력된다.
-5. HANDOFF.md에 gsd-plan 행이 기록된다 (GSD 경로 시).
+1. If PHASE_NUM is empty, output an explicit error message and exit.
+2. With GSD, run the gsd-discuss-phase Agent → gsd-plan-phase Skill chain.
+3. Without GSD, guide through the PLAN.md creation procedure via prose fallback and execute directly.
+4. If prior lessons exist, they are output first in Step 0.
+5. A gsd-plan row is recorded in HANDOFF.md (on the GSD path).
 </success_criteria>

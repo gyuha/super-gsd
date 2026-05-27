@@ -4,15 +4,22 @@ description: Run a structured retrospective on a GSD phase with one of six lense
 argument-hint: "[phase] [lens] - e.g. '14 ssc' or '14 ssc dspm'. lens: ssc|4ls|dspm|sail|5why|analyze"
 ---
 
+<language>
+Detect the user's input language and respond in that language throughout this skill's output.
+- Korean input → respond in Korean
+- English input → respond in English
+- Mixed input → match the dominant language
+</language>
+
 <objective>
 Run a structured retrospective on a GSD phase. Auto-collect phase artifacts and git context. Let the user pick one or more of six lenses — Start/Stop/Continue (ssc), 4Ls (4ls), Decisions/Surprises/Patterns/Mistakes (dspm), Sailboat (sail), Five Whys (5why), Conversation Analyzer (analyze) — via numbered list fallback (no AskUserQuestion). Facilitate each lens (artifact-grounded for ssc/4ls/dspm/sail; user-driven for 5why; transcript-native for analyze), then append all results sequentially to `.planning/lessons/{NN}-{YYYY-MM-DD}.md`.
 </objective>
 
 <constraints>
 ## Platform Constraints (Codex / Gemini CLI / Antigravity CLI)
-- AskUserQuestion 미지원: 렌즈 선택은 numbered list 텍스트 출력 + 자유 입력으로 처리한다
-- SubagentStop 미지원: 단계 종료 시 자동 트리거 없음
-- Superpowers 연동 없음: 이 스킬은 완전 독립 실행 가능
+- AskUserQuestion not supported: lens selection is handled via numbered list text output + free input
+- SubagentStop not supported: no automatic trigger on stage completion
+- Superpowers integration unavailable: this skill is fully self-contained
 </constraints>
 
 <execution_context>
@@ -94,7 +101,7 @@ fi
 If `LENS_CODE` is empty, output the following numbered list and wait for the user's response:
 
 ```
-렌즈를 선택하세요:
+Select a lens:
 1) ssc     — Start/Stop/Continue
 2) 4ls     — 4Ls (Like/Learned/Lacked/Longed for)
 3) dspm    — Decisions/Surprises/Patterns/Mistakes
@@ -102,13 +109,13 @@ If `LENS_CODE` is empty, output the following numbered list and wait for the use
 5) 5why    — Five Whys
 6) analyze — Conversation Analyzer
 
-번호 또는 코드로 입력하세요. 복수 선택: "1 3" 또는 "ssc dspm"
+Enter number or code. Multiple: "1 3" or "ssc dspm"
 ```
 
 Parse the user's response: map numbers to codes (1→ssc, 2→4ls, 3→dspm, 4→sail, 5→5why, 6→analyze), handle space-separated inputs for multiple lenses, and build `LENS_CODES_ARRAY`.
 
 ```bash
-# 숫자 입력 매핑
+# Number input mapping
 map_num_to_code() {
   case "$1" in
     1) echo "ssc"     ;;
@@ -155,7 +162,7 @@ echo "Collected artifacts:" >&2
 [ -n "$SUMMARY_FILES" ] && printf '  %s\n' $SUMMARY_FILES >&2
 ```
 
-**Step 3b — Collect session transcript (analyze lens용).**
+**Step 3b — Collect session transcript (for analyze lens).**
 
 ```bash
 PROJECT_SLUG=$(pwd | tr '/' '-')
@@ -232,16 +239,16 @@ Common flow for ssc/4ls/dspm/sail lenses:
 **Sub-block `5why` (Five Whys):**
 - Fixed subheadings: `### Problem Statement` / `### Why 1` ~ `### Why 5` / `### Root Cause`.
 - Facilitation (user-driven, text output — no AskUserQuestion):
-  1. Output: `[Five Whys — Problem] 분석할 문제를 설명하세요. (공백이면 phase artifacts에서 제안합니다)` and wait for user response.
-  2. Output: `[Why 1] [problem statement]이 왜 발생했나요?` and wait.
-  3. Output: `[Why 2] [Why 1 answer]이 왜 발생했나요?` and wait.
-  4. Output: `[Why 3] [Why 2 answer]이 왜 발생했나요?` and wait.
-  5. Output: `[Why 4] [Why 3 answer]이 왜 발생했나요?` and wait.
-  6. Output: `[Why 5] [Why 4 answer]이 왜 발생했나요?` and wait.
+  1. Output: `[Five Whys — Problem] Describe the problem to analyze. (If empty, will suggest from phase artifacts.)` and wait for user response.
+  2. Output: `[Why 1] Why did [problem statement] happen?` and wait.
+  3. Output: `[Why 2] Why did [Why 1 answer] happen?` and wait.
+  4. Output: `[Why 3] Why did [Why 2 answer] happen?` and wait.
+  5. Output: `[Why 4] Why did [Why 3 answer] happen?` and wait.
+  6. Output: `[Why 5] Why did [Why 4 answer] happen?` and wait.
   7. Derive Root Cause + confirm Action Items (text output) then append.
 
 **Sub-block `analyze` (Conversation Analyzer):**
-- Fixed subheadings: `### Analysis Findings` (표) / `### Draft sg-rules` / `### Action Items`.
+- Fixed subheadings: `### Analysis Findings` (table) / `### Draft sg-rules` / `### Action Items`.
 - Facilitation:
   1. If TRANSCRIPT_FILE is empty: `echo "No transcript found — skipping Conversation Analyzer."` and skip this lens.
   2. Read TRANSCRIPT_FILE using the Read tool (not bash grep).
@@ -453,7 +460,7 @@ _Captured: {ISO-8601 UTC}_
 
 | category | tool/event | pattern | context | severity |
 |----------|------------|---------|---------|----------|
-| frustration | Bash | `rm -rf` | User said "왜 삭제해" | high |
+| frustration | Bash | `rm -rf` | User said "why delete" | high |
 
 ### Draft sg-rules
 
@@ -468,11 +475,11 @@ _Captured: {ISO-8601 UTC}_
 </lens_templates>
 
 <success_criteria>
-1. Phase argument는 숫자여야 하며, 해당 `.planning/phases/{NN}-*/` 디렉토리가 존재해야 한다.
-2. 두 번째 argument가 `ssc`/`4ls`/`dspm`/`sail`/`5why`/`analyze`이면 numbered list 출력을 건너뛰고 바로 실행한다.
-3. Argument가 없거나 인식 불가 시 numbered list를 출력하고 사용자 입력을 기다린다. AskUserQuestion을 사용하지 않는다.
-4. 각 lens 출력: `## Lens: {name}` 헤더 + `_Captured: {ISO}_` + 렌즈별 고정 서브헤딩 + `### Action Items` 3-컬럼 테이블.
-5. 결과는 `.planning/lessons/{NN}-{YYYY-MM-DD}.md`에 append된다.
-6. DSPM lens는 phase artifacts + `git log`/`git diff`만 참조한다. transcript 스캔 없음.
-7. analyze lens는 TRANSCRIPT_FILE이 없으면 gracefully 건너뛴다.
+1. The Phase argument must be a number, and the corresponding `.planning/phases/{NN}-*/` directory must exist.
+2. If the second argument is `ssc`/`4ls`/`dspm`/`sail`/`5why`/`analyze`, skip the numbered list output and execute immediately.
+3. If no argument or unrecognized input, output the numbered list and wait for user input. Do not use AskUserQuestion.
+4. Each lens output: `## Lens: {name}` header + `_Captured: {ISO}_` + lens-specific fixed subheadings + `### Action Items` 3-column table.
+5. Results are appended to `.planning/lessons/{NN}-{YYYY-MM-DD}.md`.
+6. DSPM lens references only phase artifacts + `git log`/`git diff`. No transcript scan.
+7. The analyze lens gracefully skips if TRANSCRIPT_FILE is not found.
 </success_criteria>

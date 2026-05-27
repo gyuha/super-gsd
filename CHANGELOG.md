@@ -2,6 +2,20 @@
 
 All notable changes to `super-gsd` are documented in this file. Format follows [Keep a Changelog](https://keepachangelog.com/).
 
+## [0.0.41] - 2026-05-27
+
+### Changed
+
+- sg-next/sg-status: 스캔백 이후 enum 재검증 추가 — 손상된 HANDOFF.md 데이터가 FROM_STAGE로 전파되지 않고 init으로 폴백 (CR-01)
+- sg-status/.agents/sg-status: sg-next 복구 블록을 else{} 내부로 이동하여 D-07 구조 일치 (WR-01)
+- skills/sg-next: STAGE_DISPLAY case에 `*)` 폴백 arm 추가 — sg-status와 D-07 패리티 (WR-02)
+- sg-status/.agents/sg-status: 스캔백 경로에서 TS를 복구된 실제 행에서 읽도록 수정 (WR-03)
+- .agents/sg-learn: sg-retro/SKILL.md 부재 시 $sg-setup 안내 메시지 추가 (IN-01)
+- .agents/skills/sg-next, sg-learn: Codex/Gemini 플랫폼 지원 — sg-next 및 sg-learn이 .agents/ 에 부재하여 sg-review 이후 워크플로우가 단절되던 문제 해결
+- sg-next/sg-status: sg-next 체인 부패(sg-next→sg-next 순환) 감지 및 이전 실제 stage로 복구
+- sg-next: FROM_STAGE가 To 컬럼($5)을 읽던 버그 수정 — 이제 이미 해석된 STAGE_RAW 사용
+- 전체 19개 skills/ SKILL.md 한→영 번역 완료 + `<language>` 자동 감지 지시문 삽입
+
 ## [0.0.40] - 2026-05-26
 
 ### Changed (v2.6 Codex/Gemini 설치 UX 개선 — milestone complete)

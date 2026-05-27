@@ -13,7 +13,7 @@ This command is self-contained — no external workflow files imported. Reads .p
 </execution_context>
 
 <process>
-0. **Lessons reminder.** .planning/lessons/ 에 파일이 있으면 weighted top-N 한 줄 요약을 출력한다:
+0. **Lessons reminder.** If files exist in .planning/lessons/, print a weighted top-N one-line summary:
    ```bash
    if ls .planning/lessons/*.md 2>/dev/null | grep -q .; then
      echo "=== Top Recurring Patterns (reminder) ==="
@@ -28,7 +28,7 @@ This command is self-contained — no external workflow files imported. Reads .p
      echo "============================================"
    fi
    ```
-   파일이 없으면 조용히 건너뛴다.
+   If no files exist, skip silently.
 
 1. **Resolve phase.** If `$ARGUMENTS` is non-empty, use it as the phase identifier. Otherwise, extract the current phase from `.planning/STATE.md` by grepping the `## Current Position` section for `Phase: <N>`:
    ```bash
@@ -107,7 +107,7 @@ This command is self-contained — no external workflow files imported. Reads .p
    ```
    If the Plan Hash differs from the recorded one, a new row is permitted (PLAN.md changed since the last handoff).
 
-7.5. **HANDOFF.md 자동 초기화.** 파일이 없거나 헤더 행이 없으면 파일을 생성한다:
+7.5. **HANDOFF.md auto-initialization.** Create the file if it is missing or has no header row:
    ```bash
    HANDOFF_FILE=".planning/HANDOFF.md"
    if [ ! -f "$HANDOFF_FILE" ] || ! grep -q "Timestamp.*Phase.*From.*To.*Plan Hash" "$HANDOFF_FILE" 2>/dev/null; then
@@ -116,28 +116,28 @@ This command is self-contained — no external workflow files imported. Reads .p
    fi
    ```
 
-8. **Append HANDOFF.md row (변수 계산).** HANDOFF_TO는 Step 8.5 완료 후 결정되므로, 이 단계에서는 메타 변수만 계산한다.
+8. **Append HANDOFF.md row (variable computation).** HANDOFF_TO is determined after Step 8.5 completes, so only meta variables are computed in this step.
    Read .planning/HANDOFF.md, then extract the To column (5th pipe-delimited field) from the last row starting with "| " followed by a 4-digit year. Set FROM_STAGE (default "init" if empty).
    ```bash
    TS=$(date -u +%Y-%m-%dT%H:%M:%SZ)
    PHASE_SLUG=$(basename "$PHASE_DIR")
    ```
 
-8.5. **PLAN.md 의존성 분석.** 모든 PLAN.md에서 wave/depends_on/files_modified를 파싱하여 독립 병렬 그룹(PARALLEL_GROUPS)을 계산하고 JSON 파일로 저장한다.
+8.5. **PLAN.md dependency analysis.** Parse wave/depends_on/files_modified from all PLAN.md files, compute independent parallel groups (PARALLEL_GROUPS), and save to a JSON file.
 
    ```bash
    PARALLEL_GROUPS=""
    GROUP_COUNT=0
    GROUPS_JSON_FILE="$PHASE_DIR/parallel_groups.json"
 
-   # wave 필드 존재 여부 확인 (하나라도 있으면 분석 진행)
+   # Check if wave field exists (proceed if at least one is found)
    HAS_WAVE=$(grep -rl '^wave:' "$PHASE_DIR"/*-PLAN.md 2>/dev/null | head -1)
 
    if [ -z "$HAS_WAVE" ]; then
-     echo "[TE-05a] wave 필드 없음 — 기존 순차 실행 경로 유지. v1.3 이전 동작 보존."
+     echo "[TE-05a] No wave field — keeping existing sequential execution path. Preserving v1.3 behavior."
    else
-     # 각 PLAN.md에서 wave 번호와 files_modified 추출
-     # 결과: "wave|planfile|file1,file2,..."
+     # Extract wave number and files_modified from each PLAN.md
+     # Result: "wave|planfile|file1,file2,..."
      PLAN_WAVE_FILES=""
      for PLAN_FILE in "$PHASE_DIR"/*-PLAN.md; do
        PLAN_BASE=$(basename "$PLAN_FILE")
@@ -152,11 +152,11 @@ This command is self-contained — no external workflow files imported. Reads .p
      done
      PLAN_WAVE_FILES=$(echo "$PLAN_WAVE_FILES" | grep -v '^$')
 
-     # wave 값 목록 (중복 제거, 정렬)
+     # Wave value list (deduplicated, sorted)
      WAVE_NUMS=$(echo "$PLAN_WAVE_FILES" | awk -F'|' '{print $1}' | sort -n | uniq)
 
-     # 각 wave별로 plan 목록과 files 수집
-     # files_modified 교집합이 있는 plan은 같은 그룹으로 강제 병합
+     # Collect plan list and files per wave
+     # Plans with overlapping files_modified are force-merged into the same group
      GROUP_COUNT=0
      GROUPS_JSON="["
      FIRST_GROUP=1
@@ -224,16 +224,16 @@ This command is self-contained — no external workflow files imported. Reads .p
      GROUPS_JSON="$GROUPS_JSON]"
 
      if [ "$GROUP_COUNT" -lt 2 ]; then
-       echo "병렬 그룹 감지 안됨 — 기존 순차 실행"
+       echo "No parallel groups detected — using existing sequential execution"
        rm -f "$GROUPS_JSON_FILE"
      else
        PARALLEL_GROUPS="$GROUPS_JSON"
        printf '%s\n' "$GROUPS_JSON" > "$GROUPS_JSON_FILE"
-       echo "병렬 그룹 ${GROUP_COUNT}개 감지 — parallel_groups.json 저장 완료"
+       echo "${GROUP_COUNT} parallel group(s) detected — parallel_groups.json saved"
      fi
    fi
 
-   # HANDOFF_TO 결정 및 HANDOFF.md 기록
+   # Determine HANDOFF_TO and record HANDOFF.md
    if [ -n "$PARALLEL_GROUPS" ]; then
      HANDOFF_TO="parallel"
    else
@@ -244,13 +244,13 @@ This command is self-contained — no external workflow files imported. Reads .p
 
 9. **Build prompt and invoke Skill.**
 
-   **라우팅 분기.** Step 8.5에서 계산된 `PARALLEL_GROUPS` 변수를 확인한다:
-   - `PARALLEL_GROUPS`가 비어 있지 않으면 (독립 그룹 2개 이상): `sg-parallel-execute` 스킬로 라우팅한다 (Phase 18에서 구현).
-   - `PARALLEL_GROUPS`가 비어 있으면: 기존 순차 실행 경로(`superpowers:executing-plans`)를 그대로 사용한다.
+   **Routing branch.** Check the `PARALLEL_GROUPS` variable computed in Step 8.5:
+   - If `PARALLEL_GROUPS` is non-empty (2 or more independent groups): route to the `sg-parallel-execute` skill (implemented in Phase 18).
+   - If `PARALLEL_GROUPS` is empty: use the existing sequential execution path (`superpowers:executing-plans`) unchanged.
 
    ```bash
    if [ -n "$PARALLEL_GROUPS" ]; then
-     echo "=== 병렬 실행 경로 선택: ${GROUP_COUNT}개 그룹 감지 ==="
+     echo "=== Parallel execution path selected: ${GROUP_COUNT} group(s) detected ==="
      Skill(skill="sg-parallel-execute", args="$GROUPS_JSON_FILE")
      return
    fi
@@ -295,7 +295,7 @@ This command is self-contained — no external workflow files imported. Reads .p
 </process>
 
 <success_criteria>
-0. .planning/lessons/ 에 파일이 있으면 Step 0 reminder가 Step 1(phase resolve)보다 먼저 출력된다. 파일이 없으면 Step 0이 조용히 건너뛰어진다.
+0. If files exist in .planning/lessons/, the Step 0 reminder is printed before Step 1 (phase resolve). If no files exist, Step 0 is skipped silently.
 1. The prompt blob shown to the user contains the Phase number, Goal, Success Criteria list, all REQ-IDs with their one-line definitions, and the full body of every `*-PLAN.md` in the phase directory.
 2. The `superpowers:executing-plans` Skill is invoked exactly once per run when PARALLEL_GROUPS is empty, zero times when the idempotency check short-circuits, or `sg-parallel-execute` is invoked instead when PARALLEL_GROUPS is non-empty (parallel path).
 3. `.planning/HANDOFF.md` gains at most one new row per run, and that row matches the 5-column schema `| Timestamp | Phase | From | To | Plan Hash |`.

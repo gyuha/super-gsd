@@ -3,6 +3,13 @@ name: sg-retro
 description: Use this when a phase is complete and a structured retrospective is needed — collects phase artifacts and git context, then facilitates one or more of six lenses (ssc, 4ls, dspm, sail, 5why, analyze) and appends results to .planning/lessons/.
 ---
 
+<language>
+Detect the user's input language and respond in that language throughout this skill's output.
+- Korean input → respond in Korean
+- English input → respond in English
+- Mixed input → match the dominant language
+</language>
+
 <objective>
 Run a structured retrospective on a GSD phase. Auto-collect phase artifacts and git context. Let the user pick one or more of six lenses — Start/Stop/Continue (ssc), 4Ls (4ls), Decisions/Surprises/Patterns/Mistakes (dspm), Sailboat (sail), Five Whys (5why), Conversation Analyzer (analyze) — via AskUserQuestion multiSelect or directly via arguments. Facilitate each lens (artifact-grounded for ssc/4ls/dspm/sail; user-driven for 5why; transcript-native for analyze), then append all results sequentially to `.planning/lessons/{NN}-{YYYY-MM-DD}.md`. After all lenses complete, auto-suggest sg-rule drafts once.
 </objective>

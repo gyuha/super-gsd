@@ -3,6 +3,13 @@ name: sg-next
 description: Use this when you want to advance to the next workflow stage automatically — reads HANDOFF.md and STATE.md to determine the current stage and immediately invokes the next sg-* command.
 ---
 
+<language>
+Detect the user's input language and respond in that language throughout this skill's output.
+- Korean input → respond in Korean
+- English input → respond in English
+- Mixed input → match the dominant language
+</language>
+
 <objective>
 Detect the current workflow stage from HANDOFF.md and STATE.md, determine the next sg-* command using the same routing table as sg-status, then immediately invoke it without asking for confirmation. Appends a HANDOFF.md row before invoking. For ambiguous states (complete or init), presents choices via AskUserQuestion instead of auto-invoking.
 </objective>

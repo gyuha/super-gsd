@@ -4,6 +4,13 @@ description: Use this when a small ad-hoc task needs to be done without a full p
 argument-hint: "<task description> [--discuss] [--research] [--validate] [--full]"
 ---
 
+<language>
+Detect the user's input language and respond in that language throughout this skill's output.
+- Korean input → respond in Korean
+- English input → respond in English
+- Mixed input → match the dominant language
+</language>
+
 <objective>
 Execute a small, ad-hoc task using a gsd-planner → Superpowers automatic execution pipeline. Unlike the simple Skill delegation of previous versions, this command runs the full pipeline:
 

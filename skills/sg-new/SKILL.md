@@ -4,6 +4,13 @@ description: Use this when a milestone is complete and a new one should begin �
 argument-hint: "[milestone-name] - optional. Passed through to gsd-new-milestone."
 ---
 
+<language>
+Detect the user's input language and respond in that language throughout this skill's output.
+- Korean input → respond in Korean
+- English input → respond in English
+- Mixed input → match the dominant language
+</language>
+
 <objective>
 Invoke gsd-new-milestone Skill to start a new milestone, then display the super-gsd next-command recommendation (sg-plan) so the user continues in the super-gsd pipeline instead of falling back to raw GSD commands.
 </objective>

@@ -3,6 +3,13 @@ name: sg-status
 description: Use this when you want to know where you are in the workflow — reads HANDOFF.md and STATE.md to show the current stage and the next recommended command.
 ---
 
+<language>
+Detect the user's input language and respond in that language throughout this skill's output.
+- Korean input → respond in Korean
+- English input → respond in English
+- Mixed input → match the dominant language
+</language>
+
 <objective>
 Inspect the current super-gsd workflow state. Read .planning/HANDOFF.md to determine the current stage, .planning/STATE.md for the current phase line (single source of truth), and .planning/ROADMAP.md only to detect whether a following phase exists for the ship branch. Output exactly three header lines, a blank line, and one "Next:" line.
 </objective>

@@ -4,6 +4,13 @@ description: Use this when UI design brainstorming is needed before planning a p
 argument-hint: "[phase] - optional. Defaults to STATE.md current phase."
 ---
 
+<language>
+Detect the user's input language and respond in that language throughout this skill's output.
+- Korean input → respond in Korean
+- English input → respond in English
+- Mixed input → match the dominant language
+</language>
+
 <objective>
 Read the target phase section from ROADMAP.md and run the superpowers:brainstorming Agent to conduct a UI design session. After completion, record a To: ui-plan row in .planning/HANDOFF.md. This is the Visual Companion branch of sg-plan extracted as a standalone command; it terminates after brainstorming completes without invoking a separate plan-phase.
 </objective>

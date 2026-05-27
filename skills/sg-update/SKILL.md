@@ -4,6 +4,13 @@ description: Use this when GSD, Superpowers, or super-gsd may be outdated — ch
 argument-hint: "No arguments needed."
 ---
 
+<language>
+Detect the user's input language and respond in that language throughout this skill's output.
+- Korean input → respond in Korean
+- English input → respond in English
+- Mixed input → match the dominant language
+</language>
+
 <objective>
 Check whether each tool in the super-gsd workflow is installed, install it if missing, or update it if present:
 - GSD (@opengsd/get-shit-done-redux) — npm package

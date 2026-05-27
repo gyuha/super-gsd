@@ -4,6 +4,13 @@ description: Copy super-gsd hook and skill files to the current project — Clau
 argument-hint: "[--gemini] [--force] - --gemini: also copy .gemini/settings.json, --force: overwrite existing files"
 ---
 
+<language>
+Detect the user's input language and respond in that language throughout this skill's output.
+- Korean input → respond in Korean
+- English input → respond in English
+- Mixed input → match the dominant language
+</language>
+
 <objective>
 Copy the files required for super-gsd operation (hooks/, .agents/skills/, .codex/hooks.json) from the npm package path to the current project root. Complete installation by running node directly via the Bash tool inside the Claude Code session.
 </objective>

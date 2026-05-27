@@ -4,6 +4,13 @@ description: Use this when a new phase needs to be planned — injects prior les
 argument-hint: "[phase] - optional. Defaults to STATE.md current phase."
 ---
 
+<language>
+Detect the user's input language and respond in that language throughout this skill's output.
+- Korean input → respond in Korean
+- English input → respond in English
+- Mixed input → match the dominant language
+</language>
+
 <objective>
 Resolve the target phase, then execute a 2-step chain: spawn a subagent to run gsd-discuss-phase and wait for it to complete, then invoke gsd-plan-phase via Skill as the terminal action. Print progress messages before each step.
 </objective>

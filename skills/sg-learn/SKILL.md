@@ -3,6 +3,13 @@ name: sg-learn
 description: Use this when a phase is complete and you want to extract patterns and lessons from the session — delegates to sg-retro for structured retrospective.
 ---
 
+<language>
+Detect the user's input language and respond in that language throughout this skill's output.
+- Korean input → respond in Korean
+- English input → respond in English
+- Mixed input → match the dominant language
+</language>
+
 <objective>
 Invoke the sg-retro Skill to run a retrospective and extract learnable patterns from the current session.
 </objective>

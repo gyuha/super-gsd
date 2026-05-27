@@ -4,6 +4,13 @@ description: Use this when the phase plan is ready and implementation should beg
 argument-hint: "[phase] - optional. Defaults to STATE.md current phase"
 ---
 
+<language>
+Detect the user's input language and respond in that language throughout this skill's output.
+- Korean input → respond in Korean
+- English input → respond in English
+- Mixed input → match the dominant language
+</language>
+
 <objective>
 Package the current phase's PLAN.md bodies, REQUIREMENTS.md REQ-ID mapping, and ROADMAP.md success criteria into a single Superpowers-ready prompt and auto-invoke the `superpowers:executing-plans` Skill with it. When PLAN.md files contain `wave:` fields forming 2+ independent groups, routes to `sg-parallel-execute` instead and records `To: parallel` in HANDOFF.md. Append a timestamped row to `.planning/HANDOFF.md` describing the handoff. The append is skipped when `(phase, to=superpowers or parallel)` was already handed off and the plan hash is unchanged, so re-running on an unchanged plan is idempotent.
 </objective>

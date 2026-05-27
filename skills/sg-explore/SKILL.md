@@ -3,6 +3,13 @@ name: sg-explore
 description: Use this when you need a map of the current codebase structure — invokes gsd-map-codebase to analyse and document the project layout.
 ---
 
+<language>
+Detect the user's input language and respond in that language throughout this skill's output.
+- Korean input → respond in Korean
+- English input → respond in English
+- Mixed input → match the dominant language
+</language>
+
 <objective>
 Invoke the gsd-map-codebase Skill to analyse and map the current codebase. No arguments required.
 </objective>

@@ -3,6 +3,13 @@ name: sg-parallel-execute
 description: Use this when parallel_groups.json exists and independent plan groups should run concurrently — dispatches up to 3 Task() agents, one per group, without calling superpowers:executing-plans.
 ---
 
+<language>
+Detect the user's input language and respond in that language throughout this skill's output.
+- Korean input → respond in Korean
+- English input → respond in English
+- Mixed input → match the dominant language
+</language>
+
 <objective>
 Read the parallel_groups.json file path passed via $ARGUMENTS using the Read tool to identify the group list. Compute GROUP_COUNT (array length) and execute min(GROUP_COUNT, 3) Task()s concurrently (in parallel). Each Task() reads its group's PLAN.md directly and executes tasks without calling superpowers:executing-plans. When GROUP_COUNT > 3, execute the first 3 groups in parallel (wave-ascending order) and process the remainder sequentially.
 </objective>

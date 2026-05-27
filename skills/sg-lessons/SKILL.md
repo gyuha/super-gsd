@@ -4,6 +4,13 @@ description: Use this when starting a new phase and you want to review prior les
 argument-hint: "[phase] - optional. If provided, show only lessons for that phase number."
 ---
 
+<language>
+Detect the user's input language and respond in that language throughout this skill's output.
+- Korean input → respond in Korean
+- English input → respond in English
+- Mixed input → match the dominant language
+</language>
+
 <objective>
 Read all Markdown files in the .planning/lessons/ directory and print them in order. Allows the user to review prior lessons or use them as context before running /super-gsd:sg-plan.
 </objective>

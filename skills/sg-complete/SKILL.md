@@ -4,6 +4,13 @@ description: Use this when the current milestone is done and needs to be closed 
 argument-hint: "[phase] - optional. Defaults to STATE.md current phase."
 ---
 
+<language>
+Detect the user's input language and respond in that language throughout this skill's output.
+- Korean input → respond in Korean
+- English input → respond in English
+- Mixed input → match the dominant language
+</language>
+
 <objective>
 Resolve the target phase then invoke gsd-complete-milestone to mark the current milestone as complete.
 </objective>

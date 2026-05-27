@@ -4,6 +4,13 @@ description: Use this when starting or resuming work on a project — detects an
 argument-hint: "[project-name] - optional. Used only when no existing .planning/STATE.md is detected; passed through to gsd-new-project."
 ---
 
+<language>
+Detect the user's input language and respond in that language throughout this skill's output.
+- Korean input → respond in Korean
+- English input → respond in English
+- Mixed input → match the dominant language
+</language>
+
 <objective>
 Detect existing session via STATE.md + HANDOFF.md. If detected, show 5-line summary (Milestone / Phase / Stage / Last activity / Next) and ask user (Resume / Start new milestone / Cancel) via AskUserQuestion. If no STATE.md, delegate to gsd-new-project Skill as before (D-17 fallback). All branches access HANDOFF.md as read-only — append-only audit log invariant preserved (SESS-04).
 </objective>

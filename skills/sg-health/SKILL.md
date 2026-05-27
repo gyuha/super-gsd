@@ -3,6 +3,13 @@ name: sg-health
 description: Use this when something feels broken or before onboarding — diagnoses GSD, Superpowers, hooks, HANDOFF.md, and STATE.md installation line by line.
 ---
 
+<language>
+Detect the user's input language and respond in that language throughout this skill's output.
+- Korean input → respond in Korean
+- English input → respond in English
+- Mixed input → match the dominant language
+</language>
+
 <objective>
 A read-only diagnostic command that checks GSD/Superpowers installation, Hookify installation (optional), hooks.json hook registration, HANDOFF.md schema, and STATE.md frontmatter line by line — each item reported as [OK]/[WARN]/[FAIL]/[OPTIONAL] — ending with a summary line. Creates or modifies no files.
 </objective>

@@ -2,6 +2,13 @@
 
 All notable changes to `super-gsd` are documented in this file. Format follows [Keep a Changelog](https://keepachangelog.com/).
 
+## [0.0.42] - 2026-05-27
+
+### Changed
+
+- sg-status/.agents/sg-status: 마일스톤 목록 + 현재 마일스톤의 단계(phase) 테이블 출력 단계 추가
+- CLAUDE.md: 사용자 언어 메시지 컨벤션 섹션 추가 — skill 스크립트의 사용자 노출 메시지는 산문은 사용자 언어로, 머신 토큰은 영문 원문 그대로 표면화
+
 ## [0.0.41] - 2026-05-27
 
 ### Changed

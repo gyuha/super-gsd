@@ -73,12 +73,14 @@ Self-contained. Reads `.planning/STATE.md` (`milestone:` field) and `.planning/H
    HANDOFF_FILE=".planning/HANDOFF.md"
    if [ ! -f "$HANDOFF_FILE" ] || ! grep -q "Timestamp.*Phase.*From.*To.*Plan Hash" "$HANDOFF_FILE" 2>/dev/null; then
      mkdir -p "$(dirname "$HANDOFF_FILE")"
-     printf '| Timestamp | Phase | From | To | Plan Hash |\n| --- | --- | --- | --- | --- |\n' > "$HANDOFF_FILE"
+     printf '| Timestamp | Phase | From | To | Plan Hash | User |\n| --- | --- | --- | --- | --- | --- |\n' > "$HANDOFF_FILE"
    fi
    TS=$(date -u +%Y-%m-%dT%H:%M:%SZ)
    # Read .planning/HANDOFF.md, then extract the To column (5th pipe-delimited field) from the last row
    # that starts with "| " followed by a 4-digit year. Set FROM_STAGE to that value (default "review" if empty).
-   echo "| $TS | $MILESTONE_VER | $FROM_STAGE | complete | - |" >> "$HANDOFF_FILE"
+   GIT_USER=$(git config user.name 2>/dev/null || echo "-")
+   [ -z "$GIT_USER" ] && GIT_USER="-"
+   echo "| $TS | $MILESTONE_VER | $FROM_STAGE | complete | - | $GIT_USER |" >> "$HANDOFF_FILE"
    ```
 
    4d. **Invoke gsd-complete-milestone with the VERSION** — substitute the literal `vX.Y`. NEVER pass a phase number. Terminal handoff; no steps run after:

@@ -102,7 +102,7 @@ Reads .planning/STATE.md, .planning/ROADMAP.md, .planning/REQUIREMENTS.md, .plan
    HANDOFF_FILE=".planning/HANDOFF.md"
    if [ ! -f "$HANDOFF_FILE" ] || ! grep -q "Timestamp.*Phase.*From.*To.*Plan Hash" "$HANDOFF_FILE" 2>/dev/null; then
      mkdir -p "$(dirname "$HANDOFF_FILE")"
-     printf '| Timestamp | Phase | From | To | Plan Hash |\n| --- | --- | --- | --- | --- |\n' > "$HANDOFF_FILE"
+     printf '| Timestamp | Phase | From | To | Plan Hash | User |\n| --- | --- | --- | --- | --- | --- |\n' > "$HANDOFF_FILE"
    fi
    ```
 
@@ -143,7 +143,9 @@ Reads .planning/STATE.md, .planning/ROADMAP.md, .planning/REQUIREMENTS.md, .plan
    Read .planning/HANDOFF.md, then extract the To column (5th pipe-delimited field) from the last row starting with "| " followed by a 4-digit year. Set FROM_STAGE (default "init" if empty).
    [ -z "$FROM_STAGE" ] && FROM_STAGE="init"
    PHASE_SLUG=$(basename "$PHASE_DIR")
-   echo "| $TS | $PHASE_SLUG | $FROM_STAGE | execute | $PLAN_HASH |" >> .planning/HANDOFF.md
+   GIT_USER=$(git config user.name 2>/dev/null || echo "-")
+   [ -z "$GIT_USER" ] && GIT_USER="-"
+   echo "| $TS | $PHASE_SLUG | $FROM_STAGE | execute | $PLAN_HASH | $GIT_USER |" >> .planning/HANDOFF.md
    ```
 </process>
 

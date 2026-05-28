@@ -119,7 +119,7 @@ This command is self-contained — no external workflow files imported. Reads .p
    HANDOFF_FILE=".planning/HANDOFF.md"
    if [ ! -f "$HANDOFF_FILE" ] || ! grep -q "Timestamp.*Phase.*From.*To.*Plan Hash" "$HANDOFF_FILE" 2>/dev/null; then
      mkdir -p "$(dirname "$HANDOFF_FILE")"
-     printf '| Timestamp | Phase | From | To | Plan Hash |\n| --- | --- | --- | --- | --- |\n' > "$HANDOFF_FILE"
+     printf '| Timestamp | Phase | From | To | Plan Hash | User |\n| --- | --- | --- | --- | --- | --- |\n' > "$HANDOFF_FILE"
    fi
    ```
 
@@ -246,7 +246,9 @@ This command is self-contained — no external workflow files imported. Reads .p
    else
      HANDOFF_TO="superpowers"
    fi
-   echo "| $TS | $PHASE_SLUG | $FROM_STAGE | $HANDOFF_TO | $PLAN_HASH |" >> .planning/HANDOFF.md
+   GIT_USER=$(git config user.name 2>/dev/null || echo "-")
+   [ -z "$GIT_USER" ] && GIT_USER="-"
+   echo "| $TS | $PHASE_SLUG | $FROM_STAGE | $HANDOFF_TO | $PLAN_HASH | $GIT_USER |" >> .planning/HANDOFF.md
    ```
 
 9. **Build prompt and invoke Skill.**

@@ -73,7 +73,7 @@ Self-contained. Reads git history to derive BASE_SHA and HEAD_SHA, then delegate
    HANDOFF_FILE=".planning/HANDOFF.md"
    if [ ! -f "$HANDOFF_FILE" ] || ! grep -q "Timestamp.*Phase.*From.*To.*Plan Hash" "$HANDOFF_FILE" 2>/dev/null; then
      mkdir -p "$(dirname "$HANDOFF_FILE")"
-     printf '| Timestamp | Phase | From | To | Plan Hash |\n| --- | --- | --- | --- | --- |\n' > "$HANDOFF_FILE"
+     printf '| Timestamp | Phase | From | To | Plan Hash | User |\n| --- | --- | --- | --- | --- | --- |\n' > "$HANDOFF_FILE"
    fi
    TS=$(date -u +%Y-%m-%dT%H:%M:%SZ)
    Read .planning/STATE.md, then extract the Phase: value from the YAML frontmatter. Set PHASE_NUM_R.
@@ -81,7 +81,9 @@ Self-contained. Reads git history to derive BASE_SHA and HEAD_SHA, then delegate
    PHASE_SLUG_R=$(ls -d .planning/phases/${PHASE_PAD_R}-* 2>/dev/null | head -1 | xargs basename 2>/dev/null)
    [ -z "$PHASE_SLUG_R" ] && PHASE_SLUG_R="${PHASE_NUM_R:-unknown}"
    Read .planning/HANDOFF.md, then extract the To column (5th pipe-delimited field) from the last row starting with "| " followed by a 4-digit year. Set FROM_STAGE_R (default "init" if empty).
-   echo "| $TS | $PHASE_SLUG_R | $FROM_STAGE_R | review | - |" >> "$HANDOFF_FILE"
+   GIT_USER=$(git config user.name 2>/dev/null || echo "-")
+   [ -z "$GIT_USER" ] && GIT_USER="-"
+   echo "| $TS | $PHASE_SLUG_R | $FROM_STAGE_R | review | - | $GIT_USER |" >> "$HANDOFF_FILE"
    ```
 
 4. **Invoke Skill** with the structured context.

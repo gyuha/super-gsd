@@ -181,3 +181,5 @@
 | 2026-05-28T06:47:26Z | 34 | complete | complete | - |
 | 2026-05-28T06:47:27Z | 35 | complete | complete | - |
 | 2026-05-28T06:47:38Z | v2.6 | complete | complete | - |
+| 2026-05-28T12:50:29Z | 39-handoff-user-tracking | complete | gsd-plan | - |
+| 2026-05-28T13:10:38Z | 39-handoff-user-tracking | gsd-plan | parallel | d8e2dc2 |

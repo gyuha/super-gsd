@@ -26,6 +26,66 @@ Self-contained — reads .planning/HANDOFF.md, .planning/STATE.md, .planning/ROA
 </execution_context>
 
 <process>
+0. **`--team` 플래그 감지.** `$ARGUMENTS`에 `--team`이 포함되어 있으면 팀 현황 테이블을 출력하고 종료한다. 포함되지 않으면 이 Step을 건너뛰고 Step 1로 진행한다:
+   ```bash
+   if echo "$ARGUMENTS" | grep -qE '(^| )--team( |$)'; then
+     HANDOFF_FILE=".planning/HANDOFF.md"
+
+     # --- HANDOFF.md User 컬럼 기반 집계 ---
+     # $7 = User 컬럼 (7번째 pipe-delimited 필드)
+     # 컬럼 인덱스: $1=empty, $2=ts, $3=phase, $4=from, $5=to, $6=plan_hash, $7=user
+     # 조건: 행이 타임스탬프로 시작하고, $7가 존재하며 공백 제거 후 "-"가 아닌 것
+     TEAM_DATA=$(grep -E '^\| [0-9]{4}-' "$HANDOFF_FILE" 2>/dev/null \
+       | awk -F'|' '{
+           gsub(/ /, "", $7);
+           if ($7 != "" && $7 != "-") print $0
+         }')
+
+     if [ -n "$TEAM_DATA" ]; then
+       # 팀원별 최신 행 1개 집계 (파일은 append-only이므로 마지막 등장이 최신)
+       # 컬럼: $2=Timestamp, $3=Phase, $5=To(Stage), $7=User
+       echo "## 팀 현황"
+       echo ""
+       printf '| 팀원 | 최근 Phase | 최근 Stage | 마지막 활동 |\n'
+       printf '| ---- | --------- | --------- | ---------- |\n'
+       echo "$TEAM_DATA" \
+         | awk -F'|' '{
+             gsub(/^[[:space:]]+|[[:space:]]+$/, "", $2);
+             gsub(/^[[:space:]]+|[[:space:]]+$/, "", $3);
+             gsub(/^[[:space:]]+|[[:space:]]+$/, "", $5);
+             gsub(/^[[:space:]]+|[[:space:]]+$/, "", $7);
+             users[$7] = $2 "|" $3 "|" $5
+           }
+           END {
+             for (u in users) {
+               n = split(users[u], parts, "|");
+               printf "| %s | %s | %s | %s |\n", u, parts[2], parts[3], parts[1]
+             }
+           }'
+     else
+       # Fallback: git log 작성자 집계
+       GIT_LOG=$(git log --format="%an|%ai|%s" -20 2>/dev/null)
+       if [ -n "$GIT_LOG" ]; then
+         echo "## 팀 현황 (git log 기반 — HANDOFF User 컬럼 데이터 없음)"
+         echo ""
+         printf '| 팀원 | 최근 Phase | 최근 Stage | 마지막 활동 |\n'
+         printf '| ---- | --------- | --------- | ---------- |\n'
+         echo "$GIT_LOG" \
+           | awk -F'|' '{
+               gsub(/^[[:space:]]+|[[:space:]]+$/, "", $1);
+               gsub(/^[[:space:]]+|[[:space:]]+$/, "", $2);
+               if (!seen[$1]++) {
+                 printf "| %s | - | - | %s |\n", $1, substr($2, 1, 19)
+               }
+             }'
+       else
+         echo "팀 이력이 없습니다. sg-plan, sg-execute 등 sg-* 명령을 실행하면 이력이 쌓입니다."
+       fi
+     fi
+     exit 0
+   fi
+   ```
+
 1. **Read `Phase:` line verbatim from STATE.md.**
 
    ```bash
@@ -168,4 +228,6 @@ Self-contained — reads .planning/HANDOFF.md, .planning/STATE.md, .planning/ROA
 4. `execute` stage routes to `/super-gsd:sg-review`.
 5. STATE.md Phase parsing block is preserved (grep-sed-awk pipeline).
 6. Fully standalone regardless of whether GSD is installed.
+7. `$ARGUMENTS`에 `--team`이 포함된 경우, Step 0에서 팀 현황 테이블을 출력하고 `exit 0`으로 종료한다. 기존 Step 1~7은 실행되지 않는다.
+8. `--team` 없이 실행하면 Step 0은 건너뛰고 기존 동작이 완전히 유지된다.
 </success_criteria>

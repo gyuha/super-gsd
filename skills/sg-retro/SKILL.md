@@ -391,14 +391,16 @@ After the auto-suggest block completes, record the successful retrospective in H
 HANDOFF_FILE=".planning/HANDOFF.md"
 if [ ! -f "$HANDOFF_FILE" ] || ! grep -q "Timestamp.*Phase.*From.*To.*Plan Hash" "$HANDOFF_FILE" 2>/dev/null; then
   mkdir -p "$(dirname "$HANDOFF_FILE")"
-  printf '| Timestamp | Phase | From | To | Plan Hash |\n| --- | --- | --- | --- | --- |\n' > "$HANDOFF_FILE"
+  printf '| Timestamp | Phase | From | To | Plan Hash | User |\n| --- | --- | --- | --- | --- | --- |\n' > "$HANDOFF_FILE"
 fi
 TS_H=$(date -u +%Y-%m-%dT%H:%M:%SZ)
 PHASE_SLUG_H=$(ls -d .planning/phases/${PHASE_PAD}-* 2>/dev/null | head -1 | xargs basename 2>/dev/null)
 [ -z "$PHASE_SLUG_H" ] && PHASE_SLUG_H="${PHASE_RAW:-unknown}"
 FROM_STAGE_H=$(grep -E '^\| [0-9]{4}-' "$HANDOFF_FILE" | tail -1 | awk -F'|' '{gsub(/ /,"",$5); print $5}')
 [ -z "$FROM_STAGE_H" ] && FROM_STAGE_H="init"
-echo "| $TS_H | $PHASE_SLUG_H | $FROM_STAGE_H | sg-retro | - |" >> "$HANDOFF_FILE"
+GIT_USER=$(git config user.name 2>/dev/null || echo "-")
+[ -z "$GIT_USER" ] && GIT_USER="-"
+echo "| $TS_H | $PHASE_SLUG_H | $FROM_STAGE_H | sg-retro | - | $GIT_USER |" >> "$HANDOFF_FILE"
 ```
 
 </process>

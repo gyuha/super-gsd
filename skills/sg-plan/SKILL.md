@@ -106,7 +106,7 @@ Self-contained. Reads .planning/STATE.md for phase resolution when no argument p
    HANDOFF_FILE=".planning/HANDOFF.md"
    if [ ! -f "$HANDOFF_FILE" ] || ! grep -q "Timestamp.*Phase.*From.*To.*Plan Hash" "$HANDOFF_FILE" 2>/dev/null; then
      mkdir -p "$(dirname "$HANDOFF_FILE")"
-     printf '| Timestamp | Phase | From | To | Plan Hash |\n| --- | --- | --- | --- | --- |\n' > "$HANDOFF_FILE"
+     printf '| Timestamp | Phase | From | To | Plan Hash | User |\n| --- | --- | --- | --- | --- | --- |\n' > "$HANDOFF_FILE"
    fi
    PHASE_PAD_P=$(printf "%02d" "${PHASE_NUM:-0}" 2>/dev/null || echo "${PHASE_NUM:-0}")
    PHASE_SLUG_P=$(ls -d .planning/phases/${PHASE_PAD_P}-* 2>/dev/null | head -1 | xargs basename 2>/dev/null)
@@ -115,7 +115,9 @@ Self-contained. Reads .planning/STATE.md for phase resolution when no argument p
      TS=$(date -u +%Y-%m-%dT%H:%M:%SZ)
      Read .planning/HANDOFF.md, then extract the To column (5th pipe-delimited field) from the last row that starts with "| " followed by a 4-digit year. Set PREV_STAGE to the extracted value (empty string if no data rows exist).
      [ -z "$PREV_STAGE" ] && PREV_STAGE="init"
-     echo "| $TS | $PHASE_SLUG_P | $PREV_STAGE | gsd-plan | - |" >> "$HANDOFF_FILE"
+     GIT_USER=$(git config user.name 2>/dev/null || echo "-")
+     [ -z "$GIT_USER" ] && GIT_USER="-"
+     echo "| $TS | $PHASE_SLUG_P | $PREV_STAGE | gsd-plan | - | $GIT_USER |" >> "$HANDOFF_FILE"
    fi
    ```
 

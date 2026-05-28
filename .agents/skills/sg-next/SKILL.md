@@ -125,7 +125,7 @@ For complete/init, defer the append until after Step 5 confirmation. This preven
 HANDOFF_FILE=".planning/HANDOFF.md"
 if [ ! -f "$HANDOFF_FILE" ] || ! grep -q "Timestamp.*Phase.*From.*To.*Plan Hash" "$HANDOFF_FILE" 2>/dev/null; then
   mkdir -p "$(dirname "$HANDOFF_FILE")"
-  printf '| Timestamp | Phase | From | To | Plan Hash |\n| --- | --- | --- | --- | --- |\n' > "$HANDOFF_FILE"
+  printf '| Timestamp | Phase | From | To | Plan Hash | User |\n| --- | --- | --- | --- | --- | --- |\n' > "$HANDOFF_FILE"
 fi
 PHASE_PAD=$(printf "%02d" "${PHASE_NUM:-0}" 2>/dev/null || echo "${PHASE_NUM:-0}")
 PHASE_SLUG=$(ls -d .planning/phases/${PHASE_PAD}-* 2>/dev/null | head -1 | xargs basename 2>/dev/null)
@@ -133,7 +133,9 @@ PHASE_SLUG=$(ls -d .planning/phases/${PHASE_PAD}-* 2>/dev/null | head -1 | xargs
 FROM_STAGE="$STAGE_RAW"
 if [ "$STAGE_RAW" != "complete" ] && [ "$STAGE_RAW" != "init" ]; then
   TS=$(date -u +%Y-%m-%dT%H:%M:%SZ)
-  echo "| $TS | $PHASE_SLUG | $FROM_STAGE | sg-next | - |" >> "$HANDOFF_FILE"
+  GIT_USER=$(git config user.name 2>/dev/null || echo "-")
+  [ -z "$GIT_USER" ] && GIT_USER="-"
+  echo "| $TS | $PHASE_SLUG | $FROM_STAGE | sg-next | - | $GIT_USER |" >> "$HANDOFF_FILE"
 fi
 ```
 

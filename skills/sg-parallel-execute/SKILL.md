@@ -62,6 +62,39 @@ if echo "$GROUPS_JSON_FILE" | grep -qE '^[0-9]+(\.[0-9]+)?$'; then
 fi
 ```
 
+**Step 1.6 — parallel_groups.json 자동 생성 (파일 없을 때).**
+
+`$GROUPS_JSON_FILE` 경로에 파일이 존재하지 않으면 PHASE_DIR의 PLAN.md 파일들을 읽어 자동으로 생성한다.
+
+```bash
+if [ ! -f "$GROUPS_JSON_FILE" ]; then
+  PHASE_DIR=$(dirname "$GROUPS_JSON_FILE")
+  PLAN_FILES=$(ls "$PHASE_DIR"/*-PLAN.md 2>/dev/null | sort)
+  if [ -z "$PLAN_FILES" ]; then
+    echo "[sg-parallel-execute] Error: No PLAN.md files found in $PHASE_DIR — cannot auto-generate parallel_groups.json"
+    exit 1
+  fi
+  echo "[sg-parallel-execute] parallel_groups.json not found — auto-generating from PLAN.md files in $PHASE_DIR"
+fi
+```
+
+파일이 없으면 각 PLAN.md를 Read tool로 읽어 frontmatter의 `wave:` 값을 추출한다 (없으면 기본값 1). wave 번호별로 플랜을 그룹화해 아래 형식의 JSON 배열을 구성한다:
+
+```json
+[
+  {"wave": 1, "plans": ["NN-01-PLAN.md", "NN-02-PLAN.md"], "merged": false},
+  {"wave": 2, "plans": ["NN-03-PLAN.md"], "merged": false}
+]
+```
+
+구성된 JSON을 `$GROUPS_JSON_FILE` 경로에 Write tool로 저장한 뒤 아래 메시지를 출력한다:
+
+```
+[sg-parallel-execute] Auto-generated parallel_groups.json with <N> group(s) across <W> wave(s)
+```
+
+파일이 이미 존재하면 이 스텝 전체를 건너뛴다.
+
 **Step 2 — Read parallel_groups.json.**
 
 Read the file at the `$GROUPS_JSON_FILE` path using the Read tool. If the file does not exist or cannot be parsed as JSON, print an error message and exit. No automatic fallback (D-07):

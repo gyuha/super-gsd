@@ -49,7 +49,7 @@ See [docs/COMMANDS.md](./docs/COMMANDS.md) for the full per-command reference in
 
 ## Phase management (add / insert / remove / edit)
 
-`super-gsd` does not wrap GSD's phase CRUD operations — they are invoked directly through GSD's own `/gsd:phase` command. All four modes share the same command, routed by a flag.
+GSD's `/gsd:phase` command provides four phase-CRUD modes (add / insert / remove / edit), routed by a flag. `super-gsd` adds `/super-gsd:sg-phase`, which wraps the **edit** and **remove** modes (delegating to `gsd-phase`) and adds a **complete** operation that `gsd-phase` does not provide — reconciling a finished phase's ROADMAP Progress row, Phases checkbox, and STATE.md. Add and insert remain available directly via `gsd-phase`.
 
 | Flag | Action | When to use |
 |------|--------|-------------|
@@ -57,6 +57,14 @@ See [docs/COMMANDS.md](./docs/COMMANDS.md) for the full per-command reference in
 | `--insert <N> <description>` | Insert a decimal phase (e.g. `7.1`) after Phase N — no renumbering of existing phases | Urgent work discovered mid-milestone that cannot wait for the next milestone |
 | `--remove <N>` | Remove a future (unstarted) phase and renumber subsequent phases | Cancelling a planned phase before any work has begun |
 | `--edit <N>` | Edit fields (Goal / Requirements / Plans / etc.) of an existing phase in place | Correcting scope or metadata without renumbering |
+
+### `/super-gsd:sg-phase` subcommands
+
+| Subcommand | Action | Delegates to |
+|------------|--------|--------------|
+| `sg-phase edit <N> [changes]` | Edit an existing phase's fields | `gsd-phase --edit` |
+| `sg-phase remove <N>` | Remove a future phase and renumber the rest | `gsd-phase --remove` |
+| `sg-phase complete [N]` | Mark a finished phase done — set its ROADMAP Progress row to `Complete` with today's date, flip the Phases checkbox to `[x]`, and sync STATE.md (defaults to the current phase when `N` is omitted) | (inline — `gsd-phase` has no complete mode) |
 
 **Inserting a phase mid-milestone:**
 

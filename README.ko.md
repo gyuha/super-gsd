@@ -49,7 +49,7 @@ sg-new/sg-start → sg-explore → sg-plan → sg-execute → sg-review → sg-l
 
 ## Phase 관리 (추가 / 삽입 / 제거 / 편집)
 
-`super-gsd`는 GSD의 phase CRUD를 wrapping하지 않는다. GSD의 `/gsd:phase` 명령을 직접 호출하며, 네 가지 모드를 같은 명령에서 플래그로 라우팅한다.
+GSD의 `/gsd:phase` 명령은 네 가지 phase CRUD 모드(추가 / 삽입 / 제거 / 편집)를 플래그로 라우팅한다. `super-gsd`는 여기에 `/super-gsd:sg-phase`를 추가로 제공한다 — **edit**·**remove** 모드는 `gsd-phase`에 위임하고, `gsd-phase`에 없는 **complete** 동작을 더한다(완료된 phase의 ROADMAP Progress 행·Phases 체크박스·STATE.md를 정합화). 추가(add)·삽입(insert)은 `gsd-phase`로 직접 사용한다.
 
 | 플래그 | 동작 | 사용 시점 |
 |--------|------|-----------|
@@ -57,6 +57,14 @@ sg-new/sg-start → sg-explore → sg-plan → sg-execute → sg-review → sg-l
 | `--insert <N> <설명>` | Phase N 뒤에 십진 phase(예: `7.1`) 삽입 — 기존 정수 phase 번호는 변하지 않음 | milestone 진행 중 발견된 긴급 작업이 다음 milestone까지 미룰 수 없을 때 |
 | `--remove <N>` | 미래 phase(미착수)를 제거하고 이후 phase 번호를 재정렬 | 작업이 시작되기 전 계획된 phase를 취소할 때 |
 | `--edit <N>` | 기존 phase의 필드(Goal / Requirements / Plans 등)를 in-place 수정 | scope나 메타데이터를 renumbering 없이 정정할 때 |
+
+### `/super-gsd:sg-phase` 서브커맨드
+
+| 서브커맨드 | 동작 | 위임 대상 |
+|------------|------|-----------|
+| `sg-phase edit <N> [changes]` | 기존 phase 필드 편집 | `gsd-phase --edit` |
+| `sg-phase remove <N>` | 미래 phase 제거 + 이후 번호 재정렬 | `gsd-phase --remove` |
+| `sg-phase complete [N]` | 완료된 phase 마감 — ROADMAP Progress 행을 `Complete`+오늘 날짜로, Phases 체크박스를 `[x]`로 flip, STATE.md 동기화 (`N` 생략 시 현재 phase) | (인라인 — `gsd-phase`에 complete 모드 없음) |
 
 **milestone 진행 중 phase 끼워넣기:**
 

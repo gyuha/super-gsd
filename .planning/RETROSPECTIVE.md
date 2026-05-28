@@ -135,6 +135,48 @@
 
 ---
 
+## Milestone: v2.6 — Codex/Gemini 설치 UX 개선 (retroactive close)
+
+**Shipped:** 2026-05-26 (work) / **Formally closed:** 2026-05-28 (metadata + tag)
+**Phases:** 3 (33-35) | **Plans:** 3/3 (all phases had PLAN + SUMMARY preserved — cleanest of the four retro-closes)
+
+### What Was Built
+
+- `package.json` + `bin/setup.js` — `npx @gyuha/super-gsd install` 단일 명령으로 Codex/Gemini 설치 파일 복사 (Phase 33)
+- `.agents/skills/sg-setup/SKILL.md` — 세션 내부 `$sg-setup` 실행으로 세션 종료 없이 설치 (Phase 34)
+- README.md / AGENTS.md / README.ko.md 설치 문서 일괄 재작성 + Verify install 섹션 (Phase 35)
+
+### What Worked
+
+- **모든 phase가 정식 PLAN + SUMMARY 보존**: v1.3/v1.4의 git-rm 손실 패턴과 달리 phase 디렉토리가 살아 있었음 → `milestones/v2.6-phases/`로 정석 archive(GSD 컨벤션)
+- **npx 단일 명령 설치 UX**: GSD/Superpowers 수준으로 Codex/Gemini 설치 진입장벽을 낮춤 — 명확한 사용자 가치
+- **인세션 설치 옵션**: `$sg-setup`이 마찰을 더 줄임
+
+### What Was Inefficient (retroactive close honest record)
+
+- **late-close cost**: 2026-05-26 shipped 후 2일 만에 close → v1.3/v1.4(7일)보단 짧지만 v2.7이 먼저 닫힌 후 retro-close가 됨 (의식 누락)
+- **`accomplishments: []`**: CLI의 SUMMARY 추출이 작동 안 함 — `roadmap.analyze` 결과와 SUMMARY 디스크 매칭 로직이 견고하지 않음 (CLI 버그 후보)
+- **REQUIREMENTS.md 부재**: v2.7 close에서 git rm → v2.6-REQUIREMENTS.md 미생성 (같은 한계)
+- **아카이브 시점 불일치**: `v2.6-ROADMAP.md`는 post-v2.7 스냅샷 (v2.6 시점 아님)
+
+### Patterns Established / Reinforced
+
+- **phase 디렉토리 보존이 retro-close 품질을 결정**: git-rm 대신 `gsd-cleanup` 같은 archive 기반 housekeeping이 필수
+- **이번 세션 4건 retro-close 데이터**: v2.7(정상) → v1.4 → v1.3 → v2.6. v2.6이 phase dir 보존으로 가장 정석에 가까웠다
+
+### Key Lessons
+
+1. **phase dir은 archive로**: v2.6은 dir이 살아 있어서 milestones/v2.6-phases/로 정상 이동됐다. v1.3/v1.4는 git rm으로 손실 → 영구 갭
+2. **CLI accomplishments 추출 신뢰 안 함**: 적어도 retro-close에선 SUMMARY 보존돼도 빈 배열을 반환 — RETROSPECTIVE에 수동 기록이 더 안전
+3. **late-close < 2일도 의식 누락이 발생**: ship→close를 같은 세션에 묶을 자동화가 가치 있음
+
+### Cost Observations
+
+- Work cost: ~1일 (2026-05-26)
+- Close cost (retroactive, 2026-05-28): sg-phase complete 2회(34/35; 33은 이미 정합) + sg-complete v2.6 + AI judgment + phase dir mv archive
+
+---
+
 ## Milestone: v1.3 — Multi-Platform Support (retroactive close)
 
 **Shipped:** 2026-05-21 (work) / **Formally closed:** 2026-05-28 (metadata + tag)
@@ -231,6 +273,7 @@
 | v2.7 Skills & Hooks i18n | 3 | 3 | 27개 SKILL.md 영문화 + 언어 자동 감지, hooks 주석 영문화 |
 | v1.4 Team Agent Parallel (retro-close) | 3 | 3 | sg-parallel-execute 스킬 + wave 기반 병렬 dispatch (work 2026-05-21, close 2026-05-28) |
 | v1.3 Multi-Platform (retro-close) | 3 | 3 | Codex/Gemini 진입점, .agents/skills/, 플랫폼별 hooks, README multi-platform (work 2026-05-21, close 2026-05-28) |
+| v2.6 Codex/Gemini 설치 UX (retro-close) | 3 | 3/3 | npx installer + $sg-setup 인세션 + 설치 문서 (work 2026-05-26, close 2026-05-28) |
 
 ### Top Lessons (Verified Across Milestones)
 

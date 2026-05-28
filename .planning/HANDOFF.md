@@ -185,3 +185,6 @@
 | 2026-05-28T12:50:29Z | 39-handoff-user-tracking | complete | gsd-plan | - |
 | 2026-05-28T13:10:38Z | 39-handoff-user-tracking | gsd-plan | parallel | d8e2dc2 |
 | 2026-05-28T13:18:51Z | 39-handoff-user-tracking | parallel | review | - |
+| 2026-05-28T13:43:56Z | 39-handoff-user-tracking | review | sg-next | - |
+| 2026-05-28T13:47:01Z | 39-handoff-user-tracking | sg-next | sg-retro | - |
+| 2026-05-28T13:47:33Z | 39-handoff-user-tracking | sg-retro | ship | - | gyuha |

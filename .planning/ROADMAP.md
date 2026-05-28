@@ -176,7 +176,11 @@ Plans:
   3. wave 정보가 없는 PLAN.md로 sg-execute를 실행했을 때 v1.3 이전과 동일한 동작이 보장된다
   4. sg-execute의 idempotency 검사, HANDOFF.md 기록, lessons 주입 로직이 변경되지 않았다
 
-**Plans**: TBD
+**Plans**: 2 plans
+
+**Wave 1** (병렬 실행 가능)
+- [ ] 41-01-PLAN.md — .planning/TEAM.md 신규 생성 (DOC-01)
+- [ ] 41-02-PLAN.md — README.md + README.ko.md Team Workflow 섹션 추가 (DOC-02)
 
 ---
 
@@ -506,7 +510,11 @@ Plans:
   2. `README.md`에 "Team Usage" 섹션이 추가되어 git user.name 설정 확인 방법과 `sg-status --team` 사용법이 기술된다
   3. README.ko.md에도 동일 내용이 동기화된다
 
-**Plans**: TBD
+**Plans**: 2 plans
+
+**Wave 1** (병렬 실행 가능)
+- [ ] 41-01-PLAN.md — .planning/TEAM.md 신규 생성 (DOC-01)
+- [ ] 41-02-PLAN.md — README.md + README.ko.md Team Workflow 섹션 추가 (DOC-02)
 
 ---
 
@@ -546,4 +554,4 @@ Plans:
 | 38. hooks/ 영문화 | v2.7 | — (ad-hoc) | Complete | 2026-05-28 |
 | 39. HANDOFF 사용자 추적 + sg-status --team | v2.8 | 2/2 | Complete | 2026-05-28 |
 | 40. sg-execute 브랜치 워크플로우 + PR 안내 | v2.8 | 2/2 | Complete | 2026-05-29 |
-| 41. 팀 문서화 | v2.8 | 0/TBD | Not started | - |
+| 41. 팀 문서화 | v2.8 | 0/2 | Not started | - |

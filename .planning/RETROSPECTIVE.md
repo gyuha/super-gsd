@@ -135,6 +135,47 @@
 
 ---
 
+## Milestone: v1.3 — Multi-Platform Support (retroactive close)
+
+**Shipped:** 2026-05-21 (work) / **Formally closed:** 2026-05-28 (metadata + tag)
+**Phases:** 3 (14-16) | **Plans:** 3 (originally; phase dirs deleted in 8383461)
+
+### What Was Built
+
+- `AGENTS.md` Codex 어휘로 재작성
+- `.agents/skills/sg-*` 스킬 6개 — Codex/Gemini가 슬래시 명령 없이 워크플로우 진행
+- `.codex/hooks.json` + `.gemini/settings.json` — 플랫폼별 훅 설정
+- `hooks/*.py` `CLAUDE_PLUGIN_ROOT` 없는 경로 폴백
+- README Multi-Platform 섹션 + 기능 델타 테이블
+
+### What Worked
+
+- **Vertical slice**: phase 14(진입점) → 15(훅 설정) → 16(문서) — 각 phase가 독립 검증 가능
+- **비침투적 멀티플랫폼**: Claude Code의 핵심 동작은 그대로 두고 외부에서 Codex/Gemini를 동등 수준으로 끌어올림
+
+### What Was Inefficient (retroactive close honest record)
+
+- **late-close cost (반복 패턴)**: v1.4와 동일 — 2026-05-21 shipped 후 7일 정합 누락
+- **phase 디렉토리 손실**: 14/15/16 디렉토리가 `8383461`에서 archive가 아닌 git rm으로 삭제 → accomplishments 추출 불가
+- **REQUIREMENTS.md 부재**: v2.7 close 시 git rm → v1.3-REQUIREMENTS.md 미생성
+- **아카이브 시점 불일치**: `v1.3-ROADMAP.md`는 v1.3 시점이 아닌 post-v2.7 스냅샷
+
+### Patterns Established / Reinforced
+
+- 같은 세션 v1.4 retro-close와 동일 패턴으로 도구 재검증 — 절차가 idempotent함이 입증됨
+
+### Key Lessons
+
+1. v1.4와 동일 — ship 직후 close, git rm 대신 archive
+2. retro-close는 honest record로 남기되 마일스톤 archive에는 시점 불일치 명시
+
+### Cost Observations
+
+- Work cost: ~1일 (2026-05-21)
+- Close cost (retroactive, 2026-05-28): sg-phase complete 3회 + sg-complete v1.3 + AI judgment edits — v1.4와 사실상 동일
+
+---
+
 ## Milestone: v1.4 — Team Agent Parallel Execution (retroactive close)
 
 **Shipped:** 2026-05-21 (work) / **Formally closed:** 2026-05-28 (metadata + tag)
@@ -189,6 +230,7 @@
 | v2.0 Commands→Skills | 2 | 6 | commands/ → skills/ 마이그레이션 완료 |
 | v2.7 Skills & Hooks i18n | 3 | 3 | 27개 SKILL.md 영문화 + 언어 자동 감지, hooks 주석 영문화 |
 | v1.4 Team Agent Parallel (retro-close) | 3 | 3 | sg-parallel-execute 스킬 + wave 기반 병렬 dispatch (work 2026-05-21, close 2026-05-28) |
+| v1.3 Multi-Platform (retro-close) | 3 | 3 | Codex/Gemini 진입점, .agents/skills/, 플랫폼별 hooks, README multi-platform (work 2026-05-21, close 2026-05-28) |
 
 ### Top Lessons (Verified Across Milestones)
 

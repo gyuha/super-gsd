@@ -1,5 +1,15 @@
 # Milestones: super-gsd
 
+## v1.3 Multi-Platform Support (Shipped: 2026-05-28)
+
+**Phases completed:** 1 phases, 3 plans, 0 tasks
+
+**Key accomplishments:**
+
+- (none recorded)
+
+---
+
 ## v1.4 Team Agent Parallel Execution (Shipped: 2026-05-28)
 
 **Phases completed:** 1 phases, 3 plans, 0 tasks

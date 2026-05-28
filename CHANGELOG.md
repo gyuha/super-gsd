@@ -2,6 +2,17 @@
 
 All notable changes to `super-gsd` are documented in this file. Format follows [Keep a Changelog](https://keepachangelog.com/).
 
+## [0.0.44] - 2026-05-28
+
+### Fixed
+
+- `sg-parallel-execute` wave barrier 버그 수정 — wave 번호를 단순 정렬 키가 아닌 dependency barrier로 처리. 이전 구현은 wave 1과 wave 2 그룹을 동시에 디스패치할 수 있었으나, 수정 후 한 번에 한 wave씩 처리하고 이전 wave가 모두 완료된 후에만 다음 wave를 시작한다
+- `sg-parallel-execute` wave 내 4+ 그룹 처리 — `OVERFLOW_GROUPS` 정의 추가로 첫 번째 wave와 이후 wave의 overflow 처리 로직 대칭화. Step 6의 "same as Step 4" 모호한 참조를 자기완결적 Read tool 명시로 교체
+
+### Changed
+
+- README.md / README.ko.md Commands 테이블 동기화 — "sixteen" → "twenty-one" 커맨드 수 수정, `sg-cleanup` / `sg-parallel-execute` / `sg-setup` 3개 누락 항목 추가, `sg-start` 설명을 세션 감지 + Resume/Start/Cancel 로직으로 업데이트 (EN/KO 패리티 유지)
+
 ## [0.0.43] - 2026-05-28
 
 ### Added

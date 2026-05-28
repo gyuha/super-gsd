@@ -170,3 +170,6 @@
 | 2026-05-27T14:42:59Z | 36-skills-skills | sg-retro | ship | - |
 | 2026-05-27T15:34:48Z | 36-skills-skills | ship | complete | - |
 | 2026-05-27T15:35:16Z | 36-skills-skills | complete | sg-next | - |
+| 2026-05-28T02:20:15Z | 17 | sg-next | complete | - |
+| 2026-05-28T02:20:50Z | 18 | complete | complete | - |
+| 2026-05-28T02:20:51Z | 19 | complete | complete | - |

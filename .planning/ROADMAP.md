@@ -38,9 +38,9 @@
 
 ### v1.4 Team Agent Parallel Execution (Planned)
 
-- [ ] **Phase 17: PLAN.md 의존성 분석** — wave/depends_on/files_modified 파싱 + 독립 그룹(PARALLEL_GROUPS) 계산 + 폴백 분기
-- [ ] **Phase 18: sg-parallel-execute 스킬 + 라우팅** — 신규 SKILL.md 생성 + sg-execute.md Step 9 병렬 라우팅 추가
-- [ ] **Phase 19: 결과 통합 + 호환성 회귀 테스트** — 오케스트레이터 HANDOFF 기록 + wave 없는 경로 완전 보존 검증
+- [x] **Phase 17: PLAN.md 의존성 분석** — wave/depends_on/files_modified 파싱 + 독립 그룹(PARALLEL_GROUPS) 계산 + 폴백 분기
+- [x] **Phase 18: sg-parallel-execute 스킬 + 라우팅** — 신규 SKILL.md 생성 + sg-execute.md Step 9 병렬 라우팅 추가
+- [x] **Phase 19: 결과 통합 + 호환성 회귀 테스트** — 오케스트레이터 HANDOFF 기록 + wave 없는 경로 완전 보존 검증
 
 <details>
 <summary>✅ v2.0 Commands → Skills 마이그레이션 (Phases 22-23) — SHIPPED 2026-05-23</summary>
@@ -448,9 +448,9 @@ Plans:
 | 14. Codex 진입점 + .agents/skills/ | v1.3 | 0/TBD | Not started | - |
 | 15. 플랫폼별 훅 설정 + Python 픽스 | v1.3 | 0/TBD | Not started | - |
 | 16. README Multi-Platform 섹션 | v1.3 | 0/TBD | Not started | - |
-| 17. PLAN.md 의존성 분석 | v1.4 | 0/1 | Not started | - |
-| 18. sg-parallel-execute 스킬 + 라우팅 | v1.4 | 0/TBD | Not started | - |
-| 19. 결과 통합 + 호환성 회귀 테스트 | v1.4 | 0/TBD | Not started | - |
+| 17. PLAN.md 의존성 분석 | v1.4 | — (ad-hoc) | Complete | 2026-05-28 |
+| 18. sg-parallel-execute 스킬 + 라우팅 | v1.4 | — (ad-hoc) | Complete | 2026-05-28 |
+| 19. 결과 통합 + 호환성 회귀 테스트 | v1.4 | — (ad-hoc) | Complete | 2026-05-28 |
 | 20. sg-plan Visual Companion 통합 | v1.5 | 0/1 | Not started | - |
 | 21. sg-ui-plan 명령 + 등록 + 문서화 | v1.5 | 0/2 | Not started | - |
 | 22. Skills 파일 생성 | v2.0 | 4/4 | Complete   | 2026-05-22 |

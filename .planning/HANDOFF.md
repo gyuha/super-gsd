@@ -200,3 +200,5 @@
 | 2026-05-28T15:16:24Z | 40-sg-execute-branch-workflow | sg-retro | ship | - |
 | 2026-05-28T15:17:36Z | 40-sg-execute-branch-workflow | ship | complete | - |
 | 2026-05-28T15:21:44Z | 41-team-documentation | complete | gsd-plan | - |
+| 2026-05-28T15:27:08Z | 41-team-documentation | gsd-plan | parallel | 2b9f022 |
+| 2026-05-28T15:29:00Z | 41-team-documentation | parallel | review | - |

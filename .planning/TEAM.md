@@ -91,7 +91,7 @@ When `sg-complete [N]` (or `sg-phase complete N`) finishes a phase, it outputs P
 **If `gh` CLI is available:**
 
 ```bash
-gh pr create --base main --title "phase/41-team-documentation" --body "Phase 41 complete"
+gh pr create --base main --title "phase/{N}-{slug}"
 ```
 
 **If `gh` is not available:**

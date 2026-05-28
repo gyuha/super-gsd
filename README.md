@@ -179,7 +179,7 @@ Outputs a per-member table showing their most recent phase, stage, and last acti
 
 **Branch workflow:**
 
-When you run `sg-execute` from `main` or `master`, super-gsd detects this and offers to create a `phase/{N}-{slug}` branch (e.g. `phase/41-team-documentation`) via `AskUserQuestion`. After the phase is complete, `sg-phase complete N` prints the `gh pr create` command so you can open a PR without leaving the terminal.
+When you run `sg-execute` from `main` or `master`, super-gsd detects this and offers to create a `phase/{N}-{slug}` branch (e.g. `phase/41-team-documentation`) via `AskUserQuestion`. After the phase is complete, `sg-complete N` (or `sg-phase complete N`) prints the `gh pr create` command so you can open a PR without leaving the terminal.
 
 For branch naming conventions, file ownership rules, and merge order, see [`.planning/TEAM.md`](.planning/TEAM.md).
 

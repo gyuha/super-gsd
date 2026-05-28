@@ -179,7 +179,7 @@ git config user.name
 
 **브랜치 워크플로우:**
 
-`main` 또는 `master` 브랜치에서 `sg-execute`를 실행하면, super-gsd가 이를 감지하고 `AskUserQuestion`으로 `phase/{N}-{slug}` 브랜치(예: `phase/41-team-documentation`) 생성을 제안한다. phase 완료 후 `sg-phase complete N`을 실행하면 PR 생성 명령이 자동으로 출력된다.
+`main` 또는 `master` 브랜치에서 `sg-execute`를 실행하면, super-gsd가 이를 감지하고 `AskUserQuestion`으로 `phase/{N}-{slug}` 브랜치(예: `phase/41-team-documentation`) 생성을 제안한다. phase 완료 후 `sg-complete N` (또는 `sg-phase complete N`)을 실행하면 PR 생성 명령이 자동으로 출력된다.
 
 브랜치 명명 규칙, 파일 소유권 규칙, merge 순서는 [`.planning/TEAM.md`](.planning/TEAM.md)를 참고한다.
 

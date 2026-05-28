@@ -487,7 +487,13 @@ Plans:
   3. `sg-complete [N]` (phase 완료) 직후 gh CLI 존재 여부를 확인하고, 있으면 `gh pr create --base main` 명령을 출력, 없으면 git push 방법을 안내한다
   4. 기존 feature 브랜치에서 실행 중이면 브랜치 제안 없이 기존 흐름을 그대로 실행한다
 
-**Plans**: TBD
+**Plans:** 2 plans
+
+**Wave 1**
+- [ ] 40-01-PLAN.md — sg-execute Step 1.5 브랜치 감지 + AskUserQuestion 제안 (skills/ + .agents/ pairwise) (TEAM-03)
+
+**Wave 2** *(blocked on Wave 1 completion)*
+- [ ] 40-02-PLAN.md — sg-phase complete Step 4i PR 안내 (TEAM-04)
 
 ### Phase 41: 팀 문서화
 
@@ -539,5 +545,5 @@ Plans:
 | 37. .agents/skills/ 영문화 + 언어 자동 감지 (.agents/) | v2.7 | — (ad-hoc) | Complete | 2026-05-27 |
 | 38. hooks/ 영문화 | v2.7 | — (ad-hoc) | Complete | 2026-05-28 |
 | 39. HANDOFF 사용자 추적 + sg-status --team | v2.8 | 2/2 | Complete | 2026-05-28 |
-| 40. sg-execute 브랜치 워크플로우 + PR 안내 | v2.8 | 0/TBD | Not started | - |
+| 40. sg-execute 브랜치 워크플로우 + PR 안내 | v2.8 | 0/2 | Not started | - |
 | 41. 팀 문서화 | v2.8 | 0/TBD | Not started | - |

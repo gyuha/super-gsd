@@ -188,3 +188,7 @@
 | 2026-05-28T13:43:56Z | 39-handoff-user-tracking | review | sg-next | - |
 | 2026-05-28T13:47:01Z | 39-handoff-user-tracking | sg-next | sg-retro | - |
 | 2026-05-28T13:47:33Z | 39-handoff-user-tracking | sg-retro | ship | - | gyuha |
+| 2026-05-28T14:07:08Z | 39-handoff-user-tracking | ship | review | - |
+| 2026-05-28T14:46:19Z | 39-handoff-user-tracking | review | sg-next | - |
+| 2026-05-28T14:48:45Z | 39-handoff-user-tracking | sg-next | sg-retro | - |
+| 2026-05-28T14:49:33Z | 39-handoff-user-tracking | sg-retro | ship | - |

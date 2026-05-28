@@ -2,6 +2,20 @@
 
 All notable changes to `super-gsd` are documented in this file. Format follows [Keep a Changelog](https://keepachangelog.com/).
 
+## [0.0.45] - 2026-05-28
+
+### Fixed
+
+- `sg-parallel-execute` Step 4가 `$ARGUMENTS` 대신 `$GROUPS_JSON_FILE`에서 PHASE_DIR를 파생하도록 수정 — phase 번호 인자(`sg-parallel-execute 2`) 사용 시 `dirname(2)="."` 로 잘못된 경로를 참조하던 버그 수정
+- `sg-parallel-execute` Task() 실패 시 HANDOFF.md에 `parallel-failed` 행을 기록하고 재시도 안내를 출력 — 실패 후 sg-execute 재실행이 idempotency로 막히던 문제 해결
+- `sg-parallel-execute` Step 2의 "No automatic fallback" 문구 제거 — Step 1.6 자동 생성 로직과의 모순 해소, success_criteria 정리
+
+### Added
+
+- `sg-parallel-execute` phase 번호 인자 지원 — `$ARGUMENTS`가 숫자이면 `.planning/phases/${PHASE_PAD}-*/parallel_groups.json`을 자동 탐색
+- `sg-parallel-execute` `parallel_groups.json` 자동 생성 — 파일이 없을 때 PLAN.md의 `wave:` frontmatter를 읽어 자동으로 생성
+- `.agents/skills/sg-parallel-execute/SKILL.md` 추가 — Codex/Gemini 플랫폼에서도 스킬 호출 가능
+
 ## [0.0.44] - 2026-05-28
 
 ### Fixed

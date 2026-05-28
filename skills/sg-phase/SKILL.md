@@ -82,7 +82,9 @@ Self-contained. Reads `.planning/STATE.md`, `.planning/ROADMAP.md`, and the targ
    4g. **Optionally append a HANDOFF.md `complete` row** (append-only — never modify existing rows). Reuse the sg-ship Step 1.5 header guard + FROM_STAGE extraction (read the To column of the last data row, default `review`), then:
    ```bash
    TS=$(date -u +%Y-%m-%dT%H:%M:%SZ)
-   echo "| $TS | $PHASE_SLUG | $FROM_STAGE | complete | - |" >> .planning/HANDOFF.md
+   GIT_USER=$(git config user.name 2>/dev/null || echo "-")
+   [ -z "$GIT_USER" ] && GIT_USER="-"
+   echo "| $TS | $PHASE_SLUG | $FROM_STAGE | complete | - | $GIT_USER |" >> .planning/HANDOFF.md
    ```
 
    4h. **Print a confirmation** summarizing what changed (phase number, plans-complete, status → Complete, completed date, files touched). Surface the prose in the user's language; keep machine tokens (phase slug, `vX.Y`, dates, `Complete`) verbatim.

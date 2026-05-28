@@ -6,19 +6,20 @@
 
 ## 스키마
 
-- 5개 열 의미
+- 6개 열 의미
   - `Timestamp` — 핸드오프 시각, `ISO 8601 UTC` 형식 (예: `2026-05-15T11:23:45Z`).
   - `Phase` — 인계 대상 GSD phase 번호와 이름 (예: `2-manual-handoff-status`).
   - `From` — 직전 stage. 처음 진입 시 `init`.
   - `To` — 인계 후 도착 stage. 마지막 행의 이 값이 현재 stage가 된다.
   - `Plan Hash` — 해당 phase의 모든 `*-PLAN.md` 본문을 합쳐 산출한 sha256 short hash (7자). plan 본문이 변경되면 같은 phase라도 재인계 가능.
+  - `User` — 명령 실행 시 `git config user.name` 값. 미설정 시 `-`.
 - Stage enum (From / To 컬럼 허용 값): `init`, `gsd-plan`, `superpowers`, `review`, `hookify`, `ship`, `complete`.
 - 초기 상태 (= 데이터 행 0개)에서는 stage가 자동으로 `init`으로 판정된다 — `init` 행을 사전 작성하지 않는다.
 
 ## 로그
 
-| Timestamp | Phase | From | To | Plan Hash |
-| --------- | ----- | ---- | -- | --------- |
+| Timestamp | Phase | From | To | Plan Hash | User |
+| --------- | ----- | ---- | -- | --------- | ---- |
 | 2026-05-16T13:01:11Z | 06-sg-health | init | superpowers | 415be74 |
 | 2026-05-18T06:07:20Z | 07-status-accuracy | superpowers | superpowers | e0dfa4b |
 | 2026-05-18T15:48:55Z | 06-sg-health | superpowers | review | - |
@@ -183,3 +184,4 @@
 | 2026-05-28T06:47:38Z | v2.6 | complete | complete | - |
 | 2026-05-28T12:50:29Z | 39-handoff-user-tracking | complete | gsd-plan | - |
 | 2026-05-28T13:10:38Z | 39-handoff-user-tracking | gsd-plan | parallel | d8e2dc2 |
+| 2026-05-28T13:18:51Z | 39-handoff-user-tracking | parallel | review | - |

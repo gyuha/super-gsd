@@ -307,7 +307,7 @@ This command is self-contained — no external workflow files imported. Reads .p
 0. If files exist in .planning/lessons/, the Step 0 reminder is printed before Step 1 (phase resolve). If no files exist, Step 0 is skipped silently.
 1. The prompt blob shown to the user contains the Phase number, Goal, Success Criteria list, all REQ-IDs with their one-line definitions, and the full body of every `*-PLAN.md` in the phase directory.
 2. The `superpowers:executing-plans` Skill is invoked exactly once per run when PARALLEL_GROUPS is empty, zero times when the idempotency check short-circuits, or `sg-parallel-execute` is invoked instead when PARALLEL_GROUPS is non-empty (parallel path).
-3. `.planning/HANDOFF.md` gains at most one new row per run, and that row matches the 5-column schema `| Timestamp | Phase | From | To | Plan Hash |`.
+3. `.planning/HANDOFF.md` gains at most one new row per run, and that row matches the 6-column schema `| Timestamp | Phase | From | To | Plan Hash | User |`.
 4. Re-running the command with an unchanged plan hash produces the `Already handed off ...` message and appends no row.
 5. If sg-execute is re-run after a `complete` or `ship` stage has been recorded, the idempotency check (which only matches `superpowers` or `parallel` in the To column) will not short-circuit — a new handoff row will be appended. This is intentional: re-executing after milestone completion starts a new handoff cycle for that phase.
 </success_criteria>

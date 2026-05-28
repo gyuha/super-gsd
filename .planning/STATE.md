@@ -67,6 +67,7 @@ None.
 | 260527-w6z | sg-status에 milestones+현재 마일스톤 phase 완료 상태 표를 5줄 상태 블록 앞에 추가하고, 프로즈/표 헤더를 사용자 언어로 출력하도록 변경 + CLAUDE.md에 skill 스크립트 메시지 사용자 언어 출력 컨벤션 명시 | 2026-05-27 | c4ae830 | [260527-w6z-sg-status-milestones-phase-5-claude-md-s](./quick/260527-w6z-sg-status-milestones-phase-5-claude-md-s/) |
 | 260528-dv4 | sg-phase 스킬 신설 — gsd-phase 참고하여 edit/remove는 gsd-phase에 위임, complete(종료)는 ROADMAP Progress/Phases checkbox/STATE 메타데이터 완료 정합 신규 로직. README.md/README.ko.md "wrapping 안 함" 서술 갱신. | 2026-05-28 | baaa07f | [260528-dv4-create-sg-phase-skill-wrapping-gsd-phase](./quick/260528-dv4-create-sg-phase-skill-wrapping-gsd-phase/) |
 | 260528-fbn | sg-complete 인자 형태 분기 개선 — 숫자N→phase 완료(sg-phase complete 위임), vX.Y→해당 마일스톤 종료, 무인자→STATE milestone 현재 마일스톤 종료(phase번호를 버전으로 넘기던 버그 제거). README.md/README.ko.md sg-complete 행 갱신. | 2026-05-28 | 1b4ec28 | [260528-fbn-improve-sg-complete-argument-routing-bar](./quick/260528-fbn-improve-sg-complete-argument-routing-bar/) |
+| 260528-vqz | 현재 skill과 hook의 내용이 README.md 에 잘 이행이 되어 있는지 확인하고, 잘못된 게 있다면 수정 | 2026-05-28 | (pending) | [260528-vqz-skill-hook-readme-md](./quick/260528-vqz-skill-hook-readme-md/) |
 
 ## Deferred Items
 

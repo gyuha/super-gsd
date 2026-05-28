@@ -58,6 +58,34 @@ This command is self-contained — no external workflow files imported. Reads .p
    fi
    ```
 
+1.5. **Branch detection (TEAM-03).** Check if current git branch is main or master; if so, offer to create a phase branch.
+
+   First, compute PHASE_PAD (needed for branch name):
+   ```bash
+   if echo "$PHASE_NUM" | grep -qE '^[0-9]+$'; then
+     PHASE_PAD=$(printf "%02d" "$PHASE_NUM")
+   else
+     PHASE_PAD="$PHASE_NUM"
+   fi
+   ```
+
+   Read `.planning/ROADMAP.md` using the Read tool, then find the `### Phase <PHASE_NUM>:` header (try both unpadded and zero-padded forms). Extract the phase name text after "Phase N: " on that line. Normalize it to lowercase with hyphens (replace spaces with `-`, remove non-alphanumeric except hyphens, collapse consecutive hyphens). Set `BRANCH_SLUG` to the result.
+   Set `BRANCH_NAME="phase/${PHASE_PAD}-${BRANCH_SLUG}"`.
+
+   ```bash
+   CURRENT_BRANCH=$(git rev-parse --abbrev-ref HEAD 2>/dev/null || echo "unknown")
+   ```
+
+   If `CURRENT_BRANCH` is `main` or `master`:
+   - Use AskUserQuestion with:
+     - header: `"Branch"`
+     - question (사용자 언어로): 현재 `<CURRENT_BRANCH>` 브랜치에서 작업 중입니다. Phase <PHASE_NUM> 작업을 위해 `<BRANCH_NAME>` 브랜치를 생성하고 전환할까요?
+     - options: `["Create branch (권장)", "Skip — continue on <CURRENT_BRANCH>"]`
+   - If user selects "Create branch": execute `git checkout -b <BRANCH_NAME>` then continue to Step 2.
+   - If user selects "Skip": continue to Step 2 without branching.
+
+   If `CURRENT_BRANCH` is anything other than `main`/`master` (including `"unknown"`): skip this step entirely and proceed to Step 2.
+
 2. **Locate phase directory.** Glob `.planning/phases/<phase>-*` (with zero-padded two-digit prefix support). Example:
    ```bash
    if echo "$PHASE_NUM" | grep -qE '^[0-9]+$'; then

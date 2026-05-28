@@ -56,6 +56,29 @@ Reads .planning/STATE.md, .planning/ROADMAP.md, .planning/REQUIREMENTS.md, .plan
    fi
    ```
 
+1.5. **Branch detection (TEAM-03).** Check if current git branch is main or master; if so, inform the user about creating a phase branch. (AskUserQuestion not supported on this platform — outputs a message and continues automatically.)
+
+   First, compute PHASE_PAD:
+   ```bash
+   PHASE_PAD=$(printf "%02d" "$PHASE_NUM" 2>/dev/null || echo "$PHASE_NUM")
+   ```
+
+   Read `.planning/ROADMAP.md` using the Read tool, then find the `### Phase <PHASE_NUM>:` header (try both unpadded and zero-padded forms). Extract the phase name text after "Phase N: " on that line. Normalize it to lowercase with hyphens (replace spaces with `-`, remove non-alphanumeric except hyphens, collapse consecutive hyphens). Set `BRANCH_SLUG` to the result.
+   Set `BRANCH_NAME="phase/${PHASE_PAD}-${BRANCH_SLUG}"`.
+
+   ```bash
+   CURRENT_BRANCH=$(git rev-parse --abbrev-ref HEAD 2>/dev/null || echo "unknown")
+   ```
+
+   If `CURRENT_BRANCH` is `main` or `master`:
+   - Output a message (in the user's language) informing them they are on the `<CURRENT_BRANCH>` branch and suggesting they create a phase branch manually:
+     ```
+     On main branch — to create a phase branch, run: `git checkout -b <BRANCH_NAME>`
+     ```
+   - Continue automatically to Step 2 (no user interaction).
+
+   If `CURRENT_BRANCH` is anything other than `main`/`master` (including `"unknown"`): skip this step entirely and proceed to Step 2.
+
 2. **Locate phase directory.**
    ```bash
    PHASE_PAD=$(printf "%02d" "$PHASE_NUM" 2>/dev/null || echo "$PHASE_NUM")

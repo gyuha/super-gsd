@@ -88,6 +88,22 @@ Self-contained. Reads `.planning/STATE.md`, `.planning/ROADMAP.md`, and the targ
    ```
 
    4h. **Print a confirmation** summarizing what changed (phase number, plans-complete, status → Complete, completed date, files touched). Surface the prose in the user's language; keep machine tokens (phase slug, `vX.Y`, dates, `Complete`) verbatim.
+
+   4i. **PR creation guidance (TEAM-04).** Check for gh CLI and output the PR creation command or git push guidance.
+   ```bash
+   if command -v gh >/dev/null 2>&1; then
+     # gh CLI available — output gh pr create command text
+     echo "PR을 생성하려면 (To create a PR):"
+     echo "  gh pr create --base main --title \"phase/${PHASE_SLUG}\""
+   else
+     # gh CLI not available — output git push guidance
+     echo "PR을 생성하려면 현재 브랜치를 push한 뒤 GitHub에서 PR을 여세요 (To create a PR, push and open on GitHub):"
+     echo "  git push -u origin HEAD"
+   fi
+   ```
+   - 출력 산문은 사용자 언어로 표면화 (`<language>` 지침 준수). 명령어 토큰 (`gh pr create`, `git push -u origin HEAD`, `phase/${PHASE_SLUG}`) 은 영문 그대로.
+   - PR 자동 실행 없음 — 텍스트 출력만.
+   - 조건 분기 없이 항상 출력.
 </process>
 
 <success_criteria>

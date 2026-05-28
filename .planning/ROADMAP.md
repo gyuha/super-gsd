@@ -449,6 +449,15 @@ Plans:
 ## v2.8 Team Collaboration Support
 
 ### Phase 39: HANDOFF 사용자 추적 + sg-status --team
+**Plans:** 2 plans
+
+**Wave 1**
+- [ ] 39-01-PLAN.md — HANDOFF User 컬럼 추가 (skills/ 8개 + .agents/ 5개 = 13개 SKILL.md) (TEAM-01)
+
+**Wave 2** *(blocked on Wave 1 completion)*
+- [ ] 39-02-PLAN.md — sg-status --team 플래그 처리 (TEAM-02)
+
+
 
 **Goal**: 팀원의 작업 이력이 HANDOFF.md에 자동 기록되고, `sg-status --team`으로 현재 팀 상태를 확인할 수 있다
 **Depends on**: Phase 38 (v2.8 신규 시작)

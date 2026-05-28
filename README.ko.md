@@ -31,6 +31,7 @@ sg-new/sg-start → sg-explore → sg-plan → sg-execute → sg-review → sg-l
 | `/super-gsd:sg-start` | `gsd-new-project`를 통해 새 프로젝트 또는 마일스톤 스캐폴딩 | 새 프로젝트/마일스톤의 맨 처음 |
 | `/super-gsd:sg-explore` | `gsd-explore`를 통해 코드베이스 분석 | `sg-start` 이후, 계획 전 |
 | `/super-gsd:sg-plan` | 단계 컨텍스트를 수집하고 실행 계획 생성 (`gsd-discuss-phase` → `gsd-plan-phase` 2단계 체인) | `sg-explore` 이후, 계획할 준비가 됐을 때 |
+| `/super-gsd:sg-ui-plan` | UI 설계 전용 brainstorming — `superpowers:brainstorming`을 직접 실행 | `sg-plan`에서 Visual Companion 없이 진행했지만 UI 설계가 필요할 때 |
 | `/super-gsd:sg-execute` | 현재 단계 계획을 패키징하여 Superpowers에 인계 (`superpowers:executing-plans`) | `sg-plan` 완료 후 |
 | `/super-gsd:sg-review` | `superpowers:requesting-code-review`를 통해 코드 리뷰 요청 | 구현 완료 후 |
 | `/super-gsd:sg-learn` | `sg-retro`를 통한 회고 실행, 패턴 추출 및 훅 생성 | 리뷰 완료 후 |

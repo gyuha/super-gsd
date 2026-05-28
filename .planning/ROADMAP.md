@@ -452,10 +452,10 @@ Plans:
 **Plans:** 2 plans
 
 **Wave 1**
-- [ ] 39-01-PLAN.md — HANDOFF User 컬럼 추가 (skills/ 8개 + .agents/ 5개 = 13개 SKILL.md) (TEAM-01)
+- [x] 39-01-PLAN.md — HANDOFF User 컬럼 추가 (skills/ 8개 + .agents/ 5개 = 13개 SKILL.md) (TEAM-01)
 
 **Wave 2** *(blocked on Wave 1 completion)*
-- [ ] 39-02-PLAN.md — sg-status --team 플래그 처리 (TEAM-02)
+- [x] 39-02-PLAN.md — sg-status --team 플래그 처리 (TEAM-02)
 
 
 
@@ -472,8 +472,8 @@ Plans:
 **Plans**: 2 plans
 
 Plans:
-- [ ] 39-01-PLAN.md — HANDOFF User 컬럼 추가 (sg-plan/execute/review/ship/complete/next × skills/ + .agents/)
-- [ ] 39-02-PLAN.md — sg-status --team 플래그 처리
+- [x] 39-01-PLAN.md — HANDOFF User 컬럼 추가 (sg-plan/execute/review/ship/complete/next × skills/ + .agents/)
+- [x] 39-02-PLAN.md — sg-status --team 플래그 처리
 
 ### Phase 40: sg-execute 브랜치 워크플로우 + PR 안내
 
@@ -538,6 +538,6 @@ Plans:
 | 36. skills/ 영문화 + 언어 자동 감지 (skills/) | v2.7 | 3/3 | Complete | 2026-05-27 |
 | 37. .agents/skills/ 영문화 + 언어 자동 감지 (.agents/) | v2.7 | — (ad-hoc) | Complete | 2026-05-27 |
 | 38. hooks/ 영문화 | v2.7 | — (ad-hoc) | Complete | 2026-05-28 |
-| 39. HANDOFF 사용자 추적 + sg-status --team | v2.8 | 0/TBD | Not started | - |
+| 39. HANDOFF 사용자 추적 + sg-status --team | v2.8 | 2/2 | Complete | 2026-05-28 |
 | 40. sg-execute 브랜치 워크플로우 + PR 안내 | v2.8 | 0/TBD | Not started | - |
 | 41. 팀 문서화 | v2.8 | 0/TBD | Not started | - |

@@ -68,7 +68,7 @@ None.
 | 260528-dv4 | sg-phase 스킬 신설 — gsd-phase 참고하여 edit/remove는 gsd-phase에 위임, complete(종료)는 ROADMAP Progress/Phases checkbox/STATE 메타데이터 완료 정합 신규 로직. README.md/README.ko.md "wrapping 안 함" 서술 갱신. | 2026-05-28 | baaa07f | [260528-dv4-create-sg-phase-skill-wrapping-gsd-phase](./quick/260528-dv4-create-sg-phase-skill-wrapping-gsd-phase/) |
 | 260528-fbn | sg-complete 인자 형태 분기 개선 — 숫자N→phase 완료(sg-phase complete 위임), vX.Y→해당 마일스톤 종료, 무인자→STATE milestone 현재 마일스톤 종료(phase번호를 버전으로 넘기던 버그 제거). README.md/README.ko.md sg-complete 행 갱신. | 2026-05-28 | 1b4ec28 | [260528-fbn-improve-sg-complete-argument-routing-bar](./quick/260528-fbn-improve-sg-complete-argument-routing-bar/) |
 | 260528-vqz | 현재 skill과 hook의 내용이 README.md 에 잘 이행이 되어 있는지 확인하고, 잘못된 게 있다면 수정 | 2026-05-28 | 22c902e | [260528-vqz-skill-hook-readme-md](./quick/260528-vqz-skill-hook-readme-md/) |
-| 260528-wch | sg-parallel-execute: ARGUMENTS가 phase 번호일 때 parallel_groups.json 경로를 자동 탐색하도록 수정 | 2026-05-28 | (pending) | [260528-wch-sg-parallel-execute-arguments-phase-para](./quick/260528-wch-sg-parallel-execute-arguments-phase-para/) |
+| 260528-wch | sg-parallel-execute: ARGUMENTS가 phase 번호일 때 parallel_groups.json 경로를 자동 탐색하도록 수정 | 2026-05-28 | 236b5c8 | [260528-wch-sg-parallel-execute-arguments-phase-para](./quick/260528-wch-sg-parallel-execute-arguments-phase-para/) |
 
 ## Deferred Items
 

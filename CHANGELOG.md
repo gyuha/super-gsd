@@ -2,6 +2,19 @@
 
 All notable changes to `super-gsd` are documented in this file. Format follows [Keep a Changelog](https://keepachangelog.com/).
 
+## [0.0.43] - 2026-05-28
+
+### Added
+
+- `sg-cleanup` 신규 스킬 — `gsd-cleanup`을 래핑하고 종료 후 아카이브 내역을 마일스톤별 표로 표시 (before/after 스냅샷 diff 기반)
+- `sg-phase` 신규 스킬 — `/super-gsd:sg-phase edit|remove|complete`. edit/remove는 `gsd-phase --edit/--remove`에 위임, **complete**는 신규 인라인 정합 로직(ROADMAP Progress 행을 Complete + 날짜로, Phases 체크박스 `[x]`로, STATE 동기화, 선택적 HANDOFF complete 행) — GSD에 없던 phase-metadata 정합 기능
+
+### Changed
+
+- `sg-complete` 인자 형태 분기로 재작성 — 숫자 `<N>`은 phase 완료(`sg-phase complete <N>`에 위임), `<vX.Y>`는 해당 마일스톤 종료, 무인자는 STATE의 `milestone:`으로 현재 마일스톤 종료. 버전 regex를 숫자 regex보다 먼저 테스트해 `v1.4` 오분류 방지. phase 번호가 gsd-complete-milestone에 버전으로 넘어가던 버그 제거
+- README.md / README.ko.md — sg-phase 서브커맨드 표 추가, sg-complete 행 갱신, 기존 "super-gsd는 gsd-phase를 wrapping하지 않는다" 서술 교체. EN/KO 패리티 유지
+- v1.4 phase 메타데이터 정합 — phases 17/18/19를 새 `sg-phase complete`로 ROADMAP Progress/Phases 체크박스 정합 (검증 적용)
+
 ## [0.0.42] - 2026-05-27
 
 ### Changed

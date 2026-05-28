@@ -57,6 +57,7 @@ If GROUP_COUNT is 0, print an error message and exit (D-07, no automatic fallbac
 CURRENT_WAVE = lowest wave number among all groups.
 WAVE_GROUPS = groups where wave == CURRENT_WAVE.
 EXEC_COUNT = min(len(WAVE_GROUPS), 3).
+OVERFLOW_GROUPS = WAVE_GROUPS[3:] if len(WAVE_GROUPS) > 3 else [].
 REMAINING_WAVES = groups where wave > CURRENT_WAVE, sorted by wave ascending.
 
 Output:
@@ -99,21 +100,22 @@ Execute all tasks in the plan(s) above. Follow each task's <action>, <verify>, a
 
 When a group contains multiple plan files, include them all in the same Task() prompt.
 
+After the parallel batch completes: if any Task() reports failure, stop and surface the error — do not proceed. If OVERFLOW_GROUPS is non-empty, execute each group sequentially (one Task() at a time) before advancing to Step 6.
+
 **Step 6 — Advance through remaining waves.**
 
-After the parallel batch (Step 5) completes, process REMAINING_WAVES one wave at a time in ascending order. Do not start a wave until all Task()s from the previous wave have completed successfully. If any Task() reports failure, stop and surface the error instead of advancing.
+After the parallel batch (Step 5) and any OVERFLOW_GROUPS complete successfully, process REMAINING_WAVES one wave at a time in ascending order. Do not start a wave until all Task()s from the previous wave have completed successfully. If any Task() reports failure, stop and surface the error instead of advancing.
 
 For each subsequent wave:
 1. CURRENT_WAVE = next wave number from REMAINING_WAVES.
-2. WAVE_GROUPS = groups for this wave. EXEC_COUNT = min(len(WAVE_GROUPS), 3).
-3. Read PLAN.md for each group in WAVE_GROUPS (same as Step 4).
+2. WAVE_GROUPS = groups for this wave. EXEC_COUNT = min(len(WAVE_GROUPS), 3). OVERFLOW_GROUPS = WAVE_GROUPS[3:] if len(WAVE_GROUPS) > 3 else [].
+3. Read PLAN.md for each group in WAVE_GROUPS using the Read tool (PLAN.md path = `{PHASE_DIR}/{plan_filename}`).
 4. Dispatch EXEC_COUNT Task()s in parallel. Wait for all to complete before advancing.
+5. If OVERFLOW_GROUPS is non-empty, execute each group sequentially (one Task() at a time) before advancing to the next wave.
 
 ```
 [sg-parallel-execute] Wave {W}: dispatching {EXEC_COUNT} group(s) in parallel
 ```
-
-If WAVE_GROUPS contains more than 3 groups, execute the first 3 in parallel, wait for completion, then execute the remainder sequentially within that same wave before advancing to the next wave.
 
 </process>
 

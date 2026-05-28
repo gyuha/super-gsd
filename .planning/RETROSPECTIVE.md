@@ -135,6 +135,47 @@
 
 ---
 
+## Milestone: v1.4 — Team Agent Parallel Execution (retroactive close)
+
+**Shipped:** 2026-05-21 (work) / **Formally closed:** 2026-05-28 (metadata + tag)
+**Phases:** 3 (17-19) | **Plans:** 3 (originally; phase dirs deleted in 8383461)
+
+### What Was Built
+
+- `skills/sg-parallel-execute/SKILL.md` — independent plan groups run concurrently
+- `sg-execute` Step 8.5 `[TE-05a]` — wave/depends_on/files_modified parsing + PARALLEL_GROUPS computation + fallback
+- HANDOFF parallel-group recording + compatibility regression preserved
+
+### What Worked
+
+- **Vertical slice (17→18→19)**: 의존성 분석 → 신규 스킬 → 통합 회귀 — 각 phase가 독립 검증 가능했다
+- **Wave-based concurrency**: 독립 그룹을 안전하게 묶어 Task() 병렬 dispatch
+
+### What Was Inefficient (retroactive close honest record)
+
+- **메타데이터 정합 실패 (~7일 누적 드리프트)**: 2026-05-21 shipped 후 ROADMAP/STATE는 7일간 `Not started` 표기 유지. 2026-05-28에야 새로 만든 `sg-phase complete`로 정합·아카이브
+- **phase 디렉토리 손실**: 17/18/19 디렉토리가 commit `8383461`에서 archive가 아닌 `git rm`으로 삭제됨 → SUMMARY/CONTEXT는 git 히스토리에만 남고 milestone-close 시 accomplishments 추출 불가
+- **REQUIREMENTS.md 부재**: v2.7 close에서 이미 `git rm` 됐기에 v1.4-REQUIREMENTS.md 아카이브 생성 안 됨 (CLI graceful skip)
+- **아카이브 시점 불일치**: `v1.4-ROADMAP.md`는 v1.4 시점이 아닌 현재(post-v2.7) ROADMAP 스냅샷 — 역사적 정확도 손상
+
+### Patterns Established / Reinforced
+
+- **드리프트 자동화 도구**: 같은 세션에 신설된 `sg-phase complete`, `sg-cleanup`, `sg-complete` 분기 — v1.4 retroactive close가 이 도구들의 첫 실전 검증
+- **late-close cost**: 마일스톤 close를 미루면 phase 아티팩트 손실·아카이브 시점 misleading·REQUIREMENTS 손실이 누적됨 → 작업 완료 즉시 close가 cheap
+
+### Key Lessons
+
+1. **작업 ship 직후 milestone close**: 메타데이터·디렉토리·REQUIREMENTS 손실 누적 전에
+2. **phase 디렉토리는 archive로, git rm 금지**: 8383461처럼 일괄 `git rm`은 milestone-close의 evidence 기반(accomplishments/REQUIREMENTS)을 무너뜨림 — gsd-cleanup으로 `milestones/vX.Y-phases/` 아카이브가 정답
+3. **retroactive close는 honest record로**: 아카이브의 misleading 시점·결손을 본 문서에 명시
+
+### Cost Observations
+
+- Work cost: ~1일 (2026-05-21)
+- Close cost (retroactive, 2026-05-28): metadata reconcile + archive + tag — `sg-phase complete` 3회 + `sg-complete v1.4` 1회
+
+---
+
 ## Cross-Milestone Trends
 
 ### Process Evolution
@@ -147,6 +188,7 @@
 | v1.5 Visual Companion | 2 | 3 | sg-ui-plan + sg-plan Visual Companion 분기 |
 | v2.0 Commands→Skills | 2 | 6 | commands/ → skills/ 마이그레이션 완료 |
 | v2.7 Skills & Hooks i18n | 3 | 3 | 27개 SKILL.md 영문화 + 언어 자동 감지, hooks 주석 영문화 |
+| v1.4 Team Agent Parallel (retro-close) | 3 | 3 | sg-parallel-execute 스킬 + wave 기반 병렬 dispatch (work 2026-05-21, close 2026-05-28) |
 
 ### Top Lessons (Verified Across Milestones)
 

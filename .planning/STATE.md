@@ -3,8 +3,8 @@ gsd_state_version: 1.0
 milestone: v2.7
 milestone_name: Skills & Hooks Internationalization
 status: Awaiting next milestone
-last_updated: "2026-05-27T15:15:41.067Z"
-last_activity: 2026-05-27 — Milestone v2.7 completed and archived
+last_updated: "2026-05-28T05:42:10.368Z"
+last_activity: 2026-05-28 — Milestone v1.4 completed and archived
 progress:
   total_phases: 3
   completed_phases: 1
@@ -24,10 +24,10 @@ See: .planning/PROJECT.md (updated 2026-05-26)
 
 ## Current Position
 
-Phase: Milestone v2.7 complete
+Phase: Milestone v1.4 complete
 Plan: —
 Status: Awaiting next milestone
-Last activity: 2026-05-27 — Milestone v2.7 completed and archived
+Last activity: 2026-05-28 — Milestone v1.4 completed and archived
 
 ## Performance Metrics
 

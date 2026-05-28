@@ -173,3 +173,4 @@
 | 2026-05-28T02:20:15Z | 17 | sg-next | complete | - |
 | 2026-05-28T02:20:50Z | 18 | complete | complete | - |
 | 2026-05-28T02:20:51Z | 19 | complete | complete | - |
+| 2026-05-28T05:41:00Z | v1.4 | complete | complete | - |

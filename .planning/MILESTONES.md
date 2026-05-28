@@ -1,5 +1,15 @@
 # Milestones: super-gsd
 
+## v1.4 Team Agent Parallel Execution (Shipped: 2026-05-28)
+
+**Phases completed:** 1 phases, 3 plans, 0 tasks
+
+**Key accomplishments:**
+
+- (none recorded)
+
+---
+
 ## v2.7 Skills & Hooks Internationalization (Shipped: 2026-05-27)
 
 **Phases completed:** 1 phases, 3 plans, 0 tasks

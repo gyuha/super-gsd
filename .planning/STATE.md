@@ -66,7 +66,7 @@ None.
 | 260525-vp6 | hooks/*.py 4개 파일 일괄 삭제 (Phase 31 CLEAN-01을 앞당김) + transcript_matcher.cjs/stop_hook.cjs에 sg-retro-complete 신호 감지 추가 (지난번 cleanup에서 제거한 hookify-complete 분기를 sg-retro 명명으로 대체) | 2026-05-25 | 877a666 | [260525-vp6-hooks-py-4-phase-31-clean-01-transcript-](./quick/260525-vp6-hooks-py-4-phase-31-clean-01-transcript-/) |
 | 260527-w6z | sg-status에 milestones+현재 마일스톤 phase 완료 상태 표를 5줄 상태 블록 앞에 추가하고, 프로즈/표 헤더를 사용자 언어로 출력하도록 변경 + CLAUDE.md에 skill 스크립트 메시지 사용자 언어 출력 컨벤션 명시 | 2026-05-27 | c4ae830 | [260527-w6z-sg-status-milestones-phase-5-claude-md-s](./quick/260527-w6z-sg-status-milestones-phase-5-claude-md-s/) |
 | 260528-dv4 | sg-phase 스킬 신설 — gsd-phase 참고하여 edit/remove는 gsd-phase에 위임, complete(종료)는 ROADMAP Progress/Phases checkbox/STATE 메타데이터 완료 정합 신규 로직. README.md/README.ko.md "wrapping 안 함" 서술 갱신. | 2026-05-28 | baaa07f | [260528-dv4-create-sg-phase-skill-wrapping-gsd-phase](./quick/260528-dv4-create-sg-phase-skill-wrapping-gsd-phase/) |
-| 260528-fbn | sg-complete 인자 형태 분기 개선 — 숫자N→phase 완료(sg-phase complete 위임), vX.Y→해당 마일스톤 종료, 무인자→STATE milestone 현재 마일스톤 종료(phase번호를 버전으로 넘기던 버그 제거). README.md/README.ko.md sg-complete 행 갱신. | 2026-05-28 | (pending) | [260528-fbn-improve-sg-complete-argument-routing-bar](./quick/260528-fbn-improve-sg-complete-argument-routing-bar/) |
+| 260528-fbn | sg-complete 인자 형태 분기 개선 — 숫자N→phase 완료(sg-phase complete 위임), vX.Y→해당 마일스톤 종료, 무인자→STATE milestone 현재 마일스톤 종료(phase번호를 버전으로 넘기던 버그 제거). README.md/README.ko.md sg-complete 행 갱신. | 2026-05-28 | 1b4ec28 | [260528-fbn-improve-sg-complete-argument-routing-bar](./quick/260528-fbn-improve-sg-complete-argument-routing-bar/) |
 
 ## Deferred Items
 

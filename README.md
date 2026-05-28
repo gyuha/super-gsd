@@ -9,7 +9,7 @@ Orchestrator plugin that auto-chains GSD → Superpowers → sg-retro so plannin
 
 The problem this solves is that manual handoff between these three tools is fragile. People forget to run the review, skip the retro, lose context between sessions, or re-run a planning command that overwrites half-finished work. By separating roles and then orchestrating the seams between them, the same mistakes stop showing up.
 
-All sixteen slash commands covering the full GSD → Superpowers → sg-retro cycle are available — from starting a new milestone to closing it out and beginning the next. Use `sg-next` at any point to auto-detect the current stage and invoke the next command without having to remember it. See the **Commands** section below for the quick-reference table, and `docs/COMMANDS.md` for the full per-command reference.
+All twenty-one slash commands covering the full GSD → Superpowers → sg-retro cycle are available — from starting a new milestone to closing it out and beginning the next. Use `sg-next` at any point to auto-detect the current stage and invoke the next command without having to remember it. See the **Commands** section below for the quick-reference table, and `docs/COMMANDS.md` for the full per-command reference.
 
 ## Workflow
 
@@ -28,7 +28,7 @@ Quick reference for all `/super-gsd:sg-*` slash commands.
 
 | Command | What it does | When to use |
 |---------|-------------|-------------|
-| `/super-gsd:sg-start` | Scaffold a new project or milestone via `gsd-new-project` | At the very beginning of a new project or milestone |
+| `/super-gsd:sg-start` | Detect an existing session via STATE.md and offer Resume / Start new milestone / Cancel — falls back to `gsd-new-project` when no session exists | At project start, or to resume an existing session |
 | `/super-gsd:sg-explore` | Map and analyse the codebase via `gsd-map-codebase` | After `sg-start`, before planning |
 | `/super-gsd:sg-plan` | Gather phase context then create an execution plan (2-step chain: `gsd-discuss-phase` → `gsd-plan-phase`) | After `sg-explore`, when ready to plan |
 | `/super-gsd:sg-ui-plan` | UI 설계 전용 brainstorming — `superpowers:brainstorming`을 직접 실행한다 | sg-plan에서 Visual Companion 없이 진행했지만 UI 설계가 필요할 때 |
@@ -44,6 +44,9 @@ Quick reference for all `/super-gsd:sg-*` slash commands.
 | `/super-gsd:sg-update` | Check, install, or update GSD, superpowers, and super-gsd (installs missing tools automatically) | When you want to install or update all workflow tools at once |
 | `/super-gsd:sg-quick` | Execute a small, ad-hoc task with GSD guarantees (plan + execute + commit) | For one-off tasks outside the main phase workflow |
 | `/super-gsd:sg-health` | Self-diagnose the installation: GSD/Superpowers presence, hook registration, HANDOFF.md schema | When something feels broken or after a fresh install |
+| `/super-gsd:sg-cleanup` | Archive completed milestone phase directories via `gsd-cleanup`, then display a summary table of what was archived | After milestone completion when `.planning/phases/` needs tidying |
+| `/super-gsd:sg-parallel-execute` | When `parallel_groups.json` exists, dispatch up to 3 concurrent Task() agents — one per independent plan group | When independent plan groups exist and you want to run them concurrently instead of `sg-execute` |
+| `/super-gsd:sg-setup` | Copy super-gsd hook and skill files to the current project — Claude Code in-session installer | When manually installing super-gsd into an existing project |
 
 See [docs/COMMANDS.md](./docs/COMMANDS.md) for the full per-command reference including arguments and detailed descriptions.
 

@@ -45,7 +45,9 @@ sg-new/sg-start → sg-explore → sg-plan → sg-execute → sg-review → sg-l
 | `/super-gsd:sg-quick` | GSD 보장이 있는 소규모 애드혹 작업 실행 (계획 + 실행 + 커밋) | 메인 단계 워크플로우 외 일회성 작업 |
 | `/super-gsd:sg-health` | 설치 자기진단: GSD/Superpowers 존재 여부, 훅 등록, HANDOFF.md 스키마 확인 | 문제가 발생했거나 새 설치 후 |
 | `/super-gsd:sg-cleanup` | `gsd-cleanup`을 통해 완료된 마일스톤의 phase 디렉토리를 아카이브하고 요약 테이블 출력 | 마일스톤 완료 후 `.planning/phases/` 정리가 필요할 때 |
-| `/super-gsd:sg-parallel-execute` | `parallel_groups.json`이 있을 때 독립 플랜 그룹을 최대 3개 Task() 에이전트로 병렬 실행 | 독립 플랜 그룹이 여러 개일 때 `sg-execute` 대신 사용 |
+| `/super-gsd:sg-parallel-execute` | 독립 플랜 그룹을 병렬 실행 — phase 번호 또는 파일 경로 전달 가능; `parallel_groups.json`이 없으면 PLAN.md `wave:` 필드로 자동 생성; wave 단위로 순차 처리 | 독립 플랜 그룹이 여러 개일 때 `sg-execute` 대신 사용 |
+| `/super-gsd:sg-phase` | 기존 phase를 편집·제거·완료 처리 — `edit`/`remove`는 `gsd-phase`에 위임, `complete`는 ROADMAP Progress 행·Phases 체크박스·STATE.md를 정합화 | phase 범위 수정, 계획된 phase 취소, 완료 처리 시 |
+| `/super-gsd:sg-retro` | 6가지 렌즈(Sailboat, Five Whys 등)로 독립 회고 실행 후 결과를 `.planning/lessons/`에 저장 | 작업 세션 후 교훈을 캡처할 때; `sg-learn`이 자동으로 호출하기도 함 |
 | `/super-gsd:sg-setup` | 현재 프로젝트에 super-gsd hook/skill 파일을 복사 — Claude Code in-session 설치 도구 | 기존 프로젝트에 super-gsd를 수동으로 설치할 때 |
 
 전체 명령 레퍼런스(인수 및 상세 설명 포함)는 [docs/COMMANDS.md](./docs/COMMANDS.md)를 참고한다.
@@ -196,7 +198,7 @@ super-gsd 훅은 Claude Code 플러그인 마켓플레이스 없이 Codex, Gemin
 | PreToolUse / BeforeTool 훅 | ✅ | ✅ | ✅ |
 | Superpowers 연동 | ✅ | ❌ | ❌ |
 | AskUserQuestion UI | ✅ | ❌ numbered list 대체 | ❌ numbered list 대체 |
-| 스킬 6개 (sg-retro, sg-plan, sg-execute 등) | ✅ | ✅ `.agents/skills/` 경유 | ✅ `.agents/skills/` 경유 |
+| 스킬 21개 (sg-retro, sg-plan, sg-execute 등) | ✅ | ✅ `.agents/skills/` 경유 | ✅ `.agents/skills/` 경유 |
 
 ### Codex
 
@@ -280,6 +282,12 @@ npx @gyuha/super-gsd install --gemini
 - **Phase 15 — 플랫폼별 훅 설정 + Python 픽스 (v1.3 — 완료):** `.codex/hooks.json`과 `.gemini/settings.json` 훅 설정 파일 신규 생성, `CLAUDE_PLUGIN_ROOT` 없이도 `hooks/*.py`가 실행되도록 경로 폴백 수정.
 - **Phase 16 — README Multi-Platform 섹션 (v1.3 — 완료):** 플랫폼별 설치 가이드와 기능 델타 테이블(동작 가능 / 제한 있음 / 불가)을 README에 추가.
 - **Phase 26 — sg-next 자동 진행 (v2.2 — 완료):** `sg-next`가 HANDOFF.md와 STATE.md를 읽어 현재 워크플로우 단계를 감지하고, `sg-status`와 동일한 라우팅 테이블로 다음 sg-* 명령을 즉시 실행한다. 모호한 상태(`complete` 또는 `init`)에서는 자동 실행 대신 `AskUserQuestion`을 표시한다.
+- **Phase 27 — GSD 저장소 마이그레이션 업데이트 (v2.3 — 완료):** 모든 내부 GSD 패키지 참조를 `@opengsd/get-shit-done-redux`로 업데이트하여 `sg-update`와 `sg-health`가 올바르게 동작하도록 수정.
+- **Phase 28–31 — Hooks Node 마이그레이션 (v2.4 — 완료):** 훅 스크립트 4개(`stop_hook`, `transcript_matcher`, `rule_runner`, `lessons_ranker`)를 Python에서 Node.js `.cjs`로 재작성, 훅 설정 파일의 호출을 `node`로 교체, 레거시 `.py` 파일 삭제.
+- **Phase 32 — Superpowers 네이티브 파일 파싱 (v2.5 — 완료):** 스킬 내부 파일 파싱을 bash 파이프라인에서 Superpowers Read 도구 패턴으로 전환하여 모든 플랫폼에서 올바르게 동작.
+- **Phase 33–35 — Codex/Gemini 설치 UX 개선 (v2.6 — 완료):** `npx @gyuha/super-gsd install` 단일 명령 설치 도구 추가, `$sg-setup` 인세션 스킬 도입, README/AGENTS.md에 검증 가능한 플랫폼별 설치 안내 추가.
+- **Phase 36–38 — Skills & Hooks 국제화 (v2.7 — 완료):** `skills/`와 `.agents/skills/`의 모든 SKILL.md를 한글 소스에서 영문 + 언어 자동 감지 방식으로 전환, `hooks/`의 한글 주석을 영문으로 포팅.
+- **Phase 39 — 팀 협업 지원 (v2.8 — 진행 중):** HANDOFF.md 행에 `User` 컬럼을 추가해 각 핸드오프를 팀원에게 귀속, `sg-status --team`으로 HANDOFF.md 기반 팀원별 현재 위치 테이블 출력.
 
 ## 라이선스
 

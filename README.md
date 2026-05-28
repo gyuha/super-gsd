@@ -45,7 +45,9 @@ Quick reference for all `/super-gsd:sg-*` slash commands.
 | `/super-gsd:sg-quick` | Execute a small, ad-hoc task with GSD guarantees (plan + execute + commit) | For one-off tasks outside the main phase workflow |
 | `/super-gsd:sg-health` | Self-diagnose the installation: GSD/Superpowers presence, hook registration, HANDOFF.md schema | When something feels broken or after a fresh install |
 | `/super-gsd:sg-cleanup` | Archive completed milestone phase directories via `gsd-cleanup`, then display a summary table of what was archived | After milestone completion when `.planning/phases/` needs tidying |
-| `/super-gsd:sg-parallel-execute` | When `parallel_groups.json` exists, dispatch up to 3 concurrent Task() agents — one per independent plan group | When independent plan groups exist and you want to run them concurrently instead of `sg-execute` |
+| `/super-gsd:sg-parallel-execute` | Execute independent plan groups concurrently — accepts a phase number or file path; auto-generates `parallel_groups.json` from PLAN.md `wave:` fields if missing; processes one wave at a time | When a phase has independent plan groups and you want parallel execution instead of `sg-execute` |
+| `/super-gsd:sg-phase` | Edit, remove, or complete an existing phase — `edit`/`remove` delegate to `gsd-phase`; `complete` reconciles ROADMAP Progress row, Phases checkbox, and STATE.md | To edit scope, remove a planned phase, or mark a finished phase done |
+| `/super-gsd:sg-retro` | Run a standalone retrospective with 6 lenses (Sailboat, Five Whys, and more) and save findings to `.planning/lessons/` | After any work session to capture lessons; also invoked automatically by `sg-learn` |
 | `/super-gsd:sg-setup` | Copy super-gsd hook and skill files to the current project — Claude Code in-session installer | When manually installing super-gsd into an existing project |
 
 See [docs/COMMANDS.md](./docs/COMMANDS.md) for the full per-command reference including arguments and detailed descriptions.
@@ -196,7 +198,7 @@ super-gsd hooks work on Codex and Gemini/Antigravity CLI without the Claude Code
 | PreToolUse / BeforeTool hook | ✅ | ✅ | ✅ |
 | Superpowers integration | ✅ | ❌ | ❌ |
 | AskUserQuestion UI | ✅ | ❌ numbered list fallback | ❌ numbered list fallback |
-| 6 skills (sg-retro, sg-plan, sg-execute, etc.) | ✅ | ✅ via `.agents/skills/` | ✅ via `.agents/skills/` |
+| 21 skills (sg-retro, sg-plan, sg-execute, etc.) | ✅ | ✅ via `.agents/skills/` | ✅ via `.agents/skills/` |
 
 ### Codex
 
@@ -280,6 +282,12 @@ If checks pass for your platform, `super-gsd` is installed correctly.
 - **Phase 15 — Platform Hooks + Python Fix (v1.3 — shipped):** creates `.codex/hooks.json` and `.gemini/settings.json` hook configs, and fixes `hooks/*.py` path fallback so hooks run without `CLAUDE_PLUGIN_ROOT` in Codex/Gemini environments.
 - **Phase 16 — README Multi-Platform Section (v1.3 — shipped):** adds per-platform install guides and a feature delta table (works / limited / not available) to the README.
 - **Phase 26 — sg-next Auto-Advance (v2.2 — shipped):** `sg-next` reads HANDOFF.md and STATE.md to detect the current workflow stage, routes to the next sg-* command using the same table as `sg-status`, and invokes it immediately. Ambiguous states (`complete` or `init`) surface an `AskUserQuestion` instead of auto-invoking.
+- **Phase 27 — GSD Repository Migration Update (v2.3 — shipped):** updates all internal GSD package references from the legacy repository to `@opengsd/get-shit-done-redux` so `sg-update` and `sg-health` resolve correctly.
+- **Phases 28–31 — Hooks Node Migration (v2.4 — shipped):** rewrites all four hook scripts (`stop_hook`, `transcript_matcher`, `rule_runner`, `lessons_ranker`) from Python to Node.js `.cjs`, swaps hook config files to invoke `node` instead of `python3`, updates all skill internal calls, and removes the legacy `.py` files.
+- **Phase 32 — Superpowers-Native File Parsing (v2.5 — shipped):** replaces bash pipeline file-parsing in skills with the Superpowers Read-tool pattern so SKILL.md files work correctly across all platforms without relying on shell tools.
+- **Phases 33–35 — Codex/Gemini Install UX (v2.6 — shipped):** adds `npx @gyuha/super-gsd install` one-command installer for Codex/Gemini, introduces the `$sg-setup` in-session skill, and updates README/AGENTS.md with verified install instructions and platform-specific verification steps.
+- **Phases 36–38 — Skills & Hooks Internationalization (v2.7 — shipped):** converts all SKILL.md files in `skills/` and `.agents/skills/` from hard-coded Korean to English source text with auto-detect language directives, and ports Korean inline comments in `hooks/` to English.
+- **Phase 39 — Team Collaboration Support (v2.8 — in progress):** adds a `User` column to HANDOFF.md rows so each handoff is attributed to a team member, and introduces `sg-status --team` to display a per-user current-position table from HANDOFF.md.
 
 ## License
 

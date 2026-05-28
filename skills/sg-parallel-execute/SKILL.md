@@ -11,7 +11,7 @@ Detect the user's input language and respond in that language throughout this sk
 </language>
 
 <objective>
-Read the parallel_groups.json file path passed via $ARGUMENTS using the Read tool to identify the group list. Compute GROUP_COUNT (array length) and execute min(GROUP_COUNT, 3) Task()s concurrently (in parallel). Each Task() reads its group's PLAN.md directly and executes tasks without calling superpowers:executing-plans. When GROUP_COUNT > 3, execute the first 3 groups in parallel (wave-ascending order) and process the remainder sequentially.
+Read the parallel_groups.json file path passed via $ARGUMENTS using the Read tool to identify the group list. Execute one wave at a time: for each wave (lowest wave number first), dispatch up to 3 groups from that wave as concurrent Task()s, wait for all to complete successfully, then advance to the next wave. Never dispatch groups from different waves in the same parallel batch — wave numbers are dependency barriers, not sort keys. Each Task() reads its group's PLAN.md directly and executes tasks without calling superpowers:executing-plans.
 </objective>
 
 <execution_context>
@@ -54,13 +54,14 @@ If GROUP_COUNT is 0, print an error message and exit (D-07, no automatic fallbac
 [sg-parallel-execute] Error: parallel_groups.json contains zero groups. Nothing to execute.
 ```
 
-EXEC_COUNT = min(GROUP_COUNT, 3).
-Sort in wave-ascending order and select the first EXEC_COUNT groups for parallel execution (D-02).
-If GROUP_COUNT > 3, separate the remaining groups (after EXEC_COUNT) for sequential processing.
+CURRENT_WAVE = lowest wave number among all groups.
+WAVE_GROUPS = groups where wave == CURRENT_WAVE.
+EXEC_COUNT = min(len(WAVE_GROUPS), 3).
+REMAINING_WAVES = groups where wave > CURRENT_WAVE, sorted by wave ascending.
 
 Output:
 ```
-[sg-parallel-execute] GROUP_COUNT=N, EXEC_COUNT=M (wave-ascending order)
+[sg-parallel-execute] GROUP_COUNT=N, CURRENT_WAVE=W, EXEC_COUNT=M
 ```
 
 **Step 4 — Read PLAN.md for each parallel group.**
@@ -98,24 +99,29 @@ Execute all tasks in the plan(s) above. Follow each task's <action>, <verify>, a
 
 When a group contains multiple plan files, include them all in the same Task() prompt.
 
-**Step 6 — Sequential processing when GROUP_COUNT > 3.**
+**Step 6 — Advance through remaining waves.**
 
-After the parallel batch (Step 5) completes, process the remaining groups (after EXEC_COUNT) sequentially in wave-ascending order.
+After the parallel batch (Step 5) completes, process REMAINING_WAVES one wave at a time in ascending order. Do not start a wave until all Task()s from the previous wave have completed successfully. If any Task() reports failure, stop and surface the error instead of advancing.
 
-For each group, repeat the following (unlike the parallel batch in Step 5, execute strictly one at a time, waiting for completion before advancing):
-1. Read the group's PLAN.md file using the Read tool, same as Step 4.
-2. Invoke a single Task(). Do not execute the next Task() until the previous one completes.
+For each subsequent wave:
+1. CURRENT_WAVE = next wave number from REMAINING_WAVES.
+2. WAVE_GROUPS = groups for this wave. EXEC_COUNT = min(len(WAVE_GROUPS), 3).
+3. Read PLAN.md for each group in WAVE_GROUPS (same as Step 4).
+4. Dispatch EXEC_COUNT Task()s in parallel. Wait for all to complete before advancing.
 
 ```
-[sg-parallel-execute] Sequential group {N}: executing {plan_filename}
+[sg-parallel-execute] Wave {W}: dispatching {EXEC_COUNT} group(s) in parallel
 ```
+
+If WAVE_GROUPS contains more than 3 groups, execute the first 3 in parallel, wait for completion, then execute the remainder sequentially within that same wave before advancing to the next wave.
 
 </process>
 
 <success_criteria>
 1. When a valid parallel_groups.json path is passed via $ARGUMENTS, read the file with the Read tool and output GROUP_COUNT.
-2. EXEC_COUNT Task()s are invoked in parallel within the same response.
-3. Each Task() prompt includes instructions prohibiting: calling superpowers:executing-plans, writing to HANDOFF.md, and updating STATE.md.
-4. If $ARGUMENTS is empty or the file does not exist, print an error message and exit (no automatic fallback).
-5. When GROUP_COUNT > 3, execute the first 3 groups in parallel then process the remainder sequentially.
+2. Groups are processed one wave at a time (lowest wave first). Groups from different waves are never dispatched in the same parallel batch.
+3. Within each wave, up to 3 groups are dispatched as concurrent Task()s. No subsequent wave starts until all Task()s in the current wave complete successfully.
+4. Each Task() prompt includes instructions prohibiting: calling superpowers:executing-plans, writing to HANDOFF.md, and updating STATE.md.
+5. If $ARGUMENTS is empty or the file does not exist, print an error message and exit (no automatic fallback).
+6. If any Task() reports failure, execution stops and the error is surfaced rather than advancing to the next wave.
 </success_criteria>

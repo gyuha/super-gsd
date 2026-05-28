@@ -205,3 +205,4 @@
 | 2026-05-28T15:32:46Z | 41-team-documentation | review | sg-retro | - |
 | 2026-05-28T15:32:59Z | 41-team-documentation | sg-retro | ship | - |
 | 2026-05-28T15:33:23Z | 41-team-documentation | ship | complete | - |
+| 2026-05-28T15:33:49Z | v2.8 | complete | complete | - |

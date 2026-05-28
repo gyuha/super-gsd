@@ -1,5 +1,15 @@
 # Milestones: super-gsd
 
+## v2.8 Team Collaboration Support (Shipped: 2026-05-28)
+
+**Phases completed:** 3 phases, 6 plans, 2 tasks
+
+**Key accomplishments:**
+
+- Task:
+
+---
+
 ## v2.6 Codex/Gemini 설치 UX 개선 (Shipped: 2026-05-28)
 
 **Phases completed:** 1 phases, 3 plans, 0 tasks

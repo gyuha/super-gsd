@@ -192,3 +192,9 @@
 | 2026-05-28T14:46:19Z | 39-handoff-user-tracking | review | sg-next | - |
 | 2026-05-28T14:48:45Z | 39-handoff-user-tracking | sg-next | sg-retro | - |
 | 2026-05-28T14:49:33Z | 39-handoff-user-tracking | sg-retro | ship | - |
+| 2026-05-28T14:51:04Z | 39-handoff-user-tracking | ship | complete | - |
+| 2026-05-28T14:59:41Z | 40-sg-execute-branch-workflow | complete | gsd-plan | - |
+| 2026-05-28T15:07:37Z | 40-sg-execute-branch-workflow | gsd-plan | parallel | b1a3e8b |
+| 2026-05-28T15:11:55Z | 40-sg-execute-branch-workflow | parallel | review | - |
+| 2026-05-28T15:16:15Z | 40-sg-execute-branch-workflow | review | sg-retro | - |
+| 2026-05-28T15:16:24Z | 40-sg-execute-branch-workflow | sg-retro | ship | - |

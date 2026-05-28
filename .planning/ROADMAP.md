@@ -554,4 +554,4 @@ Plans:
 | 38. hooks/ 영문화 | v2.7 | — (ad-hoc) | Complete | 2026-05-28 |
 | 39. HANDOFF 사용자 추적 + sg-status --team | v2.8 | 2/2 | Complete | 2026-05-28 |
 | 40. sg-execute 브랜치 워크플로우 + PR 안내 | v2.8 | 2/2 | Complete | 2026-05-29 |
-| 41. 팀 문서화 | v2.8 | 0/2 | Not started | - |
+| 41. 팀 문서화 | v2.8 | 2/2 | Complete | 2026-05-28 |

@@ -159,6 +159,30 @@ Each command hands context to the next automatically. You do not need to copy-pa
 
 `sg-quick` wraps the task in a lightweight GSD plan-execute-commit cycle without starting a full milestone.
 
+## Team Workflow
+
+super-gsd tracks who did what via the `User` column in `.planning/HANDOFF.md`. Set your git identity before starting:
+
+```shell
+# Verify your git identity
+git config user.name
+# If empty: git config --global user.name "Your Name"
+```
+
+**Check team status:**
+
+```shell
+/super-gsd:sg-status --team
+```
+
+Outputs a per-member table showing their most recent phase, stage, and last activity timestamp.
+
+**Branch workflow:**
+
+When you run `sg-execute` from `main` or `master`, super-gsd detects this and offers to create a `phase/{N}-{slug}` branch (e.g. `phase/41-team-documentation`) via `AskUserQuestion`. After the phase is complete, `sg-phase complete N` prints the `gh pr create` command so you can open a PR without leaving the terminal.
+
+For branch naming conventions, file ownership rules, and merge order, see [`.planning/TEAM.md`](.planning/TEAM.md).
+
 ## Installation
 
 **Step 1 — Install super-gsd:**

@@ -159,6 +159,30 @@ GSD의 `/gsd:phase` 명령은 네 가지 phase CRUD 모드(추가 / 삽입 / 제
 
 `sg-quick`은 전체 마일스톤을 시작하지 않고 경량 GSD 계획-실행-커밋 사이클로 작업을 처리한다.
 
+## 팀 워크플로우
+
+super-gsd는 `.planning/HANDOFF.md`의 `User` 컬럼을 통해 팀원별 작업 이력을 자동으로 기록한다. 시작 전 git 사용자 정보를 설정한다:
+
+```shell
+# git 사용자 확인
+git config user.name
+# 비어 있으면: git config --global user.name "이름"
+```
+
+**팀 현황 확인:**
+
+```shell
+/super-gsd:sg-status --team
+```
+
+팀원별 최근 phase, stage, 마지막 활동 시각을 테이블로 출력한다.
+
+**브랜치 워크플로우:**
+
+`main` 또는 `master` 브랜치에서 `sg-execute`를 실행하면, super-gsd가 이를 감지하고 `AskUserQuestion`으로 `phase/{N}-{slug}` 브랜치(예: `phase/41-team-documentation`) 생성을 제안한다. phase 완료 후 `sg-phase complete N`을 실행하면 PR 생성 명령이 자동으로 출력된다.
+
+브랜치 명명 규칙, 파일 소유권 규칙, merge 순서는 [`.planning/TEAM.md`](.planning/TEAM.md)를 참고한다.
+
 ## 설치
 
 **Step 1 — super-gsd 설치:**

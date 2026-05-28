@@ -16,6 +16,7 @@
 - [x] **v2.5 Superpowers-Native File Parsing** (2026-05-26) — super-gsd skills의 bash 파이프라인(grep/sed/awk) 파일 파싱을 Read 도구 + Claude 해석 방식으로 전환 + CLAUDE.md 컨벤션 업데이트 → [Archive](.planning/milestones/v2.5-ROADMAP.md)
 - [x] **v2.6 Codex/Gemini 설치 UX 개선** (2026-05-26) — npx 단일 명령 설치 + $sg-setup 인세션 스킬 + 문서 개선 → [Archive](.planning/milestones/v2.6-ROADMAP.md)
 - [x] **v2.7 Skills & Hooks Internationalization** (2026-05-28) — skills/ + .agents/skills/ + hooks/ 한글→영문 전환 + 27개 SKILL.md 언어 자동 감지 지침 추가 → [Archive](.planning/milestones/v2.7-ROADMAP.md)
+- [ ] **v2.8 Team Collaboration Support** — HANDOFF user 추적 + sg-status --team + sg-execute 브랜치 워크플로우 + TEAM.md
 
 ## Phases
 
@@ -445,6 +446,51 @@ Plans:
 
 ---
 
+## v2.8 Team Collaboration Support
+
+### Phase 39: HANDOFF 사용자 추적 + sg-status --team
+
+**Goal**: 팀원의 작업 이력이 HANDOFF.md에 자동 기록되고, `sg-status --team`으로 현재 팀 상태를 확인할 수 있다
+**Depends on**: Phase 38 (v2.8 신규 시작)
+**Requirements**: TEAM-01, TEAM-02
+**Success Criteria** (what must be TRUE):
+
+  1. 모든 `sg-*` 명령의 HANDOFF.md append 시 `git config user.name` 값이 pipe-delimited 6번째 컬럼으로 기록된다
+  2. `sg-status --team` 실행 시 `phase/*` 브랜치 목록을 `git branch -r` 또는 `git branch`로 조회하고, 브랜치별 마지막 커밋 시각과 커밋 작성자를 표로 출력한다
+  3. 팀원이 없거나 `phase/*` 브랜치가 없으면 "No active phase branches found" 메시지를 출력하고 정상 종료한다
+  4. `--team` 플래그 없는 기존 `sg-status` 동작은 변경되지 않는다
+
+**Plans**: TBD
+
+### Phase 40: sg-execute 브랜치 워크플로우 + PR 안내
+
+**Goal**: main 브랜치에서 phase 작업 시작을 감지하고 브랜치 생성을 제안하며, phase 완료 시 PR 생성을 안내한다
+**Depends on**: Phase 39
+**Requirements**: TEAM-03, TEAM-04
+**Success Criteria** (what must be TRUE):
+
+  1. `sg-execute`가 main 또는 master 브랜치에서 실행되면 `phase/{N}-{slug}` 브랜치 생성을 AskUserQuestion으로 제안한다
+  2. 사용자가 브랜치 생성에 동의하면 `git checkout -b phase/{N}-{slug}` 명령이 실행된다
+  3. `sg-complete [N]` (phase 완료) 직후 gh CLI 존재 여부를 확인하고, 있으면 `gh pr create --base main` 명령을 출력, 없으면 git push 방법을 안내한다
+  4. 기존 feature 브랜치에서 실행 중이면 브랜치 제안 없이 기존 흐름을 그대로 실행한다
+
+**Plans**: TBD
+
+### Phase 41: 팀 문서화
+
+**Goal**: TEAM.md와 README 팀 섹션으로 팀원이 super-gsd 팀 워크플로우를 독립적으로 온보딩할 수 있다
+**Depends on**: Phase 40
+**Requirements**: DOC-01, DOC-02
+**Success Criteria** (what must be TRUE):
+
+  1. `.planning/TEAM.md`가 생성되어 브랜치 전략(phase/* 명명 규칙), 파일 소유권 규칙(STATE.md는 누가 수정하는지), merge 순서 컨벤션을 명시한다
+  2. `README.md`에 "Team Usage" 섹션이 추가되어 git user.name 설정 확인 방법과 `sg-status --team` 사용법이 기술된다
+  3. README.ko.md에도 동일 내용이 동기화된다
+
+**Plans**: TBD
+
+---
+
 ## Progress
 
 | Phase | Milestone | Plans Complete | Status | Completed |
@@ -479,3 +525,6 @@ Plans:
 | 36. skills/ 영문화 + 언어 자동 감지 (skills/) | v2.7 | 3/3 | Complete | 2026-05-27 |
 | 37. .agents/skills/ 영문화 + 언어 자동 감지 (.agents/) | v2.7 | — (ad-hoc) | Complete | 2026-05-27 |
 | 38. hooks/ 영문화 | v2.7 | — (ad-hoc) | Complete | 2026-05-28 |
+| 39. HANDOFF 사용자 추적 + sg-status --team | v2.8 | 0/TBD | Not started | - |
+| 40. sg-execute 브랜치 워크플로우 + PR 안내 | v2.8 | 0/TBD | Not started | - |
+| 41. 팀 문서화 | v2.8 | 0/TBD | Not started | - |

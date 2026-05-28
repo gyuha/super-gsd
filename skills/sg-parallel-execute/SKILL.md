@@ -36,9 +36,35 @@ if [ -z "$GROUPS_JSON_FILE" ]; then
 fi
 ```
 
+**Step 1.5 — Phase 번호 → 파일 경로 변환 (선택적).**
+
+`$ARGUMENTS`가 숫자 패턴(`^[0-9]+(\.[0-9]+)?$`)에 매칭되면 phase 번호로 해석하고, `parallel_groups.json` 파일 경로를 자동 탐색한다. 파일 경로가 직접 전달된 경우에는 이 스텝을 건너뛴다.
+
+```bash
+GROUPS_JSON_FILE="$ARGUMENTS"
+if echo "$GROUPS_JSON_FILE" | grep -qE '^[0-9]+(\.[0-9]+)?$'; then
+  # phase 번호를 2자리 zero-padding (소수점 있으면 정수 부분만)
+  INT_PART=$(echo "$GROUPS_JSON_FILE" | cut -d. -f1)
+  DEC_PART=$(echo "$GROUPS_JSON_FILE" | grep -oE '\.[0-9]+$' || true)
+  PHASE_PAD=$(printf "%02d" "$INT_PART")${DEC_PART}
+  FOUND=$(ls .planning/phases/${PHASE_PAD}-*/parallel_groups.json 2>/dev/null | head -2)
+  FOUND_COUNT=$(echo "$FOUND" | grep -c . 2>/dev/null || echo 0)
+  if [ -z "$FOUND" ] || [ "$FOUND_COUNT" -eq 0 ]; then
+    echo "[sg-parallel-execute] Error: No parallel_groups.json found for phase ${PHASE_PAD} under .planning/phases/"
+    exit 1
+  fi
+  if [ "$FOUND_COUNT" -gt 1 ]; then
+    GROUPS_JSON_FILE=$(echo "$FOUND" | head -1)
+    echo "[sg-parallel-execute] Warning: Multiple matches found for phase ${PHASE_PAD}; using $GROUPS_JSON_FILE"
+  else
+    GROUPS_JSON_FILE="$FOUND"
+  fi
+fi
+```
+
 **Step 2 — Read parallel_groups.json.**
 
-Read the file at the `$ARGUMENTS` path using the Read tool. If the file does not exist or cannot be parsed as JSON, print an error message and exit. No automatic fallback (D-07):
+Read the file at the `$GROUPS_JSON_FILE` path using the Read tool. If the file does not exist or cannot be parsed as JSON, print an error message and exit. No automatic fallback (D-07):
 
 ```
 [sg-parallel-execute] Error: Cannot read parallel_groups.json at <path>. Ensure sg-execute Step 8.5 ran successfully.

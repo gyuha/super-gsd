@@ -338,4 +338,5 @@ This command is self-contained — no external workflow files imported. Reads .p
 3. `.planning/HANDOFF.md` gains at most one new row per run, and that row matches the 6-column schema `| Timestamp | Phase | From | To | Plan Hash | User |`.
 4. Re-running the command with an unchanged plan hash produces the `Already handed off ...` message and appends no row.
 5. If sg-execute is re-run after a `complete` or `ship` stage has been recorded, the idempotency check (which only matches `superpowers` or `parallel` in the To column) will not short-circuit — a new handoff row will be appended. This is intentional: re-executing after milestone completion starts a new handoff cycle for that phase.
+6. When sg-execute is run on `main` or `master` and a ROADMAP.md phase header exists, Step 1.5 presents a branch-creation prompt (AskUserQuestion on interactive platforms; plain message on `.agents/` platforms). On any other branch, Step 1.5 is skipped entirely without output.
 </success_criteria>

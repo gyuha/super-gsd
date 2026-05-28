@@ -89,21 +89,24 @@ Self-contained. Reads `.planning/STATE.md`, `.planning/ROADMAP.md`, and the targ
 
    4h. **Print a confirmation** summarizing what changed (phase number, plans-complete, status → Complete, completed date, files touched). Surface the prose in the user's language; keep machine tokens (phase slug, `vX.Y`, dates, `Complete`) verbatim.
 
-   4i. **PR creation guidance (TEAM-04).** Check for gh CLI and output the PR creation command or git push guidance.
+   4i. **PR creation guidance (TEAM-04).** If on a feature branch (not main/master), check for gh CLI and output the PR creation command or git push guidance.
    ```bash
-   if command -v gh >/dev/null 2>&1; then
-     # gh CLI available — output gh pr create command text
-     echo "PR을 생성하려면 (To create a PR):"
-     echo "  gh pr create --base main --title \"phase/${PHASE_SLUG}\""
-   else
-     # gh CLI not available — output git push guidance
-     echo "PR을 생성하려면 현재 브랜치를 push한 뒤 GitHub에서 PR을 여세요 (To create a PR, push and open on GitHub):"
-     echo "  git push -u origin HEAD"
+   CURRENT_BRANCH=$(git rev-parse --abbrev-ref HEAD 2>/dev/null || echo "unknown")
+   if [ "$CURRENT_BRANCH" != "main" ] && [ "$CURRENT_BRANCH" != "master" ] && [ "$CURRENT_BRANCH" != "unknown" ]; then
+     if command -v gh >/dev/null 2>&1; then
+       # gh CLI available — output gh pr create command text
+       echo "PR을 생성하려면 (To create a PR):"
+       echo "  gh pr create --base main --title \"phase/${PHASE_SLUG}\""
+     else
+       # gh CLI not available — output git push guidance
+       echo "PR을 생성하려면 현재 브랜치를 push한 뒤 GitHub에서 PR을 여세요 (To create a PR, push and open on GitHub):"
+       echo "  git push -u origin HEAD"
+     fi
    fi
    ```
+   - feature 브랜치(main/master 이외)에서만 출력한다. main/master 또는 non-git 환경에서는 이 스텝을 건너뛴다.
    - 출력 산문은 사용자 언어로 표면화 (`<language>` 지침 준수). 명령어 토큰 (`gh pr create`, `git push -u origin HEAD`, `phase/${PHASE_SLUG}`) 은 영문 그대로.
    - PR 자동 실행 없음 — 텍스트 출력만.
-   - 조건 분기 없이 항상 출력.
 </process>
 
 <success_criteria>
@@ -112,5 +115,6 @@ Self-contained. Reads `.planning/STATE.md`, `.planning/ROADMAP.md`, and the targ
 3. `/super-gsd:sg-phase complete [N]` resolves the phase (arg or STATE.md), locates the zero-padded phase dir, recomputes Plans-complete (or `— (ad-hoc)`), sets the ROADMAP Progress row to Status=Complete with today's date, flips the Phases checkbox to `[x]`, updates STATE.md, and optionally appends a HANDOFF.md `complete` row — all via Read + Edit (no awk pipe-splitting, no grep -P).
 4. An empty or unknown subcommand prints a single usage line and exits without delegating or mutating any file.
 5. A `<language>` auto-detect directive is present; surfaced prose follows the user's language while machine tokens stay verbatim.
+6. The `complete` route outputs PR creation guidance (Step 4i) only when on a feature branch (not `main`/`master`/`unknown`): `gh pr create` if gh CLI is present, otherwise `git push -u origin HEAD`.
 6. The complete route does NOT delegate to gsd-phase (gsd-phase has no complete mode).
 </success_criteria>

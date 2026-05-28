@@ -460,7 +460,11 @@ Plans:
   3. 팀원이 없거나 `phase/*` 브랜치가 없으면 "No active phase branches found" 메시지를 출력하고 정상 종료한다
   4. `--team` 플래그 없는 기존 `sg-status` 동작은 변경되지 않는다
 
-**Plans**: TBD
+**Plans**: 2 plans
+
+Plans:
+- [ ] 39-01-PLAN.md — HANDOFF User 컬럼 추가 (sg-plan/execute/review/ship/complete/next × skills/ + .agents/)
+- [ ] 39-02-PLAN.md — sg-status --team 플래그 처리
 
 ### Phase 40: sg-execute 브랜치 워크플로우 + PR 안내
 

@@ -37,7 +37,7 @@ sg-new/sg-start → sg-explore → sg-plan → sg-execute → sg-review → sg-l
 | `/super-gsd:sg-learn` | `sg-retro`를 통한 회고 실행, 패턴 추출 및 훅 생성 | 리뷰 완료 후 |
 | `/super-gsd:sg-lessons` | `.planning/lessons/`에서 이전 교훈 목록 표시 (옵션: 단계 필터) | `sg-plan` 전 학습 내용 검토 시 |
 | `/super-gsd:sg-ship` | `gsd-ship`을 통해 현재 단계 병합 및 배포 | 학습 캡처 후 |
-| `/super-gsd:sg-complete` | `gsd-complete-milestone`을 통해 마일스톤 아카이브 및 완료 처리 | 모든 단계가 배포된 후 |
+| `/super-gsd:sg-complete` | `<N>`은 단계 완료(`sg-phase` 경유), `<vX.Y>`는 해당 마일스톤 종료, 비우면 현재 마일스톤 종료(`gsd-complete-milestone` 경유) | 모든 단계가 배포된 후, 또는 단일 단계를 완료 처리할 때 |
 | `/super-gsd:sg-new` | `gsd-new-milestone`을 통해 새 마일스톤 시작 | `sg-complete` 이후, 다음 마일스톤을 시작할 때 |
 | `/super-gsd:sg-next` | HANDOFF.md와 STATE.md에서 현재 워크플로우 단계를 감지하여 다음 sg-* 명령을 즉시 실행 — 확인 없음 | 다음 단계로 자동 진행하고 싶을 때 |
 | `/super-gsd:sg-status` | 현재 단계, 마지막 인계 시각, 다음 권장 명령 표시 | 언제든 현재 위치 확인 시 |

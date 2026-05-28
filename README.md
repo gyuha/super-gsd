@@ -37,7 +37,7 @@ Quick reference for all `/super-gsd:sg-*` slash commands.
 | `/super-gsd:sg-learn` | Run a retrospective via `sg-retro` to extract patterns and generate hooks | After the review is done |
 | `/super-gsd:sg-lessons` | List prior lessons from `.planning/lessons/`; accepts optional phase filter | Before `sg-plan` to review what was learned |
 | `/super-gsd:sg-ship` | Merge and ship the current phase via `gsd-ship` | After learning is captured |
-| `/super-gsd:sg-complete` | Archive and close the current milestone via `gsd-complete-milestone` | After all phases are shipped |
+| `/super-gsd:sg-complete` | `<N>` completes a phase (via `sg-phase`); `<vX.Y>` closes that milestone; empty closes the current milestone (via `gsd-complete-milestone`) | After all phases are shipped, or to mark a single phase complete |
 | `/super-gsd:sg-new` | Start a new milestone via `gsd-new-milestone` | After `sg-complete`, to begin the next milestone |
 | `/super-gsd:sg-next` | Detect the current workflow stage from HANDOFF.md and STATE.md and immediately invoke the next sg-* command — no confirmation required | Any time you want to auto-advance to the next step without remembering the command |
 | `/super-gsd:sg-status` | Show current stage, last handoff timestamp, and next recommended command | At any point to check where you are |

@@ -202,3 +202,5 @@
 | 2026-05-28T15:21:44Z | 41-team-documentation | complete | gsd-plan | - |
 | 2026-05-28T15:27:08Z | 41-team-documentation | gsd-plan | parallel | 2b9f022 |
 | 2026-05-28T15:29:00Z | 41-team-documentation | parallel | review | - |
+| 2026-05-28T15:32:46Z | 41-team-documentation | review | sg-retro | - |
+| 2026-05-28T15:32:59Z | 41-team-documentation | sg-retro | ship | - |

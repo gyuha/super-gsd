@@ -2,6 +2,12 @@
 
 All notable changes to `super-gsd` are documented in this file. Format follows [Keep a Changelog](https://keepachangelog.com/).
 
+## [0.0.48] - 2026-05-29
+
+### Changed
+
+- `.planning/codebase/` 전체 재매핑 — 7개 문서 최신화 (v2.8 완료 이후 기준)
+
 ## [0.0.47] - 2026-05-29
 
 ### Added

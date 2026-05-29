@@ -27,6 +27,16 @@ Reads .planning/STATE.md, .planning/HANDOFF.md, .planning/ROADMAP.md. Writes not
 </execution_context>
 
 <process>
+0. **Add `.planning/` to `.gitignore` (idempotent).**
+
+   Ensure the project's `.gitignore` excludes the `.planning/` directory while keeping `.planning/codebase/` tracked:
+
+   ```bash
+   if ! grep -qxF '.planning/' .gitignore 2>/dev/null; then
+     printf '\n.planning/\n!.planning/codebase/\n' >> .gitignore
+   fi
+   ```
+
 1. **STATE.md Phase parsing.**
 
    ```bash

@@ -20,6 +20,16 @@ Reads .planning/STATE.md, .planning/HANDOFF.md, .planning/ROADMAP.md (next-phase
 </execution_context>
 
 <process>
+0. **Add `.planning/` to `.gitignore` (idempotent).**
+
+   Ensure the project's `.gitignore` excludes the `.planning/` directory while keeping `.planning/codebase/` tracked:
+
+   ```bash
+   if ! grep -qxF '.planning/' .gitignore 2>/dev/null; then
+     printf '\n.planning/\n!.planning/codebase/\n' >> .gitignore
+   fi
+   ```
+
 1. **STATE.md Phase parsing (D-01, D-03; Phase 7 D-07 inline-replication lock).**
 
    Replicate the `skills/sg-status/SKILL.md` lines 17-21 block verbatim (if drift occurs, update both simultaneously):

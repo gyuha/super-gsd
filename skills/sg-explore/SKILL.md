@@ -19,6 +19,16 @@ Self-contained. Delegates entirely to gsd-map-codebase Skill (terminal action).
 </execution_context>
 
 <process>
+0. **Add `.planning/` to `.gitignore` (idempotent).**
+
+   Ensure the project's `.gitignore` excludes the `.planning/` directory while keeping `.planning/codebase/` tracked:
+
+   ```bash
+   if ! grep -qxF '.planning/' .gitignore 2>/dev/null; then
+     printf '\n.planning/\n!.planning/codebase/\n' >> .gitignore
+   fi
+   ```
+
 1. Session control transfers to the skill; no steps execute after this point:
    ```
    Skill(skill="gsd-map-codebase", args="")
@@ -27,4 +37,5 @@ Self-contained. Delegates entirely to gsd-map-codebase Skill (terminal action).
 
 <success_criteria>
 1. gsd-map-codebase Skill is invoked exactly once.
+2. 실행 전 .gitignore에 .planning/ 항목이 없으면 자동으로 추가된다 (멱등).
 </success_criteria>

@@ -2,107 +2,113 @@
 
 **Analysis Date:** 2026-05-29
 
-## AI Development Workflow Tools
+## APIs & External Services
 
-**GSD (Get Shit Done):**
-- Package: `@opengsd/get-shit-done-redux` (npm global install)
-- What it provides: Phase planning (`gsd-plan-phase`, `gsd-discuss-phase`), codebase mapping (`gsd-map-codebase`), shipping (`gsd-ship`), milestone completion (`gsd-complete-milestone`), quick tasks (`gsd-planner`, `gsd-sdk`)
-- How integrated: Skills invoke GSD commands via `Skill(skill="gsd-*", args="...")` calls; `sg-plan` chains `gsd-discuss-phase` → `gsd-plan-phase`; `sg-ship` delegates to `gsd-ship`; `sg-explore` delegates to `gsd-map-codebase`
-- Detection: `test -d "$HOME/.claude/get-shit-done"` (checked in `skills/sg-health/SKILL.md`)
-- Install path: `$HOME/.claude/get-shit-done/`
-
-**Superpowers:**
-- Plugin: `superpowers@claude-plugins-official` (Claude Code plugin marketplace)
-- What it provides: Plan execution (`superpowers:executing-plans`), code review (`superpowers:requesting-code-review`), UI brainstorming (`superpowers:brainstorming`)
-- How integrated: `sg-execute` and `sg-quick` call `Skill(skill="superpowers:executing-plans", ...)` as terminal action; `sg-review` calls `superpowers:requesting-code-review`; `sg-ui-plan` calls `superpowers:brainstorming` in a subagent
-- Detection: `test -d "$HOME/.claude/plugins/data/superpowers-claude-plugins-official"` (checked in `skills/sg-health/SKILL.md`)
-- Install path: `$HOME/.claude/plugins/data/superpowers-claude-plugins-official/`
-
-**sg-retro:**
-- Skill: built into this plugin at `skills/sg-retro/SKILL.md`
-- What it provides: Phase retrospective — extracts lessons from phase context and writes `.planning/lessons/*.md` files
-- How integrated: `sg-learn` delegates entirely to `Skill(skill="sg-retro", args="$ARGUMENTS")`
-
-## Claude Code Plugin System
-
-**Plugin Marketplace:**
-- Schema: `https://anthropic.com/claude-code/marketplace.schema.json` (referenced in `.claude-plugin/marketplace.json`)
-- Self-hosted: `marketplace.json` in `.claude-plugin/` registers the plugin locally
-- Plugin commands exposed: 21 `/super-gsd:sg-*` slash commands (one per subdirectory in `skills/`)
-
-**Hook Events Consumed:**
-- `PreToolUse` — `rule_runner.cjs` evaluates `.claude/sg-rule.*.local.md` rules before every tool call
-- `Stop` — `stop_hook.cjs` detects workflow signals and emits `systemMessage` to guide next step
-- `SubagentStop` — same `stop_hook.cjs` handler as Stop, for subagent completion events
-
-**Environment Variable Provided by Claude Code:**
-- `CLAUDE_PLUGIN_ROOT` — absolute path to installed plugin directory; consumed in `hooks/stop_hook.cjs` and `hooks/rule_runner.cjs`
-
-## Alternative AI Runtimes (Optional)
-
-**OpenAI Codex:**
-- Config: `.codex/hooks.json`
-- Hook mapping: PreToolUse → `rule_runner.cjs`, Stop → `stop_hook.cjs`
-- Same hook scripts run; paths are relative to project root
-- Note: `.codex/hooks.json` is copied to target projects on install
-
-**Gemini CLI:**
-- Config: `.gemini/settings.json`
-- Hook mapping: BeforeTool → `rule_runner.cjs`, SessionEnd → `stop_hook.cjs`
-- Variable: `$GEMINI_PROJECT_DIR` used for hook command paths
-- Installed only when `--gemini` flag passed to `npx @gyuha/super-gsd install`
-- Compatibility note: schema based on Gemini CLI docs; not fully verified (per `.planning/research/ANTIGRAVITY.md` reference in `.gemini/settings.json`)
-
-## Version Control
-
-**Git:**
-- Used by: skill Bash snippets (e.g., `git config user.name` in HANDOFF.md row construction, `git log` in release tooling)
-- No programmatic git library — raw `git` CLI calls only via Bash tool
-- Required: `git` on PATH in any project where super-gsd skills run
-
-## npm Registry
-
-**Published package:**
-- Name: `@gyuha/super-gsd`
-- Version: `0.0.46` (as of analysis date)
-- Registry: npmjs.com (standard npm registry)
-- Install command for target projects: `npx @gyuha/super-gsd install`
-- Global install for direct use: `npm install -g @gyuha/super-gsd`
+This project has **zero direct API calls** to external HTTP services. There are no HTTP clients, no API keys used at runtime, and no outbound network requests made by any hook or script.
 
 ## Data Storage
 
-**Databases:** None
+**Databases:**
+- None. No database client or ORM present.
 
-**File Storage:** Local filesystem only
-- `.planning/HANDOFF.md` — append-only pipe-delimited audit log of stage transitions
-- `.planning/STATE.md` — current workflow state (phase, stage); read by skills for context
-- `.planning/lessons/*.md` — retrospective lesson files; ranked by `lessons_ranker.cjs`
-- `.planning/config.json` — workflow feature flags and GSD/super-gsd config
-- `.claude/sg-rule.*.local.md` — rule definitions for `rule_runner.cjs`
+**File Storage:**
+- Local filesystem only. All runtime state is stored as plain files under `.planning/` in the target project:
+  - `.planning/STATE.md` — current phase, stage, workflow state
+  - `.planning/HANDOFF.md` — append-only audit log (pipe-delimited table)
+  - `.planning/config.json` — runtime configuration (including `super_gsd.auto_advance`)
+  - `.planning/lessons/*.md` — retrospective lessons (consumed by `lessons_ranker.cjs`)
+  - `.planning/milestones/` — milestone lesson archives (written by `lessons_ranker.cjs --archive`)
 
-**Caching:** None
+**Caching:**
+- None. No in-memory cache or external cache service.
 
 ## Authentication & Identity
 
-None. No API keys, auth tokens, or authentication flows. All integrations are:
-- Local CLI tools (`gsd-sdk`, `claude`, `git`)
-- Claude Code plugin system (no separate auth — runs within Claude Code session)
-- npm public registry (no auth required for global installs of public packages)
+**Auth Provider:**
+- None. No authentication layer. The plugin operates entirely within the local filesystem and Claude Code hook event system. No user identity is involved.
 
 ## Monitoring & Observability
 
-**Error Tracking:** None
+**Error Tracking:**
+- None. Errors are emitted to `stderr` within hook scripts and surface as `systemMessage` in Claude Code responses.
 
 **Logs:**
-- Hook output goes to Claude Code's hook stderr/stdout capture
-- `stop_hook.cjs` and `rule_runner.cjs` write JSON responses to stdout for Claude Code to parse
-- `lessons_ranker.cjs` writes JSON lines to stdout (consumed by skill Bash pipelines)
+- No structured logging framework. Hook scripts write warning/error lines to `process.stderr`. Example: `[warn] file not found: ...`, `[error] ...`.
+
+## CI/CD & Deployment
+
+**Hosting:**
+- npm registry: `@gyuha/super-gsd` — the package is published and installed via `npx @gyuha/super-gsd install`.
+
+**CI Pipeline:**
+- Not detected. No `.github/workflows/`, `.circleci/`, or equivalent CI config found.
+
+## Host Platform Integrations
+
+The plugin integrates with three AI coding assistant platforms via their hook event systems. Integration is purely configuration-based (JSON files). No SDK or library is imported.
+
+**Claude Code (Anthropic):**
+- Config: `hooks/hooks.json`
+- Hook events consumed: `PreToolUse`, `Stop`, `SubagentStop`
+- Path resolution: `CLAUDE_PLUGIN_ROOT` env var → `__dirname`-relative fallback
+- Skill manifest: `.agents/skills/*/SKILL.md` (Claude Code reads these as slash commands `/super-gsd:sg-*`)
+- Plugin metadata (if applicable): `.claude-plugin/plugin.json` (referenced in CLAUDE.md but not found in file scan — may be gitignored or removed)
+
+**OpenAI Codex:**
+- Config: `.codex/hooks.json`
+- Hook events consumed: `PreToolUse`, `Stop`
+- Path resolution: scripts referenced relative to project root (`node hooks/rule_runner.cjs`)
+- Skill manifest: `.codex/` hooks only; Codex uses `$sg-*` command prefix
+
+**Gemini CLI:**
+- Config: `.gemini/settings.json`
+- Hook events consumed: `BeforeTool`, `SessionEnd`
+- Path resolution: `$GEMINI_PROJECT_DIR` env var
+- Compatibility note: Schema noted as "not confirmed" in config file comment — may not be fully validated
 
 ## Webhooks & Callbacks
 
-**Incoming:** None
+**Incoming:**
+- None.
 
-**Outgoing:** None
+**Outgoing:**
+- None.
+
+## External Skill Dependencies (Runtime)
+
+These are not npm packages but external Claude Code / AI assistant skill namespaces that must be installed separately in the target project. They are invoked via `Skill(skill="...")` calls inside SKILL.md `<process>` blocks.
+
+**GSD (`@opengsd/get-shit-done-redux` or equivalent):**
+- `gsd-plan-phase` — invoked by `sg-plan` skill
+- `gsd-discuss-phase` — invoked by `sg-plan` via subagent
+- `gsd-ship` — invoked by `sg-ship` skill
+- `gsd-phase` — invoked by `sg-phase` skill (edit/remove routes)
+- `gsd-new-project` — invoked by `sg-start` skill
+- `gsd-new-milestone` — invoked by `sg-new` skill
+- `gsd-complete-milestone` — invoked by `sg-complete` skill
+- `gsd-cleanup` — invoked by `sg-cleanup` skill
+- `gsd-quick` — invoked by `sg-quick` skill
+- `gsd-map-codebase` — invoked by `sg-explore` / `sg-update` skills
+- Source: `skills/*/SKILL.md` and `.agents/skills/*/SKILL.md` `Skill(skill="gsd-*")` calls
+
+**Superpowers (`claude-plugins-official/superpowers`):**
+- `superpowers:executing-plans` — invoked by `sg-execute`, `sg-quick` skills
+- `superpowers:requesting-code-review` — invoked by `sg-review` skill (claude-code variant)
+- `superpowers:brainstorming` — invoked by `sg-ui-plan` skill
+- `superpowers:finishing-a-development-branch` — signal string detected by `transcript_matcher.cjs` (not a direct invocation)
+
+**sg-retro (self-referential):**
+- `sg-retro` — invoked by `sg-learn` skill via `Skill(skill="sg-retro", args="$ARGUMENTS")`
+- This is a skill within the same super-gsd plugin namespace
+
+## Environment Configuration
+
+**Required env vars:**
+- `CLAUDE_PLUGIN_ROOT` — optional but recommended. Hooks use it to locate their own directory. If absent, `__dirname`-relative path is used (works when installed in `hooks/` subdirectory).
+- `GEMINI_PROJECT_DIR` — required for Gemini CLI hook path resolution (set by Gemini CLI automatically).
+
+**Secrets location:**
+- None. No secrets required. No API keys, tokens, or credentials of any kind.
 
 ---
 

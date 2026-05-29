@@ -4,137 +4,136 @@
 
 ## Test Framework
 
-**Runner:**
-- None configured. No `jest.config.*`, `vitest.config.*`, or test runner present.
-- `package.json` has no `scripts.test` entry and no test-framework dependencies.
+**Runner:** None — no automated test framework installed or configured
 
-**Assertion Library:**
-- None installed.
+- No `jest.config.*`, `vitest.config.*`, or `mocha.opts` detected
+- No `test` script in `package.json`
+- `.pytest_cache/` directory exists with empty `nodeids` (likely from an earlier Python prototype that was ported to Node.js — the Python source files no longer exist in the repo)
+- No test files (`*.test.*`, `*.spec.*`) found anywhere in the codebase
 
 **Run Commands:**
 ```bash
-# No automated test runner. Manual hook invocation only:
-
-# Test rule_runner with a synthetic PreToolUse event
+# Manual integration test — hook scripts accept JSON via stdin
 echo '{"tool_name":"Bash","tool_input":{"command":"awk \"{print $1}\""}}' | node hooks/rule_runner.cjs
 
-# Test stop_hook with a synthetic Stop event
+# stop_hook Stop event simulation
 echo '{"session_id":"test","stop_hook_active":true}' | node hooks/stop_hook.cjs
 
-# Test lessons_ranker ranking mode
+# lessons weighted ranking
 node hooks/lessons_ranker.cjs --top 5 .planning/lessons/*.md
 
-# Test lessons_ranker archive mode
+# milestone archive
 node hooks/lessons_ranker.cjs --archive --milestone v1.2 .planning/lessons/*.md
 ```
 
+These are the only documented test invocations, found in `CLAUDE.md`.
+
 ## Test File Organization
 
-**No dedicated test files exist.** The repository has no `*.test.*`, `*.spec.*`, `test_*`, `*_test.*` files or `__tests__`/`test/` directories.
+**Location:** No test files exist — not co-located and no separate test directory
 
-## What is Tested
+**Naming:** Not applicable
 
-Testing is entirely manual via stdin injection into hooks. The testing approach relies on:
+**Structure:** Not applicable
 
-1. **Direct stdin injection** — pipe a JSON payload to the hook script and observe stdout
-2. **Rule file evaluation** — create a `.claude/sg-rule.*.local.md` and trigger the matching event
-3. **Lessons file parsing** — run `lessons_ranker.cjs` against real `.planning/lessons/*.md` files
-4. **SKILL.md correctness** — verified during GSD phase reviews (sg-review → Superpowers code review)
+## Test Strategy (Actual)
 
-## Manual Test Patterns
+Testing in this codebase is exclusively manual and stdin-based. The hook scripts are designed for direct invocation with crafted JSON inputs piped to stdin. This is the project's de-facto test approach.
 
-### Hook Input/Output Pattern
-
-All four hooks read JSON from `stdin` and write JSON to `stdout`. Test template:
-
+**Manual stdin testing:**
 ```bash
-# Rule runner — bash event (expects warn/block output or {})
-echo '{"tool_name":"Bash","tool_input":{"command":"COMMAND_TO_TEST"}}' \
+# Test rule_runner with a bash event
+echo '{"tool_name":"Bash","tool_input":{"command":"grep -P pattern file"}}' \
   | node hooks/rule_runner.cjs
 
-# Rule runner — file event
-echo '{"tool_name":"Edit","tool_input":{"file_path":"plugin.json","new_string":"content without skills field"}}' \
+# Test rule_runner with a file event
+echo '{"tool_name":"Edit","tool_input":{"file_path":"plugin.json","new_string":"{\"name\":\"test\"}"}}' \
   | node hooks/rule_runner.cjs
 
-# Stop hook — no transcript (expects empty {})
-echo '{"transcript_path":""}' | node hooks/stop_hook.cjs
-
-# Stop hook — with real transcript path
-echo "{\"transcript_path\":\"$HOME/.claude/projects/.../*.jsonl\"}" | node hooks/stop_hook.cjs
+# Test stop_hook with a transcript path
+echo '{"transcript_path":"/path/to/transcript.jsonl"}' \
+  | node hooks/stop_hook.cjs
 ```
 
-### Expected Output Format
+## `require.main === module` Guard
 
-Hooks always emit a single JSON line to stdout following Python `json.dumps` default formatting (space after colon and comma):
+All four hook files implement the CLI guard pattern enabling future testability:
 
-```json
-{}
-{"systemMessage": "warning text here"}
-{"hookSpecificOutput": {"hookEventName": "PreToolUse", "permissionDecision": "deny"}, "systemMessage": "block message"}
+```javascript
+// hooks/rule_runner.cjs
+if (require.main === module) {
+  main();
+}
+
+// hooks/transcript_matcher.cjs
+module.exports = { detectSignal };
+// (no main — library module only)
 ```
 
-Empty `{}` means no action. A `systemMessage` key means warn/inform. `permissionDecision: "deny"` blocks the tool call.
+This pattern means any hook can be `require()`'d in a future test suite without triggering `main()`. Only `transcript_matcher.cjs` currently exports a public API (`{ detectSignal }`).
 
-### lessons_ranker Output Pattern
+## Mocking
 
-`--top N` mode emits one JSON object per line (JSON Lines format):
+**Framework:** None — no mocking library used
 
-```
-{"pattern": "pattern text", "score": 0.8432, "source": "00-2026-05-21.md:## Lens: Conversation Analyzer"}
-```
+**Current approach:** When manual testing, real files are used. For `transcript_matcher.cjs`, a real `.jsonl` transcript path is required. For `lessons_ranker.cjs`, real `.md` lesson files are required.
 
-`--archive --milestone vX.Y` mode writes to `.planning/milestones/{VERSION}-LESSONS.md` and exits `0`.
+## Fixtures and Factories
 
-## Verification Strategy
+**Test Data:** No fixture files or factory functions exist
 
-Since there is no automated test suite, correctness is verified via:
+**Lesson files in `.planning/lessons/`** serve as real-world corpus for `lessons_ranker.cjs` manual testing:
+- `hooks/lessons_ranker.cjs --top 5 .planning/lessons/*.md` uses actual lesson content
+- Files follow naming convention `{NN}-{YYYY-MM-DD}.md`
 
-**1. Phase review (sg-review):**
-- Each GSD phase ends with `sg-review`, which runs a Superpowers code review subagent
-- The review agent checks hook behavior, SKILL.md step logic, and shell compatibility
-
-**2. sg-rule files as regression guards:**
-- `.claude/sg-rule.*.local.md` files encode known bugs as PreToolUse rules
-- `rule_runner.cjs` evaluates these rules on every Bash/Edit/Write tool call
-- This provides continuous runtime checking against previously observed failures:
-  - `sg-rule.state-phase-awk.local.md` — catches `awk '{print $1}'` on STATE.md (returns "Phase" not number)
-  - `sg-rule.warn-handoff-single-condition.local.md` — catches single-condition HANDOFF.md init check (misses missing-header case)
-  - `sg-rule.warn-sg-next-self-reference.local.md` — catches missing `sg-next` transparent-pass in routing
-  - `sg-rule.plugin-json-skills.local.md` — catches plugin.json writes missing `"skills"` field
-
-**3. Lessons injection (lessons_ranker.cjs):**
-- At the start of each `sg-plan`, prior lessons are ranked and injected into context
-- This surfaces recurring failure patterns before new implementation begins
+**sg-rule files in `.claude/`** serve as real-world test fixtures for `rule_runner.cjs`:
+- `.claude/sg-rule.plugin-json-skills.local.md`
+- `.claude/sg-rule.state-phase-awk.local.md`
+- `.claude/sg-rule.warn-handoff-single-condition.local.md`
+- `.claude/sg-rule.warn-sg-next-self-reference.local.md`
 
 ## Coverage
 
-**Requirements:** No coverage tooling or targets enforced.
+**Requirements:** None enforced — no coverage tool configured
 
-**Untested areas (structural gaps):**
-- `_roundHalfEven` banker's rounding logic in `lessons_ranker.cjs` — complex float arithmetic with no unit test; verified by comparing output against Python reference
-- `_parseFrontmatter` edge cases in `rule_runner.cjs` — nested dict items, mixed list/dict, multi-line values
-- `transcript_matcher.cjs` signal detection — depends on real transcript file paths; no mock
-- SKILL.md bash logic — no automated test; verified only during phase execution
+**Untested paths (known gaps):**
+- `_pyJsonDumps` / `_pyEncodeString` edge cases (non-ASCII, surrogate pairs, Infinity/NaN)
+- `_parseFrontmatter` multi-line YAML conditions
+- `_matchCondition` operator variants (`contains`, `equals`, `not_contains`, `starts_with`, `ends_with`)
+- `computeScores` banker's rounding via `_roundHalfEven`
+- `detectSignal` with each of the four signal arrays
+- `archiveMode` happy path and `--milestone` missing error path
 
-## Integration Points Requiring Manual Verification
+## Test Types
 
-When modifying hooks, manually verify these integration points:
+**Unit Tests:** Not present
 
-| Component | Verification Command | Expected Output |
-|-----------|----------------------|-----------------|
-| `rule_runner.cjs` rule load | `echo '{"tool_name":"Bash","tool_input":{"command":"grep -P foo"}}' \| node hooks/rule_runner.cjs` | `{}` (no rule matches grep -P) |
-| `stop_hook.cjs` auto_advance guard | Set `.planning/config.json` `super_gsd.auto_advance: false`, run hook | `{}` emitted immediately |
-| `lessons_ranker.cjs` top-N | `node hooks/lessons_ranker.cjs --top 3 .planning/lessons/*.md` | 3 JSON lines with pattern/score/source |
-| `lessons_ranker.cjs` archive | `node hooks/lessons_ranker.cjs --archive --milestone vTEST .planning/lessons/*.md` | creates `.planning/milestones/vTEST-LESSONS.md` |
+**Integration Tests:** Not present
 
-## Adding New Tests
+**E2E / Manual Tests:**
+- All testing is manual stdin-pipe invocation (documented in `CLAUDE.md` Development Commands section)
+- SKILL.md workflows are validated by running them via Claude Code sessions and inspecting HANDOFF.md + lessons output
 
-There is no test framework to extend. To add regression coverage for a new bug:
+## Adding Tests (Guidance for Future Work)
 
-1. Create a `.claude/sg-rule.{slug}.local.md` file with a `pattern` or `conditions` that matches the buggy command
-2. Set `action: warn` (or `action: block` for critical bugs)
-3. Write the warning message in Korean (user-visible prose) with a code example showing the correct pattern
-4. Verify the rule fires: `echo '{"tool_name":"Bash","tool_input":{"command":"<buggy-pattern>"}}' | node hooks/rule_runner.cjs`
+If a test framework is introduced, the `require.main === module` guard in all hook files already supports it. Recommended approach:
+
+1. Choose a Node.js test runner (e.g., `node:test` built-in — requires no install, available in Node 18+)
+2. Create `hooks/__tests__/` directory
+3. Import hook functions via `require('../rule_runner.cjs')` — currently only internal helpers are not exported; either export them or restructure to separate logic from CLI glue
+4. `transcript_matcher.cjs` is the only file already structured for import: `const { detectSignal } = require('./transcript_matcher.cjs')`
+
+**Example structure for node:test:**
+```javascript
+// hooks/__tests__/transcript_matcher.test.js
+const { test } = require('node:test');
+const assert = require('node:assert');
+const { detectSignal } = require('../transcript_matcher.cjs');
+
+test('returns empty string for missing file', () => {
+  assert.strictEqual(detectSignal('/nonexistent/path.jsonl'), '');
+});
+```
 
 ---
 

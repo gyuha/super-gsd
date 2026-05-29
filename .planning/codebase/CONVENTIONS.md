@@ -5,262 +5,174 @@
 ## Naming Patterns
 
 **Files:**
-- Hook scripts: `{verb}_{noun}.cjs` — e.g., `stop_hook.cjs`, `rule_runner.cjs`, `transcript_matcher.cjs`, `lessons_ranker.cjs`
-- Rule files: `sg-rule.{slug}.local.md` — e.g., `sg-rule.warn-handoff-single-condition.local.md`
-- SKILL.md files: always named `SKILL.md`, inside a directory named `sg-{command-name}/`
-- Lesson files: `{NN}-{YYYY-MM-DD}.md` — phase number zero-padded prefix, then date
+- Hook scripts: lowercase with underscores, `.cjs` extension — `rule_runner.cjs`, `stop_hook.cjs`, `transcript_matcher.cjs`, `lessons_ranker.cjs`
+- Installer script: lowercase with underscores, `.js` extension — `bin/setup.js`
+- Skill definitions: `SKILL.md` (uppercase) inside `skills/{sg-name}/` directories
+- Rule files: `sg-rule.{slug}.local.md` — e.g., `.claude/sg-rule.warn-handoff-single-condition.local.md`
+- Config files: lowercase — `hooks.json`, `plugin.json`, `package.json`
 
-**Directories:**
-- Skills: `skills/sg-{command-name}/` under repo root
-- Mirror skills (Codex/Gemini): `.agents/skills/sg-{command-name}/` — must match `skills/` pairwise
-- Hooks: `hooks/` under repo root (all `.cjs`)
-- Rules: `.claude/` directory with `sg-rule.*.local.md` pattern
-- Lessons: `.planning/lessons/`
+**Functions:**
+- Private/internal helpers: `_camelCase` with leading underscore — `_pyJsonDumps`, `_parseFrontmatter`, `_globLocalMd`, `_matchCondition`
+- Public/exported functions: `camelCase` without underscore — `parseLessonsFiles`, `computeScores`, `detectSignal`
+- Entry point: always named `main()` — present in all four `.cjs` hook files
+- CLI mode guard: `if (require.main === module) { main(); }` at the bottom of every file
 
-**SKILL.md command names:**
-- All slash commands use `sg-` prefix: `/super-gsd:sg-plan`, `/super-gsd:sg-execute`, etc.
-- The directory name and the `name:` frontmatter field must match exactly
+**Variables:**
+- Local bash variables in SKILL.md scripts: `UPPER_SNAKE_CASE` — `PHASE_NUM`, `HANDOFF_FILE`, `PLAN_HASH`, `GIT_USER`
+- JavaScript variables: `camelCase` — `toolName`, `toolInput`, `eventFilter`, `seenNames`
+- Constants at module scope: `UPPER_SNAKE_CASE` — `PLUGIN_ROOT`, `GSD_PLAN_SIGNALS`, `YELLOW`, `GREEN`, `RESET`
+- Loop iteration variables: single-word lowercase — `rule`, `entry`, `line`, `filepath`
 
-**JavaScript functions:**
-- Private/internal helpers: `_camelCase` with leading underscore (e.g., `_pyJsonDumps`, `_parseFrontmatter`, `_loadRules`, `_matchCondition`)
-- Public/exported functions: `camelCase` without underscore (e.g., `detectSignal`, `parseLessonsFiles`, `computeScores`)
-- Entry point: always named `main()`
-
-**Rule frontmatter `name` field:**
-- Pattern: `warn-{slug}` or `block-{slug}` matching the action type
-- Examples: `warn-state-phase-awk-token`, `warn-handoff-single-condition`, `warn-plugin-json-skills-field`
+**Skill identifiers:**
+- All skills use `sg-` prefix — `sg-plan`, `sg-execute`, `sg-review`, `sg-retro`, `sg-status`, `sg-next`, etc.
+- HANDOFF.md stage storage enum: `gsd-plan`, `ui-plan`, `superpowers`, `parallel`, `execute`, `review`, `sg-retro`, `ship`, `complete`, `sg-next`
+- HANDOFF.md stage display enum: `init`, `gsd`, `superpowers`, `sg-retro`, `ship`, `complete`
 
 ## Code Style
 
 **Formatting:**
-- No dedicated formatter config (no `.eslintrc`, `.prettierrc`, `biome.json` present)
+- No Prettier or ESLint config detected — no automated formatter enforced
 - Indentation: 2 spaces (consistent across all `.cjs` files)
-- Semicolons: present at end of statements
-- String quotes: single quotes for simple strings, backticks for template literals
+- Trailing semicolons: yes
+- Single quotes for strings in JS unless template literals required
+- Template literals (`\`...\``) used for multi-word string interpolation
 
 **Linting:**
-- No ESLint or other linter configured
-- Manual compatibility enforcement via conventions (see Shell Compatibility section)
+- No `.eslintrc` or `eslint.config.*` found — linting is not automated
+- Style is enforced through code review and `sg-rule.*.local.md` hook rules
 
-## Module System
+## Import Organization
 
-**Node.js hooks:**
-- CommonJS (`.cjs` extension) — all hooks use `require()` / `module.exports`
-- Node.js built-ins only: `fs`, `path`, `util` — no external npm dependencies in hooks
-- Each hook is self-contained: `_pyJsonDumps` and `_pyEncodeString` are duplicated inline in both `stop_hook.cjs` and `rule_runner.cjs` rather than shared (D-10 pattern: "inline helper, no shared module")
-- Only `transcript_matcher.cjs` exports a function: `module.exports = { detectSignal }`
-- `stop_hook.cjs` and `rule_runner.cjs` are CLI-only (no exports)
+**Order (Node.js CJS files):**
+1. Node built-ins: `fs`, `path`, `util` — `const fs = require('fs')`
+2. Local relative imports: `require('./transcript_matcher.cjs')`
+3. No third-party npm dependencies in hook scripts
 
-**Requiring modules:**
-```js
-// Standard pattern for all hooks
+**Pattern:**
+```javascript
 const fs = require('fs');
 const path = require('path');
-// Optional — only in lessons_ranker.cjs
 const { parseArgs } = require('util');
+const { detectSignal } = require('./transcript_matcher.cjs');
 ```
 
-## Shell Compatibility Rules (CRITICAL)
+## Error Handling
 
-All Bash snippets in SKILL.md files must run on both macOS (BSD tools) and Linux (GNU tools):
+**Patterns:**
+- Hook scripts wrap `main()` body in `try/catch/finally` — `finally` always calls `process.exit(0)` to prevent hangs
+- Errors surfaced via `systemMessage` JSON output, not thrown: `{ systemMessage: 'super-gsd hook error: ' + e.message }`
+- File read failures are silently swallowed with a `continue` or `return ''` — missing files are a normal operating condition
+- CLI tools (`lessons_ranker.cjs`) write errors to `process.stderr` with `[error]` prefix and exit non-zero
 
-**Forbidden patterns:**
-- `grep -P` — macOS grep has no PCRE (`-P`) flag. Use `grep -E` (ERE) instead
-- `awk` for pipe-delimited Markdown table parsing at the top level — BSD awk mishandles `|` separators. Use `awk -F'|'` explicitly when splitting on pipes
-- `awk '{print $1}'` on raw STATE.md `Phase:` lines — this returns `"Phase"`, not the number
+**stdout vs stderr rule:**
+- JSON hook output → `process.stdout.write(...)` (never `console.log` in stop_hook)
+- Diagnostic/warning output → `process.stderr.write('[warn] ...')` or `process.stderr.write('[error] ...')`
+- `console.log()` used in `rule_runner.cjs` only (predates `process.stdout.write` standardization)
 
-**Required STATE.md Phase parsing pipeline (macOS-compatible):**
-```bash
-# --- BEGIN STATE.md Phase parsing block ---
-PHASE_LINE=$(grep -E '^Phase:' .planning/STATE.md 2>/dev/null | head -1 | sed -E 's/^Phase:[[:space:]]*//' | sed -E 's/[[:space:]]+$//')
-PHASE_NUM=$(echo "$PHASE_LINE" | grep -oE '^[0-9]+' || echo "")
-# --- END STATE.md Phase parsing block ---
-```
+**Bash error handling in SKILL.md:**
+- Use `2>/dev/null` on commands expected to sometimes fail
+- Use `|| echo "fallback"` for graceful defaults
+- Explicit `exit 1` on fatal validation failures with a human-readable message to stderr
+- `|| true` to suppress non-zero exit codes from optional cleanup operations
 
-**Cross-platform hash computation:**
-```bash
-PLAN_HASH=$(cat "$PHASE_DIR"/*-PLAN.md 2>/dev/null | { shasum -a 256 2>/dev/null || sha256sum; } | cut -c1-7)
-```
+## Logging
 
-**HANDOFF.md pipe-table field extraction:**
-```bash
-# Use awk -F'|' with gsub for field extraction
-STAGE_RAW=$(echo "$LAST_ROW" | awk -F'|' '{gsub(/ /,"",$5); print $5}')
-```
+**Framework:** None — direct `process.stderr.write` and `process.stdout.write`
 
-**Table parsing in skill scripts:**
-- Never use `grep -P` or `awk -F'|'` for Read-then-interpret workflows
-- For ROADMAP.md progress tables: use the Read tool + Edit tool, not bash parsing (`sg-phase`, `sg-status`)
+**Patterns:**
+- Warnings from CLI: `[warn] message` prefix to stderr
+- Errors from CLI: `[error] message` prefix to stderr
+- Completion signals from CLI: `[sg-complete] message` prefix to stdout
+- Hook errors embedded in JSON: `{ systemMessage: 'super-gsd hook error: ...' }`
+- Skill progress messages use bracket-prefixed labels: `[sg-plan] Step 1/2: ...`
 
-## JSON Output in Hooks
+## Comments
 
-Hooks must emit Python-compatible JSON (`json.dumps` defaults), not standard `JSON.stringify` output. Both `stop_hook.cjs` and `rule_runner.cjs` implement a hand-rolled `_pyJsonDumps` for byte-identical parity with the Python reference implementation:
+**When to Comment:**
+- Design decision references: `// D-XX: explanation` (e.g., `// D-10: inline helper (no shared module)`)
+- Port origin lines: `// Mirror rule_runner.py:35-101 LINE-BY-LINE per D-15`
+- Block identity markers for synchronized code: `// --- BEGIN STATE.md Phase parsing block ---` / `// --- END ... ---`
+- Divergence docs: note where JS behavior differs from the Python original (e.g., `String(null)` vs Python `str(None)`)
 
-```js
-// Key differences from JSON.stringify:
-// - separators: (', ', ': ') not (',', ':')
-// - ensure_ascii: true — non-ASCII chars escaped as \uXXXX
-// - Array: '[' + items.join(', ') + ']'
-// - Object: '{' + pairs.join(', ') + '}'
-```
+**JSDoc/TSDoc:** Not used — no TypeScript, no JSDoc annotations in any hook file
 
-## SKILL.md Document Structure
+## Function Design
 
-Every SKILL.md must follow this exact YAML frontmatter + XML block structure:
+**Size:** Functions are moderate in length. Internal helpers (`_parseFrontmatter`) can be 100+ lines when directly porting Python logic line-by-line.
 
-```markdown
+**Parameters:** Prefer plain objects or primitive arguments; no class instances
+
+**Return Values:**
+- Internal helpers return plain objects or primitives — e.g., `{ fm, body }` from `_parseFrontmatter`
+- `main()` functions have no return value; results written to stdout
+- Exported functions return values directly: `detectSignal()` returns a string; `parseLessonsFiles()` returns an array
+
+## Module Design
+
+**Exports:**
+- Only one file exports anything: `transcript_matcher.cjs` exports `{ detectSignal }` via `module.exports`
+- All other hooks are self-contained CLI scripts — no exports
+- `require.main === module` guard present in all four hook files to allow future testability
+
+**Inline duplication over shared modules:**
+- `_pyJsonDumps` and `_pyEncodeString` are duplicated between `rule_runner.cjs` and `stop_hook.cjs` intentionally — design decision D-10 ("inline helper, no shared module") to avoid import-order fragility in hook execution
+- `STATE.md Phase parsing block` and `HANDOFF.md stage detection block` are duplicated across `sg-status/SKILL.md`, `sg-next/SKILL.md`, and `sg-start/SKILL.md` with explicit `D-07` drift-lock comments requiring both to be updated simultaneously
+
+## SKILL.md Conventions
+
+**Frontmatter (YAML):**
+```yaml
 ---
 name: sg-{command}
-description: Use this when [trigger condition] — [what it does]
-argument-hint: "[args] - [description]"
+description: Use this when {trigger condition} — {action taken}.
+argument-hint: "[arg] - optional. Defaults to STATE.md current phase."
 ---
-
-<language>
-Detect the user's input language and respond in that language throughout this skill's output.
-- Korean input → respond in Korean
-- English input → respond in English
-- Mixed input → match the dominant language
-</language>
-
-<objective>
-[One paragraph describing what the skill accomplishes]
-</objective>
-
-<execution_context>
-[What files it reads/writes; whether it's self-contained or delegates]
-</execution_context>
-
-<process>
-[Numbered steps with bash code blocks]
-</process>
-
-<success_criteria>
-[Numbered list of verifiable outcomes]
-</success_criteria>
 ```
 
-**`argument-hint` field:** Optional — include only when the skill accepts arguments.
+**Sections (in order):**
+1. `<language>` — auto-detect user input language directive (Korean/English/mixed)
+2. `<objective>` — single-paragraph description of what the skill does
+3. `<execution_context>` — what files it reads/writes; whether it delegates
+4. `<constraints>` — platform-specific constraints (present in `.agents/` variants only)
+5. `<process>` — numbered steps with inline bash blocks
+6. `<success_criteria>` — numbered verifiable outcomes
 
-## SKILL.md Language Output Rules
+**Bash blocks within SKILL.md:**
+- Embedded in fenced ` ```bash ` blocks
+- Variable substitution instructions use `$ARGUMENTS` token
+- Comments explain macOS/BSD compatibility rationale inline
+- `Read tool` instructions for file reads that should NOT be bash grep
 
-- Prose messages, progress labels, and table headers visible to the user must be rendered in the user's input language (Korean or English, auto-detected)
-- Machine tokens must NOT be translated: `/super-gsd:sg-*` command names, stage enum values (`gsd-plan`, `superpowers`, `review`, `ship`, `complete`), file paths, timestamps, phase slugs, version IDs (`vX.Y`)
-- Hard-coded English `echo` strings in bash snippets are internal signals — render them in user language when surfacing to the user
+## HANDOFF.md Append Protocol
 
-## HANDOFF.md Conventions
+All `sg-*` skills that modify HANDOFF.md follow this 3-step pattern:
 
-`.planning/HANDOFF.md` is an append-only pipe-delimited table. Schema is fixed at 6 columns:
-
-```
-| Timestamp | Phase | From | To | Plan Hash | User |
-| --- | --- | --- | --- | --- | --- |
-| 2026-05-29T12:00:00Z | 41-new-phase | gsd-plan | superpowers | abc1234 | gyuha |
-```
-
-**Stage enum values (To column):** `init`, `gsd-plan`, `ui-plan`, `superpowers`, `parallel`, `execute`, `review`, `sg-retro`, `ship`, `complete`, `sg-next`
-
-**Initialization guard (required in every sg-* skill that writes HANDOFF.md):**
+1. **Initialize if missing:**
 ```bash
-HANDOFF_FILE=".planning/HANDOFF.md"
 if [ ! -f "$HANDOFF_FILE" ] || ! grep -q "Timestamp.*Phase.*From.*To.*Plan Hash" "$HANDOFF_FILE" 2>/dev/null; then
   mkdir -p "$(dirname "$HANDOFF_FILE")"
   printf '| Timestamp | Phase | From | To | Plan Hash | User |\n| --- | --- | --- | --- | --- | --- |\n' > "$HANDOFF_FILE"
 fi
 ```
 
-**Never modify existing rows — only append.**
-
-## Shared Code Block Replication (D-07 Pattern)
-
-Several SKILL.md files replicate identical bash blocks verbatim, marked with comment guards:
-
+2. **Compute GIT_USER:**
 ```bash
-# --- BEGIN STATE.md Phase parsing block (D-07: replicated from skills/sg-status/SKILL.md — update both simultaneously on drift) ---
-...
-# --- END STATE.md Phase parsing block ---
+GIT_USER=$(git config user.name 2>/dev/null || echo "-")
+[ -z "$GIT_USER" ] && GIT_USER="-"
 ```
 
-Files using D-07 replicated blocks:
-- `skills/sg-status/SKILL.md` — canonical source
-- `skills/sg-start/SKILL.md` — replicates STATE.md parsing, HANDOFF.md detection, next-command routing
-- `skills/sg-next/SKILL.md` — replicates HANDOFF.md detection + next-command routing
-- `.agents/skills/` equivalents of each
-
-**Rule:** When modifying a block in one file, update all files that replicate it simultaneously.
-
-## Version Management
-
-When bumping version, update ALL three files atomically:
-
-1. `.claude-plugin/plugin.json` — `"version"` field
-2. `package.json` — `"version"` field
-3. `CHANGELOG.md` — new `## [X.Y.Z] - YYYY-MM-DD` section with `### Added/Fixed/Changed` subsections
-
-**Commit message format:** `chore(release): bump version to X.Y.Z`
-
-CHANGELOG format follows [Keep a Changelog](https://keepachangelog.com/). Subsections used: `### Added`, `### Fixed`, `### Changed`.
-
-## Skills + Agents Parity Rule
-
-When adding or modifying any skill under `skills/sg-{name}/SKILL.md`, check whether `.agents/skills/sg-{name}/SKILL.md` exists and apply the same changes there. This is a blocker in code review (Phase 32 Medium-1).
-
-Currently paired skills (both `skills/` and `.agents/skills/` exist):
-- `sg-execute`, `sg-learn`, `sg-next`, `sg-parallel-execute`, `sg-plan`, `sg-retro`, `sg-review`, `sg-setup`, `sg-ship`, `sg-start`, `sg-status`
-
-Skills only in `skills/` (no `.agents/` counterpart required yet):
-- `sg-cleanup`, `sg-complete`, `sg-explore`, `sg-health`, `sg-lessons`, `sg-new`, `sg-phase`, `sg-quick`, `sg-ui-plan`, `sg-update`
-
-## sg-rule File Conventions
-
-Rule files live in `.claude/sg-rule.{slug}.local.md`. Frontmatter schema:
-
-```yaml
----
-name: warn-{slug}          # unique identifier; prefix matches action
-enabled: true
-event: bash                # bash | file | all (no 'prompt' support)
-pattern: "regex-here"      # simple single-condition shorthand
-# OR use conditions for compound logic:
-# conditions:
-#   - field: command        # bash: command / file: new_string|new_text|file_path|old_string
-#     operator: regex_match # regex_match | contains | equals | not_contains | starts_with | ends_with
-#     pattern: "regex"
-action: warn               # warn | block
----
-
-경고 메시지 본문 (Markdown)
+3. **Append row (never modify existing rows):**
+```bash
+echo "| $TS | $PHASE_SLUG | $FROM_STAGE | $TO_STAGE | $PLAN_HASH | $GIT_USER |" >> "$HANDOFF_FILE"
 ```
 
-**Supported fields for `field`:** `command` (bash event), `new_string`/`new_text`/`content`/`file_path`/`old_string` (file event).
+The single-condition `if [ ! -f "$HANDOFF_FILE" ]` guard is banned — rule `warn-handoff-single-condition` in `.claude/sg-rule.warn-handoff-single-condition.local.md` will fire.
 
-**`prompt` event is NOT supported** by `rule_runner.cjs`.
+## macOS/BSD Portability Rules
 
-## Error Messages
-
-Hooks write errors to `stdout` as `systemMessage` JSON (never `stderr`):
-```js
-console.log(_pyJsonDumps({ systemMessage: 'super-gsd rule_runner error: ' + e.message }));
-```
-
-CLI tools (`lessons_ranker.cjs`) write warnings/errors to `stderr`:
-```js
-process.stderr.write(`[warn] file not found: ${filepath}\n`);
-process.stderr.write('[error] --milestone VERSION is required for --archive\n');
-```
-
-## Plugin Root Detection
-
-All hooks use the same environment-variable-with-fallback pattern:
-```js
-const PLUGIN_ROOT = process.env.CLAUDE_PLUGIN_ROOT
-  || path.dirname(path.dirname(path.resolve(__filename)));
-```
-
-## Comments
-
-**Hook files:** Line comments explain Python-parity decisions (e.g., `// Mirror rule_runner.py:35-101 LINE-BY-LINE per D-15.`). Reference tags follow the pattern `D-{N}` (design decisions), `HOOK-{N}` (hook behavior), `NODE-{N}` (Node.js port IDs), `W-{N}` (known deviation/warning).
-
-**SKILL.md files:** Comments appear as `<!-- comment -->` inside XML blocks or as `# --- BEGIN/END {block name} ---` guards in bash code blocks.
+- **No `grep -P`** (PCRE) — use `grep -E` (ERE) instead
+- **No `awk` to parse pipe-delimited markdown tables via `|` operator** — use `awk -F'|'` explicit field separator
+- **STATE.md Phase parsing** must use the multi-step pipeline: `grep -E '^Phase:' | head -1 | sed -E 's/^Phase:[[:space:]]*//' | sed -E 's/[[:space:]]+$//' | awk '{print $1}'` — not a single-token regex
 
 ---
 

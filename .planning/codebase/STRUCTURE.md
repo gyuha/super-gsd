@@ -6,38 +6,39 @@
 
 ```
 super-gsd/
-├── skills/                      # 21 Claude Code slash command definitions
-│   ├── sg-cleanup/SKILL.md      # Archive completed phase directories
-│   ├── sg-complete/SKILL.md     # Complete a phase or close a milestone
-│   ├── sg-execute/SKILL.md      # Hand off plan to Superpowers for implementation
-│   ├── sg-explore/SKILL.md      # Invoke gsd-map-codebase for codebase mapping
-│   ├── sg-health/SKILL.md       # Diagnose GSD/Superpowers/hooks installation
-│   ├── sg-learn/SKILL.md        # Delegate to sg-retro for retrospective
-│   ├── sg-lessons/SKILL.md      # Review prior lessons before planning
-│   ├── sg-new/SKILL.md          # Start a new milestone
-│   ├── sg-next/SKILL.md         # Auto-advance to next workflow stage
-│   ├── sg-parallel-execute/     # Dispatch parallel Task() agents per wave
-│   ├── sg-phase/SKILL.md        # Edit/remove/complete a phase
-│   ├── sg-plan/SKILL.md         # Plan a phase with lessons injection
-│   ├── sg-quick/SKILL.md        # Ad-hoc task via gsd-planner + Superpowers
-│   ├── sg-retro/SKILL.md        # Structured retrospective (6 lenses)
-│   ├── sg-review/SKILL.md       # Code review via superpowers:requesting-code-review
-│   ├── sg-setup/SKILL.md        # In-session installer for target projects
-│   ├── sg-ship/SKILL.md         # Ship a phase via gsd-ship
-│   ├── sg-start/SKILL.md        # Start or resume a project session
-│   ├── sg-status/SKILL.md       # Show current workflow state + next command
-│   ├── sg-ui-plan/SKILL.md      # UI design brainstorming via superpowers
-│   └── sg-update/SKILL.md       # Update GSD/Superpowers/super-gsd tools
-│
-├── hooks/                       # Node.js hook handlers (CommonJS)
-│   ├── hooks.json               # Claude Code event → command mapping
-│   ├── stop_hook.cjs            # Stop/SubagentStop: detect signal, emit next step
-│   ├── rule_runner.cjs          # PreToolUse: evaluate sg-rule files
-│   ├── transcript_matcher.cjs   # Library: scan transcript for workflow signals
-│   └── lessons_ranker.cjs       # CLI: rank .planning/lessons/*.md by score
-│
-├── .agents/                     # Codex / multi-agent runtime mirror
-│   └── skills/                  # 11 skills mirrored from skills/ (subset)
+├── .claude-plugin/             # Claude Code plugin manifest
+│   ├── plugin.json             # Plugin metadata, skills path, version
+│   └── marketplace.json        # Marketplace listing metadata
+├── skills/                     # Primary skill definitions (21 skills)
+│   ├── sg-cleanup/SKILL.md
+│   ├── sg-complete/SKILL.md
+│   ├── sg-execute/SKILL.md
+│   ├── sg-explore/SKILL.md
+│   ├── sg-health/SKILL.md
+│   ├── sg-learn/SKILL.md
+│   ├── sg-lessons/SKILL.md
+│   ├── sg-new/SKILL.md
+│   ├── sg-next/SKILL.md
+│   ├── sg-parallel-execute/SKILL.md
+│   ├── sg-phase/SKILL.md
+│   ├── sg-plan/SKILL.md
+│   ├── sg-quick/SKILL.md
+│   ├── sg-retro/SKILL.md
+│   ├── sg-review/SKILL.md
+│   ├── sg-setup/SKILL.md
+│   ├── sg-ship/SKILL.md
+│   ├── sg-start/SKILL.md
+│   ├── sg-status/SKILL.md
+│   ├── sg-ui-plan/SKILL.md
+│   └── sg-update/SKILL.md
+├── hooks/                      # Node.js hook scripts (Claude Code lifecycle)
+│   ├── hooks.json              # Hook event registration (Claude Code)
+│   ├── stop_hook.cjs           # Stop/SubagentStop handler
+│   ├── rule_runner.cjs         # PreToolUse rule evaluator
+│   ├── transcript_matcher.cjs  # Signal detection utility (required by stop_hook)
+│   └── lessons_ranker.cjs      # CLI: weighted lesson scoring + archive
+├── .agents/                    # Mirror layer for non-Claude-Code platforms
+│   └── skills/                 # 11 mirrored skills (Codex/Gemini/agent platforms)
 │       ├── sg-execute/SKILL.md
 │       ├── sg-learn/SKILL.md
 │       ├── sg-next/SKILL.md
@@ -49,197 +50,194 @@ super-gsd/
 │       ├── sg-ship/SKILL.md
 │       ├── sg-start/SKILL.md
 │       └── sg-status/SKILL.md
-│
-├── bin/
-│   └── setup.js                 # `npx @gyuha/super-gsd install` entry point
-│
-├── .claude-plugin/
-│   ├── plugin.json              # Claude Code plugin manifest (name, version, skills path)
-│   └── marketplace.json         # Marketplace metadata
-│
-├── .claude/                     # Project-level Claude Code configuration
-│   ├── sg-rule.*.local.md       # Rule files consumed by rule_runner.cjs
-│   └── worktrees/               # Git worktree support
-│
+├── .claude/                    # Claude Code project-level config
+│   ├── sg-rule.*.local.md      # PreToolUse guard rules (4 active rules)
+│   └── worktrees/              # Git worktree tracking (internal)
 ├── .codex/
-│   └── hooks.json               # Codex event → command mapping (PreToolUse, Stop)
-│
+│   └── hooks.json              # Hook registration for Codex platform
 ├── .gemini/
-│   └── settings.json            # Gemini CLI event → command mapping
-│
-├── .antigravitycli/             # Antigravity CLI integration (presence only)
-│
-├── .planning/                   # GSD planning artifacts (runtime data)
-│   ├── HANDOFF.md               # Append-only stage audit log (schema-locked)
-│   ├── STATE.md                 # Current phase/milestone YAML frontmatter + prose
-│   ├── ROADMAP.md               # Phase definitions, success criteria, progress
-│   ├── config.json              # Runtime toggles (auto_advance, mode, etc.)
-│   ├── MILESTONES.md            # Milestone checklist
-│   ├── RETROSPECTIVE.md         # Project-level retrospective notes
-│   ├── TEAM.md                  # Team collaboration notes
-│   ├── PROJECT.md               # Project reference document
-│   ├── codebase/                # Codebase analysis documents (this directory)
-│   │   ├── ARCHITECTURE.md
-│   │   ├── STRUCTURE.md
-│   │   ├── STACK.md
-│   │   └── INTEGRATIONS.md
-│   ├── lessons/                 # Per-phase retrospective outputs
-│   │   └── NN-YYYY-MM-DD.md     # e.g. 36-2026-05-27.md
-│   ├── milestones/              # Archived phases and lesson archives
-│   │   └── vX.Y-phases/         # Archived phase directories per milestone
-│   ├── phases/                  # Active per-phase planning directories
-│   │   └── NN-<slug>/           # e.g. 39-handoff-user-tracking/
-│   │       ├── NN-CONTEXT.md    # Phase context from gsd-discuss-phase
-│   │       ├── NN-NN-PLAN.md    # Implementation plan(s)
-│   │       └── NN-NN-SUMMARY.md # Post-execution summary
-│   ├── quick/                   # Quick task planning directories
-│   │   └── YYMMDD-XXX-<slug>/
-│   ├── reports/                 # Ad-hoc reports
-│   └── research/                # Ad-hoc research notes
-│
-├── docs/                        # Additional documentation
-├── images/                      # README images/screenshots
-├── CLAUDE.md                    # Project-level Claude Code instructions
-├── AGENTS.md                    # Agent-runtime instructions
-├── README.md                    # English documentation
-├── README.ko.md                 # Korean documentation
-├── CHANGELOG.md                 # Version history
-├── package.json                 # npm package manifest (@gyuha/super-gsd)
-└── LICENSE
+│   └── settings.json           # Hook registration for Gemini platform
+├── .antigravitycli/            # Antigravity CLI platform support
+├── bin/
+│   └── setup.js                # npx installer — copies hooks + .agents + .codex
+├── docs/
+│   └── COMMANDS.md             # Command reference documentation
+├── .planning/                  # GSD workflow state (git-ignored except codebase/)
+│   ├── STATE.md                # Current phase/milestone (YAML frontmatter + prose)
+│   ├── HANDOFF.md              # Append-only stage transition audit log
+│   ├── ROADMAP.md              # Milestone/phase plan
+│   ├── MILESTONES.md           # Milestone history
+│   ├── PROJECT.md              # Project reference
+│   ├── TEAM.md                 # Team context
+│   ├── RETROSPECTIVE.md        # High-level retrospective notes
+│   ├── config.json             # Runtime config (auto_advance toggle)
+│   ├── lessons/                # Phase retrospective outputs ({NN}-{YYYY-MM-DD}.md)
+│   ├── phases/                 # Phase work directories
+│   │   └── <NN>-<slug>/        # Per-phase artifacts
+│   │       ├── <NN>-CONTEXT.md     # Phase context (gsd-discuss-phase output)
+│   │       ├── <NN>-01-PLAN.md     # Plan files (numbered)
+│   │       ├── <NN>-01-SUMMARY.md  # Post-execution summaries
+│   │       └── parallel_groups.json # Wave groups (when parallel execution used)
+│   ├── milestones/             # Completed milestone archives
+│   │   └── vX.Y-LESSONS.md     # Archived lessons per milestone
+│   ├── quick/                  # Quick-task planning directories
+│   ├── reports/                # Generated reports
+│   ├── research/               # Research notes
+│   └── codebase/               # Codebase analysis docs (tracked in git)
+│       ├── ARCHITECTURE.md
+│       ├── STRUCTURE.md
+│       └── (other GSD map docs)
+├── images/                     # Documentation images
+├── package.json                # npm package config (@gyuha/super-gsd v0.0.47)
+├── CLAUDE.md                   # Project conventions and architecture guide
+├── CHANGELOG.md                # Version history
+├── README.md                   # English documentation
+├── README.ko.md                # Korean documentation
+└── AGENTS.md                   # Agent platform documentation
 ```
 
 ## Directory Purposes
 
 **`skills/`:**
-- Purpose: The 21 `/super-gsd:sg-*` slash command definitions. Each subdirectory contains exactly one `SKILL.md`.
-- Contains: Markdown files with YAML frontmatter + XML-tagged instruction blocks
-- Key files: `skills/sg-plan/SKILL.md`, `skills/sg-execute/SKILL.md`, `skills/sg-status/SKILL.md`, `skills/sg-next/SKILL.md`
-
-**`.agents/skills/`:**
-- Purpose: Mirror of the 11 most-used skills for Codex and multi-agent runtimes that read `.agents/` instead of `skills/`
-- Contains: Identical SKILL.md content to their `skills/` counterparts (must stay in sync)
-- Key constraint: When modifying `skills/sg-X/SKILL.md`, also update `.agents/skills/sg-X/SKILL.md` if it exists
+- Purpose: Primary skill definitions, one subdirectory per `/super-gsd:sg-*` slash command
+- Contains: Single `SKILL.md` per subdirectory — YAML frontmatter + Markdown instruction blocks
+- Key files: `skills/sg-status/SKILL.md` (contains the D-07 canonical parsing blocks), `skills/sg-execute/SKILL.md` (parallel routing logic)
 
 **`hooks/`:**
-- Purpose: Node.js CommonJS modules that handle Claude Code lifecycle events
-- Contains: `.cjs` files (no build step; run directly via `node`)
-- Key files: `stop_hook.cjs` (auto-advance), `rule_runner.cjs` (rule enforcement), `transcript_matcher.cjs` (signal library), `lessons_ranker.cjs` (lessons CLI)
+- Purpose: Node.js CommonJS scripts executed by Claude Code/Codex/Gemini on lifecycle events
+- Contains: 4 `.cjs` files + 1 `hooks.json` registration manifest
+- Key files: `hooks/stop_hook.cjs` (auto-advance guidance), `hooks/rule_runner.cjs` (guardrails), `hooks/lessons_ranker.cjs` (scoring CLI)
+
+**`.agents/skills/`:**
+- Purpose: Mirror of 11 core skills for agent platforms (Codex, Gemini, raw agent APIs)
+- Contains: Subset of `skills/` with identical content — must be kept in sync
+- Key constraint: Any change to a mirrored skill in `skills/` requires the same change in `.agents/skills/`
 
 **`.claude/`:**
-- Purpose: Project-level rule files loaded by `rule_runner.cjs`
-- Contains: `sg-rule.*.local.md` files — each defines one PreToolUse warn/block rule
+- Purpose: Claude Code project-level configuration and guard rules
+- Contains: `sg-rule.*.local.md` files evaluated by `rule_runner.cjs` on every PreToolUse
+- Key files: `sg-rule.state-phase-awk.local.md`, `sg-rule.plugin-json-skills.local.md`, `sg-rule.warn-handoff-single-condition.local.md`, `sg-rule.warn-sg-next-self-reference.local.md`
 
 **`.planning/`:**
-- Purpose: All GSD runtime data; written by skills, read by both skills and hooks
-- Key constraint: `HANDOFF.md` is append-only — never edit existing rows
+- Purpose: All GSD workflow state — git-ignored (except `.planning/codebase/`) to avoid committing planning noise
+- Contains: STATE.md, HANDOFF.md, ROADMAP.md, per-phase directories, lessons, milestones archive
+- Key constraint: `.planning/codebase/` is explicitly un-ignored (`!.planning/codebase/` in `.gitignore`)
 
 **`bin/`:**
-- Purpose: npm package CLI entry point
-- Contains: `setup.js` — the `npx @gyuha/super-gsd install` command that copies `hooks/`, `.agents/`, `.codex/` into a target project
+- Purpose: npm package binary — `npx @gyuha/super-gsd install` entry point
+- Contains: `setup.js` — copies `hooks/`, `.agents/`, `.codex/`, optionally `.gemini/settings.json`
 
 ## Key File Locations
 
 **Entry Points:**
-- `skills/sg-start/SKILL.md`: Start or resume a project
-- `skills/sg-status/SKILL.md`: Check current workflow state
-- `skills/sg-next/SKILL.md`: Auto-advance to next stage
-- `bin/setup.js`: npx installer
+- `skills/sg-start/SKILL.md`: Session detection and resume/new-milestone branching
+- `skills/sg-plan/SKILL.md`: Phase planning entry with lessons injection
+- `hooks/stop_hook.cjs`: Auto-advance guidance after Claude sessions complete
+- `bin/setup.js`: npm installer entry point
 
-**Plugin Registration:**
-- `.claude-plugin/plugin.json`: Declares `"skills": "./skills/"` — Claude Code reads this to register all slash commands
+**Configuration:**
+- `.claude-plugin/plugin.json`: Plugin version, skill path, marketplace metadata
+- `hooks/hooks.json`: Claude Code hook event registration
+- `.codex/hooks.json`: Codex hook registration
+- `.planning/config.json`: Runtime `super_gsd.auto_advance` toggle
+- `.claude/sg-rule.*.local.md`: Active PreToolUse guard rules
 
-**Hook Registration:**
-- `hooks/hooks.json`: Claude Code reads this for PreToolUse/Stop/SubagentStop bindings
-- `.codex/hooks.json`: Codex reads this for hook bindings
-- `.gemini/settings.json`: Gemini CLI reads this for hook bindings
+**Core Logic:**
+- `hooks/transcript_matcher.cjs`: Signal detection constants and `detectSignal()` function
+- `hooks/lessons_ranker.cjs`: `computeScores()` with `0.4*freq + 0.4*recency + 0.2*severity` formula
+- `hooks/rule_runner.cjs`: `_parseFrontmatter()`, `_loadRules()`, `_matchCondition()`, `_evaluate()`
 
-**Stage Routing (shared logic — must be updated in both):**
-- `skills/sg-status/SKILL.md`: Stage display + next-command routing table
-- `skills/sg-next/SKILL.md`: Auto-invoke version of the same routing table
+**Planning Artifacts (runtime):**
+- `.planning/HANDOFF.md`: Append-only stage transition log (source of truth for current stage)
+- `.planning/STATE.md`: Current phase/milestone (source of truth for current phase number)
+- `.planning/ROADMAP.md`: Milestone and phase definitions (read by sg-status, sg-execute, sg-next)
+- `.planning/lessons/`: Phase retrospective outputs — input to `lessons_ranker.cjs`
 
-**Data:**
-- `.planning/HANDOFF.md`: Append-only stage audit log
-- `.planning/STATE.md`: Current phase (YAML `Phase:` field)
-- `.planning/config.json`: `super_gsd.auto_advance` toggle
+**Testing:**
+- `.pytest_cache/`: Python test cache (legacy — Python hooks have been deleted as of phase 31)
 
 ## Naming Conventions
 
 **Skills directories:**
-- Pattern: `sg-<verb>` or `sg-<noun>` (always lowercase, hyphenated)
-- Examples: `sg-plan`, `sg-execute`, `sg-parallel-execute`, `sg-ui-plan`
+- Pattern: `sg-<kebab-name>/` — all lowercase, hyphen-separated, `sg-` prefix mandatory
+- Examples: `sg-execute/`, `sg-parallel-execute/`, `sg-ui-plan/`
 
 **Hook files:**
-- Pattern: `<role>_hook.cjs` for hooks; `<role>_matcher.cjs` / `<role>_ranker.cjs` for utilities
-- All hooks use `.cjs` extension (CommonJS, Node.js 18+)
+- Pattern: `<name>_<type>.cjs` — underscore-separated, `.cjs` extension (CommonJS)
+- Examples: `stop_hook.cjs`, `rule_runner.cjs`, `transcript_matcher.cjs`
 
 **Rule files:**
-- Pattern: `sg-rule.<slug>.local.md` — always in `.claude/`
-- Slug describes what the rule guards: `warn-handoff-single-condition`, `warn-sg-next-self-reference`
+- Pattern: `sg-rule.<slug>.local.md` — fixed prefix `sg-rule.`, fixed suffix `.local.md`
+- Examples: `sg-rule.state-phase-awk.local.md`, `sg-rule.plugin-json-skills.local.md`
 
 **Phase directories:**
-- Pattern: `.planning/phases/NN-<slug>/` — zero-padded two-digit number + hyphen + kebab-case description
-- Example: `39-handoff-user-tracking/`, `40-sg-execute-branch-workflow/`
+- Pattern: `.planning/phases/<NN>-<kebab-slug>/` — zero-padded two-digit number + hyphen + slug
+- Examples: `.planning/phases/39-handoff-user-tracking/`, `.planning/phases/40-sg-execute-branch-workflow/`
 
 **Phase artifacts:**
-- Pattern: `NN-CONTEXT.md`, `NN-NN-PLAN.md`, `NN-NN-SUMMARY.md`
-- Example: `41-CONTEXT.md`, `41-01-PLAN.md`, `41-01-SUMMARY.md`
+- Pattern: `<NN>-CONTEXT.md`, `<NN>-<WW>-PLAN.md`, `<NN>-<WW>-SUMMARY.md` — phase number prefix
+- Examples: `39-CONTEXT.md`, `39-01-PLAN.md`, `39-01-SUMMARY.md`
 
 **Lessons files:**
-- Pattern: `NN-YYYY-MM-DD.md` — phase number prefix + ISO date
-- Example: `36-2026-05-27.md`
+- Pattern: `.planning/lessons/<NN>-<YYYY-MM-DD>.md` — phase number + date
+- Examples: `39-2026-05-28.md`, `00-2026-05-21.md`
 
-**Quick task directories:**
-- Pattern: `.planning/quick/YYMMDD-XXX-<slug>/` — 6-digit date + 3-char random ID + slug
-- Example: `260528-dv4-create-sg-phase-skill-wrapping-gsd-phase/`
+**SKILL.md structure:**
+- All skill files are named exactly `SKILL.md` (uppercase)
+- YAML frontmatter fields: `name`, `description`, `argument-hint` (optional)
+- Required sections: `<language>`, `<objective>`, `<execution_context>`, `<process>`, `<success_criteria>`
 
 ## Where to Add New Code
 
-**New skill (slash command):**
-- Create `skills/sg-<name>/SKILL.md` following the YAML frontmatter + XML-block structure
-- If the skill should also work in Codex/multi-agent contexts, create identical `.agents/skills/sg-<name>/SKILL.md`
-- No changes needed to `plugin.json` — the `"skills": "./skills/"` declaration auto-discovers all subdirectories
+**New skill:**
+- Implementation: `skills/sg-<name>/SKILL.md` (create directory + SKILL.md)
+- If the skill needs agent platform support: also create `.agents/skills/sg-<name>/SKILL.md` with identical content
+- No changes needed to `plugin.json` — `"skills": "./skills/"` auto-registers all subdirectories
 
 **New hook rule:**
-- Create `.claude/sg-rule.<slug>.local.md` with YAML frontmatter
-- No registration needed — `rule_runner.cjs` globs all `sg-rule.*.local.md` files in `.claude/` at runtime
+- Implementation: `.claude/sg-rule.<slug>.local.md`
+- Format: YAML frontmatter with `name`, `enabled`, `event` (bash|file|all), `pattern` or `conditions`, `action` (warn|block)
+- No registration needed — `rule_runner.cjs` globs `.claude/sg-rule.*.local.md` automatically
 
-**New hook (new lifecycle event):**
-- Add handler file to `hooks/` as a `.cjs` file
-- Register the event in `hooks/hooks.json` (Claude Code), `.codex/hooks.json` (Codex), and `.gemini/settings.json` (Gemini CLI)
+**New hook script:**
+- Implementation: `hooks/<name>.cjs`
+- Must be registered manually in `hooks/hooks.json` under the appropriate event key
+
+**Modifying shared parsing logic:**
+- The STATE.md Phase parsing block (D-07) and HANDOFF.md stage detection block appear verbatim in multiple SKILL.md files
+- Files containing D-07 blocks: `skills/sg-status/SKILL.md`, `skills/sg-next/SKILL.md`, `skills/sg-start/SKILL.md`, `skills/sg-retro/SKILL.md`
+- All copies must be updated simultaneously when the block changes
 
 **New planning artifact type:**
-- Add to `.planning/` with a clear naming convention
-- Document the schema in the file header (see HANDOFF.md for example)
-
-**New signal string (for stop_hook auto-advance):**
-- Add the substring to the appropriate array in `hooks/transcript_matcher.cjs` (lines 5–25)
-- No other changes needed — `stop_hook.cjs` calls `detectSignal()` which checks all arrays
-
-**Updated stage enum (new workflow stage):**
-- Add to the `case` blocks in BOTH `skills/sg-status/SKILL.md` and `skills/sg-next/SKILL.md` simultaneously (D-03 lock)
-- Update HANDOFF.md schema comment in `.planning/HANDOFF.md`
+- Place under `.planning/` (git-ignored by default)
+- If it should be tracked in git, add `!.planning/<filename>` to `.gitignore` (see the `.planning/codebase/` pattern)
 
 ## Special Directories
 
 **`.planning/codebase/`:**
-- Purpose: Codebase analysis documents written by `/gsd:map-codebase`
-- Generated: Yes (by GSD map-codebase command)
-- Committed: Yes
+- Purpose: GSD codebase analysis documents (ARCHITECTURE.md, STRUCTURE.md, etc.)
+- Generated: Yes (by `/gsd:map-codebase`)
+- Committed: Yes — explicitly un-ignored in `.gitignore` via `!.planning/codebase/`
 
-**`.planning/milestones/`:**
-- Purpose: Archived phase directories and consolidated lesson files per milestone
-- Generated: Yes (by `sg-complete` and `lessons_ranker.cjs --archive`)
-- Committed: Yes
+**`.planning/phases/<NN>-*/`:**
+- Purpose: Per-phase work artifacts (context, plans, summaries, parallel groups)
+- Generated: Yes (by gsd-discuss-phase, gsd-plan-phase, sg-execute)
+- Committed: No (`.planning/` is git-ignored)
 
-**`.planning/quick/`:**
-- Purpose: Ephemeral planning directories for ad-hoc tasks via `sg-quick`
-- Generated: Yes (by `sg-quick` via gsd-sdk)
-- Committed: Yes (serves as audit trail)
+**`.planning/lessons/`:**
+- Purpose: Retrospective outputs fed back into future sg-plan runs
+- Generated: Yes (by sg-retro)
+- Committed: No (`.planning/` is git-ignored)
+
+**`.agents/`:**
+- Purpose: Mirror for agent/Codex/Gemini platforms
+- Generated: No (maintained manually, must stay in sync with `skills/`)
+- Committed: Yes — included in npm package `"files"` field
 
 **`hooks/__pycache__/`:**
-- Purpose: Python bytecode cache (legacy — from when hooks were Python before v2.4 port)
-- Generated: Yes
-- Committed: No (should be in .gitignore; present but unused)
+- Purpose: Python bytecode cache (legacy — Python hooks deleted in phase 31)
+- Generated: Yes (auto)
+- Committed: No (`.gitignore`)
 
 ---
 

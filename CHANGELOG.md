@@ -2,6 +2,26 @@
 
 All notable changes to `super-gsd` are documented in this file. Format follows [Keep a Changelog](https://keepachangelog.com/).
 
+## [0.0.46] - 2026-05-29
+
+### Added
+
+- `sg-execute` Step 1.5 — main/master 브랜치 감지 시 `phase/{N}-{slug}` 브랜치 생성을 AskUserQuestion으로 제안 (TEAM-03). `.agents/skills/sg-execute` pairwise 적용 (메시지 출력 후 자동 계속)
+- `sg-phase complete` Step 4i — feature 브랜치에서만 PR 안내 출력: gh CLI 있으면 `gh pr create --base main`, 없으면 `git push -u origin HEAD` (TEAM-04)
+- `.planning/TEAM.md` — 팀원 온보딩 가이드 (Quick Start / Branch strategy / File ownership / Merge order)
+- `README.md` `## Team Workflow` 섹션 + `README.ko.md` `## 팀 워크플로우` 섹션 추가
+- `.agents/skills/sg-parallel-execute/SKILL.md` 신규 생성 — Codex/Gemini 플랫폼 지원
+
+### Fixed
+
+- `sg-execute` `<success_criteria>` Step 1.5 브랜치 감지 동작 명시 추가
+- `sg-phase` `<success_criteria>` Step 4i PR 안내 동작 명시 추가
+- `sg-parallel-execute` Step 4i main 브랜치 가드 누락 수정 — feature 브랜치에서만 PR 안내 출력
+
+### Changed
+
+- v2.8 Team Collaboration Support 마일스톤 완료 — Phases 39-41 shipped, git tag v2.8
+
 ## [0.0.45] - 2026-05-28
 
 ### Fixed

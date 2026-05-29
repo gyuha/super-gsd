@@ -2,6 +2,12 @@
 
 All notable changes to `super-gsd` are documented in this file. Format follows [Keep a Changelog](https://keepachangelog.com/).
 
+## [0.0.47] - 2026-05-29
+
+### Added
+
+- `sg-start` / `sg-explore` Step 0 — 실행 시 프로젝트 `.gitignore`에 `.planning/` 자동 추가 (멱등). `.planning/codebase/` 는 `!.planning/codebase/` 예외로 git 추적 유지. `.agents/skills/sg-start/SKILL.md` pairwise 동기화.
+
 ## [0.0.46] - 2026-05-29
 
 ### Added

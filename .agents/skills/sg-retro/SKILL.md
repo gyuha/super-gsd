@@ -1,7 +1,7 @@
 ---
 name: sg-retro
-description: Run a structured retrospective on a GSD phase with one of six lenses — select multiple lenses in one call — and append results to .planning/lessons/{NN}-{YYYY-MM-DD}.md. AskUserQuestion-free version for Codex/Gemini CLI/Antigravity CLI.
-argument-hint: "[phase] [lens] - e.g. '14 ssc' or '14 ssc dspm'. lens: ssc|4ls|dspm|sail|5why|analyze"
+description: Run a structured retrospective on a GSD phase with one of three lenses (ssc, dspm, analyze) — select multiple lenses in one call or omit lens argument for smart default (dspm+ssc) — and append results to .planning/lessons/{NN}-{YYYY-MM-DD}.md. AskUserQuestion-free version for Codex/Gemini CLI/Antigravity CLI.
+argument-hint: "[phase] [lens] - e.g. '14 ssc' or '14 ssc dspm'. lens: ssc|dspm|analyze. Omit lens for smart default (dspm+ssc)."
 ---
 
 <language>
@@ -12,7 +12,7 @@ Detect the user's input language and respond in that language throughout this sk
 </language>
 
 <objective>
-Run a structured retrospective on a GSD phase. Auto-collect phase artifacts and git context. Let the user pick one or more of six lenses — Start/Stop/Continue (ssc), 4Ls (4ls), Decisions/Surprises/Patterns/Mistakes (dspm), Sailboat (sail), Five Whys (5why), Conversation Analyzer (analyze) — via numbered list fallback (no AskUserQuestion). Facilitate each lens (artifact-grounded for ssc/4ls/dspm/sail; user-driven for 5why; transcript-native for analyze), then append all results sequentially to `.planning/lessons/{NN}-{YYYY-MM-DD}.md`.
+Run a structured retrospective on a GSD phase. Auto-collect phase artifacts and git context. Let the user pick one or more of three lenses — Start/Stop/Continue (ssc), Decisions/Surprises/Patterns/Mistakes (dspm), Conversation Analyzer (analyze) — or omit the lens argument to apply the smart default (dspm+ssc). Facilitate each lens (artifact-grounded for ssc/dspm; transcript-native for analyze), then append all results sequentially to `.planning/lessons/{NN}-{YYYY-MM-DD}.md`.
 </objective>
 
 <constraints>
@@ -78,9 +78,9 @@ fi
 LENS_CODES_ARRAY=""
 ```
 
-**Step 2 — Lens code mapping or numbered list fallback.**
+**Step 2 — Lens code mapping with smart default.**
 
-Map `LENS_RAW` to one of `ssc`/`4ls`/`dspm`/`sail`/`5why`/`analyze` (case-insensitive). If empty or unmapped, output a numbered list and wait for user input (no AskUserQuestion).
+Map `LENS_RAW` to one of `ssc`/`dspm`/`analyze` (case-insensitive). Removed lens codes (`4ls`/`sail`/`5why`) or any unknown code emit a stderr error message and exit 1 without creating or appending to a lessons file. When `LENS_RAW` and `EXTRA_LENS_CODES` are both empty, the smart default applies automatically (no AskUserQuestion, no numbered list).
 
 ```bash
 LENS_CODE=""
@@ -88,46 +88,18 @@ if [ -n "$LENS_RAW" ]; then
   LENS_LC=$(printf '%s' "$LENS_RAW" | tr '[:upper:]' '[:lower:]')
   case "$LENS_LC" in
     ssc)     LENS_CODE="ssc"     ;;
-    4ls)     LENS_CODE="4ls"     ;;
     dspm)    LENS_CODE="dspm"    ;;
-    sail)    LENS_CODE="sail"    ;;
-    5why)    LENS_CODE="5why"    ;;
     analyze) LENS_CODE="analyze" ;;
-    *)       LENS_CODE=""        ;;
+    4ls|sail|5why)
+      printf "Lens '%s' is no longer supported (removed in v2.9).\nAvailable lenses: ssc, dspm, analyze.\nRun without lens argument to use smart default (dspm+ssc).\n" "$LENS_LC" >&2
+      exit 1
+      ;;
+    *)
+      printf "Lens '%s' is no longer supported (removed in v2.9).\nAvailable lenses: ssc, dspm, analyze.\nRun without lens argument to use smart default (dspm+ssc).\n" "$LENS_LC" >&2
+      exit 1
+      ;;
   esac
 fi
-```
-
-If `LENS_CODE` is empty, output the following numbered list and wait for the user's response:
-
-```
-Select a lens:
-1) ssc     — Start/Stop/Continue
-2) 4ls     — 4Ls (Like/Learned/Lacked/Longed for)
-3) dspm    — Decisions/Surprises/Patterns/Mistakes
-4) sail    — Sailboat
-5) 5why    — Five Whys
-6) analyze — Conversation Analyzer
-
-Enter number or code. Multiple: "1 3" or "ssc dspm"
-```
-
-Parse the user's response: map numbers to codes (1→ssc, 2→4ls, 3→dspm, 4→sail, 5→5why, 6→analyze), handle space-separated inputs for multiple lenses, and build `LENS_CODES_ARRAY`.
-
-```bash
-# Number input mapping
-map_num_to_code() {
-  case "$1" in
-    1) echo "ssc"     ;;
-    2) echo "4ls"     ;;
-    3) echo "dspm"    ;;
-    4) echo "sail"    ;;
-    5) echo "5why"    ;;
-    6) echo "analyze" ;;
-    ssc|4ls|dspm|sail|5why|analyze) echo "$1" ;;
-    *) echo "" ;;
-  esac
-}
 ```
 
 Single-lens argument path:
@@ -138,7 +110,15 @@ if [ -n "$EXTRA_LENS_CODES" ]; then
   for EC in $EXTRA_LENS_CODES; do
     EC_LC=$(printf '%s' "$EC" | tr '[:upper:]' '[:lower:]')
     case "$EC_LC" in
-      ssc|4ls|dspm|sail|5why|analyze) VALID_EXTRAS="${VALID_EXTRAS} ${EC_LC}" ;;
+      ssc|dspm|analyze) VALID_EXTRAS="${VALID_EXTRAS} ${EC_LC}" ;;
+      4ls|sail|5why)
+        printf "Lens '%s' is no longer supported (removed in v2.9).\nAvailable lenses: ssc, dspm, analyze.\nRun without lens argument to use smart default (dspm+ssc).\n" "$EC_LC" >&2
+        exit 1
+        ;;
+      *)
+        printf "Lens '%s' is no longer supported (removed in v2.9).\nAvailable lenses: ssc, dspm, analyze.\nRun without lens argument to use smart default (dspm+ssc).\n" "$EC_LC" >&2
+        exit 1
+        ;;
     esac
   done
 fi
@@ -146,6 +126,11 @@ if [ -n "$LENS_CODE" ]; then
   LENS_CODES_ARRAY="${LENS_CODE}${VALID_EXTRAS}"
 elif [ -n "$VALID_EXTRAS" ]; then
   LENS_CODES_ARRAY="$VALID_EXTRAS"
+fi
+
+# Phase 42 (D-02): smart default — no args → dspm+ssc, dspm first (technical core → behavior recommendation)
+if [ -z "$LENS_CODES_ARRAY" ] && [ -z "$LENS_RAW" ] && [ -z "$EXTRA_LENS_CODES" ]; then
+  LENS_CODES_ARRAY="dspm ssc"
 fi
 ```
 
@@ -224,28 +209,9 @@ Common flow for ssc/4ls/dspm/sail lenses:
 - Fixed subheadings: `### Start` / `### Stop` / `### Continue`.
 - Facilitation: For **Start**, propose practices/tools/conventions to begin. For **Stop**, propose anti-patterns visible in `git diff` or CONTEXT. For **Continue**, propose practices that delivered observed value.
 
-**Sub-block `4ls` (4Ls):**
-- Fixed subheadings: `### Liked` / `### Learned` / `### Lacked` / `### Longed For`.
-- Facilitation grounded in CONTEXT/PLAN/SUMMARY artifacts and `git diff`.
-
 **Sub-block `dspm` (Decisions/Surprises/Patterns/Mistakes):**
 - Fixed subheadings: `### Decisions` / `### Surprises` / `### Patterns` / `### Mistakes`.
 - **Explicit guard:** Derives strictly from collected phase artifacts + `git log`/`git diff`. Do NOT read or analyze session transcript.
-
-**Sub-block `sail` (Sailboat):**
-- Fixed subheadings: `### Wind` / `### Anchor` / `### Sun` / `### Rock`.
-- Wind/Sun from SUMMARY positives; Anchor/Rock from CONTEXT risks + delayed tasks + git reversion patterns.
-
-**Sub-block `5why` (Five Whys):**
-- Fixed subheadings: `### Problem Statement` / `### Why 1` ~ `### Why 5` / `### Root Cause`.
-- Facilitation (user-driven, text output — no AskUserQuestion):
-  1. Output: `[Five Whys — Problem] Describe the problem to analyze. (If empty, will suggest from phase artifacts.)` and wait for user response.
-  2. Output: `[Why 1] Why did [problem statement] happen?` and wait.
-  3. Output: `[Why 2] Why did [Why 1 answer] happen?` and wait.
-  4. Output: `[Why 3] Why did [Why 2 answer] happen?` and wait.
-  5. Output: `[Why 4] Why did [Why 3 answer] happen?` and wait.
-  6. Output: `[Why 5] Why did [Why 4 answer] happen?` and wait.
-  7. Derive Root Cause + confirm Action Items (text output) then append.
 
 **Sub-block `analyze` (Conversation Analyzer):**
 - Fixed subheadings: `### Analysis Findings` (table) / `### Draft sg-rules` / `### Action Items`.
@@ -270,10 +236,7 @@ mkdir -p "$LESSONS_DIR"
 
 case "$LENS_CODE" in
   ssc)     LENS_NAME="Start/Stop/Continue" ;;
-  4ls)     LENS_NAME="4Ls" ;;
   dspm)    LENS_NAME="Decisions/Surprises/Patterns/Mistakes" ;;
-  sail)    LENS_NAME="Sailboat" ;;
-  5why)    LENS_NAME="Five Whys" ;;
   analyze) LENS_NAME="Conversation Analyzer" ;;
 esac
 
@@ -350,29 +313,6 @@ _Captured: {ISO-8601 UTC}_
 | P1 | [summary] | [concrete step] |
 ```
 
-**4Ls (4ls):**
-```markdown
-## Lens: 4Ls
-_Captured: {ISO-8601 UTC}_
-
-### Liked
-- [item]
-
-### Learned
-- [item]
-
-### Lacked
-- [item]
-
-### Longed For
-- [item]
-
-### Action Items
-| priority | item | next step |
-|----------|------|-----------|
-| P1 | [summary] | [concrete step] |
-```
-
 **Decisions/Surprises/Patterns/Mistakes (dspm):**
 ```markdown
 ## Lens: Decisions/Surprises/Patterns/Mistakes
@@ -389,61 +329,6 @@ _Captured: {ISO-8601 UTC}_
 
 ### Mistakes
 - [item]
-
-### Action Items
-| priority | item | next step |
-|----------|------|-----------|
-| P1 | [summary] | [concrete step] |
-```
-
-**Sailboat (sail):**
-```markdown
-## Lens: Sailboat
-_Captured: {ISO-8601 UTC}_
-
-### Wind
-- [what propelled progress]
-
-### Anchor
-- [what slowed down]
-
-### Sun
-- [bright spot / energy source]
-
-### Rock
-- [risk or obstacle]
-
-### Action Items
-| priority | item | next step |
-|----------|------|-----------|
-| P1 | [summary] | [concrete step] |
-```
-
-**Five Whys (5why):**
-```markdown
-## Lens: Five Whys
-_Captured: {ISO-8601 UTC}_
-
-### Problem Statement
-- [user-provided problem]
-
-### Why 1
-- [user answer]
-
-### Why 2
-- [user answer]
-
-### Why 3
-- [user answer]
-
-### Why 4
-- [user answer]
-
-### Why 5
-- [user answer]
-
-### Root Cause
-- [derived root cause]
 
 ### Action Items
 | priority | item | next step |
@@ -476,8 +361,8 @@ _Captured: {ISO-8601 UTC}_
 
 <success_criteria>
 1. The Phase argument must be a number, and the corresponding `.planning/phases/{NN}-*/` directory must exist.
-2. If the second argument is `ssc`/`4ls`/`dspm`/`sail`/`5why`/`analyze`, skip the numbered list output and execute immediately.
-3. If no argument or unrecognized input, output the numbered list and wait for user input. Do not use AskUserQuestion.
+2. Second argument (if provided) is one of `ssc`/`dspm`/`analyze` (case-insensitive). When omitted along with extra-lens arguments, smart default `LENS_CODES_ARRAY="dspm ssc"` applies automatically (dspm first, then ssc) without prompting.
+3. No argument → smart default (dspm+ssc) applies without prompting. Removed lens codes (`4ls`/`sail`/`5why`) or any unknown code emit a stderr error message containing "no longer supported (removed in v2.9)" and exit 1 without creating or appending to a lessons file. Multi-lens invocations reject on the first dropped code encountered — no partial execution (D-07).
 4. Each lens output: `## Lens: {name}` header + `_Captured: {ISO}_` + lens-specific fixed subheadings + `### Action Items` 3-column table.
 5. Results are appended to `.planning/lessons/{NN}-{YYYY-MM-DD}.md`.
 6. DSPM lens references only phase artifacts + `git log`/`git diff`. No transcript scan.

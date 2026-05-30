@@ -17,6 +17,7 @@
 - [x] **v2.6 Codex/Gemini 설치 UX 개선** (2026-05-26) — npx 단일 명령 설치 + $sg-setup 인세션 스킬 + 문서 개선 → [Archive](.planning/milestones/v2.6-ROADMAP.md)
 - [x] **v2.7 Skills & Hooks Internationalization** (2026-05-28) — skills/ + .agents/skills/ + hooks/ 한글→영문 전환 + 27개 SKILL.md 언어 자동 감지 지침 추가 → [Archive](.planning/milestones/v2.7-ROADMAP.md)
 - [x] **v2.8 Team Collaboration Support** (2026-05-29) — HANDOFF user 추적 + sg-status --team + sg-execute 브랜치 워크플로우 + TEAM.md → [Archive](.planning/milestones/v2.8-ROADMAP.md)
+- [ ] **v2.9 Retro UX Simplification** — sg-retro/sg-learn lens 선택 마찰 제거 + smart default + lens 6→3 통합 + 결과 표시 개선
 
 ## Phases
 
@@ -461,6 +462,49 @@ Plans:
 
 ---
 
+## v2.9 Retro UX Simplification
+
+### Phase 42: Smart Default Lens + Lens Consolidation
+
+**Goal**: sg-learn/sg-retro 호출 시 lens 선택 질문 없이 smart default가 자동 선택되고, lens 6개가 3개 핵심 lens로 통합된다.
+**Depends on**: Phase 41 (v2.9 신규 시작)
+**Requirements**: LENS-01, LENS-02
+**Success Criteria** (what must be TRUE):
+
+  1. `sg-learn` 또는 `sg-retro <N>` 인자 없이 실행 시 AskUserQuestion 없이 smart default lens(dspm+ssc)로 즉시 진행한다
+  2. 6개 lens(ssc/4ls/dspm/sail/5why/analyze)가 3개 핵심 lens로 통합되어 SKILL.md `<process>` 블록에서 명시된다 (중복/낮은 가치 lens 통폐합)
+  3. `skills/sg-retro/SKILL.md` + `.agents/skills/sg-retro/SKILL.md` pairwise 동기화
+
+**Plans**: TBD
+
+### Phase 43: One-shot Interaction + Display Polish
+
+**Goal**: 사용자가 명시적으로 lens를 고르고 싶을 때(`sg-learn --pick`) 한 번의 AskUserQuestion으로 완료되고, 결과 출력에서 Action Items P1과 lens 의도가 한눈에 보인다.
+**Depends on**: Phase 42
+**Requirements**: LENS-03, DISPLAY-01, DISPLAY-02
+**Success Criteria** (what must be TRUE):
+
+  1. `--pick` 플래그 또는 동등한 인자 형태로 lens 선택 UI 진입 가능하며 정확히 1회 AskUserQuestion으로 종료된다
+  2. lessons 파일의 Action Items 테이블에서 P1 행이 시각적으로 강조(이모지 또는 분리된 섹션)된다
+  3. 각 lens 섹션 헤더 다음 줄에 1-2줄 의도 설명이 표시된다
+
+**Plans**: TBD
+
+### Phase 44: Documentation Sync
+
+**Goal**: README/README.ko.md/TEAM.md가 새 sg-learn/sg-retro 동작(smart default + 3 lens + --pick)을 반영하도록 동기화된다.
+**Depends on**: Phase 43
+**Requirements**: DOC-01
+**Success Criteria** (what must be TRUE):
+
+  1. README.md/README.ko.md Commands 테이블의 sg-learn 행 description이 새 동작을 반영한다
+  2. .planning/TEAM.md에 회고 워크플로우 가이드(언제 sg-learn 실행, 결과 어디 저장, --pick 사용 시점)가 추가된다
+  3. sg-retro SKILL.md description frontmatter도 3 lens 반영
+
+**Plans**: TBD
+
+---
+
 ## Progress
 
 | Phase | Milestone | Plans Complete | Status | Completed |
@@ -498,3 +542,6 @@ Plans:
 | 39. HANDOFF 사용자 추적 + sg-status --team | v2.8 | 2/2 | Complete | 2026-05-28 |
 | 40. sg-execute 브랜치 워크플로우 + PR 안내 | v2.8 | 2/2 | Complete | 2026-05-29 |
 | 41. 팀 문서화 | v2.8 | 2/2 | Complete | 2026-05-28 |
+| 42. Smart Default Lens + Lens Consolidation | v2.9 | 0/TBD | Not started | - |
+| 43. One-shot Interaction + Display Polish | v2.9 | 0/TBD | Not started | - |
+| 44. Documentation Sync | v2.9 | 0/TBD | Not started | - |

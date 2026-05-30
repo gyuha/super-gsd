@@ -168,36 +168,36 @@ Self-contained — reads .planning/HANDOFF.md, .planning/STATE.md, .planning/ROA
    fi
    ```
 
-5. **Map stage to next command (`/super-gsd:sg-*` slash commands).**
+5. **Map stage to next command (`$sg-*` skill syntax for Codex/Gemini platforms).**
    ```bash
    case "$STAGE_RAW" in
      init)
        if [ -n "$PHASE_NUM" ]; then
-         NEXT_CMD="/super-gsd:sg-plan $PHASE_NUM"
+         NEXT_CMD="\$sg-plan $PHASE_NUM"
        else
-         NEXT_CMD="/super-gsd:sg-plan"
+         NEXT_CMD="\$sg-plan"
        fi
        ;;
-     gsd-plan)    NEXT_CMD="/super-gsd:sg-execute" ;;
-     ui-plan)     NEXT_CMD="/super-gsd:sg-execute" ;;
-     superpowers) NEXT_CMD="/super-gsd:sg-review" ;;
-     parallel)    NEXT_CMD="/super-gsd:sg-review" ;;
-     execute)     NEXT_CMD="/super-gsd:sg-review" ;;
-     review)      NEXT_CMD="/super-gsd:sg-learn" ;;
-     sg-retro)    NEXT_CMD="/super-gsd:sg-ship" ;;
+     gsd-plan)    NEXT_CMD="\$sg-execute" ;;
+     ui-plan)     NEXT_CMD="\$sg-execute" ;;
+     superpowers) NEXT_CMD="\$sg-review" ;;
+     parallel)    NEXT_CMD="\$sg-review" ;;
+     execute)     NEXT_CMD="\$sg-review" ;;
+     review)      NEXT_CMD="\$sg-learn" ;;
+     sg-retro)    NEXT_CMD="\$sg-ship" ;;
      ship)
        if [ "${NEXT_PHASE_EXISTS:-0}" = "1" ]; then
-         NEXT_CMD="/super-gsd:sg-plan $NEXT_PHASE"
+         NEXT_CMD="\$sg-plan $NEXT_PHASE"
        else
-         NEXT_CMD="/super-gsd:sg-complete"
+         NEXT_CMD="\$sg-complete"
        fi
        ;;
-     complete) NEXT_CMD="/super-gsd:sg-new" ;;
+     complete) NEXT_CMD="\$sg-new" ;;
      *) NEXT_CMD="(unknown stage: $STAGE_RAW)" ;;
    esac
    ```
 
-   Note: `execute` stage (Codex direct execution mode) routes to `/super-gsd:sg-review`.
+   Note: `execute` stage (Codex direct execution mode) routes to `$sg-review`. The `.agents/` mirror uses `$sg-*` skill invocation syntax instead of `/super-gsd:sg-*` slash commands because Codex/Gemini do not support Claude Code slash command namespaces.
 
 6. **Render milestone & phase progress context (before the status block).** Read `.planning/ROADMAP.md` and `.planning/STATE.md`, then render two sections ABOVE the workflow-status block. Do not use fragile bash table parsing (`grep -P`, awk pipe-splitting) — read the files and render the tables directly.
 
@@ -224,8 +224,8 @@ Self-contained — reads .planning/HANDOFF.md, .planning/STATE.md, .planning/ROA
 <success_criteria>
 1. Output is ordered: (a) a Milestones summary + a current-milestone phase table (selected from ROADMAP.md `## Progress` by STATE.md `milestone:`) appear FIRST, with prose and table headers in the user's language and all machine tokens (version IDs, slugs, status text, dates) verbatim; then (b) the workflow-status block appears LAST as the 5-line block with English labels and English machine tokens. The former "exactly 5 lines" lock is relaxed to permit the preceding milestone/phase sections.
 2. If HANDOFF.md has no data rows, Stage=init and Last handoff=(none).
-3. `/super-gsd:sg-*` slash commands are used in the NEXT_CMD mapping.
-4. `execute` stage routes to `/super-gsd:sg-review`.
+3. `$sg-*` skill invocation syntax is used in the NEXT_CMD mapping (Codex/Gemini do not support `/super-gsd:sg-*` slash commands).
+4. `execute` stage routes to `$sg-review`.
 5. STATE.md Phase parsing block is preserved (grep-sed-awk pipeline).
 6. Fully standalone regardless of whether GSD is installed.
 7. `$ARGUMENTS`에 `--team`이 포함된 경우, Step 0에서 팀 현황 테이블을 출력하고 `exit 0`으로 종료한다. 기존 Step 1~7은 실행되지 않는다.

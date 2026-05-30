@@ -56,7 +56,7 @@ Reads .planning/STATE.md, .planning/ROADMAP.md, .planning/REQUIREMENTS.md, .plan
    fi
    ```
 
-1.5. **Branch detection (TEAM-03).** Check if current git branch is main or master; if so, inform the user about creating a phase branch. (AskUserQuestion not supported on this platform — outputs a message and continues automatically.)
+1.5. **Branch detection (TEAM-03) — BLOCKING on main/master.** Check if current git branch is main or master; if so, STOP and require the user to opt in explicitly. (AskUserQuestion not supported on this platform — the platform fallback is to halt and require a re-run, not advisory pass-through.)
 
    First, compute PHASE_PAD:
    ```bash
@@ -70,12 +70,23 @@ Reads .planning/STATE.md, .planning/ROADMAP.md, .planning/REQUIREMENTS.md, .plan
    CURRENT_BRANCH=$(git rev-parse --abbrev-ref HEAD 2>/dev/null || echo "unknown")
    ```
 
-   If `CURRENT_BRANCH` is `main` or `master`:
-   - Output a message (in the user's language) informing them they are on the `<CURRENT_BRANCH>` branch and suggesting they create a phase branch manually:
+   If `CURRENT_BRANCH` is `main` or `master` AND `$SG_ALLOW_MAIN` is not set:
+   - Print a clear blocking message (prose in user's language; commands verbatim in English):
      ```
-     On main branch — to create a phase branch, run: `git checkout -b <BRANCH_NAME>`
+     ⚠️  BLOCKED: sg-execute refuses to run Phase $PHASE_NUM on `$CURRENT_BRANCH`.
+
+     Phase work must run on a feature branch to protect the integration branch.
+
+     Choose one:
+     (1) Create a phase branch and re-run:
+         git checkout -b $BRANCH_NAME
+         $sg-execute $PHASE_NUM
+     (2) Continue on $CURRENT_BRANCH anyway (override):
+         SG_ALLOW_MAIN=1 $sg-execute $PHASE_NUM
      ```
-   - Continue automatically to Step 2 (no user interaction).
+   - Exit immediately (do not continue to Step 2). Do not write a HANDOFF row.
+
+   If `CURRENT_BRANCH` is `main`/`master` AND `$SG_ALLOW_MAIN` is set: print a one-line acknowledgement `[sg-execute] SG_ALLOW_MAIN=1 — continuing on $CURRENT_BRANCH (override)` and proceed to Step 2.
 
    If `CURRENT_BRANCH` is anything other than `main`/`master` (including `"unknown"`): skip this step entirely and proceed to Step 2.
 
@@ -177,5 +188,6 @@ Reads .planning/STATE.md, .planning/ROADMAP.md, .planning/REQUIREMENTS.md, .plan
 2. An `execute` row is recorded in HANDOFF.md.
 3. On re-execution with the same plan hash, outputs an idempotency message and exits.
 4. The Platform Constraints block explicitly states Superpowers integration is unavailable.
-5. After all tasks complete, guides user to run /super-gsd:sg-review manually.
+5. After all tasks complete, guides user to run `$sg-review` manually.
+6. On `main`/`master` branch, Step 1.5 BLOCKS execution (no HANDOFF write, no Step 2) and prints both (1) the `git checkout -b <BRANCH_NAME>` + re-run command and (2) the `SG_ALLOW_MAIN=1 $sg-execute <N>` override. Continues only when `SG_ALLOW_MAIN` is set or current branch is not main/master.
 </success_criteria>

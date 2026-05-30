@@ -11,7 +11,7 @@ Detect the user's input language and respond in that language throughout this sk
 </language>
 
 <objective>
-Run a structured retrospective on a GSD phase. Auto-collect phase artifacts and git context. Let the user pick one or more of six lenses — Start/Stop/Continue (ssc), 4Ls (4ls), Decisions/Surprises/Patterns/Mistakes (dspm), Sailboat (sail), Five Whys (5why), Conversation Analyzer (analyze) — via AskUserQuestion multiSelect or directly via arguments. Facilitate each lens (artifact-grounded for ssc/4ls/dspm/sail; user-driven for 5why; transcript-native for analyze), then append all results sequentially to `.planning/lessons/{NN}-{YYYY-MM-DD}.md`. After all lenses complete, auto-suggest sg-rule drafts once.
+Run a structured retrospective on a GSD phase. Auto-collect phase artifacts and git context. Let the user pick one or more of three lenses — Start/Stop/Continue (ssc), Decisions/Surprises/Patterns/Mistakes (dspm), Conversation Analyzer (analyze) — via direct arguments, or omit the lens argument to apply the smart default (dspm+ssc). Facilitate each lens (artifact-grounded for ssc/dspm; transcript-native for analyze), then append all results sequentially to `.planning/lessons/{NN}-{YYYY-MM-DD}.md`. After all lenses complete, auto-suggest sg-rule drafts once.
 </objective>
 
 <execution_context>

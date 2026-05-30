@@ -17,7 +17,7 @@ Run a structured retrospective on a GSD phase. Auto-collect phase artifacts and 
 
 <constraints>
 ## Platform Constraints (Codex / Gemini CLI / Antigravity CLI)
-- AskUserQuestion not supported: lens selection is handled via numbered list text output + free input
+- AskUserQuestion not supported: smart default (dspm+ssc) applies when no lens argument is provided; explicit lens arguments (ssc/dspm/analyze) are accepted directly
 - SubagentStop not supported: no automatic trigger on stage completion
 - Superpowers integration unavailable: this skill is fully self-contained
 </constraints>
@@ -197,7 +197,7 @@ for LENS_CODE in $LENS_CODES_ARRAY; do
 done
 ```
 
-Common flow for ssc/4ls/dspm/sail lenses:
+Common flow for ssc/dspm lenses:
 
 1. Read all three artifact types (CONTEXT, PLAN(s), SUMMARY(s)) and capture key signals from `${GIT_LOG}` and `${GIT_DIFF}`.
 2. For each lens-specific subheading, propose 2–5 draft bullet items grounded in the artifacts above. Each bullet must cite the source (file path or commit hash). Present the full draft as a single markdown block.

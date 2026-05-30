@@ -287,7 +287,7 @@ ANALYZE_LENS_RAN=true
 
 **Step 6 — Append to lessons file (per lens iteration).**
 
-Write the assembled lens section (header `## Lens: {name}{run-suffix}` + `_Captured: ${NOW_ISO}_` italic line + lens-specific subheadings + Action Items table) to `.planning/lessons/${PHASE_PAD}-${TODAY}.md` using a single `>>` redirect block (D-21). Create the directory if missing. Emit `lessons file: {path} +N lines` to stderr for verification.
+Write the assembled lens section (header `## Lens: {name}{run-suffix}` + `_Captured: ${NOW_ISO}_` italic line + `_Intent: ..._` italic line + lens-specific subheadings + Action Items table) to `.planning/lessons/${PHASE_PAD}-${TODAY}.md` using a single `>>` redirect block (D-21). Create the directory if missing. Emit `lessons file: {path} +N lines` to stderr for verification.
 
 ```bash
 # UTC ISO date (D-17)
@@ -419,7 +419,7 @@ echo "| $TS_H | $PHASE_SLUG_H | $FROM_STAGE_H | sg-retro | - | $GIT_USER |" >> "
 <success_criteria>
 1. Calling `Skill(skill="sg-retro", args="...")` resolves the phase argument (integer or decimal, e.g. `7` or `7.1`) to exactly one `.planning/phases/{NN}-*/` directory; integers are zero-padded, decimals are used as-is. If no directory matches, the Skill emits an error to stderr and exits 1 (D-04).
 2. Second argument (if provided) is one of `ssc`/`dspm`/`analyze` (case-insensitive). Removed codes (`4ls`/`sail`/`5why`) or any unknown code emit a stderr error message containing "no longer supported (removed in v2.9)" and exit 1 without creating a lessons file. When no second argument is provided AND no extra-lens arguments are provided, smart default applies: `LENS_CODES_ARRAY="dspm ssc"` is set automatically (dspm first, then ssc) without invoking AskUserQuestion.
-3. Each lens output follows exactly: `## Lens: {name}` header + `_Captured: {ISO}_` italic line + lens-specific fixed subheadings + a `### Action Items` 3-column table (`priority | item | next step`) (D-09, D-12). No owner column.
+3. Each lens output follows: `## Lens: {name}` header + `_Captured: {ISO}_` italic line + `_Intent: ..._` italic line + lens-specific fixed subheadings + a `### Action Items` 3-column table (`priority | item | next step`) (D-09, D-12). No owner column.
 4. The lessons file is written to `.planning/lessons/{NN}-{YYYY-MM-DD}.md`. If the file does not exist, the top-level header and the first lens section are written; if it exists, only the new lens section is appended at the end (D-17, D-18, D-19, D-21). A same-day same-lens repeat uses a `(run 2)`/`(run 3)`/... disambiguating suffix (D-20).
 5. DSPM lens derives strictly from collected phase artifacts + `git log`/`git diff`. Session-transcript scanning is never performed for ssc/dspm lenses (D-11). The analyze lens is the only path that reads the session transcript.
 6. When LENS_CODES_ARRAY contains multiple codes (smart default `dspm ssc` or multi-arg invocation), each lens is executed sequentially with its result appended to the same lessons file (D-18, D-20, RETRO-05).

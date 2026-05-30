@@ -408,7 +408,7 @@ _Intent: scan session transcript for frustration, correction, repetition, and va
 1. The Phase argument must be a number, and the corresponding `.planning/phases/{NN}-*/` directory must exist.
 2. Second argument (if provided) is one of `ssc`/`dspm`/`analyze` (case-insensitive). When omitted along with extra-lens arguments, smart default `LENS_CODES_ARRAY="dspm ssc"` applies automatically (dspm first, then ssc) without prompting.
 3. No argument → smart default (dspm+ssc) applies without prompting. Removed lens codes (`4ls`/`sail`/`5why`) or any unknown code emit a stderr error message containing "no longer supported (removed in v2.9)" and exit 1 without creating or appending to a lessons file. Multi-lens invocations reject on the first dropped code encountered — no partial execution (D-07).
-4. Each lens output: `## Lens: {name}` header + `_Captured: {ISO}_` + lens-specific fixed subheadings + `### Action Items` 3-column table.
+4. Each lens output: `## Lens: {name}` header + `_Captured: {ISO}_` + `_Intent: ..._` italic line + lens-specific fixed subheadings + `### Action Items` 3-column table.
 5. Results are appended to `.planning/lessons/{NN}-{YYYY-MM-DD}.md`.
 6. DSPM lens references only phase artifacts + `git log`/`git diff`. No transcript scan.
 7. The analyze lens gracefully skips if TRANSCRIPT_FILE is not found.

@@ -475,7 +475,13 @@ Plans:
   2. 6개 lens(ssc/4ls/dspm/sail/5why/analyze)가 3개 핵심 lens로 통합되어 SKILL.md `<process>` 블록에서 명시된다 (중복/낮은 가치 lens 통폐합)
   3. `skills/sg-retro/SKILL.md` + `.agents/skills/sg-retro/SKILL.md` pairwise 동기화
 
-**Plans**: TBD
+**Plans**: 2 plans
+
+Plans:
+**Wave 1** (병렬 실행 가능 — 별도 파일이지만 D-10에 의해 동일 commit에 staged)
+
+- [ ] 42-01-PLAN.md — skills/sg-retro/SKILL.md: smart default 분기 + 3-lens consolidation + dropped-lens reject (LENS-01, LENS-02)
+- [ ] 42-02-PLAN.md — .agents/skills/sg-retro/SKILL.md: 동일 의미적 변경 적용 (pairwise mirror, D-10) (LENS-01, LENS-02)
 
 ### Phase 43: One-shot Interaction + Display Polish
 

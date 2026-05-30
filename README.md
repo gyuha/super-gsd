@@ -28,8 +28,8 @@ Quick reference for all `/super-gsd:sg-*` slash commands.
 
 | Command | What it does | When to use |
 |---------|-------------|-------------|
-| `/super-gsd:sg-start` | Detect an existing session via STATE.md and offer Resume / Start new milestone / Cancel — falls back to `gsd-new-project` when no session exists | At project start, or to resume an existing session |
-| `/super-gsd:sg-explore` | Map and analyse the codebase via `gsd-map-codebase` | After `sg-start`, before planning |
+| `/super-gsd:sg-start` | Detect an existing session via STATE.md and offer Resume / Start new milestone / Cancel — falls back to `gsd-new-project` when no session exists. Also ensures `.planning/` is in `.gitignore` (idempotent) | At project start, or to resume an existing session |
+| `/super-gsd:sg-explore` | Map and analyse the codebase via `gsd-map-codebase`. Also ensures `.planning/` is in `.gitignore` (idempotent) | After `sg-start`, before planning |
 | `/super-gsd:sg-plan` | Gather phase context then create an execution plan (2-step chain: `gsd-discuss-phase` → `gsd-plan-phase`) | After `sg-explore`, when ready to plan |
 | `/super-gsd:sg-ui-plan` | UI 설계 전용 brainstorming — `superpowers:brainstorming`을 직접 실행한다 | sg-plan에서 Visual Companion 없이 진행했지만 UI 설계가 필요할 때 |
 | `/super-gsd:sg-execute` | Package the current phase plan and hand off to Superpowers (`superpowers:executing-plans`) | After `sg-plan` is complete |
@@ -222,7 +222,7 @@ super-gsd hooks work on Codex and Gemini/Antigravity CLI without the Claude Code
 | PreToolUse / BeforeTool hook | ✅ | ✅ | ✅ |
 | Superpowers integration | ✅ | ❌ | ❌ |
 | AskUserQuestion UI | ✅ | ❌ numbered list fallback | ❌ numbered list fallback |
-| 21 skills (sg-retro, sg-plan, sg-execute, etc.) | ✅ | ✅ via `.agents/skills/` | ✅ via `.agents/skills/` |
+| Skills coverage | ✅ 21 of 21 in `skills/` | ⚠️ 11 of 21 in `.agents/skills/` | ⚠️ 11 of 21 in `.agents/skills/` |
 
 ### Codex
 
@@ -230,7 +230,7 @@ super-gsd hooks work on Codex and Gemini/Antigravity CLI without the Claude Code
 npx @gyuha/super-gsd install
 ```
 
-This installs `.codex/hooks.json` (Stop and PreToolUse hooks), `hooks/` (Node.js .cjs scripts), and `.agents/skills/` (`$sg-*` skills). Use `$sg-retro`, `$sg-plan`, `$sg-execute`, `$sg-review`, `$sg-start`, `$sg-status` skill syntax. See `AGENTS.md` for the full workflow.
+This installs `.codex/hooks.json` (Stop and PreToolUse hooks), `hooks/` (Node.js .cjs scripts), and `.agents/skills/` (`$sg-*` skills). Available skills: `$sg-start`, `$sg-plan`, `$sg-execute`, `$sg-parallel-execute`, `$sg-review`, `$sg-learn`, `$sg-retro`, `$sg-ship`, `$sg-status`, `$sg-next`, `$sg-setup`. See `AGENTS.md` for the full workflow.
 
 > **Note:** The Stop hook prints a `Run $sg-*` reminder message — it does not auto-invoke the next skill. You must run each `$sg-*` command manually after each stage.
 

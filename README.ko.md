@@ -28,8 +28,8 @@ sg-new/sg-start → sg-explore → sg-plan → sg-execute → sg-review → sg-l
 
 | 명령어 | 하는 일 | 사용 시점 |
 |--------|---------|-----------|
-| `/super-gsd:sg-start` | STATE.md로 기존 세션을 감지해 Resume / Start new milestone / Cancel을 제시 — 세션이 없으면 `gsd-new-project`로 폴백 | 프로젝트 시작 시, 또는 기존 세션을 재개할 때 |
-| `/super-gsd:sg-explore` | `gsd-explore`를 통해 코드베이스 분석 | `sg-start` 이후, 계획 전 |
+| `/super-gsd:sg-start` | STATE.md로 기존 세션을 감지해 Resume / Start new milestone / Cancel을 제시 — 세션이 없으면 `gsd-new-project`로 폴백. 또한 `.planning/`을 `.gitignore`에 멱등 추가 | 프로젝트 시작 시, 또는 기존 세션을 재개할 때 |
+| `/super-gsd:sg-explore` | `gsd-explore`를 통해 코드베이스 분석. 또한 `.planning/`을 `.gitignore`에 멱등 추가 | `sg-start` 이후, 계획 전 |
 | `/super-gsd:sg-plan` | 단계 컨텍스트를 수집하고 실행 계획 생성 (`gsd-discuss-phase` → `gsd-plan-phase` 2단계 체인) | `sg-explore` 이후, 계획할 준비가 됐을 때 |
 | `/super-gsd:sg-ui-plan` | UI 설계 전용 brainstorming — `superpowers:brainstorming`을 직접 실행 | `sg-plan`에서 Visual Companion 없이 진행했지만 UI 설계가 필요할 때 |
 | `/super-gsd:sg-execute` | 현재 단계 계획을 패키징하여 Superpowers에 인계 (`superpowers:executing-plans`) | `sg-plan` 완료 후 |
@@ -222,7 +222,7 @@ super-gsd 훅은 Claude Code 플러그인 마켓플레이스 없이 Codex, Gemin
 | PreToolUse / BeforeTool 훅 | ✅ | ✅ | ✅ |
 | Superpowers 연동 | ✅ | ❌ | ❌ |
 | AskUserQuestion UI | ✅ | ❌ numbered list 대체 | ❌ numbered list 대체 |
-| 스킬 21개 (sg-retro, sg-plan, sg-execute 등) | ✅ | ✅ `.agents/skills/` 경유 | ✅ `.agents/skills/` 경유 |
+| 스킬 커버리지 | ✅ `skills/`에 21/21 | ⚠️ `.agents/skills/`에 11/21 | ⚠️ `.agents/skills/`에 11/21 |
 
 ### Codex
 
@@ -230,7 +230,7 @@ super-gsd 훅은 Claude Code 플러그인 마켓플레이스 없이 Codex, Gemin
 npx @gyuha/super-gsd install
 ```
 
-`.codex/hooks.json` (Stop 및 PreToolUse 훅), `hooks/` (Node.js .cjs 스크립트), `.agents/skills/` (`$sg-*` 스킬)을 설치한다. `$sg-retro`, `$sg-plan`, `$sg-execute`, `$sg-review`, `$sg-start`, `$sg-status` 스킬 문법을 사용한다. 전체 워크플로우는 `AGENTS.md`를 참조한다.
+`.codex/hooks.json` (Stop 및 PreToolUse 훅), `hooks/` (Node.js .cjs 스크립트), `.agents/skills/` (`$sg-*` 스킬)을 설치한다. 사용 가능한 스킬: `$sg-start`, `$sg-plan`, `$sg-execute`, `$sg-parallel-execute`, `$sg-review`, `$sg-learn`, `$sg-retro`, `$sg-ship`, `$sg-status`, `$sg-next`, `$sg-setup`. 전체 워크플로우는 `AGENTS.md`를 참조한다.
 
 > **참고:** Stop 훅은 `Run $sg-*` 안내 메시지를 출력할 뿐이며, 다음 스킬을 자동으로 invoke하지 않는다. 각 단계 후 `$sg-*` 명령을 직접 실행해야 한다.
 

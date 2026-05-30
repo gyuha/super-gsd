@@ -82,8 +82,9 @@ Check the following 7 items in order. Accumulate FAIL and WARN counters and prin
        ```bash
        grep -E '^\| [0-9]{4}-' .planning/HANDOFF.md | head -1 | awk -F'|' '{print NF}'
        ```
-       - NF == 8 → `HANDOFF.md ....... [OK]`
-       - NF != 8 → `HANDOFF.md ....... [FAIL] schema corrupted (not a 6-column TSV)`, FAIL++
+       - NF == 8 → `HANDOFF.md ....... [OK]` (Phase 39+ 6-column pipe schema with User)
+       - NF == 7 → `HANDOFF.md ....... [WARN] legacy 5-column rows (pre-Phase 39 — User column missing)`, WARN++
+       - NF != 7 && NF != 8 → `HANDOFF.md ....... [FAIL] schema corrupted (expected 5 or 6 pipe-delimited columns)`, FAIL++
 
 7. **STATE.md frontmatter**
 

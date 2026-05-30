@@ -106,7 +106,7 @@ Self-contained — reads .planning/HANDOFF.md, .planning/STATE.md, .planning/ROA
      STAGE_RAW=$(echo "$LAST_ROW" | awk -F'|' '{gsub(/ /,"",$5); print $5}')
      TS=$(echo "$LAST_ROW" | awk -F'|' '{gsub(/ /,"",$2); print $2}')
      case "$STAGE_RAW" in
-       gsd-plan|ui-plan|superpowers|parallel|execute|review|sg-retro|hookify|ship|complete|sg-next) ;;
+       gsd-plan|ui-plan|superpowers|parallel|execute|review|sg-retro|ship|complete|sg-next) ;;
        *) echo "Unknown stage '${STAGE_RAW}' in .planning/HANDOFF.md last row. Schema may be corrupted." >&2; exit 1 ;;
      esac
      # sg-next is a meta-transition row; recover actual stage from FROM column ($4)
@@ -121,7 +121,7 @@ Self-contained — reads .planning/HANDOFF.md, .planning/STATE.md, .planning/ROA
        fi
        # Re-validate after scan-back — corrupt HANDOFF.md data must not propagate
        case "$STAGE_RAW" in
-         init|gsd-plan|ui-plan|superpowers|parallel|execute|review|sg-retro|hookify|ship|complete) ;;
+         init|gsd-plan|ui-plan|superpowers|parallel|execute|review|sg-retro|ship|complete) ;;
          *) echo "Scan-back recovered unknown stage '${STAGE_RAW}' — defaulting to init." >&2; STAGE_RAW="init" ;;
        esac
      fi
@@ -131,12 +131,12 @@ Self-contained — reads .planning/HANDOFF.md, .planning/STATE.md, .planning/ROA
    case "$STAGE_RAW" in
      init)         STAGE_DISPLAY="init" ;;
      gsd-plan)     STAGE_DISPLAY="gsd" ;;
+     ui-plan)      STAGE_DISPLAY="gsd" ;;
      superpowers)  STAGE_DISPLAY="superpowers" ;;
      parallel)     STAGE_DISPLAY="superpowers" ;;
-     execute)      STAGE_DISPLAY="execute" ;;
-     review)       STAGE_DISPLAY="review" ;;
-     sg-retro)     STAGE_DISPLAY="hookify" ;;
-     hookify)      STAGE_DISPLAY="hookify" ;;
+     execute)      STAGE_DISPLAY="superpowers" ;;
+     review)       STAGE_DISPLAY="superpowers" ;;
+     sg-retro)     STAGE_DISPLAY="sg-retro" ;;
      ship)         STAGE_DISPLAY="ship" ;;
      complete)     STAGE_DISPLAY="complete" ;;
      *)            STAGE_DISPLAY="$STAGE_RAW" ;;
@@ -152,9 +152,9 @@ Self-contained — reads .planning/HANDOFF.md, .planning/STATE.md, .planning/ROA
    fi
    ```
 
-4. **Compute next-phase number (for hookify/ship branches).**
+4. **Compute next-phase number (for sg-retro/ship branches).**
    ```bash
-   if [ "$STAGE_RAW" = "hookify" ] || [ "$STAGE_RAW" = "ship" ]; then
+   if [ "$STAGE_RAW" = "sg-retro" ] || [ "$STAGE_RAW" = "ship" ]; then
      if echo "$PHASE_NUM" | grep -qE '^[0-9]+$'; then
        NEXT_PHASE=$((PHASE_NUM + 1))
        if grep -qE "^### Phase ${NEXT_PHASE}:" .planning/ROADMAP.md 2>/dev/null; then
@@ -179,12 +179,12 @@ Self-contained — reads .planning/HANDOFF.md, .planning/STATE.md, .planning/ROA
        fi
        ;;
      gsd-plan)    NEXT_CMD="/super-gsd:sg-execute" ;;
+     ui-plan)     NEXT_CMD="/super-gsd:sg-execute" ;;
      superpowers) NEXT_CMD="/super-gsd:sg-review" ;;
      parallel)    NEXT_CMD="/super-gsd:sg-review" ;;
      execute)     NEXT_CMD="/super-gsd:sg-review" ;;
      review)      NEXT_CMD="/super-gsd:sg-learn" ;;
      sg-retro)    NEXT_CMD="/super-gsd:sg-ship" ;;
-     hookify)     NEXT_CMD="/super-gsd:sg-ship" ;;
      ship)
        if [ "${NEXT_PHASE_EXISTS:-0}" = "1" ]; then
          NEXT_CMD="/super-gsd:sg-plan $NEXT_PHASE"

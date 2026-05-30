@@ -2,6 +2,17 @@
 
 All notable changes to `super-gsd` are documented in this file. Format follows [Keep a Changelog](https://keepachangelog.com/).
 
+## [0.0.49] - 2026-05-30
+
+### Fixed
+
+- README/구현 정합성 audit 발견 6건 수정 — `.planning/HANDOFF.md` 스키마 문서의 stale `hookify` enum 제거 및 10개 enum 정확히 명시, `sg-health` NF==7|8 둘 다 허용 (legacy 행 WARN, Phase 39+ 행 OK), `.agents/skills/sg-status` 미러에서 `hookify` 제거 + `ui-plan` 디스플레이 매핑 추가, README "21 skills"를 정직한 "11 of 21" 표기로 수정, Codex 섹션 사용 가능 스킬 6개 → 실제 11개 명시, sg-start/sg-explore 행에 `.gitignore` 자동 추가 동작 명시
+- Codex adversarial-review 발견 2건 수정 — `.agents/skills/sg-status` NEXT_CMD 매핑을 `/super-gsd:sg-*` → `$sg-*` 전환 (Codex/Gemini는 슬래시 명령 미지원), `.agents/skills/sg-execute` Step 1.5 main/master 감지 시 advisory-only → BLOCKING 변경 (`SG_ALLOW_MAIN=1` env override로 명시적 opt-in 가능)
+
+### Changed
+
+- Phase 41 leftover placeholder `.planning/phases/41-new-phase/` 정리 (canonical 위치는 `41-team-documentation/`)
+
 ## [0.0.48] - 2026-05-29
 
 ### Changed

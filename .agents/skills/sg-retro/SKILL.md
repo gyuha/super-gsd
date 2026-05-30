@@ -1,7 +1,7 @@
 ---
 name: sg-retro
 description: Run a structured retrospective on a GSD phase with one of three lenses (ssc, dspm, analyze) — select multiple lenses in one call or omit lens argument for smart default (dspm+ssc) — and append results to .planning/lessons/{NN}-{YYYY-MM-DD}.md. AskUserQuestion-free version for Codex/Gemini CLI/Antigravity CLI.
-argument-hint: "[phase] [lens] - e.g. '14 ssc' or '14 ssc dspm'. lens: ssc|dspm|analyze. Omit lens for smart default (dspm+ssc)."
+argument-hint: "[phase] [lens...|--pick] - e.g. '14 ssc' or '14 --pick'. lens: ssc|dspm|analyze. Omit lens for smart default (dspm+ssc). --pick is not supported in this environment (AskUserQuestion required) — use positional args instead."
 ---
 
 <language>
@@ -12,12 +12,12 @@ Detect the user's input language and respond in that language throughout this sk
 </language>
 
 <objective>
-Run a structured retrospective on a GSD phase. Auto-collect phase artifacts and git context. Let the user pick one or more of three lenses — Start/Stop/Continue (ssc), Decisions/Surprises/Patterns/Mistakes (dspm), Conversation Analyzer (analyze) — or omit the lens argument to apply the smart default (dspm+ssc). Facilitate each lens (artifact-grounded for ssc/dspm; transcript-native for analyze), then append all results sequentially to `.planning/lessons/{NN}-{YYYY-MM-DD}.md`.
+Run a structured retrospective on a GSD phase. Auto-collect phase artifacts and git context. Let the user pick one or more of three lenses — Start/Stop/Continue (ssc), Decisions/Surprises/Patterns/Mistakes (dspm), Conversation Analyzer (analyze) — or omit the lens argument to apply the smart default (dspm+ssc). The `--pick` flag is accepted for argument compatibility but triggers a graceful early-exit since AskUserQuestion is unavailable in this environment. Facilitate each lens (artifact-grounded for ssc/dspm; transcript-native for analyze), then append all results sequentially to `.planning/lessons/{NN}-{YYYY-MM-DD}.md`.
 </objective>
 
 <constraints>
 ## Platform Constraints (Codex / Gemini CLI / Antigravity CLI)
-- AskUserQuestion not supported: smart default (dspm+ssc) applies when no lens argument is provided; explicit lens arguments (ssc/dspm/analyze) are accepted directly
+- AskUserQuestion not supported: smart default (dspm+ssc) applies when no lens argument is provided; explicit lens arguments (ssc/dspm/analyze) are accepted directly. The `--pick` flag triggers a graceful early-exit (stderr message + exit 1) since the interactive picker requires AskUserQuestion.
 - SubagentStop not supported: no automatic trigger on stage completion
 - Superpowers integration unavailable: this skill is fully self-contained
 </constraints>
@@ -30,10 +30,26 @@ Self-contained. Reads `.planning/STATE.md`, `.planning/phases/{NN}-*/{NN}-CONTEX
 
 **Step 1 — Argument parsing + phase resolve.**
 
-Parse `$ARGUMENTS` into `PHASE_RAW` and `LENS_RAW`. If `PHASE_RAW` is empty, fall back to `.planning/STATE.md` `^Phase:` line using the multi-line `sed` pattern below. **Do not introduce a single-token regex shortcut** — preserve the full grep + sed + awk pipeline as-is.
+Parse `$ARGUMENTS` into `PHASE_RAW` and `LENS_RAW`. Detect `--pick` token anywhere in the argument list and strip it before positional parsing (D-01, D-02). If `PHASE_RAW` is empty, fall back to `.planning/STATE.md` `^Phase:` line using the multi-line `sed` pattern below. **Do not introduce a single-token regex shortcut** — preserve the full grep + sed + awk pipeline as-is.
 
 ```bash
 set -- $ARGUMENTS
+
+# D-01, D-02: --pick 토큰을 어느 위치에서든 탐지하고 제거 (positional 파싱 보존)
+PICK_MODE=false
+NEW_ARGS=""
+for ARG in "$@"; do
+  case "$ARG" in
+    --pick)
+      PICK_MODE=true
+      ;;
+    *)
+      NEW_ARGS="${NEW_ARGS}${NEW_ARGS:+ }${ARG}"
+      ;;
+  esac
+done
+# shellcheck disable=SC2086 — intentional word splitting for positional re-set
+set -- $NEW_ARGS
 PHASE_RAW="${1:-}"
 LENS_RAW="${2:-}"
 
@@ -128,6 +144,12 @@ elif [ -n "$VALID_EXTRAS" ]; then
   LENS_CODES_ARRAY="$VALID_EXTRAS"
 fi
 
+# D-03: --pick + positional lens 충돌 reject (silent override 금지)
+if [ "$PICK_MODE" = "true" ] && { [ -n "$LENS_RAW" ] || [ -n "$EXTRA_LENS_CODES" ]; }; then
+  printf 'Cannot combine --pick with positional lens argument.\nUse either: sg-retro {phase} {lens...}  (explicit args)\nOr:         sg-retro {phase} --pick     (interactive picker)\n' >&2
+  exit 1
+fi
+
 # Phase 42 (D-02): smart default — no args → dspm+ssc, dspm first (technical core → behavior recommendation)
 if [ -z "$LENS_CODES_ARRAY" ] && [ -z "$LENS_RAW" ] && [ -z "$EXTRA_LENS_CODES" ]; then
   LENS_CODES_ARRAY="dspm ssc"
@@ -188,6 +210,14 @@ echo "Git range: ${RANGE}" >&2
 ANALYZE_LENS_RAN=false
 ```
 
+```bash
+# D-05, D-06, D-17: --pick 모드 — AskUserQuestion 미지원 환경 graceful fallback
+if [ "$PICK_MODE" = "true" ]; then
+  printf -- '--pick is not supported in this environment (AskUserQuestion required).\nUse positional lens args (e.g. '\''sg-retro %s ssc dspm'\'') or omit lens for smart default (dspm+ssc).\n' "${PHASE_RAW}" >&2
+  exit 1
+fi
+```
+
 Execute each lens in LENS_CODES_ARRAY sequentially. For each iteration, set LENS_CODE to the current code and run the matching sub-block. After the sub-block completes, run Step 6 append for that lens.
 
 ```
@@ -203,7 +233,7 @@ Common flow for ssc/dspm lenses:
 2. For each lens-specific subheading, propose 2–5 draft bullet items grounded in the artifacts above. Each bullet must cite the source (file path or commit hash). Present the full draft as a single markdown block.
 3. Ask the user to confirm/edit/add/delete each subheading's items. Output the draft as text and wait for user input. Single round-trip preferred — present all subheadings at once.
 4. After items are finalized, propose 2–4 Action Items rows: priority (`P1`/`P2`/`P3`) | one-sentence item | concrete next step or `deferred to Phase N` label. No owner column. User confirms/edits.
-5. Assemble the final lens section and append to `${LESSONS_FILE}` using the bash block in Step 6.
+5. Assemble the final lens section (header + `_Captured: {NOW_ISO}_` + `_Intent: ..._` + subheadings + Action Items) and append to `${LESSONS_FILE}` using the bash block in Step 6.
 
 **Sub-block `ssc` (Start/Stop/Continue):**
 - Fixed subheadings: `### Start` / `### Stop` / `### Continue`.
@@ -240,6 +270,13 @@ case "$LENS_CODE" in
   analyze) LENS_NAME="Conversation Analyzer" ;;
 esac
 
+# D-12, D-14: lens intent line (static, English, italic single-line — emitted after _Captured: line)
+case "$LENS_CODE" in
+  ssc)     INTENT_LINE='_Intent: surface behavior changes — what to start, stop, or continue doing next phase._' ;;
+  dspm)    INTENT_LINE='_Intent: capture technical decisions, unexpected outcomes, recurring techniques, and verification failures from this phase._' ;;
+  analyze) INTENT_LINE='_Intent: scan session transcript for frustration, correction, repetition, and validated-success signals; propose sg-rule drafts._' ;;
+esac
+
 RUN_SUFFIX=""
 if [ -f "$LESSONS_FILE" ]; then
   COUNT=$(grep -cE "^## Lens: ${LENS_NAME}( \(run [0-9]+\))?\$" "$LESSONS_FILE" 2>/dev/null)
@@ -265,12 +302,17 @@ fi
 
 {
   printf '%s\n' "$LENS_HEADER"
-  printf '_Captured: %s_\n\n' "$NOW_ISO"
+  printf '_Captured: %s_\n' "$NOW_ISO"
+  printf '%s\n\n' "$INTENT_LINE"
   # BODY_PRINTF — insert subheading + bullet printf lines here (confirmed content)
   printf '\n### Action Items\n'
   printf '| priority | item | next step |\n'
   printf '|----------|------|-----------|\n'
   # ACTION_ITEMS_PRINTF — insert row printf lines here
+  # DISPLAY-01 (D-08, D-09): P1 행은 priority 셀에 `🔴 P1` prefix로 emit. P2/P3는 prefix 없음.
+  #   printf '| 🔴 P1 | %s | %s |\n' "$ITEM_TEXT" "$NEXT_STEP_TEXT"   # P1 only
+  #   printf '| P2 | %s | %s |\n' "$ITEM_TEXT" "$NEXT_STEP_TEXT"      # P2 unchanged
+  #   printf '| P3 | %s | %s |\n' "$ITEM_TEXT" "$NEXT_STEP_TEXT"      # P3 unchanged
   printf '\n'
 } >> "$LESSONS_FILE"
 
@@ -297,6 +339,7 @@ fi
 ```markdown
 ## Lens: Start/Stop/Continue
 _Captured: {ISO-8601 UTC}_
+_Intent: surface behavior changes — what to start, stop, or continue doing next phase._
 
 ### Start
 - [item]
@@ -310,13 +353,14 @@ _Captured: {ISO-8601 UTC}_
 ### Action Items
 | priority | item | next step |
 |----------|------|-----------|
-| P1 | [summary] | [concrete step] |
+| 🔴 P1 | [summary] | [concrete step] |
 ```
 
 **Decisions/Surprises/Patterns/Mistakes (dspm):**
 ```markdown
 ## Lens: Decisions/Surprises/Patterns/Mistakes
 _Captured: {ISO-8601 UTC}_
+_Intent: capture technical decisions, unexpected outcomes, recurring techniques, and verification failures from this phase._
 
 ### Decisions
 - [item]
@@ -333,13 +377,14 @@ _Captured: {ISO-8601 UTC}_
 ### Action Items
 | priority | item | next step |
 |----------|------|-----------|
-| P1 | [summary] | [concrete step] |
+| 🔴 P1 | [summary] | [concrete step] |
 ```
 
 **Conversation Analyzer (analyze):**
 ```markdown
 ## Lens: Conversation Analyzer
 _Captured: {ISO-8601 UTC}_
+_Intent: scan session transcript for frustration, correction, repetition, and validated-success signals; propose sg-rule drafts._
 
 ### Analysis Findings
 
@@ -354,7 +399,7 @@ _Captured: {ISO-8601 UTC}_
 ### Action Items
 | priority | item | next step |
 |----------|------|-----------|
-| P1 | [summary] | [concrete step] |
+| 🔴 P1 | [summary] | [concrete step] |
 ```
 
 </lens_templates>
@@ -367,4 +412,7 @@ _Captured: {ISO-8601 UTC}_
 5. Results are appended to `.planning/lessons/{NN}-{YYYY-MM-DD}.md`.
 6. DSPM lens references only phase artifacts + `git log`/`git diff`. No transcript scan.
 7. The analyze lens gracefully skips if TRANSCRIPT_FILE is not found.
+8. The `--pick` flag (long form, lowercase, hyphenated) is detected anywhere in the argument list and triggers a graceful early-exit with a stderr message and exit 1, since AskUserQuestion is unavailable in this environment (LENS-03, D-01, D-02, D-05, D-17). Combining `--pick` with a positional lens argument (e.g. `43 ssc --pick`) emits a stderr conflict error and exits 1 (D-03). Smart default (dspm+ssc) and positional lens arguments continue to work without AskUserQuestion.
+9. Lessons file `### Action Items` rows whose priority is P1 are emitted with a `🔴 P1` prefix in the priority cell; P2 and P3 rows have no prefix (DISPLAY-01, D-08, D-09). The single 3-column table schema (`priority | item | next step`) is preserved.
+10. Each lens section emits an italic single-line lens intent statement directly after the `_Captured: {ISO}_` line, sourced from the static `INTENT_LINE` case mapping in Step 6 (one fixed English sentence per lens — ssc/dspm/analyze) (DISPLAY-02, D-12, D-13, D-14, D-15).
 </success_criteria>

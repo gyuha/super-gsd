@@ -11,7 +11,7 @@ Detect the user's input language and respond in that language throughout this sk
 </language>
 
 <objective>
-Run a structured retrospective on a GSD phase. Auto-collect phase artifacts and git context. Let the user pick one or more of three lenses — Start/Stop/Continue (ssc), Decisions/Surprises/Patterns/Mistakes (dspm), Conversation Analyzer (analyze) — via direct arguments, or omit the lens argument to apply the smart default (dspm+ssc). Facilitate each lens (artifact-grounded for ssc/dspm; transcript-native for analyze), then append all results sequentially to `.planning/lessons/{NN}-{YYYY-MM-DD}.md`. After all lenses complete, auto-suggest sg-rule drafts once.
+Run a structured retrospective on a GSD phase. Auto-collect phase artifacts and git context. Let the user pick one or more of three lenses — Start/Stop/Continue (ssc), Decisions/Surprises/Patterns/Mistakes (dspm), Conversation Analyzer (analyze) — via direct arguments, the `--pick` flag (interactive multiSelect), or omit the lens argument to apply the smart default (dspm+ssc). Facilitate each lens (artifact-grounded for ssc/dspm; transcript-native for analyze), then append all results sequentially to `.planning/lessons/{NN}-{YYYY-MM-DD}.md`. After all lenses complete, auto-suggest sg-rule drafts once.
 </objective>
 
 <execution_context>
@@ -22,10 +22,26 @@ Self-contained. Reads `.planning/STATE.md`, `.planning/phases/{NN}-*/{NN}-CONTEX
 
 **Step 1 — Argument parsing + phase resolve.**
 
-Parse `$ARGUMENTS` into `PHASE_RAW` and `LENS_RAW`. If `PHASE_RAW` is empty, fall back to `.planning/STATE.md` `^Phase:` line using the multi-line `grep + sed + awk` pattern below (macOS-compatible pipeline). **Do not replace with a single-token regex** — preserve the full pipeline for macOS/BSD compatibility.
+Parse `$ARGUMENTS` into `PHASE_RAW` and `LENS_RAW`. Detect `--pick` token anywhere in the argument list and strip it before positional parsing (D-01, D-02). If `PHASE_RAW` is empty, fall back to `.planning/STATE.md` `^Phase:` line using the multi-line `grep + sed + awk` pattern below (macOS-compatible pipeline). **Do not replace with a single-token regex** — preserve the full pipeline for macOS/BSD compatibility.
 
 ```bash
 set -- $ARGUMENTS
+
+# D-01, D-02: --pick 토큰을 어느 위치에서든 탐지하고 제거 (positional 파싱 보존)
+PICK_MODE=false
+NEW_ARGS=""
+for ARG in "$@"; do
+  case "$ARG" in
+    --pick)
+      PICK_MODE=true
+      ;;
+    *)
+      NEW_ARGS="${NEW_ARGS}${NEW_ARGS:+ }${ARG}"
+      ;;
+  esac
+done
+# shellcheck disable=SC2086 — intentional word splitting for positional re-set
+set -- $NEW_ARGS
 PHASE_RAW="${1:-}"
 LENS_RAW="${2:-}"
 
@@ -125,6 +141,12 @@ elif [ -n "$VALID_EXTRAS" ]; then
   LENS_CODES_ARRAY="$VALID_EXTRAS"
 fi
 
+# D-03: --pick + positional lens 충돌 reject (silent override 금지)
+if [ "$PICK_MODE" = "true" ] && { [ -n "$LENS_RAW" ] || [ -n "$EXTRA_LENS_CODES" ]; }; then
+  printf 'Cannot combine --pick with positional lens argument.\nUse either: sg-retro {phase} {lens...}  (explicit args)\nOr:         sg-retro {phase} --pick     (interactive picker)\n' >&2
+  exit 1
+fi
+
 # Phase 42 (D-02): smart default — no args → dspm+ssc, dspm first (technical core → behavior recommendation)
 if [ -z "$LENS_CODES_ARRAY" ] && [ -z "$LENS_RAW" ] && [ -z "$EXTRA_LENS_CODES" ]; then
   LENS_CODES_ARRAY="dspm ssc"
@@ -192,6 +214,23 @@ echo "Git range: ${RANGE}" >&2
 ```bash
 # F-02 fix: initialize before loop (set to true inside analyze sub-block)
 ANALYZE_LENS_RAN=false
+
+# D-05, D-06: --pick 모드 → AskUserQuestion multiSelect 1회 호출
+if [ "$PICK_MODE" = "true" ]; then
+  # Claude execute-time: invoke AskUserQuestion with the spec below.
+  #   header: "Pick Lens"
+  #   question: "Which lens(es) do you want to run for Phase ${PHASE_RAW}?"
+  #   multiSelect: true
+  #   options:
+  #     - label "ssc",     description "surface behavior changes — what to start, stop, or continue doing next phase."
+  #     - label "dspm",    description "capture technical decisions, unexpected outcomes, recurring techniques, and verification failures from this phase."
+  #     - label "analyze", description "scan session transcript for frustration, correction, repetition, and validated-success signals; propose sg-rule drafts."
+  # Selected labels → LENS_CODES_ARRAY (space-separated, in user-selected order).
+  # 0-selection (cancel / empty) → emit stderr message and silent exit(0):
+  #   "--pick cancelled — no lens selected, no retrospective recorded."
+  # The exit(0) MUST occur before the lens loop, lessons file creation, and HANDOFF append.
+  :  # placeholder — Claude inserts the AskUserQuestion tool call here at execute time
+fi
 ```
 
 Execute each lens in LENS_CODES_ARRAY sequentially. For each iteration, set LENS_CODE to the current code and run the matching sub-block. After the sub-block completes, run Step 6 append for that lens.
@@ -211,7 +250,7 @@ Common flow for ssc/dspm lenses (D-09 hybrid + D-10 artifact-grounded draft-then
 2. For each lens-specific subheading, propose 2–5 draft bullet items grounded in the artifacts above. Each bullet must cite the source (file path or commit hash). Present the full draft as a single markdown block.
 3. Ask the user to confirm/edit/add/delete each subheading's items. Use the user's input language (D-16 — auto-detect; this is the body content language, not the markdown structure markers). Single round-trip preferred — present all subheadings at once, not one-by-one.
 4. After items are finalized, propose 2–4 Action Items rows: priority (`P1`/`P2`/`P3`) | one-sentence item | concrete next step or `deferred to Phase N` label. **No owner column (D-12).** User confirms/edits the table.
-5. Assemble the final lens section (header + `_Captured: {NOW_ISO}_` + subheadings + Action Items) and append to `${LESSONS_FILE}` using the bash block in Step 6. Empty body or empty action items violates RETRO-04. Emit `Lessons saved to ${LESSONS_FILE}.` to stdout. No other output.
+5. Assemble the final lens section (header + `_Captured: {NOW_ISO}_` + `_Intent: ..._` + subheadings + Action Items) and append to `${LESSONS_FILE}` using the bash block in Step 6. Empty body or empty action items violates RETRO-04. Emit `Lessons saved to ${LESSONS_FILE}.` to stdout. No other output.
 
 Lens-specific sub-blocks:
 
@@ -266,6 +305,13 @@ case "$LENS_CODE" in
   analyze) LENS_NAME="Conversation Analyzer" ;;
 esac
 
+# D-12, D-14: lens intent line (static, English, italic single-line — emitted after _Captured: line)
+case "$LENS_CODE" in
+  ssc)     INTENT_LINE='_Intent: surface behavior changes — what to start, stop, or continue doing next phase._' ;;
+  dspm)    INTENT_LINE='_Intent: capture technical decisions, unexpected outcomes, recurring techniques, and verification failures from this phase._' ;;
+  analyze) INTENT_LINE='_Intent: scan session transcript for frustration, correction, repetition, and validated-success signals; propose sg-rule drafts._' ;;
+esac
+
 # D-20: same-lens duplicate-run disambiguation
 # if file exists, count same lens headers to determine (run N) suffix
 RUN_SUFFIX=""
@@ -310,7 +356,8 @@ fi
 # (consistent output structure) and breaks Phase 12 LESSONS-02 parsing.
 {
   printf '%s\n' "$LENS_HEADER"
-  printf '_Captured: %s_\n\n' "$NOW_ISO"
+  printf '_Captured: %s_\n' "$NOW_ISO"
+  printf '%s\n\n' "$INTENT_LINE"
   # BODY_PRINTF — Claude inserts subheading + bullet `printf` lines here.
   # Example for ssc (replace at execution time with confirmed content):
   #   printf '### Start\n'
@@ -322,8 +369,11 @@ fi
   printf '\n### Action Items\n'
   printf '| priority | item | next step |\n'
   printf '|----------|------|-----------|\n'
-  # ACTION_ITEMS_PRINTF — Claude inserts row `printf` lines here, e.g.:
-  #   printf '| P1 | %s | %s |\n' "$ITEM_TEXT" "$NEXT_STEP_TEXT"
+  # ACTION_ITEMS_PRINTF — Claude inserts row `printf` lines here.
+  # DISPLAY-01 (D-08, D-09): P1 행은 priority 셀에 `🔴 P1` prefix로 emit. P2/P3는 prefix 없음.
+  #   printf '| 🔴 P1 | %s | %s |\n' "$ITEM_TEXT" "$NEXT_STEP_TEXT"   # P1 only
+  #   printf '| P2 | %s | %s |\n' "$ITEM_TEXT" "$NEXT_STEP_TEXT"      # P2 unchanged
+  #   printf '| P3 | %s | %s |\n' "$ITEM_TEXT" "$NEXT_STEP_TEXT"      # P3 unchanged
   printf '\n'
 } >> "$LESSONS_FILE"
 
@@ -378,4 +428,7 @@ echo "| $TS_H | $PHASE_SLUG_H | $FROM_STAGE_H | sg-retro | - | $GIT_USER |" >> "
 9. When TRANSCRIPT_FILE is empty, the analyze lens emits "No transcript found" to stderr and exits the lens gracefully without appending to lessons (D-06).
 10. The Conversation Analyzer reads the JSONL file using Claude's Read tool (not bash grep) and outputs a 5-column findings table (category/tool-event/pattern/context/severity) + Draft sg-rules section (ANALYZER-01, ANALYZER-02).
 11. sg-rule draft auto-suggest occurs exactly once per sg-retro invocation — after all lenses complete (D-02). If analyze lens ran, its Draft sg-rules section serves as the auto-suggest output; no duplicate suggestion is made.
+12. The `--pick` flag (long form, lowercase, hyphenated) is detected anywhere in the argument list and triggers an interactive lens selection via AskUserQuestion multiSelect with exactly three options (ssc/dspm/analyze) — called exactly once per invocation (LENS-03, D-01, D-02, D-05). Combining `--pick` with a positional lens argument (e.g. `43 ssc --pick`) emits a stderr conflict error and exits 1 without invoking AskUserQuestion or creating a lessons file (D-03). 0-selection silently exits 0 with a `--pick cancelled` stderr message and creates no lessons file and no HANDOFF row (D-06).
+13. Lessons file `### Action Items` rows whose priority is P1 are emitted with a `🔴 P1` prefix in the priority cell; P2 and P3 rows have no prefix (DISPLAY-01, D-08, D-09). The single 3-column table schema (`priority | item | next step`) is preserved.
+14. Each lens section emits an italic single-line lens intent statement directly after the `_Captured: {ISO}_` line, sourced from the static `INTENT_LINE` case mapping in Step 6 (one fixed English sentence per lens — ssc/dspm/analyze) (DISPLAY-02, D-12, D-13, D-14, D-15).
 </success_criteria>

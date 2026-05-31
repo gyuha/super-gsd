@@ -245,3 +245,10 @@
 | 2026-05-31T13:16:40Z | v2.10 | sg-retro | complete | - | gyuha |
 | 2026-05-31T14:11:27Z | 46 | complete | sg-next | - | gyuha |
 | 2026-05-31T14:20:21Z | 46-sg-use-tdd | sg-next | gsd-plan | - | gyuha |
+| 2026-05-31T14:32:21Z | 46-sg-use-tdd | gsd-plan | superpowers | 42bc870 | gyuha |
+| 2026-05-31T15:18:50Z | 46-sg-use-tdd | superpowers | sg-next | - | gyuha |
+| 2026-05-31T15:19:16Z | 46-sg-use-tdd | sg-next | review | - | gyuha |
+| 2026-05-31T15:33:21Z | 46-sg-use-tdd | review | sg-next | - | gyuha |
+| 2026-05-31T15:35:42Z | 46-sg-use-tdd | sg-next | sg-retro | - | gyuha |
+| 2026-05-31T15:45:14Z | 46-sg-use-tdd | sg-retro | sg-next | - | gyuha |
+| 2026-05-31T15:45:25Z | 46-sg-use-tdd | sg-next | ship | - | gyuha |

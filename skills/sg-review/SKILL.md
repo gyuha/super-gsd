@@ -155,7 +155,7 @@ Self-contained. Reads git history to derive BASE_SHA and HEAD_SHA, then delegate
    fi
    ```
 
-3.9. **Record review row in HANDOFF.md.** superpowers:requesting-code-review is a terminal Skill so the moment immediately before invocation is the last possible point to record:
+3.9. **Record review row in HANDOFF.md.** `superpowers:requesting-code-review` dispatches a Task subagent and then **returns control** to sg-review with the review result, so a post-review step (Step 5) runs after it. Record the review row here, immediately before invocation, so the audit log is written even if the post-review loop changes flow:
    ```bash
    HANDOFF_FILE=".planning/HANDOFF.md"
    if [ ! -f "$HANDOFF_FILE" ] || ! grep -q "Timestamp.*Phase.*From.*To.*Plan Hash" "$HANDOFF_FILE" 2>/dev/null; then
@@ -175,7 +175,18 @@ Self-contained. Reads git history to derive BASE_SHA and HEAD_SHA, then delegate
 
 4. **Invoke Skill** with the structured context.
    **Before calling Skill, substitute the actual resolved values** for `$DESCRIPTION`, `$PLAN_REQUIREMENTS`, `$BASE_SHA`, and `$HEAD_SHA` captured in steps 1–3.
-   Session control transfers to the skill; no steps execute after this point:
+
+   **TDD verification injection (Phase 47, D-04).** Detect the marker (presence-only; path hardcoded, never from `$ARGUMENTS`):
+   ```bash
+   if [ -f .planning/USE-TDD ]; then TDD_ON=true; else TDD_ON=false; fi
+   ```
+   When `.planning/USE-TDD` is present, APPEND the following `## TDD Verification` section to the args blob below (rendered ONLY inside the `[ -f .planning/USE-TDD ]` branch — when the marker is absent the args blob is unchanged / non-invasive). PASS/FAIL judgment is delegated to the review subagent — no test-runner auto-detection (REVIEW-F1 is Future):
+   ```
+   ## TDD Verification
+   TDD mode is ON. Verify whether the tests pass or fail and surface an explicit, unambiguous PASS/FAIL signal in your verdict (state "TESTS: PASS" or "TESTS: FAIL"). Judge from the diff and any test output available; do not assume.
+   ```
+
+   `superpowers:requesting-code-review` dispatches a Task subagent and **returns control** to sg-review with the review result — proceed to Step 5 after it:
    ```
    Skill(skill="superpowers:requesting-code-review", args="## What Was Implemented
 $DESCRIPTION
@@ -187,6 +198,62 @@ $PLAN_REQUIREMENTS
 Base: $BASE_SHA
 Head: $HEAD_SHA")
    ```
+
+5. **Post-review failure loop (Phase 47, D-05/D-06 — TDD-mode only).** This step runs ONLY when `.planning/USE-TDD` is present; when the marker is absent, sg-review ends after Step 4 exactly as before (non-invasive). After control returns from `superpowers:requesting-code-review` (Step 4), read its verdict and branch:
+
+   ```bash
+   if [ -f .planning/USE-TDD ]; then TDD_ON=true; else TDD_ON=false; fi
+   ```
+
+   When `TDD_ON` is false: stop here (legacy behavior, no loop).
+
+   When `TDD_ON` is true, interpret the review subagent's PASS/FAIL signal (the `TESTS: PASS` / `TESTS: FAIL` directive injected in Step 4):
+
+   - **Review PASS** (tests pass): reset the retry counter and finish.
+     ```bash
+     rm -f .planning/USE-TDD-RETRY
+     ```
+
+   - **Review FAIL** (tests fail): read the current retry count (line 1 of the retry file; default 0 when the file is absent — the serialization matches Plan 47-01: line 1 = count, lines 2+ = feedback body):
+     ```bash
+     if [ -f .planning/USE-TDD-RETRY ]; then
+       RETRY_COUNT=$(head -1 .planning/USE-TDD-RETRY 2>/dev/null | tr -dc '0-9')
+     fi
+     [ -z "$RETRY_COUNT" ] && RETRY_COUNT=0
+     ```
+
+     - **If `RETRY_COUNT` < 2** — ask the user whether to re-run sg-execute to fix the failing tests (same form/tone as the Step 1.5 gate). Question/option prose in the user's input language; machine tokens (`sg-execute`, `USE-TDD-RETRY`, paths) verbatim English:
+       ```
+       AskUserQuestion(
+         questions: [{
+           question: "Tests FAILED in TDD mode (retry RETRY_COUNT/2). Re-run sg-execute to fix the failing tests?",
+           header: "tdd-retry",
+           multiSelect: false,
+           options: [
+             { label: "Re-run sg-execute (Recommended)", description: "Write the FAIL feedback to .planning/USE-TDD-RETRY (count+1) and re-invoke sg-execute, which injects the feedback as a fix-first section." },
+             { label: "Stop", description: "Halt the loop. Fix manually, then re-run /super-gsd:sg-review when ready." }
+           ]
+         }]
+       )
+       ```
+       - If **"Re-run sg-execute"** selected: write the incremented count on line 1 and the review's FAIL feedback as the body (lines 2+), then re-invoke sg-execute. The retry file is the handshake Plan 47-01's sg-execute reads (presence → idempotency bypass; lines 2+ → `## Previous Test Failures — Fix First`):
+         ```bash
+         NEW_COUNT=$((RETRY_COUNT + 1))
+         { printf '%s\n' "$NEW_COUNT"; printf '%s\n' "$REVIEW_FAIL_FEEDBACK"; } > .planning/USE-TDD-RETRY
+         ```
+         `REVIEW_FAIL_FEEDBACK` is the failing-test summary from the review verdict. Then:
+         ```
+         Skill(skill="sg-execute", args="$PHASE_NUM")
+         ```
+       - If **"Stop"** selected: print a halt message (user's language) and exit without re-invoking. Leave `.planning/USE-TDD-RETRY` as-is so a later manual `/super-gsd:sg-review` can resume the count.
+
+     - **If `RETRY_COUNT` == 2 (limit reached)** — do NOT ask. Report that the retry limit was exceeded (prose in user's language), reset the counter, and stop:
+       ```bash
+       echo "TDD retry limit (2) exceeded — stopping. Fix the failing tests manually, then re-run /super-gsd:sg-review."
+       rm -f .planning/USE-TDD-RETRY
+       ```
+
+   Both the PASS path and the limit-exceeded path delete `.planning/USE-TDD-RETRY` (D-06) so a corrected restart begins with a clean counter.
 </process>
 
 <success_criteria>

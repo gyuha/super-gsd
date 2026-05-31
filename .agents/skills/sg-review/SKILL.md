@@ -154,6 +154,12 @@ Self-contained. Reads git history to derive BASE_SHA and HEAD_SHA, reads changed
    --- Review procedure ---
    ```
 
+   **TDD verification (Phase 47, D-04 adapted — mirror).** Detect the marker (presence-only; path hardcoded, never from `$ARGUMENTS`):
+   ```bash
+   if [ -f .planning/USE-TDD ]; then TDD_ON=true; else TDD_ON=false; fi
+   ```
+   When `.planning/USE-TDD` is present, the prose review MUST additionally verify whether the tests pass or fail and surface an explicit PASS/FAIL signal. Map the FAIL signal to the existing `revision-required` verdict (a failing-test review is `revision-required`). PASS/FAIL judgment is delegated to your review reading — no test-runner auto-detection (REVIEW-F1 is Future). When the marker is absent, the review proceeds unchanged (non-invasive).
+
    Execute the following steps in order:
 
    a. Check changed file list with `git diff $BASE_SHA $HEAD_SHA --name-only`
@@ -193,6 +199,12 @@ Self-contained. Reads git history to derive BASE_SHA and HEAD_SHA, reads changed
       Review complete. Result: <VERDICT>
       Next step: /super-gsd:sg-learn
       ```
+
+   f. **Prose-halt failure fallback (Phase 47, D-07/REVIEW-04 — mirror).** When `.planning/USE-TDD` is present AND the verdict is FAIL (`revision-required`), this platform has no AskUserQuestion and no auto-recall loop. Instead of re-invoking automatically, print a prose halt directing the user to re-run `$sg-execute` manually (prose in the user's input language; `$sg-execute` verbatim English). This mirror does NOT manage `.planning/USE-TDD-RETRY` counting — it only detects FAIL and surfaces the manual re-run guidance:
+      ```
+      tests FAILED — re-run $sg-execute to fix the failing tests, then re-run $sg-review.
+      ```
+      When the marker is absent, or the verdict is not `revision-required`, this halt is not printed (non-invasive).
 </process>
 
 <success_criteria>

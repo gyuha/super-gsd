@@ -505,7 +505,10 @@ Full archive: [.planning/milestones/v2.9-ROADMAP.md](.planning/milestones/v2.9-R
   3. 같은 상태로 여러 번 호출해도 오류 없이 완료된다 (idempotent)
   4. `.agents/skills/sg-use-tdd/SKILL.md` 미러가 존재하여 `$sg-use-tdd`로 동일 토글을 실행할 수 있다
 
-**Plans**: TBD
+**Plans**: 1 plan
+Plans:
+
+- [ ] 46-01-PLAN.md — sg-use-tdd/SKILL.md + .agents 미러 생성 (TDD-01, TDD-02, TDD-03)
 
 ### Phase 47: sg-execute TDD 주입 + sg-review 실패 루프
 

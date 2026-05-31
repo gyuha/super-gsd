@@ -2,6 +2,17 @@
 
 All notable changes to `super-gsd` are documented in this file. Format follows [Keep a Changelog](https://keepachangelog.com/).
 
+## [0.0.53] - 2026-05-31
+
+### Fixed
+
+- **marketplace.json plugin version sync** — 이전 release(0.0.49~0.0.52)에서 `.claude-plugin/marketplace.json:13`의 `plugins[0].version`이 `0.0.28`로 고정되어 24버전 stale 상태였음. Claude Code plugin marketplace는 이 값을 update trigger로 사용하므로 기존 설치가 `0.0.28` 이후 어떤 release도 fetch하지 못한 silent failure. marketplace.json `plugins[0].version`을 `0.0.53`으로 catch-up + 매 release마다 동기화되도록 deploy procedure 자체에 명시.
+- **CLAUDE.md "배포" 절차 보강** — 기존 3-파일 절차(plugin.json + package.json + CHANGELOG.md)에 marketplace.json을 4번째 mandatory 파일로 추가. "주의 사항"에 사용자 update 의무 명시 — `git push`는 자동 활성화를 의미하지 않으며, 사용자는 `/plugin update super-gsd@super-gsd` (Claude Code) 또는 `npx @gyuha/super-gsd install` (Codex/Gemini)로 명시적 update 필요.
+
+### Notes
+
+- 이 release는 기존 0.0.49~0.0.52에 누적된 marketplace metadata 결함을 catch up하는 cache-refresh 의미가 강함. 0.0.51의 stop_hook fix(HANDOFF.md-based stage detection) + loadConfig 수정이 이 release를 통해 비로소 marketplace로 advertise되어 사용자가 `/plugin update`로 fetch 가능.
+
 ## [0.0.52] - 2026-05-31
 
 ### Changed

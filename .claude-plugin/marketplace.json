@@ -10,7 +10,7 @@
     {
       "name": "super-gsd",
       "description": "Orchestrator plugin that auto-chains GSD -> Superpowers -> sg-retro so planning, implementation, and retrospection stay connected as a single learning loop.",
-      "version": "0.0.28",
+      "version": "0.0.52",
       "author": {
         "name": "gyuha",
         "email": "nicegyuha@gmail.com"

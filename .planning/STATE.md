@@ -3,12 +3,12 @@ gsd_state_version: 1.0
 milestone: v2.11
 milestone_name: use-tdd Workflow Mode
 status: planning
-last_updated: "2026-05-31T13:59:34.015Z"
+last_updated: "2026-05-31T14:30:00.000Z"
 last_activity: 2026-05-31
 progress:
-  total_phases: 0
+  total_phases: 3
   completed_phases: 0
-  total_plans: 0
+  total_plans: 3
   completed_plans: 0
   percent: 0
 ---
@@ -17,17 +17,24 @@ progress:
 
 ## Project Reference
 
-See: .planning/PROJECT.md (updated 2026-05-26)
+See: .planning/PROJECT.md (updated 2026-05-31)
 
 **Core value:** GSD → Superpowers → sg-retro 단계 전환을 자동화하여 학습 루프가 끊기지 않도록 한다
-**Current focus:** (none — v2.10 shipped. Run `/super-gsd:sg-new` to start the next milestone.)
+**Current focus:** v2.11 use-tdd Workflow Mode — Phase 46 시작 대기
 
 ## Current Position
 
-Phase: Not started (defining requirements)
+Phase: 46
 Plan: —
-Status: Defining requirements
-Last activity: 2026-05-31 — Milestone v2.11 started
+Status: Not started
+Last activity: 2026-05-31 — Roadmap created for v2.11 (Phases 46-48)
+
+```
+Progress: [                    ] 0% (0/3 phases)
+Phase 46: sg-use-tdd 토글 + 마커           [ ] Not started
+Phase 47: sg-execute TDD 주입 + sg-review  [ ] Not started
+Phase 48: 문서화                            [ ] Not started
+```
 
 ## Performance Metrics
 
@@ -44,12 +51,12 @@ Last activity: 2026-05-31 — Milestone v2.11 started
 Decisions are logged in PROJECT.md Key Decisions table.
 Recent decisions affecting current work:
 
-- v2.10 phase shape: 1 phase (coarse granularity) — Phase 45 covers all 6 GRILL requirements
-- Non-invasive constraint: gsd-discuss-phase must NOT be modified; grilling lives only inside sg-plan's main context
-- Pairwise file rule: `skills/sg-plan/SKILL.md` AND `.agents/skills/sg-plan/SKILL.md` must both be updated
-- Grilling output feeds gsd-discuss-phase CONTEXT input — no separate file, passed inline
-- User-language surfacing: questions use user's input language; machine tokens (command names, paths, enums) stay English
-- Claude cannot self-terminate grilling — user confirmation gate required (GRILL-05)
+- v2.11 phase shape: 3 phases (coarse granularity) — Phase 46 (toggle), Phase 47 (execute+review integration), Phase 48 (docs)
+- Non-invasive constraint: Superpowers `test-driven-development` skill must NOT be forked — inject instructions into handoff prompt only
+- Pairwise file rule: `skills/sg-use-tdd/SKILL.md` + `.agents/skills/sg-use-tdd/SKILL.md` (Phase 46); `skills/sg-execute/SKILL.md` + `.agents/skills/sg-execute/SKILL.md` (Phase 47); `skills/sg-review/SKILL.md` + `.agents/skills/sg-review/SKILL.md` (Phase 47)
+- Opt-in marker: `.planning/USE-TDD` presence = TDD mode ON; absence = legacy behavior unchanged
+- Review loop cap: max 2 automatic re-executions before surfacing to user to prevent infinite loops
+- REVIEW-04 platform fallback: `.agents/` platform lacks AskUserQuestion — prose-numbered fallback required
 
 ### Pending Todos
 
@@ -96,10 +103,10 @@ Items acknowledged and deferred at v2.2 milestone close on 2026-05-24:
 
 ## Session Continuity
 
-Last session: 2026-05-31T12:45:07.680Z
-Stopped at: Phase 45 context gathered
-Resume file: .planning/phases/45-new-phase/45-CONTEXT.md
+Last session: 2026-05-31T14:30:00.000Z
+Stopped at: v2.11 roadmap created
+Resume file: .planning/ROADMAP.md
 
 ## Operator Next Steps
 
-- Run `/super-gsd:sg-plan 45` to plan Phase 45
+- Run `/super-gsd:sg-plan 46` to plan Phase 46 (sg-use-tdd 토글 + 마커)

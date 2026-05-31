@@ -54,4 +54,17 @@
 
 ## Traceability
 
-(로드맵 생성 시 채워짐 — REQ-ID → Phase 매핑)
+| Requirement | Phase | Status |
+|-------------|-------|--------|
+| TDD-01 | Phase 46 | Pending |
+| TDD-02 | Phase 46 | Pending |
+| TDD-03 | Phase 46 | Pending |
+| EXEC-01 | Phase 47 | Pending |
+| EXEC-02 | Phase 47 | Pending |
+| EXEC-03 | Phase 47 | Pending |
+| REVIEW-01 | Phase 47 | Pending |
+| REVIEW-02 | Phase 47 | Pending |
+| REVIEW-03 | Phase 47 | Pending |
+| REVIEW-04 | Phase 47 | Pending |
+| DOC-01 | Phase 48 | Pending |
+| DOC-02 | Phase 48 | Pending |

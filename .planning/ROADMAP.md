@@ -19,6 +19,7 @@
 - [x] **v2.8 Team Collaboration Support** (2026-05-29) — HANDOFF user 추적 + sg-status --team + sg-execute 브랜치 워크플로우 + TEAM.md → [Archive](.planning/milestones/v2.8-ROADMAP.md)
 - [x] **v2.9 Retro UX Simplification** (2026-05-31) — sg-retro/sg-learn lens 선택 마찰 제거 + smart default(dspm+ssc) + lens 6→3 통합 + --pick flag + 🔴 P1 emphasis + lens intent line + 문서 동기화 → [Archive](.planning/milestones/v2.9-ROADMAP.md)
 - [x] **v2.10 Plan-Phase Ambiguity Grilling** (2026-05-31) — sg-plan이 discuss subagent 호출 전 grill-me 원칙으로 모호함을 해소하는 인터뷰 단계 추가 (GRILL-01~06, 쌍 파일 동기화) → [Archive](.planning/milestones/v2.10-ROADMAP.md)
+- [ ] **v2.11 use-tdd Workflow Mode** — sg-use-tdd 토글 + sg-execute TDD 주입 + sg-review 실패 루프 + 문서
 
 ## Phases
 
@@ -92,6 +93,12 @@
 Full archive: [.planning/milestones/v2.10-ROADMAP.md](.planning/milestones/v2.10-ROADMAP.md)
 
 </details>
+
+### v2.11 use-tdd Workflow Mode
+
+- [ ] **Phase 46: sg-use-tdd 토글 + 마커** — `sg-use-tdd` 명령 신규 생성 + `.planning/USE-TDD` 마커 파일 관리 + `.agents/` 미러 (TDD-01, TDD-02, TDD-03)
+- [ ] **Phase 47: sg-execute TDD 주입 + sg-review 실패 루프** — 마커 감지 시 핸드오프 프롬프트에 test-first 지시 주입 + 테스트 FAIL 시 사용자 확인 후 재실행 루프 + 양쪽 `.agents/` 미러 pairwise 동기화 (EXEC-01, EXEC-02, EXEC-03, REVIEW-01, REVIEW-02, REVIEW-03, REVIEW-04)
+- [ ] **Phase 48: 문서화** — README.md / README.ko.md TDD 섹션 + Commands 표 업데이트 (DOC-01, DOC-02)
 
 ## Phase Details
 
@@ -485,6 +492,49 @@ Full archive: [.planning/milestones/v2.9-ROADMAP.md](.planning/milestones/v2.9-R
 
 ---
 
+## v2.11 use-tdd Workflow Mode
+
+### Phase 46: sg-use-tdd 토글 + 마커
+
+**Goal**: 사용자가 `/super-gsd:sg-use-tdd`로 TDD 모드를 켜고 끌 수 있으며, `.planning/USE-TDD` 마커 파일의 존재로 모드 상태가 결정된다
+**Depends on**: Phase 45
+**Requirements**: TDD-01, TDD-02, TDD-03
+**Success Criteria** (what must be TRUE):
+  1. `/super-gsd:sg-use-tdd`를 실행하면 `.planning/USE-TDD` 파일이 없을 때 생성되고, 있을 때 삭제되며, 현재 상태(ON/OFF)가 출력된다
+  2. `sg-use-tdd on` / `sg-use-tdd off` 인자로 상태를 명시 지정하면 현재 상태와 무관하게 마커를 생성/삭제하고, 인자가 없으면 현재 상태를 보여준 후 토글한다
+  3. 같은 상태로 여러 번 호출해도 오류 없이 완료된다 (idempotent)
+  4. `.agents/skills/sg-use-tdd/SKILL.md` 미러가 존재하여 `$sg-use-tdd`로 동일 토글을 실행할 수 있다
+
+**Plans**: TBD
+
+### Phase 47: sg-execute TDD 주입 + sg-review 실패 루프
+
+**Goal**: `.planning/USE-TDD` 마커가 있을 때 sg-execute가 test-first 지시를 핸드오프에 주입하고, sg-review가 테스트 결과를 검증하여 FAIL 시 사용자 확인 후 sg-execute를 재호출하는 루프를 구성한다
+**Depends on**: Phase 46
+**Requirements**: EXEC-01, EXEC-02, EXEC-03, REVIEW-01, REVIEW-02, REVIEW-03, REVIEW-04
+**Success Criteria** (what must be TRUE):
+  1. `.planning/USE-TDD`가 있을 때 sg-execute의 Superpowers 핸드오프 프롬프트에 `superpowers:test-driven-development` 스킬 사용 + 구현 전 실패 테스트(Red) 우선 작성 지시가 포함된다
+  2. `.planning/USE-TDD`가 없을 때 sg-execute는 기존과 완전히 동일하게 동작하며 프롬프트에 TDD 지시가 포함되지 않는다
+  3. TDD 모드일 때 sg-review가 코드 리뷰 컨텍스트에 테스트 통과 여부 검증 지시를 포함하고, PASS/FAIL 신호를 명확히 표면화한다
+  4. 테스트 FAIL 시 sg-review가 사용자에게 sg-execute 재실행 여부를 확인(AskUserQuestion)하고, 승인 시 sg-execute를 재호출하며, 최대 2회로 루프를 제한하고 한도 초과 시 보고 후 중단한다
+  5. `.agents/skills/sg-execute/SKILL.md`와 `.agents/skills/sg-review/SKILL.md` 미러가 동일한 동작을 반영한다 (AskUserQuestion 미지원 플랫폼은 프로즈 폴백)
+
+**Plans**: TBD
+
+### Phase 48: 문서화
+
+**Goal**: README.md와 README.ko.md를 보는 사용자가 TDD 모드 활성화 방법, sg-use-tdd 명령, 워크플로우 변화를 정확히 이해할 수 있다
+**Depends on**: Phase 47
+**Requirements**: DOC-01, DOC-02
+**Success Criteria** (what must be TRUE):
+  1. `README.md`의 Workflow 섹션에 TDD 모드 opt-in 흐름이 다이어그램 또는 단계 목록으로 추가되어 있다
+  2. `README.md`의 Commands 표에 `sg-use-tdd` 명령과 설명이 등재되어 있다
+  3. `README.ko.md`가 README.md의 TDD 관련 변경 사항과 동기화되어 있다
+
+**Plans**: TBD
+
+---
+
 ## Progress
 
 | Phase | Milestone | Plans Complete | Status | Completed |
@@ -526,3 +576,6 @@ Full archive: [.planning/milestones/v2.9-ROADMAP.md](.planning/milestones/v2.9-R
 | 43. One-shot Interaction + Display Polish | v2.9 | 2/2 | Complete | 2026-05-30 |
 | 44. Documentation Sync | v2.9 | 3/3 | Complete | 2026-05-31 |
 | 45. sg-plan Grilling Step | v2.10 | 1/1 | Complete | 2026-05-31 |
+| 46. sg-use-tdd 토글 + 마커 | v2.11 | 0/1 | Not started | - |
+| 47. sg-execute TDD 주입 + sg-review 실패 루프 | v2.11 | 0/1 | Not started | - |
+| 48. 문서화 | v2.11 | 0/1 | Not started | - |

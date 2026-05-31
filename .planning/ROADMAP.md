@@ -524,7 +524,15 @@ Full archive: [.planning/milestones/v2.9-ROADMAP.md](.planning/milestones/v2.9-R
   4. 테스트 FAIL 시 sg-review가 사용자에게 sg-execute 재실행 여부를 확인(AskUserQuestion)하고, 승인 시 sg-execute를 재호출하며, 최대 2회로 루프를 제한하고 한도 초과 시 보고 후 중단한다
   5. `.agents/skills/sg-execute/SKILL.md`와 `.agents/skills/sg-review/SKILL.md` 미러가 동일한 동작을 반영한다 (AskUserQuestion 미지원 플랫폼은 프로즈 폴백)
 
-**Plans**: TBD
+**Plans**: 2 plans
+Plans:
+**Wave 1**
+
+- [ ] 47-01-PLAN.md — sg-execute TDD 주입 + 재시도 경로 + .agents 미러 (EXEC-01, EXEC-02, EXEC-03)
+
+**Wave 2** *(blocked on Wave 1 completion)*
+
+- [ ] 47-02-PLAN.md — sg-review TDD 검증 + 실패 루프 + terminal 표기 정정 + .agents 미러 (REVIEW-01, REVIEW-02, REVIEW-03, REVIEW-04)
 
 ### Phase 48: 문서화
 

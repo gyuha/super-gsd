@@ -59,6 +59,43 @@ Self-contained. Reads .planning/STATE.md for phase resolution when no argument p
    fi
    ```
 
+1.2. **Ambiguity grilling (grill-me).** Before the Visual Companion check (Step 1.5) and gsd-discuss-phase, resolve planning ambiguities in the main context — one question at a time — until you and the user reach shared understanding. There is no cap on the number of questions. This runs in the main context, so the back-and-forth reaches the user directly.
+
+   Apply these rules:
+
+   1. **Codebase-first (GRILL-03).** Before asking the user anything, ask yourself whether the answer is discoverable in the codebase (file existence, current implementation, function signatures, config values, existing patterns). If so, resolve it yourself with Read/Bash/Grep — do NOT ask the user. Only ask the user about information that is NOT in the code: design intent, priorities, scope boundaries, UX preferences, trade-off calls.
+
+   2. **One question at a time + recommended answer (GRILL-01, GRILL-02).** Ask exactly ONE question per turn, and always include your recommended answer. AskUserQuestion is unavailable on this platform, so use the prose number-choice fallback pattern (same mechanism as Step 1.5). Surface each question as:
+      ```
+      [sg-plan] Grilling question: <question>
+
+      Recommended answer: <your recommended answer>
+      Or type your own answer:
+      ```
+      Accept the user's typed answer and continue to the next question. Never batch multiple questions.
+
+   3. **Design-tree traversal (GRILL-04).** Do not use a fixed question list. After each answer, choose as the next question the item that is most uncertain and most determines downstream decisions. Walk the design tree, resolving dependencies one branch at a time.
+
+   4. **Termination gate — user-confirmed only (GRILL-05).** You may NOT end grilling on your own judgment alone. When you believe all ambiguities are resolved, print a numbered consensus summary (decisions + constraints) and ask whether anything remains, using the prose number-choice fallback:
+      ```
+      [sg-plan] Grilling complete — consensus summary:
+      1. <decision 1>
+      2. <decision 2>
+      ...
+
+      Is this everything? Let me know if there is anything else to cover.
+
+      1. Confirm — proceed to gsd-discuss-phase
+      2. More questions — keep grilling
+
+      Enter your choice (1 or 2):
+      ```
+      Proceed to Step 1.5 only after the user enters "1" / "Confirm".
+
+   5. **Language surfacing (D-07).** Surface questions, recommended answers, and the consensus summary in the user's input language. Keep machine tokens (command names like `/super-gsd:sg-plan`, file paths, enum values, phase slugs, version IDs) in English.
+
+   Store the confirmed consensus summary as `GRILL_SUMMARY` (plain text) for inline injection into the gsd-discuss-phase Agent prompt in Step 2a.
+
 1.5. **Visual Companion check.** Execute only when the Phase goal contains UI-related keywords:
    ```bash
    PHASE_SECTION_RAW=$(gsd-sdk query roadmap.get-phase "$PHASE_NUM" --pick section 2>/dev/null)
@@ -115,6 +152,7 @@ Do NOT invoke writing-plans after brainstorming finishes.",
          subagent_type="general-purpose"
        )
        ```
+       **Inject the grilled consensus (GRILL-06).** When constructing the Agent prompt above, append the following paragraph to the end of the `prompt` string (replace `{GRILL_SUMMARY}` with the actual consensus text from Step 1.2): `The user and I have already grilled the ambiguities. Treat the following as locked context — do NOT re-ask: {GRILL_SUMMARY}`. If `GRILL_SUMMARY` is empty (no ambiguities surfaced), skip the injection. This passes the grill agreement inline; do NOT modify gsd-discuss-phase itself (Non-invasive).
 
    2b. Idempotent record of gsd-plan row in HANDOFF.md:
        ```bash
@@ -164,6 +202,11 @@ Do NOT invoke writing-plans after brainstorming finishes.",
 
 <success_criteria>
 1. If PHASE_NUM is empty, output an explicit error message and exit.
+1.2a. Step 1.2 runs after phase resolution (Step 1) and before the Visual Companion check (Step 1.5): Claude grills the user in the main context, one question at a time with no cap, each question carrying a recommended answer, via the prose number-choice fallback.
+1.2b. Codebase-answerable items are resolved by Claude via Read/Bash/Grep without asking the user; only non-code information is asked.
+1.2c. Questions follow design-tree traversal (each answer determines the next question), not a fixed list.
+1.2d. Claude does not end grilling unilaterally: it prints a numbered consensus summary plus an explicit "is this everything?" prompt and proceeds only after the user enters "1"/"Confirm".
+1.2e. The confirmed consensus (GRILL_SUMMARY) is injected inline into the gsd-discuss-phase Agent prompt (Step 2a) as locked, do-not-re-ask context; gsd-discuss-phase itself is not modified.
 2. With GSD, run the gsd-discuss-phase Agent → gsd-plan-phase Skill chain.
 3. Without GSD, guide through the PLAN.md creation procedure via prose fallback and execute directly.
 4. If prior lessons exist, they are output first in Step 0.

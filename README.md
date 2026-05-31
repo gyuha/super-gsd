@@ -34,7 +34,7 @@ Quick reference for all `/super-gsd:sg-*` slash commands.
 | `/super-gsd:sg-ui-plan` | UI 설계 전용 brainstorming — `superpowers:brainstorming`을 직접 실행한다 | sg-plan에서 Visual Companion 없이 진행했지만 UI 설계가 필요할 때 |
 | `/super-gsd:sg-execute` | Package the current phase plan and hand off to Superpowers (`superpowers:executing-plans`) | After `sg-plan` is complete |
 | `/super-gsd:sg-review` | Request a code review via `superpowers:requesting-code-review` | After implementation is complete |
-| `/super-gsd:sg-learn` | Run a structured retrospective via `sg-retro` — smart default runs two of the three lenses (ssc, dspm) without prompting; pass `--pick` to choose lenses interactively | After the review is done |
+| `/super-gsd:sg-learn` | Run a structured retrospective via `sg-retro` — smart default runs two of the three lenses (ssc, dspm) without prompting; pass `--pick` for interactive lens selection (Claude Code only — on Codex/Gemini CLI, `--pick` exits with an error; use `$sg-retro <phase> ssc dspm analyze` to pick positionally) | After the review is done |
 | `/super-gsd:sg-lessons` | List prior lessons from `.planning/lessons/`; accepts optional phase filter | Before `sg-plan` to review what was learned |
 | `/super-gsd:sg-ship` | Merge and ship the current phase via `gsd-ship` | After learning is captured |
 | `/super-gsd:sg-complete` | `<N>` completes a phase (via `sg-phase`); `<vX.Y>` closes that milestone; empty closes the current milestone (via `gsd-complete-milestone`) | After all phases are shipped, or to mark a single phase complete |
@@ -47,7 +47,7 @@ Quick reference for all `/super-gsd:sg-*` slash commands.
 | `/super-gsd:sg-cleanup` | Archive completed milestone phase directories via `gsd-cleanup`, then display a summary table of what was archived | After milestone completion when `.planning/phases/` needs tidying |
 | `/super-gsd:sg-parallel-execute` | Execute independent plan groups concurrently — accepts a phase number or file path; auto-generates `parallel_groups.json` from PLAN.md `wave:` fields if missing; processes one wave at a time | When a phase has independent plan groups and you want parallel execution instead of `sg-execute` |
 | `/super-gsd:sg-phase` | Edit, remove, or complete an existing phase — `edit`/`remove` delegate to `gsd-phase`; `complete` reconciles ROADMAP Progress row, Phases checkbox, and STATE.md | To edit scope, remove a planned phase, or mark a finished phase done |
-| `/super-gsd:sg-retro` | Run a standalone retrospective with three lenses (ssc, dspm, analyze) — smart default applies dspm+ssc when no lens argument is given; pass `--pick` for interactive selection. Results saved to `.planning/lessons/` | After any work session to capture lessons; also invoked automatically by `sg-learn` |
+| `/super-gsd:sg-retro` | Run a standalone retrospective with three lenses (ssc, dspm, analyze) — smart default applies dspm+ssc when no lens argument is given; pass `--pick` for interactive selection (Claude Code only — on Codex/Gemini CLI, use `$sg-retro <phase> ssc dspm analyze` to pick positionally). Results saved to `.planning/lessons/` | After any work session to capture lessons; also invoked automatically by `sg-learn` |
 | `/super-gsd:sg-setup` | Copy super-gsd hook and skill files to the current project — Claude Code in-session installer | When manually installing super-gsd into an existing project |
 
 See [docs/COMMANDS.md](./docs/COMMANDS.md) for the full per-command reference including arguments and detailed descriptions.

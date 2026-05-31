@@ -243,3 +243,5 @@
 | 2026-05-31T13:09:54Z | 45-sg-plan-grilling | superpowers | sg-next | - | gyuha |
 | 2026-05-31T13:16:15Z | 45-sg-plan-grilling | sg-next | sg-retro | - | gyuha |
 | 2026-05-31T13:16:40Z | v2.10 | sg-retro | complete | - | gyuha |
+| 2026-05-31T14:11:27Z | 46 | complete | sg-next | - | gyuha |
+| 2026-05-31T14:20:21Z | 46-sg-use-tdd | sg-next | gsd-plan | - | gyuha |

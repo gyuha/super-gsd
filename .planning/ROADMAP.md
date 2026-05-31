@@ -197,6 +197,7 @@ Plans:
 **Plans**: 2 plans
 
 **Wave 1** (병렬 실행 가능)
+
 - [ ] 41-01-PLAN.md — .planning/TEAM.md 신규 생성 (DOC-01)
 - [ ] 41-02-PLAN.md — README.md + README.ko.md Team Workflow 섹션 추가 (DOC-02)
 
@@ -500,13 +501,13 @@ Full archive: [.planning/milestones/v2.9-ROADMAP.md](.planning/milestones/v2.9-R
 **Depends on**: Phase 45
 **Requirements**: TDD-01, TDD-02, TDD-03
 **Success Criteria** (what must be TRUE):
+
   1. `/super-gsd:sg-use-tdd`를 실행하면 `.planning/USE-TDD` 파일이 없을 때 생성되고, 있을 때 삭제되며, 현재 상태(ON/OFF)가 출력된다
   2. `sg-use-tdd on` / `sg-use-tdd off` 인자로 상태를 명시 지정하면 현재 상태와 무관하게 마커를 생성/삭제하고, 인자가 없으면 현재 상태를 보여준 후 토글한다
   3. 같은 상태로 여러 번 호출해도 오류 없이 완료된다 (idempotent)
   4. `.agents/skills/sg-use-tdd/SKILL.md` 미러가 존재하여 `$sg-use-tdd`로 동일 토글을 실행할 수 있다
 
-**Plans**: 1 plan
-Plans:
+**Plans**: 1 planPlans:
 
 - [ ] 46-01-PLAN.md — sg-use-tdd/SKILL.md + .agents 미러 생성 (TDD-01, TDD-02, TDD-03)
 
@@ -516,6 +517,7 @@ Plans:
 **Depends on**: Phase 46
 **Requirements**: EXEC-01, EXEC-02, EXEC-03, REVIEW-01, REVIEW-02, REVIEW-03, REVIEW-04
 **Success Criteria** (what must be TRUE):
+
   1. `.planning/USE-TDD`가 있을 때 sg-execute의 Superpowers 핸드오프 프롬프트에 `superpowers:test-driven-development` 스킬 사용 + 구현 전 실패 테스트(Red) 우선 작성 지시가 포함된다
   2. `.planning/USE-TDD`가 없을 때 sg-execute는 기존과 완전히 동일하게 동작하며 프롬프트에 TDD 지시가 포함되지 않는다
   3. TDD 모드일 때 sg-review가 코드 리뷰 컨텍스트에 테스트 통과 여부 검증 지시를 포함하고, PASS/FAIL 신호를 명확히 표면화한다
@@ -530,6 +532,7 @@ Plans:
 **Depends on**: Phase 47
 **Requirements**: DOC-01, DOC-02
 **Success Criteria** (what must be TRUE):
+
   1. `README.md`의 Workflow 섹션에 TDD 모드 opt-in 흐름이 다이어그램 또는 단계 목록으로 추가되어 있다
   2. `README.md`의 Commands 표에 `sg-use-tdd` 명령과 설명이 등재되어 있다
   3. `README.ko.md`가 README.md의 TDD 관련 변경 사항과 동기화되어 있다

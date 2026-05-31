@@ -14,7 +14,7 @@ All twenty-one slash commands covering the full GSD → Superpowers → sg-retro
 ## Workflow
 
 ```
-[ manual entry ]                       [ sg-next auto-chains from sg-plan onward ]
+[ manual entry ]                       [ sg-next auto-chains after sg-plan completes ]
 
 sg-new/sg-start → sg-explore → sg-plan → sg-execute → sg-review → sg-learn → sg-ship → sg-complete
                                   ↑                                    |                      ↓
@@ -100,7 +100,9 @@ The typical flow for adding a new feature milestone to an existing project (e.g.
 
 ```shell
 # 1. Start a new milestone — scaffolds .planning/ context for "payment module"
-/super-gsd:sg-start add payment module
+#    (use sg-start for fresh projects without an existing .planning/STATE.md;
+#     use sg-new when adding a new milestone to an existing super-gsd project)
+/super-gsd:sg-new add payment module
 
 # 2. Explore the codebase — maps existing code so the plan is grounded in reality
 /super-gsd:sg-explore
@@ -214,19 +216,21 @@ Move on to **Verify install** once `sg-update` completes.
 
 ## Multi-Platform Support
 
-super-gsd hooks work on Codex and Gemini/Antigravity CLI without the Claude Code plugin marketplace. Clone the repository manually — the hook configuration files are already in place.
+super-gsd hooks work on Codex and Gemini/Antigravity CLI without the Claude Code plugin marketplace. Use the `npx @gyuha/super-gsd install` command below to install platform-specific hook configuration files and skills automatically.
 
 ### Feature Delta
 
 | Feature | Claude Code | Codex | Gemini / Antigravity CLI |
 |---------|:-----------:|:-----:|:------------------------:|
 | `/sg-*` slash commands | ✅ | ❌ use `$sg-*` skills | ❌ use `$sg-*` skills |
-| Stop hook next-step reminder | ✅ auto-invoke | ⚠️ reminder only | ⚠️ reminder only |
+| Stop / SessionEnd hook next-step reminder¹ | ✅ in-context | ⚠️ user-facing text | ⚠️ user-facing text |
 | SubagentStop hook | ✅ | ❌ not supported | ❌ not supported |
 | PreToolUse / BeforeTool hook | ✅ | ✅ | ✅ |
 | Superpowers integration | ✅ | ❌ | ❌ |
 | AskUserQuestion UI | ✅ | ❌ numbered list fallback | ❌ numbered list fallback |
 | Skills coverage | ✅ 21 of 21 in `skills/` | ⚠️ 11 of 21 in `.agents/skills/` | ⚠️ 11 of 21 in `.agents/skills/` |
+
+¹ The same `hooks/stop_hook.cjs` runs on all three platforms and emits a `systemMessage` text reminder (e.g. "Run /super-gsd:sg-execute to hand off to implementation"). On Claude Code, that text enters Claude's context window where Claude can soft-act on the suggestion (or the user types `sg-next` to auto-invoke the next sg-* skill). On Codex/Gemini, the same text renders to the user, who runs the next command manually. Gemini's `SessionEnd` / `BeforeTool` hook names correspond to Claude Code's `Stop` / `PreToolUse` semantically.
 
 ### Codex
 
@@ -295,7 +299,7 @@ If checks pass for your platform, `super-gsd` is installed correctly.
 
 - **Phase 1 — Plugin Scaffold (shipped):** installable plugin shell with manifest, marketplace metadata, README, and verify checklist. No commands or hooks yet.
 - **Phase 2 — Manual Handoff & Status (shipped):** introduces `/super-gsd:sg-execute` (package a finished GSD phase as a Superpowers-ready prompt) and `/super-gsd:sg-status` (inspect current stage, last handoff, next recommended command).
-- **Phase 3 — sg- Command Set & README (shipped):** delivers the full 14-command `sg-` interface and updated documentation so the entire GSD → Superpowers → sg-retro cycle has discoverable slash commands.
+- **Phase 3 — sg- Command Set & README (shipped):** delivers the full 14-command `sg-` interface and updated documentation so the entire GSD → Superpowers → sg-retro cycle has discoverable slash commands. *(Expanded to 21 commands over subsequent phases — see Commands table for the current set.)*
 - **Phase 4 — Auto-Advance Hooks (shipped):** registers `Stop` hooks so stage transitions are auto-detected — completed `plan-phase` surfaces a handoff prompt, completed `code-reviewer` suggests Hookify via `systemMessage`. *(Hookify dependency removed in Phase 13; reminder text rerouted to `sg-retro`.)*
 - **Phase 5 — Lessons Feedback Loop (shipped):** persists Hookify findings into `.planning/lessons/` and surfaces them automatically when the next GSD phase begins, closing the learning loop. *(Lessons writer migrated to the built-in `sg-retro` Skill in Phase 13; Hookify no longer required.)*
 - **Phase 6 — sg-health (shipped):** introduces `sg-health` self-diagnosis command — checks GSD/Superpowers installation, hook registration, and HANDOFF.md schema integrity with `[OK]`/`[WARN]`/`[FAIL]` output.
@@ -306,7 +310,7 @@ If checks pass for your platform, `super-gsd` is installed correctly.
 - **Phase 11 — Self-Contained Rule Runner (shipped):** registers a `PreToolUse` hook that runs `.claude/sg-rule.*.local.md` rules directly — Hookify is no longer required for guard execution.
 - **Phase 12 — Lessons Aggregation & Recurrence Guard (shipped):** groups lessons by phase and milestone, surfaces weighted top-N patterns in `sg-plan`/`sg-execute` to prevent repeated mistakes.
 - **Phase 13 — sg-learn Routing Switch + Hookify Removal (shipped):** reroutes `sg-learn` to the built-in `sg-retro` skill and removes all Hookify dependencies from commands and documentation.
-- **Phase 14 — Codex Entry Point + .agents/skills/ (v1.3 — shipped):** rewrites `AGENTS.md` with Codex vocabulary and creates 6 `.agents/skills/` skill files so Codex, Gemini CLI, and Antigravity CLI users can follow the workflow without Claude Code slash commands.
+- **Phase 14 — Codex Entry Point + .agents/skills/ (v1.3 — shipped):** rewrites `AGENTS.md` with Codex vocabulary and creates 6 `.agents/skills/` skill files so Codex, Gemini CLI, and Antigravity CLI users can follow the workflow without Claude Code slash commands. *(Expanded to 11 .agents/skills/ files over v1.4-v2.6; see Multi-Platform Support section for the current list.)*
 - **Phase 15 — Platform Hooks + Python Fix (v1.3 — shipped):** creates `.codex/hooks.json` and `.gemini/settings.json` hook configs, and fixes `hooks/*.py` path fallback so hooks run without `CLAUDE_PLUGIN_ROOT` in Codex/Gemini environments.
 - **Phase 16 — README Multi-Platform Section (v1.3 — shipped):** adds per-platform install guides and a feature delta table (works / limited / not available) to the README.
 - **Phase 26 — sg-next Auto-Advance (v2.2 — shipped):** `sg-next` reads HANDOFF.md and STATE.md to detect the current workflow stage, routes to the next sg-* command using the same table as `sg-status`, and invokes it immediately. Ambiguous states (`complete` or `init`) surface an `AskUserQuestion` instead of auto-invoking.

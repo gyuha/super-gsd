@@ -2,6 +2,16 @@
 
 All notable changes to `super-gsd` are documented in this file. Format follows [Keep a Changelog](https://keepachangelog.com/).
 
+## [0.0.55] - 2026-06-01
+
+### Added
+
+- **sg-use-tdd 토글 스킬 (v2.11 Phase 46, TDD-01~03)** — `/super-gsd:sg-use-tdd` 명령으로 TDD 모드를 켜고 끈다. `.planning/USE-TDD` 마커 파일의 존재 여부로 모드를 판정한다(presence-only). `on`/`off` 인자로 명시 지정하거나, 무인자로 현재 상태 표시 후 토글한다. 같은 상태로 여러 번 호출해도 무오류(idempotent). 마커 내용은 사람-가독 메타데이터(설명 + ISO-8601 타임스탬프). 워크플로우 단계 전이가 아닌 설정 토글이므로 HANDOFF 행을 추가하지 않는다(sg-health/sg-status 패턴). `$sg-use-tdd` Codex/Gemini 미러 동반(`.agents/skills/sg-use-tdd/SKILL.md`, `<constraints>` 블록). 마커 소비 로직(sg-execute 핸드오프 TDD 주입, sg-review 실패 루프)은 Phase 47 예정.
+
+### Changed
+
+- v2.11 "use-tdd Workflow Mode" 마일스톤 시작 — requirements/roadmap(3 phases) 정의, Phase 46 컨텍스트·플랜 작성.
+
 ## [0.0.54] - 2026-05-31
 
 ### Added

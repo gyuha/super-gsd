@@ -51,7 +51,23 @@ Self-contained. Reads .planning/STATE.md for phase resolution when no argument p
      exit 1
    fi
    ```
-   If `PHASE_NUM` is empty after running this block, print exactly: `Could not resolve current phase. Pass phase number explicitly: /super-gsd:sg-plan <phase>` and stop execution. Do not proceed to Step 2.
+   If `PHASE_NUM` is empty after running this block, print exactly: `Could not resolve current phase. Pass phase number explicitly: /super-gsd:sg-plan <phase>` and stop execution. Do not proceed to Step 1.5.
+
+1.5. **Ambiguity grilling (grill-me).** Before calling gsd-discuss-phase, resolve planning ambiguities in the main context — one question at a time — until you and the user reach shared understanding. There is no cap on the number of questions. This step runs in the main context (NOT a subagent), so the back-and-forth reaches the user directly.
+
+   Apply these rules:
+
+   1. **Codebase-first (GRILL-03).** Before asking the user anything, ask yourself whether the answer is discoverable in the codebase (file existence, current implementation, function signatures, config values, existing patterns). If so, resolve it yourself with Read/Bash/Grep — do NOT ask the user. Only ask the user about information that is NOT in the code: design intent, priorities, scope boundaries, UX preferences, trade-off calls.
+
+   2. **One question at a time + recommended answer (GRILL-01, GRILL-02).** When you do ask the user, ask exactly ONE question per turn, and always include your own recommended answer. Use AskUserQuestion: put the recommended answer as the first option with " (recommended)" appended to its label, or state the recommendation explicitly in the question text. Never batch multiple questions into one turn.
+
+   3. **Design-tree traversal (GRILL-04).** Do not use a fixed question list. After each answer, choose as your next question the item that is most uncertain and most determines downstream decisions. Walk the design tree, resolving dependencies one branch at a time — earlier answers shape later questions.
+
+   4. **Termination gate — user-confirmed only (GRILL-05).** You may NOT end grilling on your own judgment alone. When you believe all ambiguities are resolved, present a numbered consensus summary (decisions + constraints), then explicitly ask "Is this everything? Tell me if there is anything else to cover." Use AskUserQuestion with two options: "Confirm — proceed to gsd-discuss-phase" and "More questions — keep grilling". Only proceed to Step 2 after the user selects "Confirm".
+
+   5. **Language surfacing (D-07).** Surface questions, recommended answers, and the consensus summary in the user's input language. Keep machine tokens (command names like `/super-gsd:sg-plan`, file paths, enum values, phase slugs, version IDs) in English.
+
+   Store the confirmed consensus summary as `GRILL_SUMMARY` (plain text) for inline injection into the gsd-discuss-phase Agent prompt in Step 2.1.
 
 2. Print: `[sg-plan] Step 1/2: Gathering context via gsd-discuss-phase...`
 
@@ -73,6 +89,8 @@ Self-contained. Reads .planning/STATE.md for phase resolution when no argument p
      subagent_type="general-purpose"
    )
    ```
+   **Inject the grilled consensus (GRILL-06).** When constructing the Agent prompt above, append the following paragraph to the end of the `prompt` string (replace `{GRILL_SUMMARY}` with the actual consensus text from Step 1.5): `The user and I have already grilled the ambiguities. Treat the following as locked context — do NOT re-ask: {GRILL_SUMMARY}`. If `GRILL_SUMMARY` is empty (no ambiguities surfaced), skip the injection. This passes the grill agreement inline; do NOT modify gsd-discuss-phase itself (Non-invasive).
+
    Wait for the agent to complete before proceeding. If the agent exits with an error, print: `[sg-plan] gsd-discuss-phase failed. Aborting.` and stop execution. Do not proceed to Step 2.2.
 
 2.2. **Validate discuss-phase output location.** Confirm that discuss-phase wrote CONTEXT.md to the correct Phase directory. The `-new-phase` placeholder is not accepted as a "correct" location:
@@ -132,6 +150,11 @@ Self-contained. Reads .planning/STATE.md for phase resolution when no argument p
 <success_criteria>
 0. If files exist in .planning/lessons/, Step 0 displays the weighted top-N first and prints all lessons in the order "=== Weighted Top-N Patterns ===" → ranked list → "=== All Lessons (below) ===" → cat content → "=== End of Lessons ===". If no files exist, Step 0 is skipped silently.
 1. If PHASE_NUM is empty, print an explicit error message and exit.
+1.5a. Step 1.5 runs after phase resolution (Step 1) and before the gsd-discuss-phase Agent call (Step 2/2.1): Claude grills the user in the main context, one question at a time with no cap, each question carrying a recommended answer.
+1.5b. Codebase-answerable items are resolved by Claude via Read/Bash/Grep without asking the user; only non-code information (design intent, priorities, scope, UX preference) is asked.
+1.5c. Questions follow design-tree traversal (each answer determines the next question), not a fixed list.
+1.5d. Claude does not end grilling unilaterally: it presents a numbered consensus summary plus an explicit "is this everything?" prompt, and proceeds only after the user selects "Confirm".
+1.5e. The confirmed consensus (GRILL_SUMMARY) is injected inline into the gsd-discuss-phase Agent prompt as locked, do-not-re-ask context; gsd-discuss-phase itself is not modified.
 2. Step 2.1 creates the `${PHASE_PAD}-new-phase` placeholder when no Phase ${PHASE_PAD}-* directory exists. Skip if already present.
 3. gsd-discuss-phase is executed in a subagent via Agent(), and control returns after completion.
 4. Step 2.2 validates the location of `${PHASE_PAD}-CONTEXT.md`. If found in the `-new-phase` placeholder or a wrong directory, it is automatically moved to the real `${PHASE_PAD}-*` directory and the empty placeholder is deleted.

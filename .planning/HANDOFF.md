@@ -238,3 +238,4 @@
 | 2026-05-31T01:39:53Z | 44-documentation-sync | sg-next | ship | - |
 | 2026-05-31T01:40:07Z | 44-documentation-sync | ship | sg-next | - |
 | 2026-05-31T01:40:21Z | 44-documentation-sync | sg-next | complete | - |
+| 2026-05-31T12:46:26Z | 45-sg-plan-grilling | complete | gsd-plan | - | gyuha |

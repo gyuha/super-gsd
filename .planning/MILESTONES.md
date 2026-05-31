@@ -1,5 +1,33 @@
 # Milestones: super-gsd
 
+## v2.10 Plan-Phase Ambiguity Grilling (Shipped: 2026-05-31)
+
+**Phases completed:** 1 phase (45), 1 plan
+**Files:** 2 files changed, +67 / -1 lines (`skills/sg-plan/SKILL.md` +25, `.agents/skills/sg-plan/SKILL.md` +43)
+**Timeline:** 2026-05-31 (single day)
+**Commits:** 1eb8e2e (plan) → 3ed7221 (feat) → a39f18e (merge) → 207a569 (state)
+**Known deferred items at close:** 20 stale/missing quick_tasks (see STATE.md Deferred Items)
+
+### Delivered
+
+`sg-plan`에 grill-me 원칙 기반 선행 모호함 해소 단계를 추가했다. gsd-discuss-phase subagent 호출 전, sg-plan 메인 컨텍스트에서 Claude가 한 번에 하나씩 질문해 계획 입력의 불확실성을 제거하고, 합의 결과를 discuss Agent 프롬프트에 locked context로 전달한다 (Non-invasive).
+
+### Key Accomplishments
+
+1. **Grill 선행 단계 (GRILL-01~06)** — 코드베이스 우선 탐색 → 코드에 없는 정보만 한-번-하나씩 질문, 질문마다 권장 답변 동반, 설계 트리 순차 해소
+2. **사용자 확정 종료 게이트 (GRILL-05)** — Claude 단독 종료 금지, 합의 요약 + "이게 전부인가요?" 확인 후 사용자가 종료 결정
+3. **플랫폼별 표면화 분기** — `.claude`는 AskUserQuestion(Step 1.5), `.agents`는 프로즈 번호 선택 폴백(Step 1.2)
+4. **Non-invasive inline 주입** — grill 합의를 gsd-discuss-phase Agent 프롬프트에 "locked context — do NOT re-ask"로 전달, GSD 스킬 미수정
+5. **Pairwise sync** — 두 sg-plan SKILL.md를 동일 커밋(3ed7221)에서 변경
+
+### Archive
+
+- `.planning/milestones/v2.10-ROADMAP.md`
+- `.planning/milestones/v2.10-REQUIREMENTS.md`
+- `.planning/milestones/v2.10-LESSONS.md`
+
+---
+
 ## v2.8 Team Collaboration Support (Shipped: 2026-05-28)
 
 **Phases completed:** 3 phases, 6 plans, 2 tasks

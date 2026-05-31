@@ -496,7 +496,10 @@ Full archive: [.planning/milestones/v2.9-ROADMAP.md](.planning/milestones/v2.9-R
   4. Claude가 모든 모호함이 해소됐다고 판단하면 합의 요약을 제시하고, 사용자가 "확정" 또는 "추가 질문"으로 최종 결정한다 — Claude가 단독으로 종료하지 않는다 (GRILL-05)
   5. 합의 요약(결정·제약 목록)이 gsd-discuss-phase의 CONTEXT 입력으로 전달되어 후속 plan에 반영된다 (GRILL-06)
 
-**Plans**: TBD
+**Plans**: 1 plan
+Plans:
+
+- [ ] 45-01-PLAN.md — skills/sg-plan/SKILL.md + .agents/skills/sg-plan/SKILL.md에 grill 단계 삽입 (GRILL-01~06)
 
 ---
 
@@ -540,4 +543,4 @@ Full archive: [.planning/milestones/v2.9-ROADMAP.md](.planning/milestones/v2.9-R
 | 42. Smart Default Lens + Lens Consolidation | v2.9 | 2/2 | Complete | 2026-05-30 |
 | 43. One-shot Interaction + Display Polish | v2.9 | 2/2 | Complete | 2026-05-30 |
 | 44. Documentation Sync | v2.9 | 3/3 | Complete | 2026-05-31 |
-| 45. sg-plan Grilling Step | v2.10 | 0/TBD | Not started | - |
+| 45. sg-plan Grilling Step | v2.10 | 0/1 | Not started | - |

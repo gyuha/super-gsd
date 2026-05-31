@@ -2,6 +2,20 @@
 
 All notable changes to `super-gsd` are documented in this file. Format follows [Keep a Changelog](https://keepachangelog.com/).
 
+## [0.0.54] - 2026-05-31
+
+### Added
+
+- **sg-plan grill step (v2.10, GRILL-01~06)** — `sg-plan`이 `gsd-discuss-phase` 호출 전 메인 컨텍스트에서 grill-me 모호함 해소 인터뷰를 수행한다. 한 번에 하나씩 질문 + 권장 답변 동반, 코드베이스 우선 해소, 설계 트리 순차 분기, 사용자 확정 종료 게이트. 합의는 discuss agent 프롬프트에 locked context로 inline 주입(Non-invasive — `gsd-discuss-phase` 미수정). `.agents/skills/sg-plan` 미러(프로즈 번호 선택 폴백) 동반.
+
+### Fixed
+
+- **CLAUDE.md architecture drift** — skill 개수 18 → 21로 정정(11개 `.agents/` 미러 명시). HANDOFF 스키마 문서를 5 → 6컬럼으로 갱신(v2.8 `user` 컬럼 추가), `stop_hook.cjs`가 `to_stage`를 4번째 필드로 읽고 5/6컬럼 모두 견고함을 명시.
+
+### Changed
+
+- v2.10 "Plan-Phase Ambiguity Grilling" 마일스톤 종료·아카이브(ROADMAP/REQUIREMENTS/LESSONS → `.planning/milestones/v2.10-*`).
+
 ## [0.0.53] - 2026-05-31
 
 ### Fixed

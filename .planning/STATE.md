@@ -2,11 +2,11 @@
 gsd_state_version: 1.0
 milestone: v2.10
 milestone_name: Plan-Phase Ambiguity Grilling
-status: planning
-last_updated: "2026-05-31T12:27:32.160Z"
+status: roadmap_ready
+last_updated: "2026-05-31T00:00:00.000Z"
 last_activity: 2026-05-31
 progress:
-  total_phases: 0
+  total_phases: 1
   completed_phases: 0
   total_plans: 0
   completed_plans: 0
@@ -20,14 +20,14 @@ progress:
 See: .planning/PROJECT.md (updated 2026-05-26)
 
 **Core value:** GSD → Superpowers → sg-retro 단계 전환을 자동화하여 학습 루프가 끊기지 않도록 한다
-**Current focus:** v2.7 complete (phases 36-38 shipped) — ready to close milestone
+**Current focus:** v2.10 — sg-plan Grilling Step (Phase 45)
 
 ## Current Position
 
-Phase: Not started (defining requirements)
+Phase: 45 — sg-plan Grilling Step
 Plan: —
-Status: Defining requirements
-Last activity: 2026-05-31 — Milestone v2.10 started
+Status: Roadmap created, ready for planning
+Last activity: 2026-05-31 — v2.10 roadmap written (Phase 45 defined)
 
 ## Performance Metrics
 
@@ -44,11 +44,12 @@ Last activity: 2026-05-31 — Milestone v2.10 started
 Decisions are logged in PROJECT.md Key Decisions table.
 Recent decisions affecting current work:
 
-- v2.7 phase shape: 3 phases (coarse granularity) — Phase 36 (skills/ 영문화 + language directive), Phase 37 (.agents/skills/ 영문화 + language directive), Phase 38 (hooks/ 영문화)
-- Phase 36+37 쌍 분리: pairwise convention — skills/ 변경과 .agents/ 변경을 동일 milestone 내 인접 phase로 완료
-- I18N-04 분할: 19개(Phase 36) + 8개(Phase 37) = 27개 전체를 milestone 내에서 완전히 커버
-- text-only rule: bash 코드 블록 내 명령어·flag·변수명은 변경하지 않음
-- Phase 36이 I18N-04의 partial 커버, Phase 37 완료 시 I18N-04 전체 달성
+- v2.10 phase shape: 1 phase (coarse granularity) — Phase 45 covers all 6 GRILL requirements
+- Non-invasive constraint: gsd-discuss-phase must NOT be modified; grilling lives only inside sg-plan's main context
+- Pairwise file rule: `skills/sg-plan/SKILL.md` AND `.agents/skills/sg-plan/SKILL.md` must both be updated
+- Grilling output feeds gsd-discuss-phase CONTEXT input — no separate file, passed inline
+- User-language surfacing: questions use user's input language; machine tokens (command names, paths, enums) stay English
+- Claude cannot self-terminate grilling — user confirmation gate required (GRILL-05)
 
 ### Pending Todos
 
@@ -93,10 +94,10 @@ Items acknowledged and deferred at v2.2 milestone close on 2026-05-24:
 
 ## Session Continuity
 
-Last session: 2026-05-30T15:40:42.184Z
-Stopped at: Phase 44 context gathered
-Resume file: .planning/phases/44-documentation-sync/44-CONTEXT.md
+Last session: 2026-05-31
+Stopped at: v2.10 roadmap creation (Phase 45 defined)
+Resume file: .planning/ROADMAP.md
 
 ## Operator Next Steps
 
-- Start the next milestone with /gsd-new-milestone
+- Run `/super-gsd:sg-plan 45` to plan Phase 45

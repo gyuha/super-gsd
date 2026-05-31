@@ -18,6 +18,7 @@
 - [x] **v2.7 Skills & Hooks Internationalization** (2026-05-28) — skills/ + .agents/skills/ + hooks/ 한글→영문 전환 + 27개 SKILL.md 언어 자동 감지 지침 추가 → [Archive](.planning/milestones/v2.7-ROADMAP.md)
 - [x] **v2.8 Team Collaboration Support** (2026-05-29) — HANDOFF user 추적 + sg-status --team + sg-execute 브랜치 워크플로우 + TEAM.md → [Archive](.planning/milestones/v2.8-ROADMAP.md)
 - [x] **v2.9 Retro UX Simplification** (2026-05-31) — sg-retro/sg-learn lens 선택 마찰 제거 + smart default(dspm+ssc) + lens 6→3 통합 + --pick flag + 🔴 P1 emphasis + lens intent line + 문서 동기화 → [Archive](.planning/milestones/v2.9-ROADMAP.md)
+- [ ] **v2.10 Plan-Phase Ambiguity Grilling** — sg-plan이 discuss subagent 호출 전 grill-me 원칙으로 모호함을 해소하는 인터뷰 단계 추가
 
 ## Phases
 
@@ -82,6 +83,10 @@
 - [x] Phase 38: hooks/ 영문화 — completed 2026-05-28 *(ad-hoc: 커밋 391326c 직접 수행, 별도 plan 없음)*
 
 </details>
+
+### v2.10 Plan-Phase Ambiguity Grilling
+
+- [ ] **Phase 45: sg-plan Grilling Step** — discuss subagent 호출 전 메인 컨텍스트에서 grill-me 원칙으로 모호함을 해소하는 인터뷰 단계 구현 (GRILL-01~06)
 
 ## Phase Details
 
@@ -473,6 +478,27 @@ Full archive: [.planning/milestones/v2.9-ROADMAP.md](.planning/milestones/v2.9-R
 
 </details>
 
+---
+
+## v2.10 Plan-Phase Ambiguity Grilling
+
+### Phase 45: sg-plan Grilling Step
+
+**Goal**: sg-plan을 실행한 사용자가 gsd-discuss-phase subagent 호출 전에 모호함이 완전히 해소된 상태에서 계획을 시작한다
+**Depends on**: Phase 44 (v2.10 신규 시작)
+**Requirements**: GRILL-01, GRILL-02, GRILL-03, GRILL-04, GRILL-05, GRILL-06
+**Scope note**: gsd-discuss-phase는 수정하지 않는다 (non-invasive 제약). grilling은 sg-plan 메인 컨텍스트의 선행 단계로만 구현한다. 쌍 파일 규칙: `skills/sg-plan/SKILL.md`와 `.agents/skills/sg-plan/SKILL.md` 모두 변경한다.
+**Success Criteria** (what must be TRUE):
+
+  1. `/super-gsd:sg-plan` 실행 시 gsd-discuss-phase 호출 전에 Claude가 사용자 언어로 질문을 한 번에 하나씩 제시하며, 각 질문에 권장 답변이 함께 표시된다 (GRILL-01, GRILL-02)
+  2. 코드베이스 탐색으로 답할 수 있는 질문(파일 존재 여부, 현재 구현 방식 등)은 사용자에게 묻지 않고 Claude가 직접 Read/Bash로 탐색해 해소한다 (GRILL-03)
+  3. 이전 답변이 다음 질문의 분기를 결정하며, 설계 트리 의존성이 순서대로 해소된다 (GRILL-04)
+  4. Claude가 모든 모호함이 해소됐다고 판단하면 합의 요약을 제시하고, 사용자가 "확정" 또는 "추가 질문"으로 최종 결정한다 — Claude가 단독으로 종료하지 않는다 (GRILL-05)
+  5. 합의 요약(결정·제약 목록)이 gsd-discuss-phase의 CONTEXT 입력으로 전달되어 후속 plan에 반영된다 (GRILL-06)
+
+**Plans**: TBD
+
+---
 
 ## Progress
 
@@ -514,3 +540,4 @@ Full archive: [.planning/milestones/v2.9-ROADMAP.md](.planning/milestones/v2.9-R
 | 42. Smart Default Lens + Lens Consolidation | v2.9 | 2/2 | Complete | 2026-05-30 |
 | 43. One-shot Interaction + Display Polish | v2.9 | 2/2 | Complete | 2026-05-30 |
 | 44. Documentation Sync | v2.9 | 3/3 | Complete | 2026-05-31 |
+| 45. sg-plan Grilling Step | v2.10 | 0/TBD | Not started | - |

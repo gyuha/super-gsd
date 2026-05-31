@@ -2,6 +2,12 @@
 
 All notable changes to `super-gsd` are documented in this file. Format follows [Keep a Changelog](https://keepachangelog.com/).
 
+## [0.0.52] - 2026-05-31
+
+### Changed
+
+- Cache-refresh bump — 0.0.51 이후 functional 변경 없음. 기존 installation이 marketplace re-fetch로 0.0.51의 stop_hook + loadConfig fix를 manual `/super-gsd:sg-update` 없이도 자동 pickup하도록 plugin version 신호 갱신.
+
 ## [0.0.51] - 2026-05-31
 
 ### Fixed

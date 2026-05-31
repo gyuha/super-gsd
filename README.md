@@ -14,11 +14,15 @@ All twenty-one slash commands covering the full GSD → Superpowers → sg-retro
 ## Workflow
 
 ```
+[ manual entry ]                       [ sg-next auto-chains from sg-plan onward ]
+
 sg-new/sg-start → sg-explore → sg-plan → sg-execute → sg-review → sg-learn → sg-ship → sg-complete
                                   ↑                                    |                      ↓
                                   └──── lessons auto-injected ←────────┘               → sg-new
-                                        (.planning/lessons/ + sg-lessons)          (next milestone)
+                                  (next sg-plan reads .planning/lessons/)        (next milestone)
 ```
+
+`sg-next` reads HANDOFF.md/STATE.md and auto-invokes the next command in the chain (`gsd-plan → sg-execute`, `parallel/execute → sg-review`, `review → sg-learn`, `sg-retro → sg-ship`, `ship → sg-plan {next phase}` or `sg-complete`, `complete → sg-new` via AskUserQuestion). The entry-point commands (`sg-start`, `sg-explore`, and the initial `sg-plan`) are invoked manually before the auto-chain begins.
 
 `sg-status` can be run at any point to check current position. `sg-quick` handles one-off tasks outside the main flow.
 
@@ -31,7 +35,7 @@ Quick reference for all `/super-gsd:sg-*` slash commands.
 | `/super-gsd:sg-start` | Detect an existing session via STATE.md and offer Resume / Start new milestone / Cancel — falls back to `gsd-new-project` when no session exists. Also ensures `.planning/` is in `.gitignore` (idempotent) | At project start, or to resume an existing session |
 | `/super-gsd:sg-explore` | Map and analyse the codebase via `gsd-map-codebase`. Also ensures `.planning/` is in `.gitignore` (idempotent) | After `sg-start`, before planning |
 | `/super-gsd:sg-plan` | Gather phase context then create an execution plan (2-step chain: `gsd-discuss-phase` → `gsd-plan-phase`) | After `sg-explore`, when ready to plan |
-| `/super-gsd:sg-ui-plan` | UI 설계 전용 brainstorming — `superpowers:brainstorming`을 직접 실행한다 | sg-plan에서 Visual Companion 없이 진행했지만 UI 설계가 필요할 때 |
+| `/super-gsd:sg-ui-plan` | UI design-specific brainstorming — directly invokes `superpowers:brainstorming` | When `sg-plan` ran without Visual Companion but UI design is now needed |
 | `/super-gsd:sg-execute` | Package the current phase plan and hand off to Superpowers (`superpowers:executing-plans`) | After `sg-plan` is complete |
 | `/super-gsd:sg-review` | Request a code review via `superpowers:requesting-code-review` | After implementation is complete |
 | `/super-gsd:sg-learn` | Run a structured retrospective via `sg-retro` — smart default runs two of the three lenses (ssc, dspm) without prompting; pass `--pick` for interactive lens selection (Claude Code only — on Codex/Gemini CLI, `--pick` exits with an error; use `$sg-retro <phase> ssc dspm analyze` to pick positionally) | After the review is done |
@@ -292,13 +296,13 @@ If checks pass for your platform, `super-gsd` is installed correctly.
 - **Phase 1 — Plugin Scaffold (shipped):** installable plugin shell with manifest, marketplace metadata, README, and verify checklist. No commands or hooks yet.
 - **Phase 2 — Manual Handoff & Status (shipped):** introduces `/super-gsd:sg-execute` (package a finished GSD phase as a Superpowers-ready prompt) and `/super-gsd:sg-status` (inspect current stage, last handoff, next recommended command).
 - **Phase 3 — sg- Command Set & README (shipped):** delivers the full 14-command `sg-` interface and updated documentation so the entire GSD → Superpowers → sg-retro cycle has discoverable slash commands.
-- **Phase 4 — Auto-Advance Hooks (shipped):** registers `Stop` hooks so stage transitions are auto-detected — completed `plan-phase` surfaces a handoff prompt, completed `code-reviewer` suggests Hookify via `systemMessage`.
-- **Phase 5 — Lessons Feedback Loop (shipped):** persists Hookify findings into `.planning/lessons/` and surfaces them automatically when the next GSD phase begins, closing the learning loop.
+- **Phase 4 — Auto-Advance Hooks (shipped):** registers `Stop` hooks so stage transitions are auto-detected — completed `plan-phase` surfaces a handoff prompt, completed `code-reviewer` suggests Hookify via `systemMessage`. *(Hookify dependency removed in Phase 13; reminder text rerouted to `sg-retro`.)*
+- **Phase 5 — Lessons Feedback Loop (shipped):** persists Hookify findings into `.planning/lessons/` and surfaces them automatically when the next GSD phase begins, closing the learning loop. *(Lessons writer migrated to the built-in `sg-retro` Skill in Phase 13; Hookify no longer required.)*
 - **Phase 6 — sg-health (shipped):** introduces `sg-health` self-diagnosis command — checks GSD/Superpowers installation, hook registration, and HANDOFF.md schema integrity with `[OK]`/`[WARN]`/`[FAIL]` output.
 - **Phase 7 — Status Accuracy (shipped):** fixes `sg-status` STATE.md Phase line parsing and storage/display enum separation so the current workflow stage is always correctly shown.
 - **Phase 8 — Session Restore (shipped):** `sg-start` detects an existing session and presents Resume / Start new milestone / Cancel so users can safely return after a break.
 - **Phase 9 — sg-retro Skill Scaffold (shipped):** introduces the built-in `sg-retro` skill with 3 retrospection lenses; results are saved to `.planning/lessons/` without requiring Hookify.
-- **Phase 10 — Conversation Analyzer + Lens Expansion (shipped):** adds a self-contained transcript analyzer that extracts frustration/correction/repeated/validated-success patterns, and expands to 6 total lenses (Sailboat, Five Whys, and more).
+- **Phase 10 — Conversation Analyzer + Lens Expansion (shipped):** adds a self-contained transcript analyzer that extracts frustration/correction/repeated/validated-success patterns, and expands to 6 total lenses (Sailboat, Five Whys, and more). *(Consolidated to 3 lenses — `ssc`/`dspm`/`analyze` — in Phase 42 / v2.9; `4ls`/`sail`/`5why` removed.)*
 - **Phase 11 — Self-Contained Rule Runner (shipped):** registers a `PreToolUse` hook that runs `.claude/sg-rule.*.local.md` rules directly — Hookify is no longer required for guard execution.
 - **Phase 12 — Lessons Aggregation & Recurrence Guard (shipped):** groups lessons by phase and milestone, surfaces weighted top-N patterns in `sg-plan`/`sg-execute` to prevent repeated mistakes.
 - **Phase 13 — sg-learn Routing Switch + Hookify Removal (shipped):** reroutes `sg-learn` to the built-in `sg-retro` skill and removes all Hookify dependencies from commands and documentation.
@@ -311,7 +315,8 @@ If checks pass for your platform, `super-gsd` is installed correctly.
 - **Phase 32 — Superpowers-Native File Parsing (v2.5 — shipped):** replaces bash pipeline file-parsing in skills with the Superpowers Read-tool pattern so SKILL.md files work correctly across all platforms without relying on shell tools.
 - **Phases 33–35 — Codex/Gemini Install UX (v2.6 — shipped):** adds `npx @gyuha/super-gsd install` one-command installer for Codex/Gemini, introduces the `$sg-setup` in-session skill, and updates README/AGENTS.md with verified install instructions and platform-specific verification steps.
 - **Phases 36–38 — Skills & Hooks Internationalization (v2.7 — shipped):** converts all SKILL.md files in `skills/` and `.agents/skills/` from hard-coded Korean to English source text with auto-detect language directives, and ports Korean inline comments in `hooks/` to English.
-- **Phase 39 — Team Collaboration Support (v2.8 — in progress):** adds a `User` column to HANDOFF.md rows so each handoff is attributed to a team member, and introduces `sg-status --team` to display a per-user current-position table from HANDOFF.md.
+- **Phases 39–41 — Team Collaboration Support (v2.8 — shipped):** adds a `User` column to HANDOFF.md rows so each handoff is attributed to a team member, introduces `sg-status --team` per-user current-position table, detects `main`/`master` in `sg-execute` and offers to create a `phase/{N}-{slug}` branch via `AskUserQuestion`, prints `gh pr create` hint after `sg-complete N`, and ships `.planning/TEAM.md` onboarding guide plus README/README.ko.md Team Workflow section.
+- **Phases 42–44 — Retro UX Simplification (v2.9 — shipped):** smart default lens auto-runs `dspm + ssc` without prompting, lens set consolidated 6 → 3 (`ssc`/`dspm`/`analyze`; `4ls`/`sail`/`5why` rejected via stderr + exit 1), `--pick` flag introduces token-position-free interactive multiSelect (Claude Code only — Codex/Gemini get graceful exit + positional alternative), Action Items P1 rows get `🔴` emoji emphasis, `_Intent: ..._` italic line documents each lens's purpose, README/README.ko.md/`.planning/TEAM.md`/sg-retro frontmatter all synced. Bundled quick task closes Phase 42/43 retro P1 via `sg-review` auto-commit gate when working tree contains uncommitted phase implementation.
 
 ## License
 

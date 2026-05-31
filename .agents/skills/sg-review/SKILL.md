@@ -50,11 +50,49 @@ Self-contained. Reads git history to derive BASE_SHA and HEAD_SHA, reads changed
        || git rev-parse HEAD)
    fi
    if [ "$BASE_SHA" = "$HEAD_SHA" ]; then
+     # Phase 42/43 retro P1 #2 closure: detect uncommitted phase implementation.
+     # AskUserQuestion is not available in this environment, so emit a concrete
+     # suggested command and exit instead of auto-committing.
+     WORKING_PORCELAIN=$(git status --porcelain 2>/dev/null)
+
+     if [ -z "$WORKING_PORCELAIN" ]; then
+       echo "Error: BASE_SHA == HEAD_SHA and working tree is clean — no commits to review."
+       echo "Options:"
+       echo "  1. Pass an explicit base SHA: sg-review <base-sha>"
+       echo "  2. Pass a range: sg-review <base-sha>..<head-sha>"
+       echo "  3. Run from a feature branch after committing your changes."
+       exit 1
+     fi
+
+     CURRENT_PHASE_SLUG=$(grep -E '^\| [0-9]{4}-' .planning/HANDOFF.md 2>/dev/null \
+       | tail -1 | awk -F'|' '{gsub(/^[ \t]+|[ \t]+$/,"",$3); print $3}')
+     PHASE_NUM_AUTO=$(printf '%s' "$CURRENT_PHASE_SLUG" | sed -E 's/^0*([0-9]+)-.*/\1/')
+     PHASE_PAD_AUTO=$(printf "%02d" "$PHASE_NUM_AUTO" 2>/dev/null || echo "$PHASE_NUM_AUTO")
+
+     CANDIDATES=$(printf '%s\n' "$WORKING_PORCELAIN" \
+       | awk '{sub(/^[^ ]+ +/, ""); print}' \
+       | grep -E "^(skills/|\.agents/skills/|\.planning/phases/${PHASE_PAD_AUTO}-[^/]*/(.*SUMMARY|parallel_groups))" \
+       || true)
+
+     PHASE_SUBJECT_SLUG=$(printf '%s' "$CURRENT_PHASE_SLUG" | sed -E 's/^[0-9]+-//' | tr '-' ' ')
+
      echo "Error: BASE_SHA == HEAD_SHA — no commits to review."
-     echo "Options:"
-     echo "  1. Pass an explicit base SHA: sg-review <base-sha>"
-     echo "  2. Pass a range: sg-review <base-sha>..<head-sha>"
-     echo "  3. Run from a feature branch after committing your changes."
+     if [ -n "$CANDIDATES" ]; then
+       echo ""
+       echo "Working tree contains likely Phase ${PHASE_NUM_AUTO} implementation:"
+       printf '%s\n' "$CANDIDATES" | sed 's/^/  /'
+       echo ""
+       echo "Commit these files first, then re-run sg-review. Suggested commands:"
+       echo ""
+       echo "  git add \\"
+       printf '%s\n' "$CANDIDATES" | sed 's|^|    |;s|$| \\|'
+       echo "  git commit -m \"feat(${PHASE_PAD_AUTO}): ${PHASE_SUBJECT_SLUG}\""
+     else
+       echo "Options:"
+       echo "  1. Pass an explicit base SHA: sg-review <base-sha>"
+       echo "  2. Pass a range: sg-review <base-sha>..<head-sha>"
+       echo "  3. Commit your working tree changes (no phase-implementation candidates detected)."
+     fi
      exit 1
    fi
    echo "Reviewing: $BASE_SHA..$HEAD_SHA"

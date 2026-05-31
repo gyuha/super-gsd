@@ -27,13 +27,100 @@ Self-contained. Reads git history to derive BASE_SHA and HEAD_SHA, then delegate
      || git merge-base HEAD master 2>/dev/null \
      || git rev-parse HEAD~1 2>/dev/null \
      || git rev-parse HEAD)
+   echo "Initial range: $BASE_SHA..$HEAD_SHA"
+   ```
+
+1.5. **Auto-commit gate when BASE==HEAD + dirty working tree (Phase 42/43 retro P1 #2 closure).**
+
+   When `BASE_SHA == HEAD_SHA` and the working tree has uncommitted phase implementation, offer to auto-commit before exiting with the original error. This closes the recurring manual-commit step that surfaced in Phase 42 and Phase 43 after sg-parallel-execute (which intentionally does not commit per D-10/D-16 staging).
+
+   ```bash
    if [ "$BASE_SHA" = "$HEAD_SHA" ]; then
-     echo "Error: BASE_SHA == HEAD_SHA — no commits to review."
-     echo "Options:"
-     echo "  1. Commit your changes first, then run /super-gsd:sg-review."
-     echo "  2. Run from a feature branch that has diverged from main."
-     exit 1
+     WORKING_PORCELAIN=$(git status --porcelain 2>/dev/null)
+
+     if [ -z "$WORKING_PORCELAIN" ]; then
+       echo "Error: BASE_SHA == HEAD_SHA and working tree is clean — no commits to review."
+       echo "Run from a feature branch that has diverged from main, or make new commits."
+       exit 1
+     fi
+
+     # Identify current phase slug from HANDOFF.md last data row (Phase column)
+     CURRENT_PHASE_SLUG=$(grep -E '^\| [0-9]{4}-' .planning/HANDOFF.md 2>/dev/null \
+       | tail -1 | awk -F'|' '{gsub(/^[ \t]+|[ \t]+$/,"",$3); print $3}')
+     PHASE_NUM_AUTO=$(printf '%s' "$CURRENT_PHASE_SLUG" | sed -E 's/^0*([0-9]+)-.*/\1/')
+     PHASE_PAD_AUTO=$(printf "%02d" "$PHASE_NUM_AUTO" 2>/dev/null || echo "$PHASE_NUM_AUTO")
+
+     # Candidate files: skills/, .agents/skills/, current phase SUMMARY + parallel_groups
+     CANDIDATES=$(printf '%s\n' "$WORKING_PORCELAIN" \
+       | awk '{sub(/^[^ ]+ +/, ""); print}' \
+       | grep -E "^(skills/|\.agents/skills/|\.planning/phases/${PHASE_PAD_AUTO}-[^/]*/(.*SUMMARY|parallel_groups))" \
+       || true)
+
+     if [ -z "$CANDIDATES" ]; then
+       echo "Error: BASE_SHA == HEAD_SHA — working tree has changes but none look like phase implementation."
+       echo ""
+       echo "Working tree state:"
+       printf '%s\n' "$WORKING_PORCELAIN" | sed 's/^/  /'
+       echo ""
+       echo "Commit your changes manually before sg-review, or pass an explicit base SHA."
+       exit 1
+     fi
+
+     echo ""
+     echo "BASE_SHA == HEAD_SHA but working tree contains likely Phase ${PHASE_NUM_AUTO} implementation:"
+     printf '%s\n' "$CANDIDATES" | sed 's/^/  /'
+     echo ""
    fi
+   ```
+
+   If `CANDIDATES` is non-empty, invoke AskUserQuestion to confirm auto-commit:
+
+   ```
+   AskUserQuestion(
+     questions: [{
+       question: "Auto-commit these files with derived message before review? (Phase 42/43 retro P1 #2 closure)",
+       header: "auto-commit",
+       multiSelect: false,
+       options: [
+         { label: "Auto-commit and proceed (Recommended)", description: "Stage candidates and commit with derived feat(NN) message, then recompute BASE_SHA=HEAD~1 and proceed with review." },
+         { label: "Cancel", description: "Exit with original BASE==HEAD error. Commit manually then re-run sg-review." }
+       ]
+     }]
+   )
+   ```
+
+   If "Auto-commit and proceed" selected:
+
+   ```bash
+   # Stage candidates (one per line, preserve spaces in path)
+   while IFS= read -r f; do
+     [ -z "$f" ] && continue
+     git add "$f"
+   done <<EOF
+   $CANDIDATES
+   EOF
+
+   # Derive commit subject from phase slug: "43-pick-display-polish" → "43" + "pick display polish"
+   PHASE_SUBJECT_SLUG=$(printf '%s' "$CURRENT_PHASE_SLUG" | sed -E 's/^[0-9]+-//' | tr '-' ' ')
+   COMMIT_MSG=$(printf 'feat(%s): %s\n\nAuto-committed by sg-review (Phase 42/43 retro P1 #2 closure).\nWorking tree contained uncommitted Phase %s implementation; sg-parallel-execute completed without commit per D-10/D-16 staging.\n\nCo-Authored-By: Claude Opus 4.7 (1M context) <noreply@anthropic.com>\n' "$PHASE_PAD_AUTO" "$PHASE_SUBJECT_SLUG" "$PHASE_NUM_AUTO")
+   git commit -m "$COMMIT_MSG"
+
+   # Recompute SHAs after auto-commit
+   HEAD_SHA=$(git rev-parse HEAD)
+   BASE_SHA=$(git rev-parse HEAD~1)
+   echo "Auto-committed. New range: $BASE_SHA..$HEAD_SHA"
+   ```
+
+   If "Cancel" selected:
+
+   ```bash
+   echo "Cancelled. Commit your changes manually then re-run /super-gsd:sg-review."
+   exit 1
+   ```
+
+   After this gate, control flow resumes with `BASE_SHA != HEAD_SHA` guaranteed.
+
+   ```bash
    echo "Reviewing: $BASE_SHA..$HEAD_SHA"
    ```
 

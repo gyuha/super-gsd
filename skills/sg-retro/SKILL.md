@@ -1,6 +1,6 @@
 ---
 name: sg-retro
-description: Use this when a phase is complete and a structured retrospective is needed — collects phase artifacts and git context, then facilitates one or more of three lenses (ssc, dspm, analyze) and appends results to .planning/lessons/. Smart default (dspm+ssc) runs when no lens argument is provided.
+description: Use this when a phase is complete and a structured retrospective is needed — collects phase artifacts and git context, then facilitates one or more of three lenses (ssc, dspm, analyze) and appends results to .planning/lessons/. Smart default (dspm+ssc) runs when no lens argument is provided; pass --pick for interactive lens selection.
 ---
 
 <language>

@@ -34,7 +34,7 @@ sg-new/sg-start → sg-explore → sg-plan → sg-execute → sg-review → sg-l
 | `/super-gsd:sg-ui-plan` | UI 설계 전용 brainstorming — `superpowers:brainstorming`을 직접 실행 | `sg-plan`에서 Visual Companion 없이 진행했지만 UI 설계가 필요할 때 |
 | `/super-gsd:sg-execute` | 현재 단계 계획을 패키징하여 Superpowers에 인계 (`superpowers:executing-plans`) | `sg-plan` 완료 후 |
 | `/super-gsd:sg-review` | `superpowers:requesting-code-review`를 통해 코드 리뷰 요청 | 구현 완료 후 |
-| `/super-gsd:sg-learn` | `sg-retro`를 통한 회고 실행, 패턴 추출 및 훅 생성 | 리뷰 완료 후 |
+| `/super-gsd:sg-learn` | `sg-retro`를 통한 구조화된 회고 실행 — 스마트 기본값으로 세 가지 렌즈 중 두 개(ssc, dspm)를 질문 없이 실행; lens를 직접 고르려면 `--pick` 사용 | 리뷰 완료 후 |
 | `/super-gsd:sg-lessons` | `.planning/lessons/`에서 이전 교훈 목록 표시 (옵션: 단계 필터) | `sg-plan` 전 학습 내용 검토 시 |
 | `/super-gsd:sg-ship` | `gsd-ship`을 통해 현재 단계 병합 및 배포 | 학습 캡처 후 |
 | `/super-gsd:sg-complete` | `<N>`은 단계 완료(`sg-phase` 경유), `<vX.Y>`는 해당 마일스톤 종료, 비우면 현재 마일스톤 종료(`gsd-complete-milestone` 경유) | 모든 단계가 배포된 후, 또는 단일 단계를 완료 처리할 때 |
@@ -47,7 +47,7 @@ sg-new/sg-start → sg-explore → sg-plan → sg-execute → sg-review → sg-l
 | `/super-gsd:sg-cleanup` | `gsd-cleanup`을 통해 완료된 마일스톤의 phase 디렉토리를 아카이브하고 요약 테이블 출력 | 마일스톤 완료 후 `.planning/phases/` 정리가 필요할 때 |
 | `/super-gsd:sg-parallel-execute` | 독립 플랜 그룹을 병렬 실행 — phase 번호 또는 파일 경로 전달 가능; `parallel_groups.json`이 없으면 PLAN.md `wave:` 필드로 자동 생성; wave 단위로 순차 처리 | 독립 플랜 그룹이 여러 개일 때 `sg-execute` 대신 사용 |
 | `/super-gsd:sg-phase` | 기존 phase를 편집·제거·완료 처리 — `edit`/`remove`는 `gsd-phase`에 위임, `complete`는 ROADMAP Progress 행·Phases 체크박스·STATE.md를 정합화 | phase 범위 수정, 계획된 phase 취소, 완료 처리 시 |
-| `/super-gsd:sg-retro` | 6가지 렌즈(Sailboat, Five Whys 등)로 독립 회고 실행 후 결과를 `.planning/lessons/`에 저장 | 작업 세션 후 교훈을 캡처할 때; `sg-learn`이 자동으로 호출하기도 함 |
+| `/super-gsd:sg-retro` | 세 가지 렌즈(ssc, dspm, analyze)로 독립 회고 실행 — lens 인자를 생략하면 스마트 기본값으로 dspm+ssc 자동 적용; lens를 직접 고르려면 `--pick` 사용. 결과는 `.planning/lessons/`에 저장 | 작업 세션 후 교훈을 캡처할 때; `sg-learn`이 자동으로 호출하기도 함 |
 | `/super-gsd:sg-setup` | 현재 프로젝트에 super-gsd hook/skill 파일을 복사 — Claude Code in-session 설치 도구 | 기존 프로젝트에 super-gsd를 수동으로 설치할 때 |
 
 전체 명령 레퍼런스(인수 및 상세 설명 포함)는 [docs/COMMANDS.md](./docs/COMMANDS.md)를 참고한다.

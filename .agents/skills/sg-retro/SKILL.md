@@ -1,6 +1,6 @@
 ---
 name: sg-retro
-description: Run a structured retrospective on a GSD phase with one of three lenses (ssc, dspm, analyze) — select multiple lenses in one call or omit lens argument for smart default (dspm+ssc) — and append results to .planning/lessons/{NN}-{YYYY-MM-DD}.md. AskUserQuestion-free version for Codex/Gemini CLI/Antigravity CLI.
+description: Run a structured retrospective on a GSD phase with one of three lenses (ssc, dspm, analyze) — select multiple lenses in one call or omit lens argument for smart default (dspm+ssc) — and append results to .planning/lessons/{NN}-{YYYY-MM-DD}.md. `--pick` flag is rejected with a graceful exit explaining positional alternative (no AskUserQuestion in this environment). AskUserQuestion-free version for Codex/Gemini CLI/Antigravity CLI.
 argument-hint: "[phase] [lens...|--pick] - e.g. '14 ssc' or '14 --pick'. lens: ssc|dspm|analyze. Omit lens for smart default (dspm+ssc). --pick is not supported in this environment (AskUserQuestion required) — use positional args instead."
 ---
 

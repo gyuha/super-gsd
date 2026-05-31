@@ -84,6 +84,33 @@ HANDOFF.md is append-only. Never edit or delete existing rows.
 
 ---
 
+## Retrospective workflow
+
+After implementation review, capture lessons before shipping so the next phase starts with current context.
+
+**When to run sg-learn:**
+
+Run `/super-gsd:sg-learn` immediately after `sg-review` completes and before `sg-ship`. Skipping this step is the most common cause of lessons drift between phases.
+
+**What sg-learn does:**
+
+`sg-learn` is a thin pass-through to the `sg-retro` skill. Without arguments, sg-retro runs a smart default of two lenses (`dspm` + `ssc`) — no prompt, no AskUserQuestion. Results are appended to `.planning/lessons/{NN}-{YYYY-MM-DD}.md`.
+
+**When to use `--pick`:**
+
+Pass `--pick` when you need a non-default lens combination — for example to run only `analyze` (conversation transcript scan), only `ssc` (behavior changes), or all three lenses together. `sg-learn --pick` or `sg-retro {phase} --pick` opens a single AskUserQuestion multiSelect with the three available lenses (`ssc`, `dspm`, `analyze`). Combining `--pick` with a positional lens argument is rejected with a graceful error — pick one form.
+
+**Where results live:**
+
+| Artifact | Path | Mode |
+|----------|------|------|
+| Lessons file | `.planning/lessons/{NN}-{YYYY-MM-DD}.md` | append-only |
+| Handoff row | `.planning/HANDOFF.md` (one row per sg-learn invocation) | append-only |
+
+The lessons file groups output by lens (`## Lens: ...` headers). Action Items rated P1 are emphasized with a `🔴 P1` prefix in the priority cell so the next phase's `sg-plan` surfaces them first.
+
+---
+
 ## Merge order
 
 When `sg-complete [N]` (or `sg-phase complete N`) finishes a phase, it outputs PR guidance. Follow this order to merge cleanly:

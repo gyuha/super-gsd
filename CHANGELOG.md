@@ -2,6 +2,19 @@
 
 All notable changes to `super-gsd` are documented in this file. Format follows [Keep a Changelog](https://keepachangelog.com/).
 
+## [0.0.51] - 2026-05-31
+
+### Fixed
+
+- **stop_hook.cjs 정확도 — HANDOFF.md 기반 stage detection 도입** (이전: transcript 패턴 매칭의 stale signal로 stage 진행 후에도 "Run sg-execute" 같은 시대착오 메시지가 emit됨). 새 로직: `.planning/HANDOFF.md`의 마지막 데이터 행 To 컬럼(sg-next 메타 행은 스킵)을 authoritative source로 사용. HANDOFF가 없는 신규 프로젝트는 기존 transcript_matcher로 fallback. complete/ship/init stage는 메시지 emit 안 함 (사용자 선택 대기). `_projectRoot(inputData)` helper로 `inputData.cwd` 우선 → `process.cwd()` fallback으로 프로젝트 루트 정확히 해석.
+- **`loadConfig()` 잘못된 경로 수정** — 이전: `PLUGIN_ROOT/.planning/config.json` (Claude Code에서 플러그인 캐시 디렉토리를 가리켜 사용자 프로젝트의 `auto_advance: false` 설정이 무시됨). 새: `_projectRoot(inputData)/.planning/config.json`. 이제 `.planning/config.json`의 `super_gsd.auto_advance: false`가 실제로 작동.
+- unused `PLUGIN_ROOT` 상수 제거 (정리).
+
+### Notes
+
+- 동작 변경 자체는 stop_hook.cjs 내부 로직만 영향. 4개 systemMessage 분기 자체는 동일 (gsd-plan-complete / superpowers-implementation-complete / superpowers-review-complete / sg-retro-complete). HANDOFF stage → signal 매핑 추가로 정확성 확보.
+- transcript_matcher.cjs는 변경 없음 — HANDOFF.md가 없을 때만 fallback으로 사용됨.
+
 ## [0.0.50] - 2026-05-31
 
 ### Added

@@ -125,7 +125,15 @@ Reads .planning/STATE.md, .planning/ROADMAP.md, .planning/REQUIREMENTS.md, .plan
 7. **Idempotency check.**
    ```bash
    EXISTING_HASH=$(grep -E "^\| [^|]+ \| (${PHASE_PAD}|${PHASE_NUM})-[^|]* \| [^|]+ \|[[:space:]]*execute[[:space:]]*\|" .planning/HANDOFF.md 2>/dev/null | tail -1 | awk -F'|' '{gsub(/ /,"",$6); print $6}')
-   if [ -n "$EXISTING_HASH" ] && [ "$EXISTING_HASH" = "$PLAN_HASH" ]; then
+   # TDD retry-bypass (Phase 47, D-02): when a sg-review failure loop wrote
+   # .planning/USE-TDD-RETRY, re-execution of the SAME plan hash is the intent —
+   # so the same-hash short-circuit below must NOT fire. Absent the retry file,
+   # this guard is a no-op and the idempotency behavior is byte-identical.
+   RETRY_BYPASS=""
+   if [ -f .planning/USE-TDD-RETRY ]; then
+     RETRY_BYPASS=1
+   fi
+   if [ -z "$RETRY_BYPASS" ] && [ -n "$EXISTING_HASH" ] && [ "$EXISTING_HASH" = "$PLAN_HASH" ]; then
      echo "Already executed Phase $PHASE_NUM (plan hash matches: $PLAN_HASH). Skipping. Modify a PLAN.md to re-execute."
      exit 0
    fi
@@ -141,6 +149,17 @@ Reads .planning/STATE.md, .planning/ROADMAP.md, .planning/REQUIREMENTS.md, .plan
    ```
 
 9. **Direct implementation mode execution.**
+
+   **TDD marker detection (Phase 47, D-03 adapted — inline path; no Skill handoff exists here).** Detect the two markers before assembling the Direct Implementation Instructions (presence-only; paths hardcoded, never derived from `$ARGUMENTS`):
+   ```bash
+   if [ -f .planning/USE-TDD ]; then TDD_ON=true; else TDD_ON=false; fi
+   # USE-TDD-RETRY carries prior FAIL feedback (line 1 = retry count, lines 2+ = feedback body).
+   if [ -f .planning/USE-TDD-RETRY ]; then
+     RETRY_FEEDBACK=$(tail -n +2 .planning/USE-TDD-RETRY 2>/dev/null)
+   else
+     RETRY_FEEDBACK=""
+   fi
+   ```
 
    Display the collected PLAN.md content, then execute each task sequentially according to the instructions below:
 
@@ -165,6 +184,21 @@ Reads .planning/STATE.md, .planning/ROADMAP.md, .planning/REQUIREMENTS.md, .plan
    checkpoint:human-verify tasks stop and request user confirmation.
    checkpoint:decision tasks output the choices as text and wait for input.
    ```
+
+   **TDD-gated injection (D-03/D-02 adapted for the inline path; both additions are strictly conditional so the marker-absent instructions are unchanged, EXEC-02).** Since `superpowers:test-driven-development` is unavailable on this platform, reference the TDD discipline in prose rather than invoking the skill:
+
+   - When the retry file is present — i.e. `[ -f .planning/USE-TDD-RETRY ]` — PREPEND a `## Previous Test Failures — Fix First` section (before the execution order) whose body is `$RETRY_FEEDBACK` (lines 2+ of `.planning/USE-TDD-RETRY`); the inline implementer must address these failures first. This renders ONLY inside the `[ -f .planning/USE-TDD-RETRY ]` branch:
+     ```
+     ## Previous Test Failures — Fix First
+     <RETRY_FEEDBACK — the prior review's FAIL feedback, read from lines 2+ of .planning/USE-TDD-RETRY>
+     ```
+
+   - When TDD mode is on — i.e. `[ -f .planning/USE-TDD ]` — APPEND the following Red-first directive to the Direct Implementation Instructions. It renders ONLY inside the `[ -f .planning/USE-TDD ]` branch — never when the marker is absent:
+     ```
+     TDD mode (Red-first): for each behavior, write a failing (red) test BEFORE implementing it, then make the test pass. Do not write implementation code before its failing test exists.
+     ```
+
+   When `.planning/USE-TDD` is absent AND `.planning/USE-TDD-RETRY` is absent, neither addition is emitted and the instructions are unchanged (EXEC-02 / D-03b).
 
    After all tasks complete:
    ```

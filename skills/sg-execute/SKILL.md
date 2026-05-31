@@ -135,12 +135,20 @@ This command is self-contained — no external workflow files imported. Reads .p
 7. **Idempotency check.** Inspect `.planning/HANDOFF.md` for the latest row whose `Phase` cell matches `$PHASE_NUM` and whose `To` cell equals `superpowers` or `parallel`. Extract the recorded Plan Hash and compare it to `$PLAN_HASH`:
    ```bash
    EXISTING_HASH=$(grep -E "^\| [^|]+ \| (${PHASE_PAD}|${PHASE_NUM})-[^|]* \| [^|]+ \|[[:space:]]*(superpowers|parallel)[[:space:]]*\|" .planning/HANDOFF.md | tail -1 | awk -F'|' '{gsub(/ /,"",$6); print $6}')
-   if [ -n "$EXISTING_HASH" ] && [ "$EXISTING_HASH" = "$PLAN_HASH" ]; then
+   # TDD retry-bypass (Phase 47, D-02): when a sg-review failure loop wrote
+   # .planning/USE-TDD-RETRY, re-execution of the SAME plan hash is the intent —
+   # so the same-hash short-circuit below must NOT fire. Absent the retry file,
+   # this guard is a no-op and the idempotency behavior is byte-identical.
+   RETRY_BYPASS=""
+   if [ -f .planning/USE-TDD-RETRY ]; then
+     RETRY_BYPASS=1
+   fi
+   if [ -z "$RETRY_BYPASS" ] && [ -n "$EXISTING_HASH" ] && [ "$EXISTING_HASH" = "$PLAN_HASH" ]; then
      echo "Already handed off Phase $PHASE_NUM to superpowers or parallel (plan hash matches: $PLAN_HASH). Skipping append. Use /super-gsd:sg-status to inspect, or modify a PLAN.md to re-handoff."
      exit 0
    fi
    ```
-   If the Plan Hash differs from the recorded one, a new row is permitted (PLAN.md changed since the last handoff).
+   If the Plan Hash differs from the recorded one, a new row is permitted (PLAN.md changed since the last handoff). When `.planning/USE-TDD-RETRY` is present (a TDD failure-loop retry), the short-circuit is bypassed so the same plan re-executes with the prior FAIL feedback injected (see Step 9).
 
 7.5. **HANDOFF.md auto-initialization.** Create the file if it is missing or has no header row:
    ```bash
@@ -293,6 +301,18 @@ This command is self-contained — no external workflow files imported. Reads .p
    fi
    ```
 
+   **TDD marker detection (Phase 47, D-03 — sequential path only).** This runs ONLY here, after the parallel `return` above, so the parallel path (sg-parallel-execute) is never touched. Detect the two markers (presence-only; paths hardcoded, never derived from `$ARGUMENTS`):
+   ```bash
+   if [ -f .planning/USE-TDD ]; then TDD_ON=true; else TDD_ON=false; fi
+   # USE-TDD-RETRY carries prior FAIL feedback (line 1 = retry count, lines 2+ = feedback body).
+   # The fix-first section reads lines 2+ (the body) via `tail -n +2`.
+   if [ -f .planning/USE-TDD-RETRY ]; then
+     RETRY_FEEDBACK=$(tail -n +2 .planning/USE-TDD-RETRY 2>/dev/null)
+   else
+     RETRY_FEEDBACK=""
+   fi
+   ```
+
    Assemble a single markdown blob in this exact order (English labels only):
    ```
    # Superpowers Execution Handoff — Phase <N> (<PHASE_NAME>)
@@ -323,6 +343,22 @@ This command is self-contained — no external workflow files imported. Reads .p
    ## Instruction to Superpowers
    Execute the plans above using the superpowers:executing-plans skill. Treat each PLAN.md as the authoritative source of tasks and acceptance criteria.
    ```
+
+   **TDD-gated blob augmentation (D-03, D-02 — sequential path only; both additions are strictly conditional so the marker-absent blob is byte-identical, EXEC-02).**
+
+   - When the retry file is present — i.e. `[ -f .planning/USE-TDD-RETRY ]` — PREPEND a `## Previous Test Failures — Fix First` section (placed before `## Plans`) whose body is `$RETRY_FEEDBACK` (lines 2+ of `.planning/USE-TDD-RETRY`). This section renders ONLY inside the `[ -f .planning/USE-TDD-RETRY ]` branch — never when the retry file is absent:
+     ```
+     ## Previous Test Failures — Fix First
+     <RETRY_FEEDBACK — the prior review's FAIL feedback, read from lines 2+ of .planning/USE-TDD-RETRY>
+     ```
+
+   - When TDD mode is on — i.e. `[ -f .planning/USE-TDD ]` — APPEND the following two lines to the `## Instruction to Superpowers` section. These lines render ONLY inside the `[ -f .planning/USE-TDD ]` branch — never when the marker is absent (the two existing `## Instruction to Superpowers` lines above stay verbatim):
+     ```
+     Use the superpowers:test-driven-development skill: for each behavior, write a failing (Red) test BEFORE implementing it, then make it pass (Green). Do not write implementation code before its failing test exists.
+     ```
+
+   When `.planning/USE-TDD` is absent AND `.planning/USE-TDD-RETRY` is absent, neither addition is emitted and the blob is byte-identical to the legacy output (EXEC-02 / D-03b).
+
    Display the prompt blob to the user. Then print exactly:
    `Handoff complete. HANDOFF.md updated; superpowers:executing-plans invoked. Use /super-gsd:sg-status to inspect workflow state.`
    Then invoke the Skill tool — no confirmation prompt. Session control transfers to the skill; no steps execute after this point:

@@ -2,6 +2,31 @@
 
 All notable changes to `super-gsd` are documented in this file. Format follows [Keep a Changelog](https://keepachangelog.com/).
 
+## [0.0.50] - 2026-05-31
+
+### Added
+
+- **Milestone v2.9 Retro UX Simplification** (Phases 42-44) shipped — sg-retro/sg-learn lens 선택 마찰 완전 제거
+- Phase 42: Smart default lens (`dspm+ssc`) — `sg-retro <N>` 인자 없이 호출 시 AskUserQuestion/numbered-list 없이 즉시 두 lens 실행. 6 lens → 3 lens(`ssc`/`dspm`/`analyze`) 통합 + dropped lens(`4ls`/`sail`/`5why`) reject (stderr 에러 + exit 1)
+- Phase 43: `--pick` 플래그 — token-position-free 탐지 후 AskUserQuestion multiSelect로 정확히 1회 lens 선택. `--pick` + positional lens 충돌은 stderr error + exit 1로 거부. DISPLAY-01 `🔴 P1` emoji prefix in Action Items, DISPLAY-02 `_Intent: ..._` italic line directly after `_Captured:` (각 lens 의도 명시)
+- Phase 44: README.md + README.ko.md Commands 테이블 sg-learn/sg-retro 행 갱신, `skills/sg-retro` + `.agents/skills/sg-retro` frontmatter description에 `--pick` 명시, `.planning/TEAM.md`에 `## Retrospective workflow` 섹션 신설 (4 sub-blocks)
+- `skills/sg-review` + `.agents/skills/sg-review` Step 1.5 auto-commit gate — `BASE_SHA == HEAD_SHA` + dirty working tree 감지 시 skills/, .agents/skills/, 현재 phase SUMMARY.md를 자동 stage하고 derived `feat(NN)` commit으로 커밋. Phase 42/43 retro P1 #2 closure (sg-parallel-execute → sg-review manual commit 단계 자동화). `.agents/` 환경은 AskUserQuestion 불가하므로 ready-to-paste git add/commit 명령 출력 + exit 1
+
+### Fixed
+
+- Codex adversarial review 발견 — README.md/README.ko.md에서 `--pick`를 Claude Code 전용으로 명시, Codex/Gemini CLI에서는 `$sg-retro <phase> ssc dspm analyze` 위치 인자 대안 안내 (D-17 graceful exit 동작과 docs 정합)
+- Phase 43 review fix — `skills/sg-retro/SKILL.md` Step 6 description + success_criteria #3 / `.agents/` success_criteria #4에 `_Intent: ..._` 토큰 누락 보완 (Phase 42 retro stale-prose-drift class 재발)
+- Phase 44 review fix — `README.md:37` sg-learn description의 산술 모순 "three lenses (ssc, dspm)" → "two of the three lenses (ssc, dspm)" 정정 (Korean mirror가 이미 정확했음 — 우연한 영문/한글 비대칭으로 documentation arithmetic 검증 누락 발견. NEW retro sub-class: token spec internal consistency check)
+
+### Changed
+
+- ROADMAP.md v2.9 섹션을 `<details>` 한 줄 entry + Archive link로 collapse, Progress 테이블 Phase 42-44 Complete 표시
+- PROJECT.md "Current Milestone: v2.9" → "Completed Milestone: v2.9" + Current State 섹션 신설
+- STATE.md status `executing` → `complete`, percent 67 → 100
+- `.planning/REQUIREMENTS.md` 삭제 (v2.9-REQUIREMENTS.md로 아카이브, 다음 milestone에서 새로 생성)
+- 16개 lessons 파일을 `.planning/milestones/v2.9-LESSONS.md`로 weighted-rank archive (`lessons_ranker.cjs --archive`)
+- git tag `v2.9` 생성
+
 ## [0.0.49] - 2026-05-30
 
 ### Fixed

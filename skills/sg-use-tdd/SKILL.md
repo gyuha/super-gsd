@@ -59,7 +59,7 @@ The marker path is always the literal `.planning/USE-TDD` — never derived from
 
 **Idempotency guarantee:** `on` when the marker already exists overwrites it with a fresh timestamp (no-op on presence, no error). `off` when the marker is absent is a `rm -f` no-op (no error). Running either branch twice leaves the filesystem in the same state as running it once.
 
-**Shell portability (CLAUDE.md):** no PCRE (`-P`) grep flag; argument classification uses `case`/`sed -E`. `date -u +%Y-%m-%dT%H:%M:%SZ` is POSIX-compatible on both macOS (BSD) and Linux (GNU).
+**Shell portability (CLAUDE.md):** no PCRE (`-P`) grep flag; argument classification uses prose matching + a `sed -E` trim. `date -u +%Y-%m-%dT%H:%M:%SZ` is POSIX-compatible on both macOS (BSD) and Linux (GNU).
 </process>
 
 <success_criteria>

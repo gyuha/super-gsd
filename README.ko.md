@@ -242,7 +242,7 @@ npx @gyuha/super-gsd install
 
 ### Gemini / Antigravity CLI
 
-Gemini CLI는 지원된다. Antigravity CLI 호환성은 독립적으로 검증되지 않았다 — `.planning/phases/15-platform-hooks-python-fix/15-01-VERIFICATION.md` 참조.
+Gemini CLI는 지원된다. Antigravity CLI 호환성은 v1.3 platform-hooks phase에서 독립적으로 검증되지 않았다 — 해당 환경에서 검증이 필요하면 이슈를 열어주세요.
 
 ```bash
 npx @gyuha/super-gsd install --gemini

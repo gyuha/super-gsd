@@ -242,7 +242,7 @@ This installs `.codex/hooks.json` (Stop and PreToolUse hooks), `hooks/` (Node.js
 
 ### Gemini / Antigravity CLI
 
-Gemini CLI is supported. Antigravity CLI compatibility has not been independently verified — see `.planning/phases/15-platform-hooks-python-fix/15-01-VERIFICATION.md`.
+Gemini CLI is supported. Antigravity CLI compatibility was not independently verified during the v1.3 platform-hooks phase — please file an issue if you need this verified for your environment.
 
 ```bash
 npx @gyuha/super-gsd install --gemini

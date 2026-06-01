@@ -132,6 +132,8 @@ function stageToSignal(stage) {
     case 'parallel':
     case 'execute':
       return 'superpowers-implementation-complete';     // → "Run sg-review"
+    case 'tdd':
+      return 'tdd-complete';                            // → "Run sg-review"
     case 'review':
       return 'superpowers-review-complete';             // → "Run sg-learn"
     case 'sg-retro':
@@ -181,17 +183,19 @@ function main() {
     }
 
     const platform = _detectPlatform();
-    let cmdExecute, cmdReview, cmdLearn, cmdShip;
+    let cmdExecute, cmdReview, cmdLearn, cmdShip, cmdTdd;
     if (platform === 'claude-code') {
       cmdExecute = '/super-gsd:sg-execute';
       cmdReview  = '/super-gsd:sg-review';
       cmdLearn   = '/super-gsd:sg-learn';
       cmdShip    = '/super-gsd:sg-ship';
+      cmdTdd     = '/super-gsd:sg-tdd';
     } else {
       cmdExecute = '$sg-execute';
       cmdReview  = '$sg-review';
       cmdLearn   = '$sg-retro';
       cmdShip    = '$sg-ship';
+      cmdTdd     = '$sg-tdd';
     }
 
     let response;
@@ -199,6 +203,8 @@ function main() {
       response = { systemMessage: `GSD plan-phase complete. Run ${cmdExecute} to hand off to implementation.` };
     } else if (signal === 'superpowers-implementation-complete') {
       response = { systemMessage: `Implementation complete. Run ${cmdReview} to request a code review.` };
+    } else if (signal === 'tdd-complete') {
+      response = { systemMessage: `TDD verification complete. Run ${cmdReview} to request a code review.` };
     } else if (signal === 'superpowers-review-complete') {
       response = { systemMessage: `Review complete. Run ${cmdLearn} to capture lessons via sg-retro.` };
     } else if (signal === 'sg-retro-complete') {

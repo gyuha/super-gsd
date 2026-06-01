@@ -2,6 +2,12 @@
 
 All notable changes to `super-gsd` are documented in this file. Format follows [Keep a Changelog](https://keepachangelog.com/).
 
+## [0.0.56] - 2026-06-01
+
+### Fixed
+
+- **stop_hook `execute` 단계 안내가 `tdd_mode`를 반영** — `execute` 완료 + `super_gsd.tdd_mode: true`일 때 `stop_hook.cjs`가 `sg-review`/`sg-learn`을 안내하던 문제(`sg-next`는 `sg-tdd`로 라우팅하므로 불일치)를 수정. 이제 `sg-next`와 동일하게 `sg-tdd`를 안내한다. `execute` 단계만 `tdd_mode`를 반영하고(`superpowers`/`parallel`은 기존대로), `tdd_mode` off일 때 출력은 byte-identical.
+
 ## [0.0.55] - 2026-06-01
 
 ### Added

@@ -3,10 +3,10 @@ gsd_state_version: 1.0
 milestone: v2.11
 milestone_name: Add TDD workflow (sg-tdd)
 status: planning
-last_updated: "2026-06-01T04:57:07.058Z"
+last_updated: "2026-06-01T05:00:00.000Z"
 last_activity: 2026-06-01
 progress:
-  total_phases: 0
+  total_phases: 2
   completed_phases: 0
   total_plans: 0
   completed_plans: 0
@@ -17,17 +17,23 @@ progress:
 
 ## Project Reference
 
-See: .planning/PROJECT.md (updated 2026-05-26)
+See: .planning/PROJECT.md (updated 2026-06-01)
 
 **Core value:** GSD → Superpowers → sg-retro 단계 전환을 자동화하여 학습 루프가 끊기지 않도록 한다
-**Current focus:** (none — v2.10 shipped. Run `/super-gsd:sg-new` to start the next milestone.)
+**Current focus:** v2.11 — sg-execute와 sg-review 사이 TDD 검증 게이트(sg-tdd) 추가
 
 ## Current Position
 
-Phase: Not started (defining requirements)
+Phase: 46 (not started)
 Plan: —
-Status: Defining requirements
-Last activity: 2026-06-01 — Milestone v2.11 started
+Status: Roadmap created, ready for planning
+Last activity: 2026-06-01 — Roadmap created for v2.11 (2 phases: 46–47)
+
+```
+v2.11 Progress: ░░░░░░░░░░ 0% (0/2 phases)
+Phase 46: sg-tdd 구현 + 파이프라인 통합 — Not started
+Phase 47: 문서 갱신 — Not started
+```
 
 ## Performance Metrics
 
@@ -44,12 +50,12 @@ Last activity: 2026-06-01 — Milestone v2.11 started
 Decisions are logged in PROJECT.md Key Decisions table.
 Recent decisions affecting current work:
 
-- v2.10 phase shape: 1 phase (coarse granularity) — Phase 45 covers all 6 GRILL requirements
-- Non-invasive constraint: gsd-discuss-phase must NOT be modified; grilling lives only inside sg-plan's main context
-- Pairwise file rule: `skills/sg-plan/SKILL.md` AND `.agents/skills/sg-plan/SKILL.md` must both be updated
-- Grilling output feeds gsd-discuss-phase CONTEXT input — no separate file, passed inline
-- User-language surfacing: questions use user's input language; machine tokens (command names, paths, enums) stay English
-- Claude cannot self-terminate grilling — user confirmation gate required (GRILL-05)
+- v2.11 phase shape: 2 phases (coarse granularity) — Phase 46 covers TDD-01~03 + PIPE-01~03 + MIRROR-01 (구현 + 통합), Phase 47 covers DOC-01~02 (문서)
+- Non-invasive constraint: Superpowers/GSD 파일 미수정, sg-tdd는 외부에서 `test-driven-development` 스킬만 호출
+- Pairwise file rule: `skills/sg-tdd/SKILL.md` AND `.agents/skills/sg-tdd/SKILL.md` 동시 생성 필수 (MIRROR-01)
+- D-07 inline-replication: sg-next AND sg-status 라우팅 테이블 양쪽 동시 갱신 (PIPE-02)
+- config flag `super_gsd.tdd_mode` — 부재 시 기본 off, tdd_mode: true일 때만 sg-tdd 단계 활성화 (PIPE-01)
+- sg-tdd semantics: 구현 이후 "TDD 준수 검증 게이트" — 테스트-우선 배치 아님
 
 ### Pending Todos
 
@@ -96,10 +102,10 @@ Items acknowledged and deferred at v2.2 milestone close on 2026-05-24:
 
 ## Session Continuity
 
-Last session: 2026-05-31T12:45:07.680Z
-Stopped at: Phase 45 context gathered
-Resume file: .planning/phases/45-new-phase/45-CONTEXT.md
+Last session: 2026-06-01T05:00:00.000Z
+Stopped at: v2.11 roadmap created
+Resume file: —
 
 ## Operator Next Steps
 
-- Run `/super-gsd:sg-plan 45` to plan Phase 45
+- Run `/super-gsd:sg-plan 46` to plan Phase 46

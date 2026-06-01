@@ -19,6 +19,7 @@
 - [x] **v2.8 Team Collaboration Support** (2026-05-29) — HANDOFF user 추적 + sg-status --team + sg-execute 브랜치 워크플로우 + TEAM.md → [Archive](.planning/milestones/v2.8-ROADMAP.md)
 - [x] **v2.9 Retro UX Simplification** (2026-05-31) — sg-retro/sg-learn lens 선택 마찰 제거 + smart default(dspm+ssc) + lens 6→3 통합 + --pick flag + 🔴 P1 emphasis + lens intent line + 문서 동기화 → [Archive](.planning/milestones/v2.9-ROADMAP.md)
 - [x] **v2.10 Plan-Phase Ambiguity Grilling** (2026-05-31) — sg-plan이 discuss subagent 호출 전 grill-me 원칙으로 모호함을 해소하는 인터뷰 단계 추가 (GRILL-01~06, 쌍 파일 동기화) → [Archive](.planning/milestones/v2.10-ROADMAP.md)
+- [ ] **v2.11 Add TDD workflow (sg-tdd)** — sg-execute와 sg-review 사이 TDD 검증 게이트 + 파이프라인 통합 + 문서 갱신
 
 ## Phases
 
@@ -92,6 +93,11 @@
 Full archive: [.planning/milestones/v2.10-ROADMAP.md](.planning/milestones/v2.10-ROADMAP.md)
 
 </details>
+
+### v2.11 Add TDD workflow (sg-tdd)
+
+- [ ] **Phase 46: sg-tdd 구현 + 파이프라인 통합** — sg-tdd SKILL.md(skills/ + .agents/ 쌍) + config 플래그 + sg-next/sg-status 라우팅 갱신 + stop_hook/transcript_matcher 신호 추가
+- [ ] **Phase 47: 문서 갱신** — README/README.ko.md Commands 표 + CLAUDE.md 아키텍처 반영
 
 ## Phase Details
 
@@ -485,6 +491,32 @@ Full archive: [.planning/milestones/v2.9-ROADMAP.md](.planning/milestones/v2.9-R
 
 ---
 
+## v2.11 Add TDD workflow (sg-tdd)
+
+### Phase 46: sg-tdd 구현 + 파이프라인 통합
+
+**Goal**: 사용자가 `/super-gsd:sg-tdd`를 호출하면 Superpowers TDD 스킬을 오케스트레이션하는 red-green-refactor 검증 게이트가 실행되고, sg-next/sg-status 라우팅과 stop_hook 신호 감지가 tdd_mode 플래그로 제어된다
+**Depends on**: Phase 45
+**Requirements**: TDD-01, TDD-02, TDD-03, PIPE-01, PIPE-02, PIPE-03, MIRROR-01
+**Success Criteria** (what must be TRUE):
+  1. `skills/sg-tdd/SKILL.md`가 존재하고 `/super-gsd:sg-tdd [phase]` 호출 시 Superpowers `test-driven-development` 스킬을 Non-invasive하게 오케스트레이션하며, 완료 후 HANDOFF.md에 `sg-tdd` stage 행이 append된다
+  2. `.planning/config.json`(또는 플러그인 config)의 `super_gsd.tdd_mode: true`일 때 sg-next가 execute 완료 상태에서 sg-tdd로, `false`(또는 부재)이면 sg-review로 라우팅한다 — sg-status도 동일하게 동작한다 (D-07 inline-replication 양쪽 동시 갱신)
+  3. `hooks/transcript_matcher.cjs`가 sg-tdd 진입·완료를 나타내는 신호 패턴을 인식하고, `hooks/stop_hook.cjs`가 완료 시 sg-review를 다음 단계로 systemMessage에 안내한다
+  4. `.agents/skills/sg-tdd/SKILL.md`가 존재하여 Codex/Gemini에서 `$sg-tdd`로 호출 가능하며 skills/ 원본과 pairwise sync 상태다
+**Plans**: TBD
+
+### Phase 47: 문서 갱신
+
+**Goal**: README/README.ko.md Commands 표와 CLAUDE.md 아키텍처 섹션이 sg-tdd 단계와 tdd_mode 플래그를 정확히 반영한다
+**Depends on**: Phase 46
+**Requirements**: DOC-01, DOC-02
+**Success Criteria** (what must be TRUE):
+  1. `README.md`와 `README.ko.md` Commands 표에 `sg-tdd` 행이 추가되고, 파이프라인 서술이 `sg-plan → sg-execute → sg-tdd → sg-review`로 갱신된다
+  2. `CLAUDE.md` 아키텍처/데이터 흐름 섹션에 `sg-tdd` 단계와 `super_gsd.tdd_mode` 플래그(기본 off, config.json 제어)가 명시된다
+**Plans**: TBD
+
+---
+
 ## Progress
 
 | Phase | Milestone | Plans Complete | Status | Completed |
@@ -526,3 +558,5 @@ Full archive: [.planning/milestones/v2.9-ROADMAP.md](.planning/milestones/v2.9-R
 | 43. One-shot Interaction + Display Polish | v2.9 | 2/2 | Complete | 2026-05-30 |
 | 44. Documentation Sync | v2.9 | 3/3 | Complete | 2026-05-31 |
 | 45. sg-plan Grilling Step | v2.10 | 1/1 | Complete | 2026-05-31 |
+| 46. sg-tdd 구현 + 파이프라인 통합 | v2.11 | 0/TBD | Not started | - |
+| 47. 문서 갱신 | v2.11 | 0/TBD | Not started | - |

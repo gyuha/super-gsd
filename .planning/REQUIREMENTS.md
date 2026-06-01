@@ -42,12 +42,12 @@
 
 | REQ-ID | Phase | Status |
 |--------|-------|--------|
-| TDD-01 | TBD | not started |
-| TDD-02 | TBD | not started |
-| TDD-03 | TBD | not started |
-| PIPE-01 | TBD | not started |
-| PIPE-02 | TBD | not started |
-| PIPE-03 | TBD | not started |
-| MIRROR-01 | TBD | not started |
-| DOC-01 | TBD | not started |
-| DOC-02 | TBD | not started |
+| TDD-01 | Phase 46 | not started |
+| TDD-02 | Phase 46 | not started |
+| TDD-03 | Phase 46 | not started |
+| PIPE-01 | Phase 46 | not started |
+| PIPE-02 | Phase 46 | not started |
+| PIPE-03 | Phase 46 | not started |
+| MIRROR-01 | Phase 46 | not started |
+| DOC-01 | Phase 47 | not started |
+| DOC-02 | Phase 47 | not started |

@@ -262,3 +262,5 @@
 | 2026-06-01T07:05:11Z | 47-documentation-update | sg-next | sg-retro | - | gyuha |
 | 2026-06-01T07:05:29Z | 47-documentation-update | sg-retro | sg-next | - | gyuha |
 | 2026-06-01T07:05:40Z | 47-documentation-update | sg-next | ship | - | gyuha |
+| 2026-06-01T07:07:02Z | 47-documentation-update | ship | sg-next | - | gyuha |
+| 2026-06-01T07:07:25Z | v2.11 | sg-next | complete | - | gyuha |

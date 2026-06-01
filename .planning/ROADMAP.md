@@ -96,7 +96,7 @@ Full archive: [.planning/milestones/v2.10-ROADMAP.md](.planning/milestones/v2.10
 
 ### v2.11 Add TDD workflow (sg-tdd)
 
-- [ ] **Phase 46: sg-tdd 구현 + 파이프라인 통합** — sg-tdd SKILL.md(skills/ + .agents/ 쌍) + config 플래그 + sg-next/sg-status 라우팅 갱신 + stop_hook/transcript_matcher 신호 추가
+- [x] **Phase 46: sg-tdd 구현 + 파이프라인 통합** — sg-tdd SKILL.md(skills/ + .agents/ 쌍) + config 플래그 + sg-next/sg-status 라우팅 갱신 + stop_hook/transcript_matcher 신호 추가 (completed 2026-06-01)
 - [ ] **Phase 47: 문서 갱신** — README/README.ko.md Commands 표 + CLAUDE.md 아키텍처 반영
 
 ## Phase Details
@@ -566,5 +566,5 @@ Plans:
 | 43. One-shot Interaction + Display Polish | v2.9 | 2/2 | Complete | 2026-05-30 |
 | 44. Documentation Sync | v2.9 | 3/3 | Complete | 2026-05-31 |
 | 45. sg-plan Grilling Step | v2.10 | 1/1 | Complete | 2026-05-31 |
-| 46. sg-tdd 구현 + 파이프라인 통합 | v2.11 | 2/2 | Complete   | 2026-06-01 |
+| 46. sg-tdd 구현 + 파이프라인 통합 | v2.11 | 2/2 | Complete    | 2026-06-01 |
 | 47. 문서 갱신 | v2.11 | 0/TBD | Not started | - |

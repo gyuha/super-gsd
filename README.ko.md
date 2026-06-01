@@ -229,7 +229,7 @@ super-gsd 훅은 Claude Code 플러그인 마켓플레이스 없이 Codex, Gemin
 | PreToolUse / BeforeTool 훅 | ✅ | ✅ | ✅ |
 | Superpowers 연동 | ✅ | ❌ | ❌ |
 | AskUserQuestion UI | ✅ | ❌ numbered list 대체 | ❌ numbered list 대체 |
-| 스킬 커버리지 | ✅ `skills/`에 21/21 | ⚠️ `.agents/skills/`에 11/21 | ⚠️ `.agents/skills/`에 11/21 |
+| 스킬 커버리지 | ✅ `skills/`에 22/22 | ⚠️ `.agents/skills/`에 12/22 | ⚠️ `.agents/skills/`에 12/22 |
 
 ¹ 세 플랫폼 모두 동일한 `hooks/stop_hook.cjs`를 실행하여 `systemMessage` 텍스트 안내(예: "Run /super-gsd:sg-execute to hand off to implementation")를 출력한다. Claude Code에서는 이 텍스트가 Claude의 컨텍스트 윈도우에 들어가 Claude가 안내에 soft-act하거나(사용자가 `sg-next`로 다음 스킬을 자동 invoke), Codex/Gemini에서는 같은 텍스트가 사용자에게 직접 표시되어 사용자가 다음 명령을 수동 실행한다. Gemini의 `SessionEnd` / `BeforeTool` 훅 이름은 Claude Code의 `Stop` / `PreToolUse`와 의미적으로 동일하다.
 
@@ -300,7 +300,7 @@ npx @gyuha/super-gsd install --gemini
 
 - **Phase 1 — 플러그인 스캐폴드 (완료):** 설치 가능한 플러그인 셸(매니페스트, 마켓플레이스 메타데이터, README, 검증 체크리스트). 아직 명령이나 훅 없음.
 - **Phase 2 — 수동 인계 및 상태 (완료):** `/super-gsd:sg-execute`(완성된 GSD 단계를 Superpowers 준비 프롬프트로 패키징)와 `/super-gsd:sg-status`(현재 단계, 마지막 인계, 다음 권장 명령 확인) 도입.
-- **Phase 3 — sg- 명령 세트 및 README (완료):** 전체 GSD → Superpowers → sg-retro 사이클을 커버하는 14개 명령 인터페이스와 업데이트된 문서 제공. *(이후 phase에서 21개 명령으로 확장 — 현재 목록은 Commands 테이블 참조.)*
+- **Phase 3 — sg- 명령 세트 및 README (완료):** 전체 GSD → Superpowers → sg-retro 사이클을 커버하는 14개 명령 인터페이스와 업데이트된 문서 제공. *(이후 phase에서 22개 명령으로 확장 — 현재 목록은 Commands 테이블 참조.)*
 - **Phase 4 — 자동 진행 훅 (완료):** `Stop` 훅을 등록하여 단계 전환을 자동 감지 — `plan-phase` 완료 시 인계 프롬프트 표시, 코드 리뷰어 완료 시 Hookify 제안. *(Hookify 의존성은 Phase 13에서 제거됨, 알림 텍스트는 `sg-retro`로 라우팅 전환.)*
 - **Phase 5 — 학습 루프 (완료):** Hookify 교훈을 `.planning/lessons/`에 저장하고 다음 GSD 단계 시작 시 자동 표시하여 학습 루프 완성. *(Lessons 작성은 Phase 13에서 내장 `sg-retro` Skill로 이관됨; Hookify 불필요.)*
 - **Phase 6 — sg-health (완료):** `sg-health` 자기진단 명령 도입 — GSD/Superpowers 설치 여부, 훅 등록, HANDOFF.md 스키마 무결성을 `[OK]`/`[WARN]`/`[FAIL]`로 출력.

@@ -229,7 +229,7 @@ super-gsd hooks work on Codex and Gemini/Antigravity CLI without the Claude Code
 | PreToolUse / BeforeTool hook | ✅ | ✅ | ✅ |
 | Superpowers integration | ✅ | ❌ | ❌ |
 | AskUserQuestion UI | ✅ | ❌ numbered list fallback | ❌ numbered list fallback |
-| Skills coverage | ✅ 21 of 21 in `skills/` | ⚠️ 11 of 21 in `.agents/skills/` | ⚠️ 11 of 21 in `.agents/skills/` |
+| Skills coverage | ✅ 22 of 22 in `skills/` | ⚠️ 12 of 22 in `.agents/skills/` | ⚠️ 12 of 22 in `.agents/skills/` |
 
 ¹ The same `hooks/stop_hook.cjs` runs on all three platforms and emits a `systemMessage` text reminder (e.g. "Run /super-gsd:sg-execute to hand off to implementation"). On Claude Code, that text enters Claude's context window where Claude can soft-act on the suggestion (or the user types `sg-next` to auto-invoke the next sg-* skill). On Codex/Gemini, the same text renders to the user, who runs the next command manually. Gemini's `SessionEnd` / `BeforeTool` hook names correspond to Claude Code's `Stop` / `PreToolUse` semantically.
 
@@ -300,7 +300,7 @@ If checks pass for your platform, `super-gsd` is installed correctly.
 
 - **Phase 1 — Plugin Scaffold (shipped):** installable plugin shell with manifest, marketplace metadata, README, and verify checklist. No commands or hooks yet.
 - **Phase 2 — Manual Handoff & Status (shipped):** introduces `/super-gsd:sg-execute` (package a finished GSD phase as a Superpowers-ready prompt) and `/super-gsd:sg-status` (inspect current stage, last handoff, next recommended command).
-- **Phase 3 — sg- Command Set & README (shipped):** delivers the full 14-command `sg-` interface and updated documentation so the entire GSD → Superpowers → sg-retro cycle has discoverable slash commands. *(Expanded to 21 commands over subsequent phases — see Commands table for the current set.)*
+- **Phase 3 — sg- Command Set & README (shipped):** delivers the full 14-command `sg-` interface and updated documentation so the entire GSD → Superpowers → sg-retro cycle has discoverable slash commands. *(Expanded to 22 commands over subsequent phases — see Commands table for the current set.)*
 - **Phase 4 — Auto-Advance Hooks (shipped):** registers `Stop` hooks so stage transitions are auto-detected — completed `plan-phase` surfaces a handoff prompt, completed `code-reviewer` suggests Hookify via `systemMessage`. *(Hookify dependency removed in Phase 13; reminder text rerouted to `sg-retro`.)*
 - **Phase 5 — Lessons Feedback Loop (shipped):** persists Hookify findings into `.planning/lessons/` and surfaces them automatically when the next GSD phase begins, closing the learning loop. *(Lessons writer migrated to the built-in `sg-retro` Skill in Phase 13; Hookify no longer required.)*
 - **Phase 6 — sg-health (shipped):** introduces `sg-health` self-diagnosis command — checks GSD/Superpowers installation, hook registration, and HANDOFF.md schema integrity with `[OK]`/`[WARN]`/`[FAIL]` output.

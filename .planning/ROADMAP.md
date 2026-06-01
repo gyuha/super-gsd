@@ -507,7 +507,7 @@ Full archive: [.planning/milestones/v2.9-ROADMAP.md](.planning/milestones/v2.9-R
 Plans:
 **Wave 1** (MIRROR-01 sg-tdd 파일 쌍 동시 생성)
 
-- [ ] 46-01-PLAN.md — skills/sg-tdd/SKILL.md + .agents/skills/sg-tdd/SKILL.md 신규 생성 (TDD-01, TDD-02, TDD-03, MIRROR-01)
+- [x] 46-01-PLAN.md — skills/sg-tdd/SKILL.md + .agents/skills/sg-tdd/SKILL.md 신규 생성 (TDD-01, TDD-02, TDD-03, MIRROR-01)
 
 **Wave 2** *(blocked on Wave 1 completion)*
 
@@ -566,5 +566,5 @@ Plans:
 | 43. One-shot Interaction + Display Polish | v2.9 | 2/2 | Complete | 2026-05-30 |
 | 44. Documentation Sync | v2.9 | 3/3 | Complete | 2026-05-31 |
 | 45. sg-plan Grilling Step | v2.10 | 1/1 | Complete | 2026-05-31 |
-| 46. sg-tdd 구현 + 파이프라인 통합 | v2.11 | 0/TBD | Not started | - |
+| 46. sg-tdd 구현 + 파이프라인 통합 | v2.11 | 1/2 | In Progress|  |
 | 47. 문서 갱신 | v2.11 | 0/TBD | Not started | - |

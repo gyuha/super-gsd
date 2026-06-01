@@ -183,23 +183,26 @@ function main() {
     }
 
     const platform = _detectPlatform();
-    let cmdExecute, cmdReview, cmdLearn, cmdShip;
+    let cmdExecute, cmdReview, cmdLearn, cmdShip, cmdTdd;
     if (platform === 'claude-code') {
       cmdExecute = '/super-gsd:sg-execute';
       cmdReview  = '/super-gsd:sg-review';
       cmdLearn   = '/super-gsd:sg-learn';
       cmdShip    = '/super-gsd:sg-ship';
+      cmdTdd     = '/super-gsd:sg-tdd';
     } else {
       cmdExecute = '$sg-execute';
       cmdReview  = '$sg-review';
       cmdLearn   = '$sg-retro';
       cmdShip    = '$sg-ship';
+      cmdTdd     = '$sg-tdd';
     }
 
     // Skip-aware next-step resolution (super_gsd.skip_review / skip_learn).
     // With both flags false/absent, blurbs are byte-identical to the prior fixed messages.
     const skipReview = !!cfg.skip_review;
     const skipLearn = !!cfg.skip_learn;
+    const tddMode = !!cfg.tdd_mode;
     const implNextBlurb = (!skipReview)
       ? `Run ${cmdReview} to request a code review.`
       : (!skipLearn)
@@ -213,7 +216,13 @@ function main() {
     if (signal === 'gsd-plan-complete') {
       response = { systemMessage: `GSD plan-phase complete. Run ${cmdExecute} to hand off to implementation.` };
     } else if (signal === 'superpowers-implementation-complete') {
-      response = { systemMessage: `Implementation complete. ${implNextBlurb}` };
+      // When the execute stage completes with tdd_mode on, sg-next routes to sg-tdd;
+      // mirror that here so the reminder matches. Only the `execute` stage honors
+      // tdd_mode (superpowers/parallel route straight to review, as in sg-next).
+      const blurb = (handoffStage === 'execute' && tddMode)
+        ? `Run ${cmdTdd} to run the TDD verification gate.`
+        : implNextBlurb;
+      response = { systemMessage: `Implementation complete. ${blurb}` };
     } else if (signal === 'tdd-complete') {
       response = { systemMessage: `TDD verification complete. ${implNextBlurb}` };
     } else if (signal === 'superpowers-review-complete') {

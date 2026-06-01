@@ -255,3 +255,10 @@
 | 2026-06-01T06:38:28Z | 46-sg-tdd-pipeline | sg-next | ship | - | gyuha |
 | 2026-06-01T06:40:20Z | 46-sg-tdd-pipeline | ship | sg-next | - | gyuha |
 | 2026-06-01T06:49:08Z | 47-documentation-update | sg-next | gsd-plan | - | gyuha |
+| 2026-06-01T06:59:56Z | 47-documentation-update | gsd-plan | execute | - | gyuha |
+| 2026-06-01T07:00:09Z | 47-documentation-update | execute | sg-next | - | gyuha |
+| 2026-06-01T07:00:25Z | 47-documentation-update | sg-next | review | - | gyuha |
+| 2026-06-01T07:03:11Z | 47-documentation-update | review | sg-next | - | gyuha |
+| 2026-06-01T07:05:11Z | 47-documentation-update | sg-next | sg-retro | - | gyuha |
+| 2026-06-01T07:05:29Z | 47-documentation-update | sg-retro | sg-next | - | gyuha |
+| 2026-06-01T07:05:40Z | 47-documentation-update | sg-next | ship | - | gyuha |

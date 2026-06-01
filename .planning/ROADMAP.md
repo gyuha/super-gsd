@@ -521,7 +521,10 @@ Plans:
 **Success Criteria** (what must be TRUE):
   1. `README.md`와 `README.ko.md` Commands 표에 `sg-tdd` 행이 추가되고, 파이프라인 서술이 `sg-plan → sg-execute → sg-tdd → sg-review`로 갱신된다
   2. `CLAUDE.md` 아키텍처/데이터 흐름 섹션에 `sg-tdd` 단계와 `super_gsd.tdd_mode` 플래그(기본 off, config.json 제어)가 명시된다
-**Plans**: TBD
+**Plans**: 1 plan
+Plans:
+
+- [ ] 47-01-PLAN.md — README.md + README.ko.md + CLAUDE.md sg-tdd 문서 갱신 (DOC-01, DOC-02)
 
 ---
 
@@ -567,4 +570,4 @@ Plans:
 | 44. Documentation Sync | v2.9 | 3/3 | Complete | 2026-05-31 |
 | 45. sg-plan Grilling Step | v2.10 | 1/1 | Complete | 2026-05-31 |
 | 46. sg-tdd 구현 + 파이프라인 통합 | v2.11 | 2/2 | Complete    | 2026-06-01 |
-| 47. 문서 갱신 | v2.11 | 0/TBD | Not started | - |
+| 47. 문서 갱신 | v2.11 | 0/1 | Not started | - |

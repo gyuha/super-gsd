@@ -511,7 +511,7 @@ Plans:
 
 **Wave 2** *(blocked on Wave 1 completion)*
 
-- [ ] 46-02-PLAN.md — transcript_matcher + stop_hook + sg-next/sg-status + .agents/ 미러 라우팅 갱신 (PIPE-01, PIPE-02, PIPE-03)
+- [x] 46-02-PLAN.md — transcript_matcher + stop_hook + sg-next/sg-status + .agents/ 미러 라우팅 갱신 (PIPE-01, PIPE-02, PIPE-03)
 
 ### Phase 47: 문서 갱신
 
@@ -566,5 +566,5 @@ Plans:
 | 43. One-shot Interaction + Display Polish | v2.9 | 2/2 | Complete | 2026-05-30 |
 | 44. Documentation Sync | v2.9 | 3/3 | Complete | 2026-05-31 |
 | 45. sg-plan Grilling Step | v2.10 | 1/1 | Complete | 2026-05-31 |
-| 46. sg-tdd 구현 + 파이프라인 통합 | v2.11 | 1/2 | In Progress|  |
+| 46. sg-tdd 구현 + 파이프라인 통합 | v2.11 | 2/2 | Complete   | 2026-06-01 |
 | 47. 문서 갱신 | v2.11 | 0/TBD | Not started | - |

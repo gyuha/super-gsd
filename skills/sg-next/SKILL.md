@@ -42,7 +42,7 @@ else
   STAGE_RAW=$(echo "$LAST_ROW" | awk -F'|' '{gsub(/ /,"",$5); print $5}')
   TS=$(echo "$LAST_ROW" | awk -F'|' '{gsub(/ /,"",$2); print $2}')
   case "$STAGE_RAW" in
-    gsd-plan|ui-plan|superpowers|parallel|execute|review|sg-retro|ship|complete|sg-next) ;;
+    gsd-plan|ui-plan|superpowers|parallel|execute|tdd|review|sg-retro|ship|complete|sg-next) ;;
     *) echo "Unknown stage '${STAGE_RAW}' in .planning/HANDOFF.md last row. Schema may be corrupted." >&2; exit 1 ;;
   esac
   # sg-next is a meta-transition row, so use the preceding FROM column ($4) as the actual current stage
@@ -57,7 +57,7 @@ else
     fi
     # Re-validate after scan-back — corrupt HANDOFF.md data must not propagate to FROM_STAGE
     case "$STAGE_RAW" in
-      init|gsd-plan|ui-plan|superpowers|parallel|execute|review|sg-retro|ship|complete) ;;
+      init|gsd-plan|ui-plan|superpowers|parallel|execute|tdd|review|sg-retro|ship|complete) ;;
       *) echo "Scan-back recovered unknown stage '${STAGE_RAW}' — defaulting to init." >&2; STAGE_RAW="init" ;;
     esac
   fi
@@ -107,7 +107,15 @@ case "$STAGE_RAW" in
   ui-plan)     NEXT_CMD="/super-gsd:sg-execute" ;;
   superpowers) NEXT_CMD="/super-gsd:sg-review" ;;
   parallel)    NEXT_CMD="/super-gsd:sg-review" ;;
-  execute)     NEXT_CMD="/super-gsd:sg-review" ;;
+  execute)
+    TDD_MODE=$(node -e "try{const c=require('./.planning/config.json');console.log(c.super_gsd&&c.super_gsd.tdd_mode?'true':'false')}catch(e){console.log('false')}" 2>/dev/null || echo "false")
+    if [ "$TDD_MODE" = "true" ]; then
+      NEXT_CMD="/super-gsd:sg-tdd"
+    else
+      NEXT_CMD="/super-gsd:sg-review"
+    fi
+    ;;
+  tdd)         NEXT_CMD="/super-gsd:sg-review" ;;
   review)      NEXT_CMD="/super-gsd:sg-learn" ;;
   sg-retro)    NEXT_CMD="/super-gsd:sg-ship" ;;
   ship)
@@ -198,6 +206,7 @@ echo "→ $NEXT_CMD"
 Skill() mapping by `NEXT_CMD`:
 
 - `/super-gsd:sg-execute` → `Skill(skill="super-gsd:sg-execute", args="")`
+- `/super-gsd:sg-tdd` → `Skill(skill="super-gsd:sg-tdd", args="")`
 - `/super-gsd:sg-review` → `Skill(skill="super-gsd:sg-review", args="")`
 - `/super-gsd:sg-learn` → `Skill(skill="super-gsd:sg-learn", args="")`
 - `/super-gsd:sg-ship` → `Skill(skill="super-gsd:sg-ship", args="")`
@@ -214,4 +223,5 @@ Skill() mapping by `NEXT_CMD`:
 3. For all stages except complete/init, emit one `→ /super-gsd:sg-[cmd]` line and immediately invoke via Skill() — no confirmation prompt (NEXT-03).
 4. When STAGE_RAW is complete or init, call AskUserQuestion; emit `Cancelled. No changes made.` and exit when cancel is selected (NEXT-04).
 5. Before Skill() invoke, append `| TS | PHASE_SLUG | FROM_STAGE | sg-next | - |` row to HANDOFF.md (NEXT-05, D-04).
+6. When STAGE_RAW is tdd, routes to /super-gsd:sg-review.
 </success_criteria>

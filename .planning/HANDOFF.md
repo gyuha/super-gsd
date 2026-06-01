@@ -253,3 +253,5 @@
 | 2026-06-01T06:38:00Z | 46-sg-tdd-pipeline | sg-next | sg-retro | - | gyuha |
 | 2026-06-01T06:38:18Z | 46-sg-tdd-pipeline | sg-retro | sg-next | - | gyuha |
 | 2026-06-01T06:38:28Z | 46-sg-tdd-pipeline | sg-next | ship | - | gyuha |
+| 2026-06-01T06:40:20Z | 46-sg-tdd-pipeline | ship | sg-next | - | gyuha |
+| 2026-06-01T06:49:08Z | 47-documentation-update | sg-next | gsd-plan | - | gyuha |

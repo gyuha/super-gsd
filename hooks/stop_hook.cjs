@@ -183,19 +183,17 @@ function main() {
     }
 
     const platform = _detectPlatform();
-    let cmdExecute, cmdReview, cmdLearn, cmdShip, cmdTdd;
+    let cmdExecute, cmdReview, cmdLearn, cmdShip;
     if (platform === 'claude-code') {
       cmdExecute = '/super-gsd:sg-execute';
       cmdReview  = '/super-gsd:sg-review';
       cmdLearn   = '/super-gsd:sg-learn';
       cmdShip    = '/super-gsd:sg-ship';
-      cmdTdd     = '/super-gsd:sg-tdd';
     } else {
       cmdExecute = '$sg-execute';
       cmdReview  = '$sg-review';
       cmdLearn   = '$sg-retro';
       cmdShip    = '$sg-ship';
-      cmdTdd     = '$sg-tdd';
     }
 
     let response;

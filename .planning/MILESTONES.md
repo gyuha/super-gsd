@@ -1,5 +1,15 @@
 # Milestones: super-gsd
 
+## v2.11 Add TDD workflow (sg-tdd) (Shipped: 2026-06-01)
+
+**Phases completed:** 2 phases, 3 plans, 0 tasks
+
+**Key accomplishments:**
+
+- (none recorded)
+
+---
+
 ## v2.10 Plan-Phase Ambiguity Grilling (Shipped: 2026-05-31)
 
 **Phases completed:** 1 phase (45), 1 plan

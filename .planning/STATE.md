@@ -2,15 +2,15 @@
 gsd_state_version: 1.0
 milestone: v2.11
 milestone_name: Add TDD workflow (sg-tdd)
-status: verifying
-last_updated: "2026-06-01T06:59:16.442Z"
-last_activity: 2026-06-01
+status: Awaiting next milestone
+last_updated: "2026-06-01T07:08:09.759Z"
+last_activity: 2026-06-01 — Milestone v2.11 completed and archived
 progress:
   total_phases: 10
-  completed_phases: 1
-  total_plans: 2
-  completed_plans: 2
-  percent: 10
+  completed_phases: 2
+  total_plans: 3
+  completed_plans: 3
+  percent: 20
 ---
 
 # Project State
@@ -24,16 +24,10 @@ See: .planning/PROJECT.md (updated 2026-06-01)
 
 ## Current Position
 
-Phase: 47
-Plan: Not started
-Status: Phase 47 complete — verified
-Last activity: 2026-06-01
-
-```
-v2.11 Progress: ░░░░░░░░░░ 0% (0/2 phases)
-Phase 46: sg-tdd 구현 + 파이프라인 통합 — Not started
-Phase 47: 문서 갱신 — Not started
-```
+Phase: Milestone v2.11 complete
+Plan: —
+Status: Awaiting next milestone
+Last activity: 2026-06-01 — Milestone v2.11 completed and archived
 
 ## Performance Metrics
 
@@ -108,4 +102,4 @@ Resume file: .planning/phases/47-new-phase/47-CONTEXT.md
 
 ## Operator Next Steps
 
-- Run `/super-gsd:sg-plan 46` to plan Phase 46
+- Start the next milestone with /gsd-new-milestone

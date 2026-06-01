@@ -300,3 +300,15 @@ This document evolves at phase transitions and milestone boundaries.
 
 ---
 *Last updated: 2026-06-01 after v2.11 milestone start — Add TDD workflow (sg-tdd) 목표 설정. Version 0.0.54.*
+
+## Key Decisions (v2.11 추가)
+
+| Decision | Rationale | Outcome |
+|----------|-----------|---------|
+| sg-tdd는 Non-invasive (Skill() 단일 호출) | Superpowers/GSD 내부 파일 미수정 원칙 — 외부 오케스트레이션만 수행 | ✓ Good — 완전한 Non-invasive 달성, 기존 워크플로우 무영향 |
+| tdd_mode config 플래그 기본 off | sg-execute → sg-review 기존 동작 보존 — 사용자가 명시적으로 opt-in 필요 | ✓ Good — 기존 사용자 워크플로우 중단 없음 |
+| HANDOFF.md dynamic FROM_STAGE | 재시도 시 From=tdd corruption 방지 — 마지막 행 To 컬럼 동적 읽기 | ✓ Good — sg-tdd/sg-retro 등 코드 리뷰에서 발견된 개선점 적용 |
+| D-07 inline-replication: sg-next+sg-status 4파일 동시 갱신 | 라우팅 테이블 동기화 보장 — 어느 한 파일만 수정하면 코드 리뷰 블로커 | ✓ Good — Phase 46에서 원자적 갱신 달성 |
+
+---
+*Last updated: 2026-06-01 after v2.11 milestone — Add TDD workflow (sg-tdd) shipped. Version 0.0.54.*

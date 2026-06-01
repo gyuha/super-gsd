@@ -252,3 +252,9 @@
 | 2026-05-31T15:35:42Z | 46-sg-use-tdd | sg-next | sg-retro | - | gyuha |
 | 2026-05-31T15:45:14Z | 46-sg-use-tdd | sg-retro | sg-next | - | gyuha |
 | 2026-05-31T15:45:25Z | 46-sg-use-tdd | sg-next | ship | - | gyuha |
+| 2026-05-31T15:50:34Z | 46-sg-use-tdd | ship | sg-next | - | gyuha |
+| 2026-05-31T16:03:54Z | 47-tdd-inject-fail-loop | sg-next | gsd-plan | - | gyuha |
+| 2026-05-31T21:58:32Z | 46-sg-use-tdd | sg-retro | sg-next | - | gyuha |
+| 2026-05-31T23:03:10Z | 47-tdd-inject-fail-loop | sg-next | superpowers | 59e60af | gyuha |
+| 2026-06-01T01:36:46Z | 47-tdd-inject-fail-loop | superpowers | sg-next | - | gyuha |
+| 2026-06-01T01:37:15Z | 47-tdd-inject-fail-loop | sg-next | review | - | gyuha |

@@ -2,6 +2,22 @@
 
 All notable changes to `super-gsd` are documented in this file. Format follows [Keep a Changelog](https://keepachangelog.com/).
 
+## [0.0.55] - 2026-06-01
+
+### Added
+
+- **워크플로우 단계 스킵 토글** — `sg-toggle-tdd` / `sg-toggle-review` / `sg-toggle-learn` 명령 신규(인자 없으면 토글, `on`/`off`로 명시 설정). `super_gsd.tdd_mode` / `skip_review` / `skip_learn` 플래그를 `.planning/config.json`에 read-merge-write로 기록(다른 키·2-space 들여쓰기 보존). `sg-next` / `sg-status` / `sg-start` 라우팅과 `stop_hook.cjs` 안내가 비활성 단계를 건너뛰고 다음 비-생략 단계로 chain-skip(`execute → … → ship`). 플래그가 모두 off이면 기존 라우팅과 byte-identical. `sg-start`는 새 프로젝트/마일스톤 시작 시 멀티셀렉트로 세 단계를 일괄 설정. `skills/` + `.agents/skills/` 미러 동반.
+- **sg-tdd TDD 워크플로우 단계 (v2.11)** — `super_gsd.tdd_mode: true`일 때 `sg-execute` 완료 후 `superpowers:test-driven-development` 검증 게이트를 실행하는 `sg-tdd` 스킬 신규. `sg-next`/`sg-status` 라우팅과 `.agents/` 미러에 `tdd` stage 추가, `stop_hook.cjs`에 `tdd-complete` 분기, `transcript_matcher.cjs`에 `TDD_SIGNALS` 추가.
+
+### Changed
+
+- README.md/README.ko.md 워크플로우 다이어그램을 색상 Mermaid 차트로 재작성(스킵 경로를 점선으로 표시)하고 텍스트 흐름도를 병기.
+- 스킬 개수 문서 정정 — `skills/` 25개, `.agents/skills/` 15개 (CLAUDE.md / README.md / README.ko.md / AGENTS.md / docs/COMMANDS.md).
+
+### Fixed
+
+- `.agents/skills/sg-start` 스킵 라우팅 분기에 `tdd`/`parallel` stage 누락 보정 — Codex/Gemini에서 마지막 stage가 `tdd`일 때 Next 줄이 `(unknown stage)`로 표시되던 문제 해결.
+
 ## [0.0.54] - 2026-05-31
 
 ### Added

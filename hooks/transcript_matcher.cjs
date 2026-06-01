@@ -24,6 +24,10 @@ const SG_RETRO_SIGNALS = [
   'Retrospective complete',
 ];
 
+const TDD_SIGNALS = [
+  'TDD verification complete',
+];
+
 function _splitlines(s) {
   const lines = s.split(/\r?\n/);
   if (lines.length > 0 && lines[lines.length - 1] === '') lines.pop();
@@ -47,6 +51,7 @@ function detectSignal(transcriptPath) {
   if (IMPLEMENTATION_SIGNALS.some(sig => recent.includes(sig))) return 'superpowers-implementation-complete';
   if (REVIEW_SIGNALS.some(sig => recent.includes(sig))) return 'superpowers-review-complete';
   if (SG_RETRO_SIGNALS.some(sig => recent.includes(sig))) return 'sg-retro-complete';
+  if (TDD_SIGNALS.some(sig => recent.includes(sig))) return 'tdd-complete';
   return '';
 }
 

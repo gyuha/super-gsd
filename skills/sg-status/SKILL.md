@@ -98,7 +98,7 @@ Self-contained — reads .planning/HANDOFF.md, .planning/STATE.md, .planning/ROA
      STAGE_RAW=$(echo "$LAST_ROW" | awk -F'|' '{gsub(/ /,"",$5); print $5}')
      TS=$(echo "$LAST_ROW" | awk -F'|' '{gsub(/ /,"",$2); print $2}')
      case "$STAGE_RAW" in
-       gsd-plan|ui-plan|superpowers|parallel|execute|review|sg-retro|ship|complete|sg-next) ;;
+       gsd-plan|ui-plan|superpowers|parallel|execute|tdd|review|sg-retro|ship|complete|sg-next) ;;
        *) echo "Unknown stage '${STAGE_RAW}' in .planning/HANDOFF.md last row. Schema may be corrupted." >&2; exit 1 ;;
      esac
      # sg-next is a meta-transition row; recover actual stage from FROM column ($4)
@@ -113,7 +113,7 @@ Self-contained — reads .planning/HANDOFF.md, .planning/STATE.md, .planning/ROA
        fi
        # Re-validate after scan-back — corrupt HANDOFF.md data must not propagate
        case "$STAGE_RAW" in
-         init|gsd-plan|ui-plan|superpowers|parallel|execute|review|sg-retro|ship|complete) ;;
+         init|gsd-plan|ui-plan|superpowers|parallel|execute|tdd|review|sg-retro|ship|complete) ;;
          *) echo "Scan-back recovered unknown stage '${STAGE_RAW}' — defaulting to init." >&2; STAGE_RAW="init" ;;
        esac
      fi
@@ -127,6 +127,7 @@ Self-contained — reads .planning/HANDOFF.md, .planning/STATE.md, .planning/ROA
      superpowers)  STAGE_DISPLAY="superpowers" ;;
      parallel)     STAGE_DISPLAY="superpowers" ;;
      execute)      STAGE_DISPLAY="superpowers" ;;
+     tdd)          STAGE_DISPLAY="superpowers" ;;
      review)       STAGE_DISPLAY="superpowers" ;;
      sg-retro)     STAGE_DISPLAY="sg-retro" ;;
      ship)         STAGE_DISPLAY="ship" ;;
@@ -174,7 +175,15 @@ Self-contained — reads .planning/HANDOFF.md, .planning/STATE.md, .planning/ROA
      ui-plan)     NEXT_CMD="/super-gsd:sg-execute" ;;
      superpowers) NEXT_CMD="/super-gsd:sg-review" ;;
      parallel)    NEXT_CMD="/super-gsd:sg-review" ;;
-     execute)     NEXT_CMD="/super-gsd:sg-review" ;;
+     execute)
+       TDD_MODE=$(node -e "try{const c=require('./.planning/config.json');console.log(c.super_gsd&&c.super_gsd.tdd_mode?'true':'false')}catch(e){console.log('false')}" 2>/dev/null || echo "false")
+       if [ "$TDD_MODE" = "true" ]; then
+         NEXT_CMD="/super-gsd:sg-tdd"
+       else
+         NEXT_CMD="/super-gsd:sg-review"
+       fi
+       ;;
+     tdd)         NEXT_CMD="/super-gsd:sg-review" ;;
      review)      NEXT_CMD="/super-gsd:sg-learn" ;;
      sg-retro)    NEXT_CMD="/super-gsd:sg-ship" ;;
      ship)

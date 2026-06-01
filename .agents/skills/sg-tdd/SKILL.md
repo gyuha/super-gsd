@@ -17,9 +17,9 @@ tdd_mode가 활성화된 경우 현재 phase의 구현 결과를 Superpowers tes
 
 <constraints>
 ## Platform Constraints (Codex / Gemini CLI / Antigravity CLI)
-- Superpowers integration unavailable: superpowers:test-driven-development skill cannot be used. Runs in direct TDD verification mode.
 - SubagentStop not supported: no automatic trigger on stage completion. Run $sg-review manually after completion.
 - AskUserQuestion not supported: failure path is presented as a plain text numbered list. Read user reply and proceed accordingly.
+- Use $sg-tdd / $sg-review / $sg-execute instead of /super-gsd:sg-* slash commands.
 </constraints>
 
 <execution_context>
@@ -98,37 +98,35 @@ This command is self-contained — no external workflow files imported. Reads .p
    echo "| $TS | $PHASE_SLUG | $FROM_STAGE | tdd | - | $GIT_USER |" >> .planning/HANDOFF.md
    ```
 
-7. **직접 TDD 검증 실행 + 완료 신호 출력 (D-06, D-07).**
-   Superpowers 미사용. 아래 단계를 직접 수행한다:
+7. **프롬프트 빌드 + TDD 검증 완료 신호 출력 + Skill() 호출 (D-06, D-07).**
+   Superpowers에 전달할 컨텍스트 blob을 아래 형식으로 조립한다:
+   ```
+   # TDD Verification — Phase <N> (<PHASE_NAME>)
 
-   (a) 프로젝트 테스트 명령 탐지 및 실행:
-   ```bash
-   if [ -f "package.json" ]; then
-     TEST_CMD="npm test"
-   elif [ -f "Cargo.toml" ]; then
-     TEST_CMD="cargo test"
-   elif [ -f "go.mod" ]; then
-     TEST_CMD="go test ./..."
-   elif [ -f "pyproject.toml" ] || [ -f "requirements.txt" ]; then
-     TEST_CMD="python -m pytest -q --tb=short"
-   else
-     TEST_CMD=""
-   fi
-   if [ -n "$TEST_CMD" ]; then
-     eval "$TEST_CMD" 2>&1
-     TEST_EXIT=$?
-   else
-     echo "No test runner detected. Skipping automated test run."
-     TEST_EXIT=0
-   fi
+   ## Goal
+   <GOAL>
+
+   ## Success Criteria
+   <SC_TEXT>
+
+   ## Instruction
+   Verify TDD compliance for the implementation above using superpowers:test-driven-development.
+   Check that: (1) tests were written before or alongside implementation, (2) all tests pass, (3) no production code exists without a corresponding test.
+   If TDD verification finds issues, surface them and ask the user: proceed to $sg-review or retry.
    ```
 
-   (b) 결과 평가 후 반드시 아래 정확한 문자열을 출력한다 (D-06 transcript 신호):
+   컨텍스트 blob 출력 후 반드시 아래 정확한 문자열을 출력한다 (D-06 transcript 신호):
    ```bash
    echo "TDD verification complete"
    ```
 
-   (c) 테스트 실패 시 plain text numbered list로 소프트 경고 + 선택지 제공 (D-01):
+   그 다음 Skill() 호출 — 이후 어떤 코드도 실행하지 않는다 (Terminal Skill pattern):
+   ```
+   Skill(skill="superpowers:test-driven-development", args="<the context blob above>")
+   ```
+
+   TDD 검증 실패 처리 (D-01) — Superpowers 스킬이 실패를 보고할 때 sg-tdd 스킬 내부에서 처리:
+   Superpowers 스킬 완료 후 실패 신호가 감지되면 plain text로 다음을 출력하고 사용자 응답을 기다린다:
    ```
    TDD verification found issues. How do you want to proceed?
    1. Proceed to $sg-review

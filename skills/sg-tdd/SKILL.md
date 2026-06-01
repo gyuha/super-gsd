@@ -77,13 +77,18 @@ This command is self-contained — no external workflow files imported. Reads .p
    ```
 
 6. **HANDOFF.md에 tdd 행 append (Skill() 호출 전).**
-   From 컬럼은 항상 "execute"를 사용한다 (sg-tdd는 항상 execute 뒤에 온다).
+   From 컬럼은 HANDOFF.md 마지막 행의 To 값을 읽어 설정한다 (재시도 시 From=tdd 방지).
    ```bash
    TS=$(date -u +%Y-%m-%dT%H:%M:%SZ)
    PHASE_SLUG=$(basename "$PHASE_DIR")
    GIT_USER=$(git config user.name 2>/dev/null || echo "-")
    [ -z "$GIT_USER" ] && GIT_USER="-"
-   echo "| $TS | $PHASE_SLUG | execute | tdd | - | $GIT_USER |" >> .planning/HANDOFF.md
+   LAST_ROW=$(grep -E '^\| [0-9]{4}-' .planning/HANDOFF.md 2>/dev/null | tail -1)
+   if [ -n "$LAST_ROW" ]; then
+     FROM_STAGE=$(echo "$LAST_ROW" | awk -F'|' '{gsub(/ /,"",$5); print $5}')
+   fi
+   [ -z "$FROM_STAGE" ] && FROM_STAGE="execute"
+   echo "| $TS | $PHASE_SLUG | $FROM_STAGE | tdd | - | $GIT_USER |" >> .planning/HANDOFF.md
    ```
 
 7. **프롬프트 빌드 + TDD 검증 완료 신호 출력 + Skill() 호출 (D-06, D-07).**

@@ -69,6 +69,7 @@ case "$STAGE_RAW" in
   superpowers)  STAGE_DISPLAY="superpowers" ;;
   parallel)     STAGE_DISPLAY="superpowers" ;;
   execute)      STAGE_DISPLAY="superpowers" ;;
+  tdd)          STAGE_DISPLAY="superpowers" ;;
   review)       STAGE_DISPLAY="superpowers" ;;
   sg-retro)     STAGE_DISPLAY="sg-retro" ;;
   ship)         STAGE_DISPLAY="ship" ;;

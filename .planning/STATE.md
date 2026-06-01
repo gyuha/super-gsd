@@ -1,16 +1,16 @@
 ---
 gsd_state_version: 1.0
-milestone: v2.10
-milestone_name: Plan-Phase Ambiguity Grilling
-status: shipped
-last_updated: "2026-05-31T13:17:00.000Z"
-last_activity: 2026-05-31 — v2.10 milestone shipped (Phase 45 retro + archived)
+milestone: v2.11
+milestone_name: Add TDD workflow (sg-tdd)
+status: planning
+last_updated: "2026-06-01T04:57:07.058Z"
+last_activity: 2026-06-01
 progress:
-  total_phases: 1
-  completed_phases: 1
-  total_plans: 1
-  completed_plans: 1
-  percent: 100
+  total_phases: 0
+  completed_phases: 0
+  total_plans: 0
+  completed_plans: 0
+  percent: 0
 ---
 
 # Project State
@@ -24,10 +24,10 @@ See: .planning/PROJECT.md (updated 2026-05-26)
 
 ## Current Position
 
-Phase: 45 — sg-plan Grilling Step
-Plan: 45-01 (1 plan, 1 wave) — complete
-Status: v2.10 shipped (retro recorded, milestone archived). No active milestone.
-Last activity: 2026-05-31 — v2.10 milestone closed (Phase 45 retro → lessons → archive)
+Phase: Not started (defining requirements)
+Plan: —
+Status: Defining requirements
+Last activity: 2026-06-01 — Milestone v2.11 started
 
 ## Performance Metrics
 

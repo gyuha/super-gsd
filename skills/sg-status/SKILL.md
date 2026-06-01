@@ -173,18 +173,13 @@ Self-contained — reads .planning/HANDOFF.md, .planning/STATE.md, .planning/ROA
        ;;
      gsd-plan)    NEXT_CMD="/super-gsd:sg-execute" ;;
      ui-plan)     NEXT_CMD="/super-gsd:sg-execute" ;;
-     superpowers) NEXT_CMD="/super-gsd:sg-review" ;;
-     parallel)    NEXT_CMD="/super-gsd:sg-review" ;;
-     execute)
-       TDD_MODE=$(node -e "try{const c=require('./.planning/config.json');console.log(c.super_gsd&&c.super_gsd.tdd_mode?'true':'false')}catch(e){console.log('false')}" 2>/dev/null || echo "false")
-       if [ "$TDD_MODE" = "true" ]; then
-         NEXT_CMD="/super-gsd:sg-tdd"
-       else
-         NEXT_CMD="/super-gsd:sg-review"
-       fi
+     superpowers|parallel|execute|tdd|review)
+       # Skip-aware routing for the implementation→ship segment (mirrors skills/sg-next/SKILL.md).
+       #   tdd_mode (execute only) → sg-tdd; skip_review → omit review; skip_learn → omit learn.
+       # With all flags false/absent this reproduces the prior fixed routing exactly.
+       NEXT_CMD=$(SG_STAGE="$STAGE_RAW" node -e 'let c={};try{c=(require("./.planning/config.json").super_gsd)||{}}catch(e){}var tdd=!!c.tdd_mode,sr=!!c.skip_review,sl=!!c.skip_learn,s=process.env.SG_STAGE,n;if(s==="execute"&&tdd){n="sg-tdd"}else if(s==="review"){n=sl?"sg-ship":"sg-learn"}else{n=sr?(sl?"sg-ship":"sg-learn"):"sg-review"}process.stdout.write("/super-gsd:"+n)' 2>/dev/null)
+       [ -z "$NEXT_CMD" ] && NEXT_CMD="/super-gsd:sg-review"
        ;;
-     tdd)         NEXT_CMD="/super-gsd:sg-review" ;;
-     review)      NEXT_CMD="/super-gsd:sg-learn" ;;
      sg-retro)    NEXT_CMD="/super-gsd:sg-ship" ;;
      ship)
        if [ "$NEXT_PHASE_EXISTS" = "1" ]; then

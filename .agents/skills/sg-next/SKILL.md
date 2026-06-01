@@ -99,18 +99,13 @@ case "$STAGE_RAW" in
     ;;
   gsd-plan)    NEXT_CMD="\$sg-execute" ;;
   ui-plan)     NEXT_CMD="\$sg-execute" ;;
-  superpowers) NEXT_CMD="\$sg-review" ;;
-  parallel)    NEXT_CMD="\$sg-review" ;;
-  execute)
-    TDD_MODE=$(node -e "try{const c=require('./.planning/config.json');console.log(c.super_gsd&&c.super_gsd.tdd_mode?'true':'false')}catch(e){console.log('false')}" 2>/dev/null || echo "false")
-    if [ "$TDD_MODE" = "true" ]; then
-      NEXT_CMD="\$sg-tdd"
-    else
-      NEXT_CMD="\$sg-review"
-    fi
+  superpowers|parallel|execute|tdd|review)
+    # Skip-aware routing for the implementation→ship segment. Reads super_gsd config:
+    #   tdd_mode (execute only) → run $sg-tdd; skip_review → omit $sg-review; skip_learn → omit $sg-learn.
+    # With all flags false/absent this reproduces the prior fixed routing exactly.
+    NEXT_CMD=$(SG_STAGE="$STAGE_RAW" node -e 'let c={};try{c=(require("./.planning/config.json").super_gsd)||{}}catch(e){}var tdd=!!c.tdd_mode,sr=!!c.skip_review,sl=!!c.skip_learn,s=process.env.SG_STAGE,n;if(s==="execute"&&tdd){n="sg-tdd"}else if(s==="review"){n=sl?"sg-ship":"sg-learn"}else{n=sr?(sl?"sg-ship":"sg-learn"):"sg-review"}process.stdout.write("$"+n)' 2>/dev/null)
+    [ -z "$NEXT_CMD" ] && NEXT_CMD="\$sg-review"
     ;;
-  tdd)         NEXT_CMD="\$sg-review" ;;
-  review)      NEXT_CMD="\$sg-learn" ;;
   sg-retro)    NEXT_CMD="\$sg-ship" ;;
   ship)
     if [ "$NEXT_PHASE_EXISTS" = "1" ]; then
@@ -194,4 +189,5 @@ Then tell the user to activate that skill by running it as a Codex/Gemini skill 
 5. Before reporting the next step, append `| TS | PHASE_SLUG | FROM_STAGE | sg-next | - |` to HANDOFF.md (NEXT-05).
 6. FROM_STAGE is set to the resolved STAGE_RAW value (not re-read from HANDOFF.md).
 7. If the last HANDOFF row has corrupted sg-next chain, scan backward for the last real stage (NEXT-06).
+8. For the superpowers/parallel/execute/tdd/review stages, routing is skip-aware (super_gsd.tdd_mode / skip_review / skip_learn): a skipped stage chain-skips to the next non-skipped stage. With all flags false/absent the routing is unchanged.
 </success_criteria>

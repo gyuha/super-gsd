@@ -147,10 +147,12 @@ Reads .planning/STATE.md, .planning/HANDOFF.md, .planning/ROADMAP.md (next-phase
        ;;
      gsd-plan)    NEXT_CMD="/super-gsd:sg-execute" ;;
      ui-plan)     NEXT_CMD="/super-gsd:sg-execute" ;;
-     superpowers) NEXT_CMD="/super-gsd:sg-review" ;;
-     parallel)    NEXT_CMD="/super-gsd:sg-review" ;;
-     execute)     NEXT_CMD="/super-gsd:sg-review" ;;
-     review)      NEXT_CMD="/super-gsd:sg-learn" ;;
+     superpowers|parallel|execute|tdd|review)
+       # Skip-aware routing for the implementation→ship segment (mirrors skills/sg-next/SKILL.md).
+       #   tdd_mode (execute only) → sg-tdd; skip_review → omit review; skip_learn → omit learn.
+       NEXT_CMD=$(SG_STAGE="$STAGE_RAW" node -e 'let c={};try{c=(require("./.planning/config.json").super_gsd)||{}}catch(e){}var tdd=!!c.tdd_mode,sr=!!c.skip_review,sl=!!c.skip_learn,s=process.env.SG_STAGE,n;if(s==="execute"&&tdd){n="sg-tdd"}else if(s==="review"){n=sl?"sg-ship":"sg-learn"}else{n=sr?(sl?"sg-ship":"sg-learn"):"sg-review"}process.stdout.write("/super-gsd:"+n)' 2>/dev/null)
+       [ -z "$NEXT_CMD" ] && NEXT_CMD="/super-gsd:sg-review"
+       ;;
      sg-retro)    NEXT_CMD="/super-gsd:sg-ship" ;;
      ship)
        if [ "$NEXT_PHASE_EXISTS" = "1" ]; then
@@ -195,7 +197,7 @@ Reads .planning/STATE.md, .planning/HANDOFF.md, .planning/ROADMAP.md (next-phase
 
    Response branches:
    - **Resume** (D-08, D-16): no additional output, exit. Automatic Skill invoke is strictly forbidden (D-09 hybrid handoff not applied — user runs the Next line command directly).
-   - **Start new milestone** (D-14):
+   - **Start new milestone** (D-14): first run the **Stage skip configuration** block (Step 7) to let the user choose which stages to skip, then:
      ```
      Skill(skill="gsd-new-milestone", args="")
      ```
@@ -206,11 +208,52 @@ Reads .planning/STATE.md, .planning/HANDOFF.md, .planning/ROADMAP.md (next-phase
 
 6. **D-17 fallback branch (`EXISTING_SESSION=0`).**
 
-   When STATE.md is not detected or `^Phase:` line capture fails, call as-is (unchanged behavior):
+   When STATE.md is not detected or `^Phase:` line capture fails: first run the **Stage skip configuration** block (Step 7) so the choice is persisted before delegation, then call as-is (backward compatible):
    ```
    Skill(skill="gsd-new-project", args="$ARGUMENTS")
    ```
-   `$ARGUMENTS` passthrough preserved (backward compatible). No additional output.
+   `$ARGUMENTS` passthrough preserved. No additional output beyond the Step 7 confirmation.
+
+   Caveat: for a brand-new project, `.planning/config.json` may not exist yet, so Step 7 creates it with only the `super_gsd` block. If `gsd-new-project` later regenerates config.json from scratch it could overwrite these flags; in that case the user re-applies them with `/super-gsd:sg-toggle-*`.
+
+7. **Stage skip configuration (SKIP-CFG; new milestone / new project only).**
+
+   Run this block ONLY when the user chose "Start new milestone" (Step 5) or in the new-project fallback (Step 6). Never run it on Resume. It lets the user pick which workflow stages to skip and persists the choice to `.planning/config.json`.
+
+   AskUserQuestion (multiSelect — selecting nothing keeps the defaults: Review + Learn included, TDD off):
+   ```
+   AskUserQuestion(
+     questions: [{
+       question: "Configure optional workflow stages. Selecting nothing keeps the defaults (Review and Learn run, TDD off).",
+       header: "Stages",
+       multiSelect: true,
+       options: [
+         { label: "Skip Review", description: "Skip the sg-review stage (skip_review=true)." },
+         { label: "Skip Learn", description: "Skip the sg-learn / sg-retro stage (skip_learn=true)." },
+         { label: "Enable TDD", description: "Run sg-tdd after execute (tdd_mode=true)." }
+       ]
+     }]
+   )
+   ```
+
+   Derive three booleans from the selection, then persist (read-merge-write; macOS compatible — node only, no jq). `SR`=true if "Skip Review" selected, `SL`=true if "Skip Learn" selected, `TM`=true if "Enable TDD" selected:
+   ```bash
+   SR="$SKIP_REVIEW" SL="$SKIP_LEARN" TM="$ENABLE_TDD" node -e '
+   const fs=require("fs"), path=require("path");
+   const p=path.join(process.cwd(),".planning","config.json");
+   let cfg={}; try{cfg=JSON.parse(fs.readFileSync(p,"utf-8"));}catch(e){cfg={};}
+   cfg.super_gsd=cfg.super_gsd||{};
+   cfg.super_gsd.skip_review=(process.env.SR==="true");
+   cfg.super_gsd.skip_learn=(process.env.SL==="true");
+   cfg.super_gsd.tdd_mode=(process.env.TM==="true");
+   fs.mkdirSync(path.dirname(p),{recursive:true});
+   fs.writeFileSync(p, JSON.stringify(cfg,null,2)+"\n");
+   const seq=["execute"]; if(cfg.super_gsd.tdd_mode)seq.push("tdd"); if(!cfg.super_gsd.skip_review)seq.push("review"); if(!cfg.super_gsd.skip_learn)seq.push("learn"); seq.push("ship");
+   process.stdout.write(seq.join(" → "));
+   '
+   ```
+
+   Report the resulting workflow sequence in the user's language (the printed `execute → … → ship` sequence and the flag names stay verbatim), then continue with the branch's delegation.
 </process>
 
 <success_criteria>
@@ -218,5 +261,6 @@ Reads .planning/STATE.md, .planning/HANDOFF.md, .planning/ROADMAP.md (next-phase
 2. When Resume is selected, exit emit-only with no additional Skill invoke; the user runs the Next line command directly (SESS-03; D-08, D-09).
 3. When Start new milestone is selected, call `Skill(skill="gsd-new-milestone", args="")` (args empty string); when Cancel is selected, emit `Cancelled. No changes made.` single line and exit (D-14, D-15).
 4. All three options access `.planning/HANDOFF.md` as read-only — no deletion, modification, or append (SESS-04; D-16).
-5. When STATE.md is not detected or `^Phase:` line capture fails, call `Skill(skill="gsd-new-project", args="$ARGUMENTS")` unchanged (D-17 backward compatible).
+5. When STATE.md is not detected or `^Phase:` line capture fails, run the Step 7 Stage skip configuration block, then call `Skill(skill="gsd-new-project", args="$ARGUMENTS")` (D-17 backward compatible).
+6. The Stage skip configuration block (Step 7) runs only for "Start new milestone" and the new-project fallback — never on Resume — and persists `skip_review` / `skip_learn` / `tdd_mode` to `.planning/config.json` (read-merge-write, other keys preserved).
 </success_criteria>

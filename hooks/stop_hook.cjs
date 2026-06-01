@@ -196,15 +196,28 @@ function main() {
       cmdShip    = '$sg-ship';
     }
 
+    // Skip-aware next-step resolution (super_gsd.skip_review / skip_learn).
+    // With both flags false/absent, blurbs are byte-identical to the prior fixed messages.
+    const skipReview = !!cfg.skip_review;
+    const skipLearn = !!cfg.skip_learn;
+    const implNextBlurb = (!skipReview)
+      ? `Run ${cmdReview} to request a code review.`
+      : (!skipLearn)
+        ? `Run ${cmdLearn} to capture lessons via sg-retro.`
+        : `Run ${cmdShip} to ship the phase.`;
+    const reviewNextBlurb = (!skipLearn)
+      ? `Run ${cmdLearn} to capture lessons via sg-retro.`
+      : `Run ${cmdShip} to ship the phase.`;
+
     let response;
     if (signal === 'gsd-plan-complete') {
       response = { systemMessage: `GSD plan-phase complete. Run ${cmdExecute} to hand off to implementation.` };
     } else if (signal === 'superpowers-implementation-complete') {
-      response = { systemMessage: `Implementation complete. Run ${cmdReview} to request a code review.` };
+      response = { systemMessage: `Implementation complete. ${implNextBlurb}` };
     } else if (signal === 'tdd-complete') {
-      response = { systemMessage: `TDD verification complete. Run ${cmdReview} to request a code review.` };
+      response = { systemMessage: `TDD verification complete. ${implNextBlurb}` };
     } else if (signal === 'superpowers-review-complete') {
-      response = { systemMessage: `Review complete. Run ${cmdLearn} to capture lessons via sg-retro.` };
+      response = { systemMessage: `Review complete. ${reviewNextBlurb}` };
     } else if (signal === 'sg-retro-complete') {
       response = { systemMessage: `Retrospective complete. Run ${cmdShip} to ship the phase.` };
     } else {

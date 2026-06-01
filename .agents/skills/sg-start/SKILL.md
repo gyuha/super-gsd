@@ -142,9 +142,12 @@ Reads .planning/STATE.md, .planning/HANDOFF.md, .planning/ROADMAP.md. Writes not
        fi
        ;;
      gsd-plan)    NEXT_CMD="/super-gsd:sg-execute" ;;
-     superpowers) NEXT_CMD="/super-gsd:sg-review" ;;
-     execute)     NEXT_CMD="/super-gsd:sg-review" ;;
-     review)      NEXT_CMD="/super-gsd:sg-learn" ;;
+     superpowers|parallel|execute|tdd|review)
+       # Skip-aware routing for the implementation→ship segment.
+       #   tdd_mode (execute only) → sg-tdd; skip_review → omit review; skip_learn → omit learn.
+       NEXT_CMD=$(SG_STAGE="$STAGE_RAW" node -e 'let c={};try{c=(require("./.planning/config.json").super_gsd)||{}}catch(e){}var tdd=!!c.tdd_mode,sr=!!c.skip_review,sl=!!c.skip_learn,s=process.env.SG_STAGE,n;if(s==="execute"&&tdd){n="sg-tdd"}else if(s==="review"){n=sl?"sg-ship":"sg-learn"}else{n=sr?(sl?"sg-ship":"sg-learn"):"sg-review"}process.stdout.write("/super-gsd:"+n)' 2>/dev/null)
+       [ -z "$NEXT_CMD" ] && NEXT_CMD="/super-gsd:sg-review"
+       ;;
      hookify)     NEXT_CMD="/super-gsd:sg-ship" ;;
      ship)
        if [ "${NEXT_PHASE_EXISTS:-0}" = "1" ]; then
@@ -183,7 +186,7 @@ Reads .planning/STATE.md, .planning/HANDOFF.md, .planning/ROADMAP.md. Writes not
 
    Response branch:
    - **"1" or "Resume"**: No additional output, exit. User runs the Next line command directly.
-   - **"2" or "Start new milestone"**:
+   - **"2" or "Start new milestone"**: first run the **Stage skip configuration** block (Step 7), then:
      ```
      Skill(skill="gsd-new-milestone", args="")
      ```
@@ -202,12 +205,12 @@ Reads .planning/STATE.md, .planning/HANDOFF.md, .planning/ROADMAP.md. Writes not
    fi
    ```
 
-   With GSD:
+   With GSD: first run the **Stage skip configuration** block (Step 7), then:
    ```
    Skill(skill="gsd-new-project", args="$ARGUMENTS")
    ```
 
-   Without GSD (prose fallback):
+   Without GSD (prose fallback): run the **Stage skip configuration** block (Step 7), then:
    ```
    [sg-start] GSD not found. Running manual project setup.
 
@@ -216,8 +219,45 @@ Reads .planning/STATE.md, .planning/HANDOFF.md, .planning/ROADMAP.md. Writes not
    2. Create .planning/STATE.md (Phase: 1, milestone: v1.0)
    3. Create .planning/ROADMAP.md (add Phase 1 section)
    4. Create .planning/REQUIREMENTS.md (requirements list)
-   5. Run /super-gsd:sg-plan 1 to start planning the first phase
+   5. Run $sg-plan 1 to start planning the first phase
    ```
+
+7. **Stage skip configuration (SKIP-CFG; new milestone / new project only).**
+
+   Run this block ONLY for "Start new milestone" (Step 5 option 2) or the new-project fallback (Step 6). Never run it on Resume. AskUserQuestion is unavailable, so prompt as text and read the free-form reply:
+   ```
+   Configure optional workflow stages. Enter any of: review, learn, tdd (comma-separated).
+     - review → skip the $sg-review stage
+     - learn  → skip the $sg-learn stage
+     - tdd    → enable the $sg-tdd stage (runs after execute)
+   Press Enter with no input to keep the defaults (review + learn run, tdd off).
+   ```
+
+   Parse the reply into a single lowercase string `SELECTION`, then persist (read-merge-write; node only, no jq):
+   ```bash
+   SELECTION=$(printf '%s' "$REPLY" | tr '[:upper:]' '[:lower:]')
+   SR=false; SL=false; TM=false
+   echo "$SELECTION" | grep -q 'review' && SR=true
+   echo "$SELECTION" | grep -q 'learn'  && SL=true
+   echo "$SELECTION" | grep -q 'tdd'    && TM=true
+   SR="$SR" SL="$SL" TM="$TM" node -e '
+   const fs=require("fs"), path=require("path");
+   const p=path.join(process.cwd(),".planning","config.json");
+   let cfg={}; try{cfg=JSON.parse(fs.readFileSync(p,"utf-8"));}catch(e){cfg={};}
+   cfg.super_gsd=cfg.super_gsd||{};
+   cfg.super_gsd.skip_review=(process.env.SR==="true");
+   cfg.super_gsd.skip_learn=(process.env.SL==="true");
+   cfg.super_gsd.tdd_mode=(process.env.TM==="true");
+   fs.mkdirSync(path.dirname(p),{recursive:true});
+   fs.writeFileSync(p, JSON.stringify(cfg,null,2)+"\n");
+   const seq=["execute"]; if(cfg.super_gsd.tdd_mode)seq.push("tdd"); if(!cfg.super_gsd.skip_review)seq.push("review"); if(!cfg.super_gsd.skip_learn)seq.push("learn"); seq.push("ship");
+   process.stdout.write(seq.join(" → "));
+   '
+   ```
+
+   Report the resulting `execute → … → ship` sequence in the user's language (sequence and flag names verbatim), then continue with the branch's delegation.
+
+   Caveat: for a brand-new project, `.planning/config.json` may not exist yet, so this block creates it with only the `super_gsd` section; if `gsd-new-project` regenerates config.json it may overwrite these flags, in which case the user re-applies them with `$sg-toggle-*`.
 </process>
 
 <success_criteria>

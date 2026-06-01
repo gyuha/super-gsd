@@ -82,6 +82,9 @@ Self-contained. Determine the @gyuha/super-gsd package root via require.resolve,
    - `.agents/skills/sg-ship/SKILL.md`
    - `.agents/skills/sg-start/SKILL.md`
    - `.agents/skills/sg-status/SKILL.md`
+   - `.agents/skills/sg-toggle-tdd/SKILL.md`
+   - `.agents/skills/sg-toggle-review/SKILL.md`
+   - `.agents/skills/sg-toggle-learn/SKILL.md`
    - `.codex/hooks.json`
 
    Added when GEMINI=true:

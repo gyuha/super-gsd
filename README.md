@@ -13,14 +13,49 @@ All twenty-two slash commands covering the full GSD → Superpowers → sg-retro
 
 ## Workflow
 
-```
-[ manual entry ]                       [ sg-next auto-chains after sg-plan completes ]
+The workflow splits into a **manual entry** (you run `sg-start`/`sg-new`, `sg-explore`, then the first `sg-plan`) and an **auto-chain** that `sg-next` drives from `sg-execute` onward. The `sg-tdd`, `sg-review`, and `sg-learn` stages are **optional** — toggle them with `sg-toggle-*` (which set `tdd_mode` / `skip_review` / `skip_learn` in `.planning/config.json`), and `sg-next`, `sg-status`, and the stop hook all chain-skip any disabled stage straight to the next non-skipped one. `sg-start` can also configure all three at once via multi-select when starting a new project or milestone. Each shipped phase loops back to `sg-plan` (with lessons fed forward); closing the milestone runs `sg-complete` → `sg-new`.
 
-sg-new/sg-start → sg-explore → sg-plan → sg-execute → sg-tdd (tdd_mode=true) → sg-review → sg-learn → sg-ship → sg-complete
-                                  ↑                                                          |                      ↓
-                                  └──── lessons auto-injected ←───────────────────────────────┘               → sg-new
-                                  (next sg-plan reads .planning/lessons/)        (next milestone)
+```text
+Manual entry                  Auto-chain (sg-next drives from sg-execute)
+sg-start / sg-new                          ┌── [sg-tdd] ─ [sg-review] ─ [sg-learn] ──┐
+   → sg-explore → sg-plan ── sg-execute ───┤  (optional, skippable via sg-toggle-*)  ├── sg-ship
+                      ▲                     └─────────────────────────────────────────┘     │
+                      └── next phase / lessons fed forward ───────────────────────────┘     │
+                                                              milestone done ── sg-complete ─→ sg-new
+[ … ] = optional stage — skip with sg-toggle-tdd / sg-toggle-review / sg-toggle-learn
 ```
+
+```mermaid
+flowchart LR
+    S(["sg-start / sg-new"]) --> EX["sg-explore"] --> PL["sg-plan"]
+    PL --> EXE["sg-execute"]
+    EXE --> TDD["sg-tdd"]
+    TDD --> REV["sg-review"]
+    REV --> LRN["sg-learn"]
+    LRN --> SHIP["sg-ship"]
+
+    EXE -.->|"tdd_mode off (default)"| REV
+    EXE -.->|"skip_review"| LRN
+    REV -.->|"skip_learn"| SHIP
+
+    SHIP -->|"next phase"| PL
+    SHIP -->|"milestone done"| CMP["sg-complete"]
+    CMP --> NEW["sg-new"]
+    NEW -.->|"next milestone"| PL
+    LRN -.->|"lessons → next plan"| PL
+
+    classDef manual fill:#e3f2fd,stroke:#1565c0,color:#0d47a1;
+    classDef auto fill:#e8f5e9,stroke:#2e7d32,color:#1b5e20;
+    classDef opt fill:#fff8e1,stroke:#ef6c00,color:#e65100,stroke-dasharray:5 3;
+    classDef done fill:#f3e5f5,stroke:#7b1fa2,color:#4a148c;
+
+    class S,EX,PL manual;
+    class EXE,SHIP auto;
+    class TDD,REV,LRN opt;
+    class CMP,NEW done;
+```
+
+> Solid arrows are the default path; dashed arrows are skip routes that activate when a stage is toggled off (`tdd_mode` is off by default, so `sg-tdd` only runs once enabled). Yellow dashed nodes are the optional, toggleable stages.
 
 `sg-next` reads HANDOFF.md/STATE.md and auto-invokes the next command in the chain (`gsd-plan → sg-execute`, `parallel/execute → sg-tdd (tdd_mode=true) → sg-review`, `review → sg-learn`, `sg-retro → sg-ship`, `ship → sg-plan {next phase}` or `sg-complete`, `complete → sg-new` via AskUserQuestion). The entry-point commands (`sg-start`, `sg-explore`, and the initial `sg-plan`) are invoked manually before the auto-chain begins.
 
@@ -46,6 +81,9 @@ Quick reference for all `/super-gsd:sg-*` slash commands.
 | `/super-gsd:sg-new` | Start a new milestone via `gsd-new-milestone` | After `sg-complete`, to begin the next milestone |
 | `/super-gsd:sg-next` | Detect the current workflow stage from HANDOFF.md and STATE.md and immediately invoke the next sg-* command — no confirmation required | Any time you want to auto-advance to the next step without remembering the command |
 | `/super-gsd:sg-status` | Show current stage, last handoff timestamp, and next recommended command | At any point to check where you are |
+| `/super-gsd:sg-toggle-tdd` | Toggle the `sg-tdd` stage on/off (`super_gsd.tdd_mode`) — `on`/`off`, or no argument to flip | To enable or disable the TDD verification gate |
+| `/super-gsd:sg-toggle-review` | Toggle the `sg-review` stage on/off (`super_gsd.skip_review`) — `on`/`off`, or no argument to flip | To include or skip code review in the workflow |
+| `/super-gsd:sg-toggle-learn` | Toggle the `sg-learn` stage on/off (`super_gsd.skip_learn`) — `on`/`off`, or no argument to flip | To include or skip the retrospective in the workflow |
 | `/super-gsd:sg-update` | Check, install, or update GSD, superpowers, and super-gsd (installs missing tools automatically) | When you want to install or update all workflow tools at once |
 | `/super-gsd:sg-quick` | Execute a small, ad-hoc task with GSD guarantees (plan + execute + commit) | For one-off tasks outside the main phase workflow |
 | `/super-gsd:sg-health` | Self-diagnose the installation: GSD/Superpowers presence, hook registration, HANDOFF.md schema | When something feels broken or after a fresh install |
@@ -229,7 +267,7 @@ super-gsd hooks work on Codex and Gemini/Antigravity CLI without the Claude Code
 | PreToolUse / BeforeTool hook | ✅ | ✅ | ✅ |
 | Superpowers integration | ✅ | ❌ | ❌ |
 | AskUserQuestion UI | ✅ | ❌ numbered list fallback | ❌ numbered list fallback |
-| Skills coverage | ✅ 22 of 22 in `skills/` | ⚠️ 12 of 22 in `.agents/skills/` | ⚠️ 12 of 22 in `.agents/skills/` |
+| Skills coverage | ✅ 25 of 25 in `skills/` | ⚠️ 15 of 25 in `.agents/skills/` | ⚠️ 15 of 25 in `.agents/skills/` |
 
 ¹ The same `hooks/stop_hook.cjs` runs on all three platforms and emits a `systemMessage` text reminder (e.g. "Run /super-gsd:sg-execute to hand off to implementation"). On Claude Code, that text enters Claude's context window where Claude can soft-act on the suggestion (or the user types `sg-next` to auto-invoke the next sg-* skill). On Codex/Gemini, the same text renders to the user, who runs the next command manually. Gemini's `SessionEnd` / `BeforeTool` hook names correspond to Claude Code's `Stop` / `PreToolUse` semantically.
 
@@ -239,7 +277,7 @@ super-gsd hooks work on Codex and Gemini/Antigravity CLI without the Claude Code
 npx @gyuha/super-gsd install
 ```
 
-This installs `.codex/hooks.json` (Stop and PreToolUse hooks), `hooks/` (Node.js .cjs scripts), and `.agents/skills/` (`$sg-*` skills). Available skills: `$sg-start`, `$sg-plan`, `$sg-execute`, `$sg-parallel-execute`, `$sg-review`, `$sg-learn`, `$sg-retro`, `$sg-ship`, `$sg-status`, `$sg-next`, `$sg-setup`. See `AGENTS.md` for the full workflow.
+This installs `.codex/hooks.json` (Stop and PreToolUse hooks), `hooks/` (Node.js .cjs scripts), and `.agents/skills/` (`$sg-*` skills). Available skills: `$sg-start`, `$sg-plan`, `$sg-execute`, `$sg-parallel-execute`, `$sg-review`, `$sg-learn`, `$sg-retro`, `$sg-ship`, `$sg-status`, `$sg-next`, `$sg-tdd`, `$sg-toggle-tdd`, `$sg-toggle-review`, `$sg-toggle-learn`, `$sg-setup`. See `AGENTS.md` for the full workflow.
 
 > **Note:** The Stop hook prints a `Run $sg-*` reminder message — it does not auto-invoke the next skill. You must run each `$sg-*` command manually after each stage.
 
@@ -300,7 +338,7 @@ If checks pass for your platform, `super-gsd` is installed correctly.
 
 - **Phase 1 — Plugin Scaffold (shipped):** installable plugin shell with manifest, marketplace metadata, README, and verify checklist. No commands or hooks yet.
 - **Phase 2 — Manual Handoff & Status (shipped):** introduces `/super-gsd:sg-execute` (package a finished GSD phase as a Superpowers-ready prompt) and `/super-gsd:sg-status` (inspect current stage, last handoff, next recommended command).
-- **Phase 3 — sg- Command Set & README (shipped):** delivers the full 14-command `sg-` interface and updated documentation so the entire GSD → Superpowers → sg-retro cycle has discoverable slash commands. *(Expanded to 22 commands over subsequent phases — see Commands table for the current set.)*
+- **Phase 3 — sg- Command Set & README (shipped):** delivers the full 14-command `sg-` interface and updated documentation so the entire GSD → Superpowers → sg-retro cycle has discoverable slash commands. *(Expanded to 25 commands over subsequent phases — see Commands table for the current set.)*
 - **Phase 4 — Auto-Advance Hooks (shipped):** registers `Stop` hooks so stage transitions are auto-detected — completed `plan-phase` surfaces a handoff prompt, completed `code-reviewer` suggests Hookify via `systemMessage`. *(Hookify dependency removed in Phase 13; reminder text rerouted to `sg-retro`.)*
 - **Phase 5 — Lessons Feedback Loop (shipped):** persists Hookify findings into `.planning/lessons/` and surfaces them automatically when the next GSD phase begins, closing the learning loop. *(Lessons writer migrated to the built-in `sg-retro` Skill in Phase 13; Hookify no longer required.)*
 - **Phase 6 — sg-health (shipped):** introduces `sg-health` self-diagnosis command — checks GSD/Superpowers installation, hook registration, and HANDOFF.md schema integrity with `[OK]`/`[WARN]`/`[FAIL]` output.

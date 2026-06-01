@@ -106,18 +106,15 @@ case "$STAGE_RAW" in
     ;;
   gsd-plan)    NEXT_CMD="/super-gsd:sg-execute" ;;
   ui-plan)     NEXT_CMD="/super-gsd:sg-execute" ;;
-  superpowers) NEXT_CMD="/super-gsd:sg-review" ;;
-  parallel)    NEXT_CMD="/super-gsd:sg-review" ;;
-  execute)
-    TDD_MODE=$(node -e "try{const c=require('./.planning/config.json');console.log(c.super_gsd&&c.super_gsd.tdd_mode?'true':'false')}catch(e){console.log('false')}" 2>/dev/null || echo "false")
-    if [ "$TDD_MODE" = "true" ]; then
-      NEXT_CMD="/super-gsd:sg-tdd"
-    else
-      NEXT_CMD="/super-gsd:sg-review"
-    fi
+  superpowers|parallel|execute|tdd|review)
+    # Skip-aware routing for the implementation→ship segment. Reads super_gsd config:
+    #   tdd_mode    (execute only) → run sg-tdd before review
+    #   skip_review → omit sg-review, fall through to sg-learn (or sg-ship if learn also skipped)
+    #   skip_learn  → omit sg-learn, fall through to sg-ship
+    # With all flags false/absent this reproduces the prior fixed routing exactly.
+    NEXT_CMD=$(SG_STAGE="$STAGE_RAW" node -e 'let c={};try{c=(require("./.planning/config.json").super_gsd)||{}}catch(e){}var tdd=!!c.tdd_mode,sr=!!c.skip_review,sl=!!c.skip_learn,s=process.env.SG_STAGE,n;if(s==="execute"&&tdd){n="sg-tdd"}else if(s==="review"){n=sl?"sg-ship":"sg-learn"}else{n=sr?(sl?"sg-ship":"sg-learn"):"sg-review"}process.stdout.write("/super-gsd:"+n)' 2>/dev/null)
+    [ -z "$NEXT_CMD" ] && NEXT_CMD="/super-gsd:sg-review"
     ;;
-  tdd)         NEXT_CMD="/super-gsd:sg-review" ;;
-  review)      NEXT_CMD="/super-gsd:sg-learn" ;;
   sg-retro)    NEXT_CMD="/super-gsd:sg-ship" ;;
   ship)
     if [ "$NEXT_PHASE_EXISTS" = "1" ]; then
@@ -224,5 +221,5 @@ Skill() mapping by `NEXT_CMD`:
 3. For all stages except complete/init, emit one `→ /super-gsd:sg-[cmd]` line and immediately invoke via Skill() — no confirmation prompt (NEXT-03).
 4. When STAGE_RAW is complete or init, call AskUserQuestion; emit `Cancelled. No changes made.` and exit when cancel is selected (NEXT-04).
 5. Before Skill() invoke, append `| TS | PHASE_SLUG | FROM_STAGE | sg-next | - |` row to HANDOFF.md (NEXT-05, D-04).
-6. When STAGE_RAW is tdd, routes to /super-gsd:sg-review.
+6. For the superpowers/parallel/execute/tdd/review stages, routing is skip-aware (super_gsd.tdd_mode / skip_review / skip_learn): a skipped stage chain-skips to the next non-skipped stage. With all flags false/absent the routing is unchanged (execute → sg-review unless tdd_mode, tdd → sg-review, review → sg-learn).
 </success_criteria>

@@ -503,7 +503,15 @@ Full archive: [.planning/milestones/v2.9-ROADMAP.md](.planning/milestones/v2.9-R
   2. `.planning/config.json`(또는 플러그인 config)의 `super_gsd.tdd_mode: true`일 때 sg-next가 execute 완료 상태에서 sg-tdd로, `false`(또는 부재)이면 sg-review로 라우팅한다 — sg-status도 동일하게 동작한다 (D-07 inline-replication 양쪽 동시 갱신)
   3. `hooks/transcript_matcher.cjs`가 sg-tdd 진입·완료를 나타내는 신호 패턴을 인식하고, `hooks/stop_hook.cjs`가 완료 시 sg-review를 다음 단계로 systemMessage에 안내한다
   4. `.agents/skills/sg-tdd/SKILL.md`가 존재하여 Codex/Gemini에서 `$sg-tdd`로 호출 가능하며 skills/ 원본과 pairwise sync 상태다
-**Plans**: TBD
+**Plans**: 2 plans
+Plans:
+**Wave 1** (MIRROR-01 sg-tdd 파일 쌍 동시 생성)
+
+- [ ] 46-01-PLAN.md — skills/sg-tdd/SKILL.md + .agents/skills/sg-tdd/SKILL.md 신규 생성 (TDD-01, TDD-02, TDD-03, MIRROR-01)
+
+**Wave 2** *(blocked on Wave 1 completion)*
+
+- [ ] 46-02-PLAN.md — transcript_matcher + stop_hook + sg-next/sg-status + .agents/ 미러 라우팅 갱신 (PIPE-01, PIPE-02, PIPE-03)
 
 ### Phase 47: 문서 갱신
 

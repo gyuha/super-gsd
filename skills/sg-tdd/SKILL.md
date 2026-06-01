@@ -77,7 +77,7 @@ This command is self-contained — no external workflow files imported. Reads .p
    ```
 
 6. **Append tdd row to HANDOFF.md (before Skill() call).**
-   Read the From value from the last row of HANDOFF.md to avoid hardcoding "execute" (prevents corrupt From=tdd on retry).
+   Read the To value from the last row of HANDOFF.md (the previous stage's destination becomes this row's From) to avoid hardcoding "execute" (prevents corrupt From=tdd on retry).
    ```bash
    TS=$(date -u +%Y-%m-%dT%H:%M:%SZ)
    PHASE_SLUG=$(basename "$PHASE_DIR")

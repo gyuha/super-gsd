@@ -13,7 +13,7 @@
   - `To` — 인계 후 도착 stage. 마지막 행의 이 값이 현재 stage가 된다.
   - `Plan Hash` — 해당 phase의 모든 `*-PLAN.md` 본문을 합쳐 산출한 sha256 short hash (7자). plan 본문이 변경되면 같은 phase라도 재인계 가능. 적용 불가 시 `-`.
   - `User` — 명령 실행 시 `git config user.name` 값. 미설정 시 `-`. (Phase 39 이전 행은 이 컬럼이 없음)
-- **Stage enum** (From / To 컬럼 허용 값): `init`, `gsd-plan`, `ui-plan`, `superpowers`, `parallel`, `review`, `sg-retro`, `ship`, `complete`, `sg-next` (sg-next는 메타 전이 행 전용).
+- **Stage enum** (From / To 컬럼 허용 값): `init`, `gsd-plan`, `ui-plan`, `superpowers`, `parallel`, `execute`, `tdd`, `review`, `sg-retro`, `ship`, `complete`, `sg-next` (sg-next는 메타 전이 행 전용).
 - 초기 상태 (= 데이터 행 0개)에서는 stage가 자동으로 `init`으로 판정된다 — `init` 행을 사전 작성하지 않는다.
 
 ## 로그
@@ -243,3 +243,13 @@
 | 2026-05-31T13:09:54Z | 45-sg-plan-grilling | superpowers | sg-next | - | gyuha |
 | 2026-05-31T13:16:15Z | 45-sg-plan-grilling | sg-next | sg-retro | - | gyuha |
 | 2026-05-31T13:16:40Z | v2.10 | sg-retro | complete | - | gyuha |
+| 2026-06-01T05:21:48Z | 46 | complete | sg-next | - | gyuha |
+| 2026-06-01T05:38:30Z | 46-sg-tdd-pipeline | sg-next | gsd-plan | - | gyuha |
+| 2026-06-01T06:19:32Z | 46-sg-tdd-pipeline | gsd-plan | sg-next | - | gyuha |
+| 2026-06-01T06:21:45Z | 46-sg-tdd-pipeline | gsd-plan | parallel | 0fcf5f3 | gyuha |
+| 2026-06-01T06:29:16Z | 46-sg-tdd-pipeline | parallel | sg-next | - | gyuha |
+| 2026-06-01T06:29:36Z | 46-sg-tdd-pipeline | sg-next | review | - | gyuha |
+| 2026-06-01T06:35:03Z | 46-sg-tdd-pipeline | review | sg-next | - | gyuha |
+| 2026-06-01T06:38:00Z | 46-sg-tdd-pipeline | sg-next | sg-retro | - | gyuha |
+| 2026-06-01T06:38:18Z | 46-sg-tdd-pipeline | sg-retro | sg-next | - | gyuha |
+| 2026-06-01T06:38:28Z | 46-sg-tdd-pipeline | sg-next | ship | - | gyuha |

@@ -12,14 +12,14 @@ Detect the user's input language and respond in that language throughout this sk
 </language>
 
 <objective>
-tdd_mode가 활성화된 경우 현재 phase의 구현 결과를 Superpowers test-driven-development 스킬로 TDD 준수 여부를 검증하고, HANDOFF.md에 tdd stage 행을 기록한다. Non-invasive 제약(D-07)에 따라 Superpowers 또는 GSD 내부 파일을 수정하지 않는다.
+When tdd_mode is enabled, verify that the current phase implementation complies with TDD discipline by invoking the Superpowers test-driven-development skill, then record a tdd stage row in HANDOFF.md. Per the Non-invasive constraint (D-07), no Superpowers or GSD internal files are modified.
 </objective>
 
 <constraints>
 ## Platform Constraints (Codex / Gemini CLI / Antigravity CLI)
 - SubagentStop not supported: no automatic trigger on stage completion. Run $sg-review manually after completion.
 - AskUserQuestion not supported: failure path is presented as a plain text numbered list. Read user reply and proceed accordingly.
-- Use $sg-tdd / $sg-review / $sg-execute instead of /super-gsd:sg-* slash commands.
+- Use $sg-tdd / $sg-review / $sg-execute (agent-style commands). Claude Code slash-command format is not supported.
 </constraints>
 
 <execution_context>
@@ -84,7 +84,7 @@ This command is self-contained — no external workflow files imported. Reads .p
    ```
 
 6. **HANDOFF.md에 tdd 행 append (Skill() 호출 전).**
-   From 컬럼은 HANDOFF.md 마지막 행의 To 값을 읽어 설정한다 (재시도 시 From=tdd 방지).
+   From 컬럼은 HANDOFF.md 마지막 행의 To 값(이전 stage의 목적지 = 현재 행의 출발지)을 읽어 설정한다 (재시도 시 From=tdd 방지).
    ```bash
    TS=$(date -u +%Y-%m-%dT%H:%M:%SZ)
    PHASE_SLUG=$(basename "$PHASE_DIR")
@@ -138,7 +138,7 @@ This command is self-contained — no external workflow files imported. Reads .p
 <success_criteria>
 1. tdd_mode: false 또는 미설정 상태에서 호출하면 경고 메시지를 출력하고 계속 진행한다 (블록 없음).
 2. tdd_mode: true 상태에서 호출하면 Superpowers test-driven-development 스킬을 정확히 한 번 호출한다.
-3. Skill() 호출 전에 HANDOFF.md에 tdd stage 행이 기록된다 (From=execute, To=tdd, Plan Hash=-).
+3. Skill() 호출 전에 HANDOFF.md에 tdd stage 행이 기록된다 (From=dynamic, To=tdd, Plan Hash=-).
 4. Skill() 호출 직전에 "TDD verification complete" 문자열이 출력된다.
 5. TDD 검증 실패 시 plain text numbered list로 소프트 경고 + proceed/retry 선택지를 제공한다 (AskUserQuestion 미사용).
 </success_criteria>

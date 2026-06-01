@@ -9,20 +9,20 @@ Orchestrator plugin that auto-chains GSD → Superpowers → sg-retro so plannin
 
 The problem this solves is that manual handoff between these three tools is fragile. People forget to run the review, skip the retro, lose context between sessions, or re-run a planning command that overwrites half-finished work. By separating roles and then orchestrating the seams between them, the same mistakes stop showing up.
 
-All twenty-one slash commands covering the full GSD → Superpowers → sg-retro cycle are available — from starting a new milestone to closing it out and beginning the next. Use `sg-next` at any point to auto-detect the current stage and invoke the next command without having to remember it. See the **Commands** section below for the quick-reference table, and `docs/COMMANDS.md` for the full per-command reference.
+All twenty-two slash commands covering the full GSD → Superpowers → sg-retro cycle are available — from starting a new milestone to closing it out and beginning the next. Use `sg-next` at any point to auto-detect the current stage and invoke the next command without having to remember it. See the **Commands** section below for the quick-reference table, and `docs/COMMANDS.md` for the full per-command reference.
 
 ## Workflow
 
 ```
 [ manual entry ]                       [ sg-next auto-chains after sg-plan completes ]
 
-sg-new/sg-start → sg-explore → sg-plan → sg-execute → sg-review → sg-learn → sg-ship → sg-complete
-                                  ↑                                    |                      ↓
-                                  └──── lessons auto-injected ←────────┘               → sg-new
+sg-new/sg-start → sg-explore → sg-plan → sg-execute → sg-tdd (tdd_mode=true) → sg-review → sg-learn → sg-ship → sg-complete
+                                  ↑                                                          |                      ↓
+                                  └──── lessons auto-injected ←───────────────────────────────┘               → sg-new
                                   (next sg-plan reads .planning/lessons/)        (next milestone)
 ```
 
-`sg-next` reads HANDOFF.md/STATE.md and auto-invokes the next command in the chain (`gsd-plan → sg-execute`, `parallel/execute → sg-review`, `review → sg-learn`, `sg-retro → sg-ship`, `ship → sg-plan {next phase}` or `sg-complete`, `complete → sg-new` via AskUserQuestion). The entry-point commands (`sg-start`, `sg-explore`, and the initial `sg-plan`) are invoked manually before the auto-chain begins.
+`sg-next` reads HANDOFF.md/STATE.md and auto-invokes the next command in the chain (`gsd-plan → sg-execute`, `parallel/execute → sg-tdd (tdd_mode=true) → sg-review`, `review → sg-learn`, `sg-retro → sg-ship`, `ship → sg-plan {next phase}` or `sg-complete`, `complete → sg-new` via AskUserQuestion). The entry-point commands (`sg-start`, `sg-explore`, and the initial `sg-plan`) are invoked manually before the auto-chain begins.
 
 `sg-status` can be run at any point to check current position. `sg-quick` handles one-off tasks outside the main flow.
 
@@ -37,6 +37,7 @@ Quick reference for all `/super-gsd:sg-*` slash commands.
 | `/super-gsd:sg-plan` | Gather phase context then create an execution plan (2-step chain: `gsd-discuss-phase` → `gsd-plan-phase`) | After `sg-explore`, when ready to plan |
 | `/super-gsd:sg-ui-plan` | UI design-specific brainstorming — directly invokes `superpowers:brainstorming` | When `sg-plan` ran without Visual Companion but UI design is now needed |
 | `/super-gsd:sg-execute` | Package the current phase plan and hand off to Superpowers (`superpowers:executing-plans`) | After `sg-plan` is complete |
+| `/super-gsd:sg-tdd` | Run a red-green-refactor TDD verification gate via `superpowers:test-driven-development` — only active when `super_gsd.tdd_mode: true` in `.planning/config.json` | After `sg-execute` completes, when `tdd_mode` is enabled |
 | `/super-gsd:sg-review` | Request a code review via `superpowers:requesting-code-review` | After implementation is complete |
 | `/super-gsd:sg-learn` | Run a structured retrospective via `sg-retro` — smart default runs two of the three lenses (ssc, dspm) without prompting; pass `--pick` for interactive lens selection (Claude Code only — on Codex/Gemini CLI, `--pick` exits with an error; use `$sg-retro <phase> ssc dspm analyze` to pick positionally) | After the review is done |
 | `/super-gsd:sg-lessons` | List prior lessons from `.planning/lessons/`; accepts optional phase filter | Before `sg-plan` to review what was learned |

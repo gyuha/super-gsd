@@ -226,7 +226,7 @@ Head: $HEAD_SHA")
        ```
        AskUserQuestion(
          questions: [{
-           question: "Tests FAILED in TDD mode (retry RETRY_COUNT/2). Re-run sg-execute to fix the failing tests?",
+           question: "Tests FAILED in TDD mode (retry $RETRY_COUNT/2). Re-run sg-execute to fix the failing tests?",
            header: "tdd-retry",
            multiSelect: false,
            options: [
@@ -247,7 +247,7 @@ Head: $HEAD_SHA")
          ```
        - If **"Stop"** selected: print a halt message (user's language) and exit without re-invoking. Leave `.planning/USE-TDD-RETRY` as-is so a later manual `/super-gsd:sg-review` can resume the count.
 
-     - **If `RETRY_COUNT` == 2 (limit reached)** — do NOT ask. Report that the retry limit was exceeded (prose in user's language), reset the counter, and stop:
+     - **If `RETRY_COUNT` >= 2 (limit reached)** — do NOT ask. Report that the retry limit was exceeded (prose in user's language), reset the counter, and stop. (Using `>=` rather than `== 2` hardens against a hand-edited/corrupted retry file holding a value above 2 — it must still halt, never silently fall through.):
        ```bash
        echo "TDD retry limit (2) exceeded — stopping. Fix the failing tests manually, then re-run /super-gsd:sg-review."
        rm -f .planning/USE-TDD-RETRY
